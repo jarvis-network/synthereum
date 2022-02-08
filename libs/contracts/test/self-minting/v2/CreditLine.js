@@ -40,7 +40,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   const collateralOwner = accounts[5];
   const beneficiary = accounts[6];
   let feePercentage = toBN(toWei('0.002'));
-  let overCollateralizationFactor = toBN(toWei('1.2'));
+  let overCollateralizationFactor = toWei('1.2');
   let feeRecipient = accounts[7];
   let Fee = {
     feePercentage: feePercentage,
@@ -48,7 +48,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     feeProportions: [1],
     totalFeeProportions: [1],
   };
-  let capMintAmount = toBN(toWei('1000000'));
+  let capMintAmount = toBN(toWei('10000000000000000000'));
 
   // Contracts
   let collateral;
@@ -69,8 +69,8 @@ contract('Synthereum CreditLine ', function (accounts) {
   const syntheticName = 'Test Synthetic Token';
   const syntheticSymbol = 'SYNTH';
   const startTimestamp = Math.floor(Date.now() / 1000);
-  const priceFeedIdentifier = web3.utils.padRight(utf8ToHex('JRT/EUR'), 64);
-  const startingPrice = toBN(toWei('1.02'));
+  const priceFeedIdentifier = web3.utils.padRight(utf8ToHex('jEUR/USDC'), 64);
+  const startingPrice = toWei('1.02', 'mwei');
   const minSponsorTokens = toWei('5');
 
   // Conveniently asserts expected collateral and token balances, assuming that
@@ -155,7 +155,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   const calculateFeeAmount = collateralAmount => {
     const feeAmount = collateralAmount
       .mul(Fee.feePercentage)
-      .div(toBN(Math.pow(10, 18)));
+      .div(toBN(Math.pow(10, 20)));
     return feeAmount;
   };
 
@@ -186,11 +186,11 @@ contract('Synthereum CreditLine ', function (accounts) {
     };
 
     // Represents WETH or some other token that the sponsor and contracts don't control.
-    collateral = await TestnetSelfMintingERC20.new('test', 'tsc', 18);
-    await collateral.allocateTo(sponsor, toWei('10000000000000'), {
+    collateral = await TestnetSelfMintingERC20.new('test', 'tsc', 6);
+    await collateral.allocateTo(sponsor, toBN(toWei('10000000000000')), {
       from: collateralOwner,
     });
-    await collateral.allocateTo(other, toWei('10000000000000000'), {
+    await collateral.allocateTo(other, toBN(toWei('10000000000000000')), {
       from: collateralOwner,
     });
 
@@ -208,7 +208,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     // // register forwarder
     // await synthereumFinderInstance.changeImplementationAddress(utf8ToHex("TrustedForwarder"), forwarderInstance.address, {from:maintainers})
 
-    mockOnchainOracle = await MockOnchainOracle.new({
+    mockOnchainOracle = await MockOnchainOracle.new(8, {
       from: contractDeployer,
     });
     const mockOracleInterfaceName = utf8ToHex('PriceFeed');
@@ -285,10 +285,10 @@ contract('Synthereum CreditLine ', function (accounts) {
     it('Position lifecycle', async () => {
       // Create the initial creditLine.
       const createTokens = toBN(toWei('100'));
-      const createCollateral = toBN(toWei('150'));
+      const createCollateral = toBN(toWei('150', 'mwei'));
       let expectedSponsorTokens = toBN(createTokens);
       let feeAmount = calculateFeeAmount(
-        calculateCollateralValue(createTokens, startingPrice),
+        calculateCollateralValue(createTokens, toBN(startingPrice)),
       );
       let expectedSponsorCollateral = createCollateral.sub(feeAmount);
 
@@ -447,7 +447,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // Check redeem return value and event.
       expectedFeeAmount = calculateFeeAmount(
-        calculateCollateralValue(redeemTokens, startingPrice),
+        calculateCollateralValue(redeemTokens, toBN(startingPrice)),
       );
 
       const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
@@ -514,7 +514,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       });
 
       let feeAmount = calculateFeeAmount(
-        calculateCollateralValue(toBN(numTokens), startingPrice),
+        calculateCollateralValue(toBN(numTokens), toBN(startingPrice)),
       );
 
       // Other makes a deposit to the sponsor's account.
@@ -561,7 +561,7 @@ contract('Synthereum CreditLine ', function (accounts) {
         from: sponsor,
       });
       let feeAmount = calculateFeeAmount(
-        calculateCollateralValue(toBN(outputTokens), startingPrice),
+        calculateCollateralValue(toBN(outputTokens), toBN(startingPrice)),
       );
 
       const initialSponsorTokens = await tokenCurrency.balanceOf.call(sponsor);
@@ -591,7 +591,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       let repayFeeAmount = calculateFeeAmount(
-        calculateCollateralValue(toBN(repayTokens), startingPrice),
+        calculateCollateralValue(toBN(repayTokens), toBN(startingPrice)),
       );
 
       const expectedCollAmount = toBN(inputCollateral)
@@ -850,8 +850,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // Create the initial creditLine.
-      createTokens = toBN(toWei('1100'));
-      createCollateral = toBN(toWei('1400'));
+      createTokens = toBN(toWei('11000'));
+      createCollateral = toBN(toWei('140', 'mwei'));
 
       await collateral.approve(creditLine.address, createCollateral, {
         from: sponsor,
@@ -867,7 +867,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // create liquidator position to have tokens
-      liquidatorCollateral = toBN(toWei('10000'));
+      liquidatorCollateral = toBN(toWei('100', 'mwei'));
       liquidatorTokens = toBN(toWei('2000'));
 
       await collateral.approve(creditLine.address, liquidatorCollateral, {
@@ -885,7 +885,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // change price - position is under collateral requirement but still cover the debt
-      const updatedPrice = toBN(toWei('1.1'));
+      const updatedPrice = toWei('1.1', 'mwei');
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       // check collateralisation from view function
@@ -899,10 +899,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       const collateralRequirement = createTokens
-        .mul(updatedPrice)
+        .mul(toBN(updatedPrice))
         .div(toBN(Math.pow(10, 18)))
-        .mul(overCollateralizationFactor)
-        .div(toBN(Math.pow(10, 18)));
+        .mul(toBN(overCollateralizationFactor))
+        .div(toBN(Math.pow(10, 20)));
       assert.equal(
         collateralRequirement.sub(createCollateral) > 0,
         true,
@@ -910,14 +910,14 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // let inversePrice = toBN(toWei('1')).div(updatedPrice);
-      const liquidationTokens = toBN(toWei('40'));
+      const liquidationTokens = toBN(toWei('400'));
 
       let liquidatedCollateralPortion = liquidationTokens
         .mul(createCollateral)
         .div(createTokens);
       const liquidatedTokensValue = liquidationTokens
-        .mul(updatedPrice)
-        .div(toBN(Math.pow(10, 18)));
+        .mul(toBN(updatedPrice))
+        .div(toBN(Math.pow(10, 20)));
 
       const isCapitalised = liquidatedCollateralPortion.gt(
         liquidatedTokensValue,
@@ -1167,13 +1167,13 @@ contract('Synthereum CreditLine ', function (accounts) {
   it('Lifecycle', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
-    const createCollateral = toBN(toWei('150'));
+    const createCollateral = toBN(toWei('150', 'mwei'));
     let expectedSponsorTokens = toBN(createTokens);
     let feeAmount = calculateFeeAmount(
-      calculateCollateralValue(createTokens, startingPrice),
+      calculateCollateralValue(createTokens, toBN(startingPrice)),
     );
     let expectedSponsorCollateral = createCollateral.sub(feeAmount);
-    let expectedLiquidationPrice = '1.2483'; // expectedSponsor / (createTokens * overCollateralisation)
+    let expectedLiquidationPrice = '1.249983'; // expectedSponsor / (createTokens * overCollateralisation)
 
     // Fails without approving collateral.
     await truffleAssert.reverts(
@@ -1185,15 +1185,16 @@ contract('Synthereum CreditLine ', function (accounts) {
     await collateral.approve(creditLine.address, createCollateral, {
       from: sponsor,
     });
-
+    await collateral.approve(creditLine.address, createCollateral, {
+      from: other,
+    });
     // reverts if undercollateralised
     await truffleAssert.reverts(
-      creditLine.create(toBN(toWei('90')), toBN(toWei('1000')), {
-        from: accounts[3],
+      creditLine.create(toWei('1', 'mwei'), toWei('1000'), {
+        from: other,
       }),
       'Insufficient Collateral',
     );
-
     const actualFee = await creditLine.create.call(
       createCollateral,
       createTokens,
@@ -1225,7 +1226,6 @@ contract('Synthereum CreditLine ', function (accounts) {
       toWei(expectedLiquidationPrice),
     );
 
-    return;
     // check balances and fee distribution is ok
     await checkBalances(
       expectedSponsorTokens,
@@ -1245,7 +1245,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.create(0, toBN(toWei('2')), { from: sponsor });
 
     let createFeeAmount = calculateFeeAmount(
-      calculateCollateralValue(toBN(toWei('2')), startingPrice),
+      calculateCollateralValue(toBN(toWei('2')), toBN(startingPrice)),
     );
     assert.equal(opfee.toString(), createFeeAmount.toString());
 
@@ -1268,7 +1268,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await checkFeeRecipients(createFeeAmount);
 
     // can create other tokens passing a bit of collateral (less than fee amount) staying above cr
-    let collateralPassed = toBN(toWei('1'));
+    let collateralPassed = toBN(toWei('1', 'mwei'));
     await collateral.approve(creditLine.address, collateralPassed, {
       from: sponsor,
     });
@@ -1281,7 +1281,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     createFeeAmount = calculateFeeAmount(
-      calculateCollateralValue(toBN(toWei('10')), startingPrice),
+      calculateCollateralValue(toBN(toWei('10')), toBN(startingPrice)),
     );
     assert.equal(opfee.toString(), createFeeAmount.toString());
 
@@ -1390,7 +1390,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Check redeem return value and event.
     expectedFeeAmount = calculateFeeAmount(
-      calculateCollateralValue(redeemTokens, startingPrice),
+      calculateCollateralValue(redeemTokens, toBN(startingPrice)),
     );
 
     const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
@@ -1439,9 +1439,9 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Create additional.
     const createAdditionalTokens = toBN(toWei('10'));
-    const createAdditionalCollateral = toBN(toWei('110'));
+    const createAdditionalCollateral = toBN(toWei('110', 'mwei'));
     feeAmount = calculateFeeAmount(
-      calculateCollateralValue(createAdditionalTokens, startingPrice),
+      calculateCollateralValue(createAdditionalTokens, toBN(startingPrice)),
     );
     expectedSponsorTokens = expectedSponsorTokens.add(
       toBN(createAdditionalTokens),
@@ -1471,7 +1471,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     // Redeem full.
     const redeemRemainingTokens = expectedSponsorTokens;
     feeAmount = calculateFeeAmount(
-      calculateCollateralValue(redeemRemainingTokens, startingPrice),
+      calculateCollateralValue(redeemRemainingTokens, toBN(startingPrice)),
     );
     await tokenCurrency.approve(creditLine.address, redeemRemainingTokens, {
       from: sponsor,
@@ -1508,7 +1508,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   it('Cannot withdraw collateral if position gets undercollateralised', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
-    const createCollateral = toBN(toWei('150'));
+    const createCollateral = toBN(toWei('150', 'mwei'));
 
     await collateral.approve(creditLine.address, createCollateral, {
       from: sponsor,
@@ -1518,7 +1518,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     let feeAmount = calculateFeeAmount(
-      calculateCollateralValue(createTokens, startingPrice),
+      calculateCollateralValue(createTokens, toBN(startingPrice)),
     );
 
     // Cannot withdraw full collateral because the position would go under collateralized
@@ -1539,14 +1539,14 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     const numTokens = toWei('10');
-    const collateralAmount = toWei('20');
+    const collateralAmount = toWei('20', 'mwei');
 
     await creditLine.create(collateralAmount, numTokens, {
       from: sponsor,
     });
 
     let feeAmount = calculateFeeAmount(
-      calculateCollateralValue(toBN(numTokens), startingPrice),
+      calculateCollateralValue(toBN(numTokens), toBN(startingPrice)),
     );
 
     // Other makes a deposit to the sponsor's account.
@@ -1713,13 +1713,13 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    let inputCollateral = toWei('20');
+    let inputCollateral = toWei('20', 'mwei');
     let outputTokens = toWei('12');
     await creditLine.create(inputCollateral, outputTokens, {
       from: sponsor,
     });
     let feeAmount = calculateFeeAmount(
-      calculateCollateralValue(toBN(outputTokens), startingPrice),
+      calculateCollateralValue(toBN(outputTokens), toBN(startingPrice)),
     );
 
     const initialSponsorTokens = await tokenCurrency.balanceOf.call(sponsor);
@@ -1736,7 +1736,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
     let repayFeeAmount = calculateFeeAmount(
-      calculateCollateralValue(toBN(repayTokens), startingPrice),
+      calculateCollateralValue(toBN(repayTokens), toBN(startingPrice)),
     );
 
     // Event is correctly emitted.
@@ -2082,7 +2082,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     // Create new oracle, replace it in the finder, and push a different price to it.
-    const newMockOracle = await MockOnchainOracle.new({
+    const newMockOracle = await MockOnchainOracle.new(8, {
       from: contractDeployer,
     });
     await synthereumFinderInstance.changeImplementationAddress(
@@ -2185,8 +2185,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // Create the initial creditLine.
-      createTokens = toBN(toWei('1100'));
-      createCollateral = toBN(toWei('1400'));
+      createTokens = toBN(toWei('11000'));
+      createCollateral = toBN(toWei('140', 'mwei'));
 
       await collateral.approve(creditLine.address, createCollateral, {
         from: sponsor,
@@ -2202,7 +2202,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // create liquidator position to have tokens
-      liquidatorCollateral = toBN(toWei('10000'));
+      liquidatorCollateral = toBN(toWei('100', 'mwei'));
       liquidatorTokens = toBN(toWei('2000'));
 
       await collateral.approve(creditLine.address, liquidatorCollateral, {
@@ -2231,7 +2231,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     it('Correctly liquidates an undercollateralised amount, position capitalised', async () => {
       // change price - position is under collateral requirement but still cover the debt
-      const updatedPrice = toBN(toWei('1.1'));
+      const updatedPrice = toWei('1.1', 'mwei');
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       // check collateralisation from view function
@@ -2245,10 +2245,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       const collateralRequirement = createTokens
-        .mul(updatedPrice)
+        .mul(toBN(updatedPrice))
         .div(toBN(Math.pow(10, 18)))
-        .mul(overCollateralizationFactor)
-        .div(toBN(Math.pow(10, 18)));
+        .mul(toBN(overCollateralizationFactor))
+        .div(toBN(Math.pow(10, 20)));
       assert.equal(
         collateralRequirement.sub(createCollateral) > 0,
         true,
@@ -2262,8 +2262,8 @@ contract('Synthereum CreditLine ', function (accounts) {
         .mul(createCollateral)
         .div(createTokens);
       const liquidatedTokensValue = liquidationTokens
-        .mul(updatedPrice)
-        .div(toBN(Math.pow(10, 18)));
+        .mul(toBN(updatedPrice))
+        .div(toBN(Math.pow(10, 20)));
 
       const isCapitalised = liquidatedCollateralPortion.gt(
         liquidatedTokensValue,
@@ -2353,7 +2353,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     it('Fully liquidates an undercollateralised amount, position capitalised', async () => {
       // change price - position is under collateral requirement but still cover the debt
-      const updatedPrice = toBN(toWei('1.1'));
+      const updatedPrice = toBN(toWei('1.1', 'mwei'));
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       // check collateralisation from view function
@@ -2365,8 +2365,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       const collateralRequirement = createTokens
         .mul(updatedPrice)
         .div(toBN(Math.pow(10, 18)))
-        .mul(overCollateralizationFactor)
-        .div(toBN(Math.pow(10, 18)));
+        .mul(toBN(overCollateralizationFactor))
+        .div(toBN(Math.pow(10, 20)));
       assert.equal(
         collateralRequirement.sub(createCollateral) > 0,
         true,
@@ -2374,14 +2374,14 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // let inversePrice = toBN(toWei('1')).div(updatedPrice);
-      const liquidationTokens = toBN(toWei('1000'));
+      const liquidationTokens = toBN(toWei('400'));
 
       let liquidatedCollateralPortion = liquidationTokens
         .mul(createCollateral)
         .div(createTokens);
       const liquidatedTokensValue = liquidationTokens
         .mul(updatedPrice)
-        .div(toBN(Math.pow(10, 18)));
+        .div(toBN(Math.pow(10, 20)));
 
       const isCapitalised = liquidatedCollateralPortion.gt(
         liquidatedTokensValue,
@@ -2473,14 +2473,14 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     it('Correctly liquidates an undercollateralised amount, position undercapitalised', async () => {
       // change price - position is under collateral requirement and cant fully cover debt
-      const updatedPrice = toBN(toWei('15'));
+      const updatedPrice = toBN(toWei('15', 'mwei'));
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       const collateralRequirement = createTokens
         .mul(updatedPrice)
         .div(toBN(Math.pow(10, 18)))
-        .mul(overCollateralizationFactor)
-        .div(toBN(Math.pow(10, 18)));
+        .mul(toBN(overCollateralizationFactor))
+        .div(toBN(Math.pow(10, 20)));
       assert.equal(
         collateralRequirement.sub(createCollateral) > 0,
         true,

@@ -4,12 +4,19 @@ pragma solidity ^0.8.4;
 contract MockOnChainOracle {
   mapping(bytes32 => uint256) idToPrice;
 
+  uint8 decimals;
+
+  constructor(uint8 _decimals) {
+    decimals = _decimals;
+  }
+
   function getLatestPrice(bytes32 identifier)
     external
     view
     returns (uint256 price)
   {
     price = idToPrice[identifier];
+    price = price * (10**(18 - decimals));
   }
 
   function setPrice(bytes32 identifier, uint256 price) external {
