@@ -19,14 +19,7 @@ variables:
   parallel:
     matrix:
       - TARGET:
-          [
-            contracts,
-            atomic-swap,
-            yield-farming,
-            legacy-currency-contracts,
-            jrt-investors,
-            crypto-utils,
-          ]
+          [contracts, atomic-swap, yield-farming, jrt-investors, crypto-utils]
   script:
     - yarn test $TARGET
   rules:

@@ -90,10 +90,6 @@
     "examples": {
       "tags": []
     },
-    "legacy-currency-contracts": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
     "hardhat-utils": {
       "tags": []
     },

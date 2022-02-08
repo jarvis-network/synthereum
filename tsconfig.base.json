@@ -39,9 +39,6 @@
       "@jarvis-network/sol2ts-code-gen": ["libs/sol2ts-code-gen/src/index.ts"],
       "@jarvis-network/crypto-utils": ["libs/crypto-utils/src/index.ts"],
       "@jarvis-network/synthereum-ts": ["libs/synthereum-ts/src/index.ts"],
-      "@jarvis-network/legacy-currency-contracts": [
-        "libs/legacy-currency-contracts/src/index.ts"
-      ],
       "@jarvis-network/hardhat-utils": ["libs/hardhat-utils/src/index.ts"],
       "@jarvis-network/yield-farming": ["libs/yield-farming/src/index.ts"],
       "@jarvis-network/atomic-swap": ["libs/atomic-swap/src/index.ts"],
