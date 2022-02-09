@@ -28,17 +28,6 @@ contract LendingProxy is ILendingProxy {
   address public maintainer;
   address immutable finder;
 
-  struct PoolStorage {
-    address moneyMarket;
-    address lendingModule;
-    address interestBearingToken;
-    address swapRouter;
-    uint256 collateralDeposited;
-    uint256 daoInterestShare;
-    uint256 unclaimedDaoInterest;
-    uint256 JRTBuybackShare;
-  }
-
   mapping(address => PoolStorage) public poolStorage;
 
   modifier onlyPool() {
@@ -54,6 +43,76 @@ contract LendingProxy is ILendingProxy {
   constructor(address _maintainer, address _finder) {
     maintainer = _maintainer;
     finder = _finder;
+  }
+
+  function deposit(uint256 amount)
+    external
+    override
+    onlyPool
+    returns (uint256 poolInterest)
+  {
+    PoolStorage memory poolData = poolStorage[msg.sender];
+
+    // retrievve pool collateral
+    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
+    collateral.safeTransferFrom(msg.sender, address(this), amount);
+
+    // calculate interest splitting on delta deposit
+    uint256 daoInterest;
+    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+
+    // delegate call aave deposit - approve
+    collateral.safeIncreaseAllowance(poolData.moneyMarket, amount);
+    IPool(poolData.moneyMarket).deposit(
+      address(collateral),
+      amount,
+      msg.sender,
+      uint16(0)
+    );
+
+    // update poolLastDeposit
+    poolData.collateralDeposited += amount;
+
+    // update unclaimed interest
+    poolData.unclaimedDaoInterest += daoInterest;
+  }
+
+  function withdraw(uint256 amount, address recipient)
+    external
+    override
+    onlyPool
+    returns (uint256 poolInterest)
+  {
+    PoolStorage memory poolData = poolStorage[msg.sender];
+    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
+
+    // retrieve aTokens
+    IERC20(poolData.interestBearingToken).safeTransferFrom(
+      msg.sender,
+      address(this),
+      amount
+    );
+
+    // delegate call aave withdraw - approve
+    IERC20(poolData.interestBearingToken).safeIncreaseAllowance(
+      poolData.moneyMarket,
+      amount
+    );
+    IPool(poolData.moneyMarket).withdraw(
+      address(collateral),
+      amount,
+      recipient
+    );
+
+    // calculate interest splitting on delta deposit
+    uint256 daoInterest;
+    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+
+    // update poolLastDeposit
+    poolData.collateralDeposited -= amount;
+
+    // update unclaimed interest
+    poolData.unclaimedDaoInterest += daoInterest;
   }
 
   function claimCommission(address pool)
@@ -119,71 +178,6 @@ contract LendingProxy is ILendingProxy {
       recipient,
       expiration
     );
-  }
-
-  function deposit(uint256 amount)
-    external
-    override
-    onlyPool
-    returns (uint256 poolInterest)
-  {
-    PoolStorage memory poolData = poolStorage[msg.sender];
-
-    // retrievve pool collateral
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
-    collateral.safeTransferFrom(msg.sender, address(this), amount);
-
-    // calculate interest splitting on delta deposit
-    uint256 daoInterest;
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
-
-    // delegate call aave deposit - approve
-    IPool(poolData.moneyMarket).deposit(
-      address(collateral),
-      amount,
-      msg.sender,
-      uint16(0)
-    );
-
-    // update poolLastDeposit
-    poolData.collateralDeposited += amount;
-
-    // update unclaimed interest
-    poolData.unclaimedDaoInterest += daoInterest;
-  }
-
-  function withdraw(uint256 amount, address recipient)
-    external
-    override
-    onlyPool
-    returns (uint256 poolInterest)
-  {
-    PoolStorage memory poolData = poolStorage[msg.sender];
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
-
-    // retrieve aTokens
-    IERC20(poolData.interestBearingToken).safeTransferFrom(
-      msg.sender,
-      address(this),
-      amount
-    );
-
-    // delegate call aave withdraw - approve
-    IPool(poolData.moneyMarket).withdraw(
-      address(collateral),
-      amount,
-      recipient
-    );
-
-    // calculate interest splitting on delta deposit
-    uint256 daoInterest;
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
-
-    // update poolLastDeposit
-    poolData.collateralDeposited -= amount;
-
-    // update unclaimed interest
-    poolData.unclaimedDaoInterest += daoInterest;
   }
 
   function calculateGeneratedInterest(PoolStorage memory pool)

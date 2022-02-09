@@ -2,6 +2,17 @@
 pragma solidity ^0.8.4;
 
 interface ILendingProxy {
+  struct PoolStorage {
+    address moneyMarket;
+    address lendingModule;
+    address interestBearingToken;
+    address swapRouter;
+    uint256 collateralDeposited;
+    uint256 daoInterestShare;
+    uint256 unclaimedDaoInterest;
+    uint256 JRTBuybackShare;
+  }
+
   function deposit(uint256 amount) external returns (uint256 poolInterest);
 
   function withdraw(uint256 amount, address recipient)
