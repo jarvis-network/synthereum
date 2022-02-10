@@ -1,24 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.10;
 
-import {ILendingProxy} from '../interfaces/ILendingProxy.sol';
-import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
-import {
-  IScaledBalanceToken
-} from '@aave/core-v3/contracts/interfaces/IScaledBalanceToken.sol';
-import {
-  ISynthereumFinder
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
-import {
-  ISynthereumDeployment
-} from '@jarvis-network/synthereum-contracts/contracts/common/interfaces/IDeployment.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {
+  ISynthereumDeployment
+} from '@jarvis-network/synthereum-contracts/contracts/common/interfaces/IDeployment.sol';
+import {
+  IUniswapV2Router02
+} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 
 contract JRTSwapModule {
+  using SafeERC20 for IERC20;
+
   struct SwapInfo {
     address routerAddress;
     address[] tokenSwapPath;
@@ -28,13 +25,15 @@ contract JRTSwapModule {
   function swapToJRT(
     address recipient,
     uint256 amountIn,
-    bytes params
-  ) returns (uint256 amountOut) {
+    bytes memory params
+  ) external returns (uint256 amountOut) {
+    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
+
     // decode swapInfo
     SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
 
     // swap to JRT to final recipient
-    IUniswapV2Router02 router = IUniswapV2Router02(swapInfo.swapRouter);
+    IUniswapV2Router02 router = IUniswapV2Router02(swapInfo.routerAddress);
 
     collateral.safeIncreaseAllowance(address(router), amountIn);
     amountOut = router.swapExactTokensForTokens(

@@ -2,16 +2,12 @@
 pragma solidity ^0.8.10;
 
 import {ILendingProxy} from './interfaces/ILendingProxy.sol';
-import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 import {
   ISynthereumDeployment
 } from '@jarvis-network/synthereum-contracts/contracts/common/interfaces/IDeployment.sol';
-import {
-  IUniswapV2Router02
-} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
