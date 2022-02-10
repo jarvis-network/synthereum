@@ -74,7 +74,8 @@ contract LendingProxy is ILendingProxy {
     poolData.collateralDeposited += amount;
 
     // update unclaimed interest
-    poolData.unclaimedDaoInterest += daoInterest;
+    poolData.unclaimedDaoJRT += daoInterest * JRTBuybackShare;
+    poolData.unclaimedDaoCommission += daoInterest * (1 - JRTBuybackShare);
   }
 
   function withdraw(uint256 amount, address recipient)
@@ -112,7 +113,8 @@ contract LendingProxy is ILendingProxy {
     poolData.collateralDeposited -= amount;
 
     // update unclaimed interest
-    poolData.unclaimedDaoInterest += daoInterest;
+    poolData.unclaimedDaoJRT += daoInterest * JRTBuybackShare;
+    poolData.unclaimedDaoCommission += daoInterest * (1 - JRTBuybackShare);
   }
 
   function claimCommission(address pool)
@@ -123,12 +125,12 @@ contract LendingProxy is ILendingProxy {
   {
     // withdraw % of commission from unclaimed interest
     PoolStorage memory poolData = poolStorage[pool];
-    amountClaimed =
-      poolData.unclaimedDaoInterest *
-      (100 - poolData.JRTBuybackShare);
-    poolData.unclaimedDaoInterest -= amountClaimed;
+    amountClaimed = poolData.unclaimedDaoCommission;
+    poolData.unclaimedDaoCommission = 0;
+
     IERC20 collateral = ISynthereumDeployment(pool).collateralToken();
     // pull tokens from pool
+    // pool.transfer
     collateral.safeTransferFrom(pool, address(this), amountClaimed);
     collateral.safeIncreaseAllowance(poolData.moneyMarket, amountClaimed);
     // redeem them on aave and forward to commission receiver
@@ -144,12 +146,14 @@ contract LendingProxy is ILendingProxy {
   function executeBuyback(
     address pool,
     address JRTAddress,
+    bytes swapParams,
     uint256 expiration
   ) external override onlyMaintainer returns (uint256 amountClaimed) {
     // withdraw % of commission from unclaimed interest and swap it to JRT
     PoolStorage memory poolData = poolStorage[pool];
-    amountClaimed = poolData.unclaimedDaoInterest * (poolData.JRTBuybackShare);
-    poolData.unclaimedDaoInterest -= amountClaimed;
+    amountClaimed = poolData.unclaimedDaoJRT;
+    poolData.unclaimedDaoJRT = 0;
+
     // pull tokens from pool
     IERC20 collateral = ISynthereumDeployment(pool).collateralToken();
     collateral.safeTransferFrom(pool, address(this), amountClaimed);
@@ -187,7 +191,7 @@ contract LendingProxy is ILendingProxy {
   {
     uint256 ratio = pool.daoInterestShare;
 
-    // get current pool scaled balance of collateral (excluding daoShare of it)
+    // get current pool scaled balance of collateral
     uint256 poolBalance =
       IScaledBalanceToken(pool.interestBearingToken).scaledBalanceOf(
         msg.sender

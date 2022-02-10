@@ -9,7 +9,8 @@ interface ILendingProxy {
     address swapRouter;
     uint256 collateralDeposited;
     uint256 daoInterestShare;
-    uint256 unclaimedDaoInterest;
+    uint256 unclaimedDaoJRT;
+    uint256 unclaimedDaoCommission;
     uint256 JRTBuybackShare;
   }
 
