@@ -14,11 +14,19 @@ interface ILendingProxy {
     uint256 JRTBuybackShare;
   }
 
-  function deposit(uint256 amount) external returns (uint256 poolInterest);
+  struct ReturnValues {
+    uint256 poolInterest;
+    uint256 daoInterest;
+    uint256 tokensOut;
+  }
+
+  function deposit(uint256 amount)
+    external
+    returns (ReturnValues memory returnValues);
 
   function withdraw(uint256 amount, address recipient)
     external
-    returns (uint256 poolInterest);
+    returns (ReturnValues memory returnValues);
 
   function claimCommission(address pool)
     external

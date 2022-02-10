@@ -4,9 +4,6 @@ pragma solidity ^0.8.10;
 import {ILendingProxy} from './interfaces/ILendingProxy.sol';
 import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
 import {
-  IScaledBalanceToken
-} from '@aave/core-v3/contracts/interfaces/IScaledBalanceToken.sol';
-import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 import {
@@ -27,6 +24,12 @@ contract LendingProxy is ILendingProxy {
 
   address public maintainer;
   address immutable finder;
+
+  string public constant DEPOSIT_SIG =
+    'deposit((address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256)';
+
+  string public constant WITHDRAW_SIG =
+    'withdraw((address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256,address)';
 
   mapping(address => PoolStorage) public poolStorage;
 
@@ -49,72 +52,58 @@ contract LendingProxy is ILendingProxy {
     external
     override
     onlyPool
-    returns (uint256 poolInterest)
+    returns (ReturnValues memory returnValues)
   {
+    // retrieve caller pool data
     PoolStorage memory poolData = poolStorage[msg.sender];
 
-    // retrievve pool collateral
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
-    collateral.safeTransferFrom(msg.sender, address(this), amount);
+    // delegate call implementation
+    bytes memory result =
+      address(poolData.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(DEPOSIT_SIG, poolData, amount)
+      );
 
-    // calculate interest splitting on delta deposit
-    uint256 daoInterest;
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+    returnValues = abi.decode(result, (ReturnValues));
 
-    // delegate call aave deposit - approve
-    collateral.safeIncreaseAllowance(poolData.moneyMarket, amount);
-    IPool(poolData.moneyMarket).deposit(
-      address(collateral),
-      amount,
-      msg.sender,
-      uint16(0)
-    );
-
-    // update poolLastDeposit
+    // update collateral deposit amount of the pool
     poolData.collateralDeposited += amount;
 
-    // update unclaimed interest
-    poolData.unclaimedDaoJRT += daoInterest * JRTBuybackShare;
-    poolData.unclaimedDaoCommission += daoInterest * (1 - JRTBuybackShare);
+    // update dao unclaimed interest of the pool
+    poolData.unclaimedDaoJRT +=
+      returnValues.daoInterest *
+      poolData.JRTBuybackShare;
+    poolData.unclaimedDaoCommission +=
+      returnValues.daoInterest *
+      (1 - poolData.JRTBuybackShare);
   }
 
   function withdraw(uint256 amount, address recipient)
     external
     override
     onlyPool
-    returns (uint256 poolInterest)
+    returns (ReturnValues memory returnValues)
   {
+    // retrieve caller pool data
     PoolStorage memory poolData = poolStorage[msg.sender];
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
 
-    // retrieve aTokens
-    IERC20(poolData.interestBearingToken).safeTransferFrom(
-      msg.sender,
-      address(this),
-      amount
-    );
+    // delegate call implementation
+    bytes memory result =
+      address(poolData.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount)
+      );
 
-    // delegate call aave withdraw - approve
-    IERC20(poolData.interestBearingToken).safeIncreaseAllowance(
-      poolData.moneyMarket,
-      amount
-    );
-    IPool(poolData.moneyMarket).withdraw(
-      address(collateral),
-      amount,
-      recipient
-    );
-
-    // calculate interest splitting on delta deposit
-    uint256 daoInterest;
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+    returnValues = abi.decode(result, (ReturnValues));
 
     // update poolLastDeposit
     poolData.collateralDeposited -= amount;
 
     // update unclaimed interest
-    poolData.unclaimedDaoJRT += daoInterest * JRTBuybackShare;
-    poolData.unclaimedDaoCommission += daoInterest * (1 - JRTBuybackShare);
+    poolData.unclaimedDaoJRT +=
+      returnValues.daoInterest *
+      poolData.JRTBuybackShare;
+    poolData.unclaimedDaoCommission +=
+      returnValues.daoInterest *
+      (1 - poolData.JRTBuybackShare);
   }
 
   function claimCommission(address pool)
@@ -146,7 +135,6 @@ contract LendingProxy is ILendingProxy {
   function executeBuyback(
     address pool,
     address JRTAddress,
-    bytes swapParams,
     uint256 expiration
   ) external override onlyMaintainer returns (uint256 amountClaimed) {
     // withdraw % of commission from unclaimed interest and swap it to JRT
@@ -182,25 +170,5 @@ contract LendingProxy is ILendingProxy {
       recipient,
       expiration
     );
-  }
-
-  function calculateGeneratedInterest(PoolStorage memory pool)
-    internal
-    view
-    returns (uint256 poolInterest, uint256 daoInterest)
-  {
-    uint256 ratio = pool.daoInterestShare;
-
-    // get current pool scaled balance of collateral
-    uint256 poolBalance =
-      IScaledBalanceToken(pool.interestBearingToken).scaledBalanceOf(
-        msg.sender
-      );
-
-    // the total interest is delta between current balance and lastBalance
-    uint256 totalInterestGenerated =
-      poolBalance - pool.collateralDeposited - pool.unclaimedDaoInterest;
-    daoInterest = (totalInterestGenerated * ratio) / 100;
-    poolInterest = (totalInterestGenerated * (100 - ratio)) / 100;
   }
 }
