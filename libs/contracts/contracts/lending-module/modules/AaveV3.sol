@@ -19,7 +19,9 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract AaveV3Module {
-  function deposit(ILendingProxy.PoolStorage poolData, uint256 amount)
+  using SafeERC20 for IERC20;
+
+  function deposit(ILendingProxy.PoolStorage calldata poolData, uint256 amount)
     external
     returns (
       uint256 tokensOut,
@@ -48,7 +50,7 @@ contract AaveV3Module {
   }
 
   function withdraw(
-    ILendingProxy.PoolStorage poolData,
+    ILendingProxy.PoolStorage calldata poolData,
     uint256 amount,
     address recipient
   )
@@ -85,7 +87,7 @@ contract AaveV3Module {
     tokensOut = amount;
   }
 
-  function calculateGeneratedInterest(ILendingProxy.PoolStorage memory pool)
+  function calculateGeneratedInterest(ILendingProxy.PoolStorage calldata pool)
     internal
     view
     returns (uint256 poolInterest, uint256 daoInterest)
@@ -99,10 +101,11 @@ contract AaveV3Module {
       );
 
     // the total interest is delta between current balance and lastBalance
-    totalInterestGenerated =
+    uint256 totalInterestGenerated =
       poolBalance -
-      pool.collateralDeposited -
-      pool.unclaimedDaoInterest;
+        pool.collateralDeposited -
+        pool.unclaimedDaoCommission -
+        pool.unclaimedDaoJRT;
     daoInterest = (totalInterestGenerated * ratio) / 100;
     poolInterest = (totalInterestGenerated * (100 - ratio)) / 100;
   }
