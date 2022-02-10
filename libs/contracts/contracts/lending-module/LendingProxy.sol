@@ -22,14 +22,15 @@ contract LendingProxy is ILendingProxy {
   using Address for address;
   using SafeERC20 for IERC20;
 
-  address public maintainer;
   address immutable finder;
 
   string public constant DEPOSIT_SIG =
-    'deposit((address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256)';
+    'deposit((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256)';
 
   string public constant WITHDRAW_SIG =
-    'withdraw((address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256,address)';
+    'withdraw((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256,address)';
+
+  string public JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 
   mapping(address => PoolStorage) public poolStorage;
 
@@ -38,13 +39,7 @@ contract LendingProxy is ILendingProxy {
     _;
   }
 
-  modifier onlyMaintainer() {
-    require(msg.sender == maintainer, 'Only maintainter');
-    _;
-  }
-
-  constructor(address _maintainer, address _finder) {
-    maintainer = _maintainer;
+  constructor(address _finder) {
     finder = _finder;
   }
 
@@ -89,7 +84,7 @@ contract LendingProxy is ILendingProxy {
     // delegate call implementation
     bytes memory result =
       address(poolData.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount)
+        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount, recipient)
       );
 
     returnValues = abi.decode(result, (ReturnValues));
@@ -106,69 +101,60 @@ contract LendingProxy is ILendingProxy {
       (1 - poolData.JRTBuybackShare);
   }
 
-  function claimCommission(address pool)
+  function claimCommission()
     external
     override
-    onlyMaintainer
+    onlyPool
     returns (uint256 amountClaimed)
   {
-    // withdraw % of commission from unclaimed interest
-    PoolStorage memory poolData = poolStorage[pool];
+    // withdraw unclaimedDaoCommission
+    PoolStorage memory poolData = poolStorage[msg.sender];
     amountClaimed = poolData.unclaimedDaoCommission;
     poolData.unclaimedDaoCommission = 0;
 
-    IERC20 collateral = ISynthereumDeployment(pool).collateralToken();
-    // pull tokens from pool
-    // pool.transfer
-    collateral.safeTransferFrom(pool, address(this), amountClaimed);
-    collateral.safeIncreaseAllowance(poolData.moneyMarket, amountClaimed);
-    // redeem them on aave and forward to commission receiver
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
-    IPool(poolData.moneyMarket).withdraw(
-      address(collateral),
-      amountClaimed,
-      recipient
+
+    // delegate call withdraw
+    address(poolData.lendingModule).functionDelegateCall(
+      abi.encodeWithSignature(WITHDRAW_SIG, poolData, amountClaimed, recipient)
     );
   }
 
-  function executeBuyback(
-    address pool,
-    address JRTAddress,
-    uint256 expiration
-  ) external override onlyMaintainer returns (uint256 amountClaimed) {
-    // withdraw % of commission from unclaimed interest and swap it to JRT
-    PoolStorage memory poolData = poolStorage[pool];
-    amountClaimed = poolData.unclaimedDaoJRT;
+  function executeBuyback(bytes memory swapParams)
+    external
+    override
+    onlyPool
+    returns (uint256 amountOut)
+  {
+    // withdraw unclaimedDaoJRT and swap it to JRT
+    PoolStorage memory poolData = poolStorage[msg.sender];
+    uint256 unclaimed = poolData.unclaimedDaoJRT;
     poolData.unclaimedDaoJRT = 0;
 
-    // pull tokens from pool
-    IERC20 collateral = ISynthereumDeployment(pool).collateralToken();
-    collateral.safeTransferFrom(pool, address(this), amountClaimed);
-    // redeem on aave
-    IPool(poolData.moneyMarket).withdraw(
-      address(collateral),
-      amountClaimed,
-      address(this)
-    );
-    // swap to JRT to final recipient
-    IUniswapV2Router02 router = IUniswapV2Router02(poolData.swapRouter);
+    // delegate call withdraw into collateral
+    bytes memory withdrawRes =
+      address(poolData.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          unclaimed,
+          address(this)
+        )
+      );
+    uint256 tokensOut = abi.decode(withdrawRes, (ReturnValues)).tokensOut;
+
+    // delegate call the swap to JRT
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress(
         'BuybackProgramReceiver'
       );
 
-    address[] memory tokenSwapPath = new address[](2);
-    tokenSwapPath[0] = address(collateral);
-    tokenSwapPath[1] = JRTAddress;
+    bytes memory result =
+      address(poolData.jrtSwapModule).functionDelegateCall(
+        abi.encodeWithSignature(JRTSWAP_SIG, recipient, tokensOut, swapParams)
+      );
 
-    collateral.safeIncreaseAllowance(address(router), amountClaimed);
-    router.swapExactTokensForTokens(
-      amountClaimed,
-      0,
-      tokenSwapPath,
-      recipient,
-      expiration
-    );
+    amountOut = abi.decode(result, (uint256));
   }
 }

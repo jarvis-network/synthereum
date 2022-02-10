@@ -5,8 +5,8 @@ interface ILendingProxy {
   struct PoolStorage {
     address moneyMarket;
     address lendingModule;
+    address jrtSwapModule;
     address interestBearingToken;
-    address swapRouter;
     uint256 collateralDeposited;
     uint256 daoInterestShare;
     uint256 unclaimedDaoJRT;
@@ -28,13 +28,9 @@ interface ILendingProxy {
     external
     returns (ReturnValues memory returnValues);
 
-  function claimCommission(address pool)
-    external
-    returns (uint256 amountClaimed);
+  function claimCommission() external returns (uint256 amountClaimed);
 
-  function executeBuyback(
-    address pool,
-    address JRTAddress,
-    uint256 expiration
-  ) external returns (uint256 amountClaimed);
+  function executeBuyback(bytes memory swapParams)
+    external
+    returns (uint256 amountOut);
 }
