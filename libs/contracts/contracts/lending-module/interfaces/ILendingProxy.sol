@@ -20,6 +20,16 @@ interface ILendingProxy {
     uint256 tokensOut;
   }
 
+  event PoolRegistered(
+    address pool,
+    address moneyMarket,
+    address lendingModule,
+    address jrtSwapModule,
+    address interestBearingToken
+  );
+  event Deposit(address pool, uint256 amount);
+  event Withdraw(address pool, uint256 amount, address recipient);
+
   function deposit(uint256 amount)
     external
     returns (ReturnValues memory returnValues);
@@ -33,4 +43,12 @@ interface ILendingProxy {
   function executeBuyback(bytes memory swapParams)
     external
     returns (uint256 amountOut);
+
+  function setPool(
+    address pool,
+    address moneyMarket,
+    address lendingModule,
+    address jrtSwapModule,
+    address interestBearingToken
+  ) external;
 }

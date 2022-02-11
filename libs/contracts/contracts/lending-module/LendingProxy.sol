@@ -19,6 +19,7 @@ contract LendingProxy is ILendingProxy {
   using SafeERC20 for IERC20;
 
   address immutable finder;
+  address public maintainer; // todo roles
 
   string public constant DEPOSIT_SIG =
     'deposit((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256)';
@@ -35,8 +36,14 @@ contract LendingProxy is ILendingProxy {
     _;
   }
 
-  constructor(address _finder) {
+  modifier onlyMaintainer() {
+    require(msg.sender == maintainer, 'Only maintainer');
+    _;
+  }
+
+  constructor(address _finder, address _maintainer) {
     finder = _finder;
+    maintainer = _maintainer;
   }
 
   function deposit(uint256 amount)
@@ -66,6 +73,8 @@ contract LendingProxy is ILendingProxy {
     poolData.unclaimedDaoCommission +=
       returnValues.daoInterest *
       (1 - poolData.JRTBuybackShare);
+
+    emit Deposit(msg.sender, amount);
   }
 
   function withdraw(uint256 amount, address recipient)
@@ -95,6 +104,8 @@ contract LendingProxy is ILendingProxy {
     poolData.unclaimedDaoCommission +=
       returnValues.daoInterest *
       (1 - poolData.JRTBuybackShare);
+
+    emit Withdraw(msg.sender, amount, recipient);
   }
 
   function claimCommission()
@@ -152,5 +163,27 @@ contract LendingProxy is ILendingProxy {
       );
 
     amountOut = abi.decode(result, (uint256));
+  }
+
+  function setPool(
+    address pool,
+    address moneyMarket,
+    address lendingModule,
+    address jrtSwapModule,
+    address interestBearingToken
+  ) external override onlyMaintainer {
+    PoolStorage storage poolData = poolStorage[pool];
+    poolData.moneyMarket = moneyMarket;
+    poolData.lendingModule = lendingModule;
+    poolData.jrtSwapModule = jrtSwapModule;
+    poolData.interestBearingToken = interestBearingToken;
+
+    emit PoolRegistered(
+      pool,
+      moneyMarket,
+      lendingModule,
+      jrtSwapModule,
+      interestBearingToken
+    );
   }
 }
