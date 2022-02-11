@@ -55,4 +55,17 @@ contract SynthereumMultiLpLiquidityPool is
     require(LPs.add(lp), 'LP already member of the pool');
     emit AddedLp(lp);
   }
+
+  /**
+   * @notice Get all the LPs of this pool
+   * @return The list of addresses of all the active LPs in the pool.
+   */
+  function getLPs() external view returns (address[] memory) {
+    uint256 numberOfLPs = LPs.length();
+    address[] memory activeLPs = new address[](numberOfLPs);
+    for (uint256 j = 0; j < numberOfLPs; j++) {
+      activeLPs[j] = LPs.at(j);
+    }
+    return activeLPs;
+  }
 }
