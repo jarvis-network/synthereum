@@ -36,6 +36,7 @@ import '../synthereum-pool/v5/LiquidityPoolLib.sol';
 import '../synthereum-pool/v5/LiquidityPoolCreator.sol';
 import '../synthereum-pool/v5/LiquidityPoolFactory.sol';
 import '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPoolEvents.sol';
+import '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import '../synthereum-pool/v6/MultiLpLiquidityPool.sol';
 import '../core/Manager.sol';
 import '../core/FactoryVersioning.sol';

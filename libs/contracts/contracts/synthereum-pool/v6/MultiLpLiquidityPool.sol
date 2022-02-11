@@ -2,6 +2,9 @@
 pragma solidity 0.8.9;
 
 import {
+  ISynthereumMultiLpLiquidityPool
+} from './interfaces/IMultiLpLiquidityPool.sol';
+import {
   ISynthereumMultiLpLiquidityPoolEvents
 } from './interfaces/IMultiLpLiquidityPoolEvents.sol';
 import {
@@ -16,6 +19,7 @@ import {
  */
 contract SynthereumMultiLpLiquidityPool is
   ISynthereumMultiLpLiquidityPoolEvents,
+  ISynthereumMultiLpLiquidityPool,
   AccessControlEnumerable
 {
   using EnumerableSet for EnumerableSet.AddressSet;
@@ -24,7 +28,7 @@ contract SynthereumMultiLpLiquidityPool is
   // Constants
   //----------------------------------------
 
-  string public constant typology = 'POOL';
+  string public constant override typology = 'POOL';
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
