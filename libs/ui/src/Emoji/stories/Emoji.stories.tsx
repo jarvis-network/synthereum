@@ -129,6 +129,17 @@ export const ATMSign = () => (
     <Emoji emoji="ATMSign" />
   </Container>
 );
+export const SendArrow = () => (
+  <Container>
+    <Emoji emoji="SendArrow" />
+  </Container>
+);
+
+export const ReceiveArrow = () => (
+  <Container>
+    <Emoji emoji="ReceiveArrow" />
+  </Container>
+);
 
 export const Knobs = () => (
   <Container>

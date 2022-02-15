@@ -20,6 +20,8 @@ const emojiList: EmojiKeys[] = [
   'WavingHand',
   'Sparkles',
   'ATMSign',
+  'SendArrow',
+  'ReceiveArrow',
 ];
 
 export { emojiList };

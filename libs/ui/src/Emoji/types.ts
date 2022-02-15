@@ -18,6 +18,16 @@ export enum Emoji {
   WavingHand = '\u{1F44B}',
   Sparkles = '\u{2728}',
   ATMSign = '\u{1F3E7}',
+  SendArrow = `\u2197\uFE0F`,
+  ReceiveArrow = `\u2199\uFE0F`,
+  FountainPen = `\u{1F58B}`,
+  Money = `\u{1F4B8}`,
+  CheckMark = `\u{2705}`,
+  PaperClip = `\u{1F4CE}`,
+  Ledger = `\u{1F4D2}`,
+  Purse = `\u{1F45B}`,
+  OutBox = `\u{1F4E4}`,
+  None = ``,
 }
 
 export type EmojiKeys = keyof typeof Emoji;
