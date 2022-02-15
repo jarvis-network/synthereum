@@ -29,11 +29,13 @@ export type HeaderProps =
       link: any;
       logoUrl?: string;
       leftSide:
+        | null
         | Renderer
         | {
             menu: MenuItemProps[];
           };
       rightSide:
+        | null
         | Renderer
         | {
             actionButtons: ActionButtonProps[];

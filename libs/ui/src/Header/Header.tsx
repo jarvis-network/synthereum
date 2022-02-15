@@ -97,27 +97,32 @@ export const Header: React.FC<HeaderProps> = props => (
         <props.link to="/" className="logo">
           <img alt="Logo" src={props.logoUrl} className="header-logo" />
         </props.link>
-        <LeftSectionContainer>
-          {isRenderer(props.leftSide)
-            ? props.leftSide.render(props)
-            : props.leftSide.menu.map((menuItem, index) => (
-                // (*) We don't have a unique id attached to each item, so we
-                // don't have a choice but to use the array index. Since the
-                // list is going to be static and with a small number of
-                // elements, this shouldn't be a problem in practice.
-                // eslint-disable-next-line react/no-array-index-key
-                <MenuItem key={index} routerLink={props.link} {...menuItem} />
-              ))}
-        </LeftSectionContainer>
-        <RightSectionContainer>
-          {isRenderer(props.rightSide)
-            ? props.rightSide.render(props)
-            : props.rightSide.actionButtons.map((button, index) => (
-                // (*) same as above
-                // eslint-disable-next-line react/no-array-index-key
-                <ActionButton key={index} {...button} />
-              ))}
-        </RightSectionContainer>
+
+        {props.leftSide && (
+          <LeftSectionContainer>
+            {isRenderer(props.leftSide)
+              ? props.leftSide.render(props)
+              : props.leftSide.menu.map((menuItem, index) => (
+                  // (*) We don't have a unique id attached to each item, so we
+                  // don't have a choice but to use the array index. Since the
+                  // list is going to be static and with a small number of
+                  // elements, this shouldn't be a problem in practice.
+                  // eslint-disable-next-line react/no-array-index-key
+                  <MenuItem key={index} routerLink={props.link} {...menuItem} />
+                ))}
+          </LeftSectionContainer>
+        )}
+        {props.rightSide && (
+          <RightSectionContainer>
+            {isRenderer(props.rightSide)
+              ? props.rightSide.render(props)
+              : props.rightSide.actionButtons.map((button, index) => (
+                  // (*) same as above
+                  // eslint-disable-next-line react/no-array-index-key
+                  <ActionButton key={index} {...button} />
+                ))}
+          </RightSectionContainer>
+        )}
       </>
     )}
   </Container>
