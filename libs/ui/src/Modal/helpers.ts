@@ -12,7 +12,7 @@ const defaultVariants: { [key: string]: Variants } = {
       },
     },
     hidden: {
-      y: 100,
+      y: 500,
       transition: {
         ease: 'easeOut',
       },

@@ -37,6 +37,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   anchor,
   overlayClassName,
+  overlayContainerStyle = {},
   overlayStyle = {},
   animation = 'fade',
   duration = 0.2,
@@ -100,15 +101,18 @@ export const Modal: React.FC<ModalProps> = ({
       {isOpened && (
         <Container
           className={overlayClassName || ''}
-          style={overlayStyle || {}}
+          style={overlayContainerStyle || {}}
           {...overlayAnimation}
         >
           <Overlay
             style={{
               ...modalPosition,
-              zIndex: 2001,
-              height: '735px',
-              position: 'absolute',
+              // || ...{
+              //   zIndex: 2001,
+              //   height: '735px',
+              //   position: 'absolute',
+              // }
+              ...overlayStyle,
             }}
             ref={contentRef}
             {...modalAnimation}

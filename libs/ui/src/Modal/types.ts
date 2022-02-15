@@ -1,5 +1,5 @@
-import { CSSProperties, ReactNode } from 'react';
 import { MotionProps } from 'framer-motion';
+import { CSSProperties, ReactNode } from 'react';
 
 export type ModalAnimation = 'fade' | 'slideBottom' | 'slideTop';
 
@@ -10,6 +10,7 @@ export interface ModalProps {
   anchor?: any;
   // customize
   overlayClassName?: string;
+  overlayContainerStyle?: CSSProperties;
   overlayStyle?: CSSProperties;
   // animations
   animation?: ModalAnimation | MotionProps;
