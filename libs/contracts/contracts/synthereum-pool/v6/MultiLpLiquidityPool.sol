@@ -36,7 +36,7 @@ contract SynthereumMultiLpLiquidityPool is
   // Storage
   //----------------------------------------
 
-  EnumerableSet.AddressSet private LPs;
+  EnumerableSet.AddressSet private registeredLPs;
 
   //----------------------------------------
   // Modifiers
@@ -51,25 +51,25 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Add a liquidity pool to the LP's whitelist
+   * @notice Register a liquidity provider to the LP's whitelist
    * @notice This can be called only by the maintainer
    * @param lp Address of the LP
    */
-  function addLP(address lp) external onlyMaintainer {
-    require(LPs.add(lp), 'LP already member of the pool');
-    emit AddedLp(lp);
+  function registerLP(address lp) external onlyMaintainer {
+    require(registeredLPs.add(lp), 'LP already registered');
+    emit RegisteredLp(lp);
   }
 
   /**
-   * @notice Get all the LPs of this pool
-   * @return The list of addresses of all the active LPs in the pool.
+   * @notice Get all the registered LPs of this pool
+   * @return The list of addresses of all the registered LPs in the pool.
    */
-  function getLPs() external view returns (address[] memory) {
-    uint256 numberOfLPs = LPs.length();
-    address[] memory activeLPs = new address[](numberOfLPs);
+  function getRegisteredLPs() external view returns (address[] memory) {
+    uint256 numberOfLPs = registeredLPs.length();
+    address[] memory lpList = new address[](numberOfLPs);
     for (uint256 j = 0; j < numberOfLPs; j++) {
-      activeLPs[j] = LPs.at(j);
+      lpList[j] = registeredLPs.at(j);
     }
-    return activeLPs;
+    return lpList;
   }
 }

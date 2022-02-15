@@ -3,8 +3,8 @@ pragma solidity >0.8.0;
 
 interface ISynthereumMultiLpLiquidityPoolEvents {
   /**
-   * @notice Emitted when a LP is added to the pool by the maintainer
-   * @param lp Address of the LP to be added
+   * @notice Emitted when a LP is registered in the pool by the maintainer
+   * @param lp Address of the LP to be registered
    */
-  event AddedLp(address lp);
+  event RegisteredLp(address lp);
 }
