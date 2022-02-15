@@ -17,8 +17,9 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {ILendingModule} from '../interfaces/ILendingModule.sol';
 
-contract AaveV3Module {
+contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
 
   function deposit(ILendingProxy.PoolStorage calldata poolData, uint256 amount)
