@@ -13,13 +13,16 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract LendingProxy is ILendingProxy {
+contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   using Address for address;
   using SafeERC20 for IERC20;
 
   address immutable finder;
-  address public maintainer; // todo roles
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string public constant DEPOSIT_SIG =
     'deposit((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256)';
@@ -37,13 +40,18 @@ contract LendingProxy is ILendingProxy {
   }
 
   modifier onlyMaintainer() {
-    require(msg.sender == maintainer, 'Only maintainer');
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
+    );
     _;
   }
 
-  constructor(address _finder, address _maintainer) {
+  constructor(address _finder) {
     finder = _finder;
-    maintainer = _maintainer;
+
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
   }
 
   function deposit(uint256 amount)
