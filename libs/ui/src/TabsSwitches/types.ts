@@ -16,5 +16,5 @@ export interface TabsProps {
   extra?: ReactNode;
   pointerPosition?: string;
   titleFontSize?: FontSizeType;
-  titleBackground?: boolean;
+  layout?: 'TOP-BOTTOM' | 'BOTTOM-TOP';
 }

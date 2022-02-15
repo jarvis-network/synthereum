@@ -16,10 +16,16 @@ export const Default = () => (
 );
 
 export const Inline = () => (
-  <p>
-    The text:
-    <IconButton onClick={action('clicked')} icon="BsDownload" inline />
-  </p>
+  <div>
+    <div>
+      The text:
+      <IconButton onClick={action('clicked')} icon="BsDownload" inline />
+    </div>
+    <div>
+      <IconButton onClick={action('clicked')} icon="BsDownload" inline />
+      The text:
+    </div>
+  </div>
 );
 
 export const Knobs = () => (

@@ -7,8 +7,8 @@ import { flexRow } from '../common/mixins';
 import { TabsProps } from './types';
 
 const TABS_BORDER_SIZE = 1;
-const TABS_POINTER_WIDTH = 25;
-const TABS_POINTER_HEIGHT = 3;
+// const TABS_POINTER_WIDTH = 25;
+// const TABS_POINTER_HEIGHT = 3;
 const TABS_SPACE = 25;
 
 const Container = styled.div`
@@ -17,25 +17,25 @@ const Container = styled.div`
 `;
 
 const TabsContainer = styled.div`
-  ${flexRow()}
-
+  display: inline-grid;
   align-content: center;
-  background: ${props => props.theme.background.secondary};
-  border-bottom: ${TABS_BORDER_SIZE}px solid
-    ${props => props.theme.border.secondary};
+  border: ${TABS_BORDER_SIZE}px solid ${props => props.theme.border.primary};
   height: ${props => props.theme.sizes.row};
   justify-content: space-between;
   line-height: ${props => props.theme.sizes.row};
-  width: 100%;
-  border-radius: ${props => props.theme.borderRadius.m}
-    ${props => props.theme.borderRadius.m} 0 0;
+  margin: 0px auto;
+  border-radius: ${props => props.theme.borderRadius.m};
+  .active {
+    color: ${props => props.theme.text.inverted};
+    z-index: 50;
+    position: relative;
+  }
 `;
 
 const TabsWrapper = styled.div`
   ${flexRow()}
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
-  flex-direction: column;
 `;
 
 const TabContent = styled.div`
@@ -44,7 +44,7 @@ const TabContent = styled.div`
 
 const TabButton = styled.div<{ isPre?: boolean }>`
   cursor: pointer;
-  margin-left: ${props => (props.isPre ? 0 : TABS_SPACE)}px;
+  padding: 0px 10px;
   position: relative;
   color: ${props => props.theme.text.primary};
 `;
@@ -60,22 +60,23 @@ const CustomMotionDiv: FC<
 > = props => <motion.div {...props} />;
 
 const TabTitle = styled(CustomMotionDiv)`
-  color: ${props => props.theme.text.secondary};
+  color: ${props => props.theme.text.primary};
   font-size: ${props => props.theme.font.sizes[props.fontSize]};
   font-weight: 300;
   margin: 0;
-  text-align: left;
+
   ${props => (props.active ? `color: ${props.theme.text.primary};` : '')};
 `;
 
 const TabPointer = styled(motion.div)`
-  border-bottom: ${TABS_POINTER_HEIGHT}px solid
-    ${props => props.theme.common.success};
-  bottom: -${TABS_POINTER_HEIGHT / 2}px;
-  left: 50%;
-  margin-left: -${TABS_POINTER_WIDTH / 2}px;
+  background: ${props => props.theme.background.inverted};
+  left: 0%;
+  z-index: 0;
+  top: 0px;
   position: absolute;
-  width: ${TABS_POINTER_WIDTH}px;
+  width: 100%;
+  height: ${props => props.theme.sizes.row};
+  border-radius: ${props => props.theme.borderRadius.m};
 `;
 
 export type ButtonHandler = {
@@ -86,13 +87,13 @@ const RefTabs = forwardRef<ButtonHandler, TabsProps>(
     {
       tabs = [],
       pointerPosition = 'center',
+      layout = 'TOP-BOTTOM',
       pointer = true,
       extra,
       pre,
       selected: initialSelected = 0,
       onChange,
       titleFontSize,
-      titleBackground = true,
       ...props
     },
     ref,
@@ -100,7 +101,7 @@ const RefTabs = forwardRef<ButtonHandler, TabsProps>(
     const style = () => {
       if (pointerPosition !== 'center') {
         return {
-          left: `${pointerPosition}`,
+          left: `0`,
         };
       }
       return {};
@@ -121,15 +122,10 @@ const RefTabs = forwardRef<ButtonHandler, TabsProps>(
     }));
     return (
       <Container {...props}>
-        <TabsContainer
-          style={
-            titleBackground === false
-              ? {
-                  background: 'none',
-                }
-              : {}
-          }
-        >
+        {layout === 'BOTTOM-TOP' ? (
+          <TabContent>{tabs[selected]?.content}</TabContent>
+        ) : null}
+        <TabsContainer>
           {pre && <TabPre>{pre}</TabPre>}
           <TabsWrapper>
             <AnimateSharedLayout>
@@ -147,9 +143,7 @@ const RefTabs = forwardRef<ButtonHandler, TabsProps>(
                     animate
                     active={selected === index}
                     fontSize={titleFontSize || 'l'}
-                    className={
-                      selected === index ? 'active tabTitle' : 'tabTitle'
-                    }
+                    className={selected === index ? 'active' : ''}
                   >
                     <span>{title}</span>
                   </TabTitle>
@@ -160,12 +154,13 @@ const RefTabs = forwardRef<ButtonHandler, TabsProps>(
               ))}
             </AnimateSharedLayout>
           </TabsWrapper>
-
           {extra && <TabExtra>{extra}</TabExtra>}
         </TabsContainer>
-        <TabContent>{tabs[selected]?.content}</TabContent>
+        {layout === 'TOP-BOTTOM' ? (
+          <TabContent>{tabs[selected]?.content}</TabContent>
+        ) : null}
       </Container>
     );
   },
 );
-export const Tabs = React.memo(RefTabs);
+export const SwitchTabs = React.memo(RefTabs);
