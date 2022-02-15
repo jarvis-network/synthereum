@@ -9,6 +9,7 @@ import jJPY from './icons/jJPY.svg';
 import jPHP from './icons/jPHP.svg';
 import jSEK from './icons/jSEK.svg';
 import jSGD from './icons/jSGD.svg';
+import jXAU from './icons/jXAU.svg';
 import UMA from './icons/UMA.svg';
 import USDC from './icons/USDC.svg';
 
@@ -26,6 +27,7 @@ export const files = {
   jSGD,
   UMA,
   USDC,
+  jXAU,
 };
 
 export type FlagKeys = keyof typeof files;
