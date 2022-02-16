@@ -113,7 +113,6 @@ const TableContainer = styled(ReactTable)`
   }
 
   .-loading {
-    display: none !important;
     background: ${props => props.theme.background.primary};
   }
 

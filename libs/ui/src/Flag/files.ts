@@ -11,6 +11,7 @@ import jSEK from './icons/jSEK.svg';
 import jSGD from './icons/jSGD.svg';
 import jXAU from './icons/jXAU.svg';
 import UMA from './icons/UMA.svg';
+import US from './icons/US.svg';
 import USDC from './icons/USDC.svg';
 
 export const files = {
@@ -28,6 +29,7 @@ export const files = {
   UMA,
   USDC,
   jXAU,
+  US,
 };
 
 export type FlagKeys = keyof typeof files;

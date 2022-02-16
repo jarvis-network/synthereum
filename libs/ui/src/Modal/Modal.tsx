@@ -101,17 +101,12 @@ export const Modal: React.FC<ModalProps> = ({
       {isOpened && (
         <Container
           className={overlayClassName || ''}
-          style={overlayContainerStyle || {}}
+          style={overlayContainerStyle}
           {...overlayAnimation}
         >
           <Overlay
             style={{
               ...modalPosition,
-              // || ...{
-              //   zIndex: 2001,
-              //   height: '735px',
-              //   position: 'absolute',
-              // }
               ...overlayStyle,
             }}
             ref={contentRef}
