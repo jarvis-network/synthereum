@@ -24,6 +24,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   address immutable finder;
   IPoolStorageManager immutable poolStorageManager;
+
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string public constant DEPOSIT_SIG =

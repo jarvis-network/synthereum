@@ -2,17 +2,6 @@
 pragma solidity ^0.8.4;
 
 interface ILendingProxy {
-  struct PoolStorage {
-    address lendingModule;
-    address collateral;
-    address interestBearingToken;
-    uint256 collateralDeposited;
-    uint256 daoInterestShare;
-    uint256 unclaimedDaoJRT;
-    uint256 unclaimedDaoCommission;
-    uint256 JRTBuybackShare;
-  }
-
   struct ReturnValues {
     uint256 poolInterest;
     uint256 daoInterest;
