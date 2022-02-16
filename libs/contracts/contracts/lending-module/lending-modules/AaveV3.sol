@@ -30,6 +30,9 @@ contract AaveV3Module is ILendingModule {
       uint256 daoInterest
     )
   {
+    // calculate accrued interest since last operation
+    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+
     // retrievve pool collateral
     IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
     collateral.safeTransferFrom(msg.sender, address(this), amount);
@@ -42,9 +45,6 @@ contract AaveV3Module is ILendingModule {
       msg.sender,
       uint16(0)
     );
-
-    // calculate accrued interest since last operation
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
     // aave tokens are always 1:1
     tokensOut = amount;
@@ -62,6 +62,9 @@ contract AaveV3Module is ILendingModule {
       uint256 daoInterest
     )
   {
+    // calculate accrued interest since last operation
+    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+
     // retrieve aTokens
     IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
     IERC20(poolData.interestBearingToken).safeTransferFrom(
@@ -80,9 +83,6 @@ contract AaveV3Module is ILendingModule {
       amount,
       recipient
     );
-
-    // calculate interest splitting on delta deposit
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
     // aave tokens are always 1:1
     tokensOut = amount;
@@ -110,4 +110,10 @@ contract AaveV3Module is ILendingModule {
     daoInterest = (totalInterestGenerated * ratio) / 100;
     poolInterest = (totalInterestGenerated * (100 - ratio)) / 100;
   }
+
+  function getInterestBearingToken(address collateral)
+    internal
+    view
+    returns (address token)
+  {}
 }
