@@ -38,7 +38,7 @@ contract AaveV3Module is ILendingModule {
     (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
     // retrievve pool collateral
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
+    IERC20 collateral = IERC20(poolData.collateral);
     collateral.safeTransferFrom(msg.sender, address(this), amount);
 
     // aave deposit - approve
@@ -73,7 +73,6 @@ contract AaveV3Module is ILendingModule {
     (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
     // retrieve aTokens
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
     IERC20(poolData.interestBearingToken).safeTransferFrom(
       msg.sender,
       address(this),
@@ -87,8 +86,7 @@ contract AaveV3Module is ILendingModule {
       moneyMarket,
       amount
     );
-
-    IPool(moneyMarket).withdraw(address(collateral), amount, recipient);
+    IPool(moneyMarket).withdraw(poolData.collateral, amount, recipient);
 
     // aave tokens are always 1:1
     tokensOut = amount;
@@ -121,10 +119,4 @@ contract AaveV3Module is ILendingModule {
     daoInterest = (totalInterestGenerated * ratio) / 100;
     poolInterest = (totalInterestGenerated * (100 - ratio)) / 100;
   }
-
-  function getInterestBearingToken(address collateral)
-    internal
-    view
-    returns (address token)
-  {}
 }
