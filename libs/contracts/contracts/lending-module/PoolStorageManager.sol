@@ -9,6 +9,18 @@ contract PoolStorageManager is IPoolStorageManager {
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
   mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
 
+  address lendingProxy;
+
+  modifier onlyProxy() {
+    require(msg.sender == lendingProxy, 'Not allowed');
+    _;
+  }
+
+  constructor(address _lendingProxy) {
+    lendingProxy = _lendingProxy;
+  }
+
+  // todo onlyMaintainerOrFactory
   function setPoolStorage(
     address pool,
     address collateral,
@@ -38,7 +50,7 @@ contract PoolStorageManager is IPoolStorageManager {
     uint256 collateralDeposited,
     uint256 daoJRT,
     uint256 daoInterest
-  ) external {
+  ) external onlyProxy {
     PoolStorage storage poolData = poolStorage[pool];
 
     // update collateral deposit amount of the pool
