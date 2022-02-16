@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.10;
 
-import {ILendingProxy} from '../interfaces/ILendingProxy.sol';
+import {IPoolStorageManager} from '../interfaces/IPoolStorageManager.sol';
 import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
 import {
   IScaledBalanceToken
@@ -22,7 +22,11 @@ import {ILendingModule} from '../interfaces/ILendingModule.sol';
 contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
 
-  function deposit(ILendingProxy.PoolStorage calldata poolData, uint256 amount)
+  function deposit(
+    IPoolStorageManager.PoolStorage calldata poolData,
+    IPoolStorageManager storageManager,
+    uint256 amount
+  )
     external
     returns (
       uint256 tokensOut,
@@ -38,8 +42,10 @@ contract AaveV3Module is ILendingModule {
     collateral.safeTransferFrom(msg.sender, address(this), amount);
 
     // aave deposit - approve
-    collateral.safeIncreaseAllowance(poolData.moneyMarket, amount);
-    IPool(poolData.moneyMarket).deposit(
+    address moneyMarket =
+      decodeLendingArgs(storageManager, poolData.lendingModule);
+    collateral.safeIncreaseAllowance(moneyMarket, amount);
+    IPool(moneyMarket).deposit(
       address(collateral),
       amount,
       msg.sender,
@@ -51,7 +57,8 @@ contract AaveV3Module is ILendingModule {
   }
 
   function withdraw(
-    ILendingProxy.PoolStorage calldata poolData,
+    IPoolStorageManager.PoolStorage calldata poolData,
+    IPoolStorageManager storageManager,
     uint256 amount,
     address recipient
   )
@@ -74,25 +81,29 @@ contract AaveV3Module is ILendingModule {
     );
 
     // aave withdraw - approve
+    address moneyMarket =
+      decodeLendingArgs(storageManager, poolData.lendingModule);
     IERC20(poolData.interestBearingToken).safeIncreaseAllowance(
-      poolData.moneyMarket,
+      moneyMarket,
       amount
     );
-    IPool(poolData.moneyMarket).withdraw(
-      address(collateral),
-      amount,
-      recipient
-    );
+
+    IPool(moneyMarket).withdraw(address(collateral), amount, recipient);
 
     // aave tokens are always 1:1
     tokensOut = amount;
   }
 
-  function calculateGeneratedInterest(ILendingProxy.PoolStorage calldata pool)
-    internal
-    view
-    returns (uint256 poolInterest, uint256 daoInterest)
-  {
+  function decodeLendingArgs(
+    IPoolStorageManager storageManager,
+    address lendingModule
+  ) internal view returns (address) {
+    return abi.decode(storageManager.getLendingArgs(lendingModule), (address));
+  }
+
+  function calculateGeneratedInterest(
+    IPoolStorageManager.PoolStorage calldata pool
+  ) internal view returns (uint256 poolInterest, uint256 daoInterest) {
     uint256 ratio = pool.daoInterestShare;
 
     // get current pool scaled balance of collateral
