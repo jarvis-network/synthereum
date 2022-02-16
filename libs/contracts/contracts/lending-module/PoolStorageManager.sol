@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.10;
 import {IPoolStorageManager} from './interfaces/IPoolStorageManager.sol';
+import {ILendingModule} from './interfaces/ILendingModule.sol';
 
 contract PoolStorageManager is IPoolStorageManager {
   mapping(string => address) public idToLending; // ie 'aave' -> address(AaveModule)
@@ -22,8 +23,14 @@ contract PoolStorageManager is IPoolStorageManager {
     poolData.collateral = collateral;
     poolData.daoInterestShare = daoInterestShare;
     poolData.JRTBuybackShare = jrtBuybackShare;
-    //TODO retrieve interest baring token
-    // poolData.interestBearingToken = interestBearingToken == address(0) ? ILendingProxy(lendingModule) : interestBearingToken;
+    poolData.lendingModule = lendingModule;
+    poolData.interestBearingToken = interestBearingToken == address(0)
+      ? ILendingModule(lendingModule).getInterestBearingToken(
+        collateral,
+        address(this),
+        lendingModule
+      )
+      : interestBearingToken;
   }
 
   function updateValues(

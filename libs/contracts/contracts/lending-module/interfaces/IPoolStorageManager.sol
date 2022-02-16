@@ -6,11 +6,11 @@ interface IPoolStorageManager {
     address lendingModule;
     address collateral;
     address interestBearingToken;
-    uint256 collateralDeposited;
+    uint256 JRTBuybackShare;
     uint256 daoInterestShare;
+    uint256 collateralDeposited;
     uint256 unclaimedDaoJRT;
     uint256 unclaimedDaoCommission;
-    uint256 JRTBuybackShare;
   }
 
   function setPoolStorage(
