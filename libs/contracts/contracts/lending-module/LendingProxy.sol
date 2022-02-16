@@ -21,6 +21,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   using Address for address;
   using SafeERC20 for IERC20;
 
+  mapping(string => address) public idToLending;
+  mapping(address => bytes) lendingToArgs;
+  mapping(address => address) public collateralToSwapModule;
+
+  // pool storage in separate registry
+  mapping(address => PoolStorage) public poolStorage;
+
   address immutable finder;
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
@@ -31,8 +38,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     'withdraw((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),uint256,address)';
 
   string public JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
-
-  mapping(address => PoolStorage) public poolStorage;
 
   modifier onlyPool() {
     require(poolStorage[msg.sender].lendingModule != address(0), 'Not allowed');
@@ -61,7 +66,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returns (ReturnValues memory returnValues)
   {
     // retrieve caller pool data
-    PoolStorage memory poolData = poolStorage[msg.sender];
+    PoolStorage storage poolData = poolStorage[msg.sender];
 
     // delegate call implementation
     bytes memory result =
@@ -72,7 +77,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returnValues = abi.decode(result, (ReturnValues));
 
     // update collateral deposit amount of the pool
-    poolData.collateralDeposited += amount;
+    poolData.collateralDeposited += amount + returnValues.poolInterest;
 
     // update dao unclaimed interest of the pool
     poolData.unclaimedDaoJRT +=
@@ -92,7 +97,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returns (ReturnValues memory returnValues)
   {
     // retrieve caller pool data
-    PoolStorage memory poolData = poolStorage[msg.sender];
+    PoolStorage storage poolData = poolStorage[msg.sender];
 
     // delegate call implementation
     bytes memory result =
@@ -102,8 +107,12 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
     returnValues = abi.decode(result, (ReturnValues));
 
+    // setValues()
     // update poolLastDeposit
-    poolData.collateralDeposited -= amount;
+    poolData.collateralDeposited =
+      poolData.collateralDeposited +
+      returnValues.poolInterest -
+      amount;
 
     // update unclaimed interest
     poolData.unclaimedDaoJRT +=
@@ -116,48 +125,64 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     emit Withdraw(msg.sender, amount, recipient);
   }
 
-  function claimCommission()
+  // add amount
+  function claimCommission(uint256 amount)
     external
     override
     onlyPool
-    returns (uint256 amountClaimed)
+    returns (uint256)
   {
     // withdraw unclaimedDaoCommission
-    PoolStorage memory poolData = poolStorage[msg.sender];
-    amountClaimed = poolData.unclaimedDaoCommission;
-    poolData.unclaimedDaoCommission = 0;
+    PoolStorage storage poolData = poolStorage[msg.sender];
 
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
 
     // delegate call withdraw
-    address(poolData.lendingModule).functionDelegateCall(
-      abi.encodeWithSignature(WITHDRAW_SIG, poolData, amountClaimed, recipient)
-    );
+    bytes memory result =
+      address(poolData.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount, recipient)
+      );
+
+    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
+
+    //update pool deposit with interest
+    poolData.collateralDeposited += returnValues.poolInterest;
+
+    // update unclaimedDao interest - if amount is more than what due to the dao it will revert
+    poolData.unclaimedDaoCommission =
+      poolData.unclaimedDaoCommission +
+      returnValues.daoInterest -
+      amount;
+
+    return amount;
   }
 
-  function executeBuyback(bytes memory swapParams)
+  // add amount
+  function executeBuyback(uint256 amount, bytes memory swapParams)
     external
     override
     onlyPool
     returns (uint256 amountOut)
   {
     // withdraw unclaimedDaoJRT and swap it to JRT
-    PoolStorage memory poolData = poolStorage[msg.sender];
-    uint256 unclaimed = poolData.unclaimedDaoJRT;
-    poolData.unclaimedDaoJRT = 0;
+    PoolStorage storage poolData = poolStorage[msg.sender];
 
     // delegate call withdraw into collateral
     bytes memory withdrawRes =
       address(poolData.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          WITHDRAW_SIG,
-          poolData,
-          unclaimed,
-          address(this)
-        )
+        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount, address(this))
       );
-    uint256 tokensOut = abi.decode(withdrawRes, (ReturnValues)).tokensOut;
+    ReturnValues memory returnValues = abi.decode(withdrawRes, (ReturnValues));
+
+    //update pool deposit with interest
+    poolData.collateralDeposited += returnValues.poolInterest;
+
+    // update unclaimedDao interest - if amount is more than what due to the dao it will revert
+    poolData.unclaimedDaoCommission =
+      poolData.unclaimedDaoCommission +
+      returnValues.daoInterest -
+      amount;
 
     // delegate call the swap to JRT
     address recipient =
@@ -166,32 +191,47 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       );
 
     bytes memory result =
-      address(poolData.jrtSwapModule).functionDelegateCall(
-        abi.encodeWithSignature(JRTSWAP_SIG, recipient, tokensOut, swapParams)
+      address(collateralToSwapModule[poolData.collateral]).functionDelegateCall(
+        abi.encodeWithSignature(
+          JRTSWAP_SIG,
+          recipient,
+          returnValues.tokensOut,
+          swapParams
+        )
       );
 
     amountOut = abi.decode(result, (uint256));
   }
 
+  // clled by factory
   function setPool(
     address pool,
-    address moneyMarket,
-    address lendingModule,
-    address jrtSwapModule,
-    address interestBearingToken
+    address collateral,
+    string memory lendingID,
+    address interestBearingToken,
+    uint256 daoInterestShare,
+    uint256 jrtBuybackShare
   ) external override onlyMaintainer {
+    address lendingModule = idToLending[lendingID];
     PoolStorage storage poolData = poolStorage[pool];
-    poolData.moneyMarket = moneyMarket;
-    poolData.lendingModule = lendingModule;
-    poolData.jrtSwapModule = jrtSwapModule;
-    poolData.interestBearingToken = interestBearingToken;
-
-    emit PoolRegistered(
-      pool,
-      moneyMarket,
-      lendingModule,
-      jrtSwapModule,
-      interestBearingToken
-    );
+    poolData.collateral = collateral;
+    poolData.daoInterestShare = daoInterestShare;
+    poolData.JRTBuybackShare = jrtBuybackShare;
+    //TODO retrieve interest baring token
+    // poolData.interestBearingToken = interestBearingToken == address(0) ? ILendingProxy(lendingModule) : interestBearingToken;
   }
+
+  // when pool is upgraded
+  // function migrateLiquidity(address newPool) external onlyPool {
+  //   // set msg.sender storage as newPool storage
+  //   // delete msg.sender storage
+  // }
+
+  // // move from AAVE to compound
+  // function migrateLendingModule(address newLendingModule) external onlyPool {
+  //     // delegate call withdraw pool - old module - recipient proxy
+  //     // reset pool data (interest to 0)
+  //     // deposit call on new module - new interest = 0
+  //     // reset interest to old
+  // }
 }

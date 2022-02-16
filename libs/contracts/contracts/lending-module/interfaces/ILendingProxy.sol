@@ -3,9 +3,8 @@ pragma solidity ^0.8.4;
 
 interface ILendingProxy {
   struct PoolStorage {
-    address moneyMarket;
     address lendingModule;
-    address jrtSwapModule;
+    address collateral;
     address interestBearingToken;
     uint256 collateralDeposited;
     uint256 daoInterestShare;
@@ -38,17 +37,20 @@ interface ILendingProxy {
     external
     returns (ReturnValues memory returnValues);
 
-  function claimCommission() external returns (uint256 amountClaimed);
+  function claimCommission(uint256 amount)
+    external
+    returns (uint256 amountClaimed);
 
-  function executeBuyback(bytes memory swapParams)
+  function executeBuyback(uint256 amount, bytes memory swapParams)
     external
     returns (uint256 amountOut);
 
   function setPool(
     address pool,
-    address moneyMarket,
-    address lendingModule,
-    address jrtSwapModule,
-    address interestBearingToken
+    address collateral,
+    string memory lendingID,
+    address interestBearingToken,
+    uint256 daoInterestShare,
+    uint256 jrtBuybackShare
   ) external;
 }
