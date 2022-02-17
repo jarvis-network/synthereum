@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity >0.8.0;
+pragma solidity >=0.8.0;
 
 /**
  * @title An interface to track a whitelist of identifiers.
