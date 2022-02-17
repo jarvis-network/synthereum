@@ -137,7 +137,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     emit Withdraw(msg.sender, amount, recipient);
   }
 
-  // add amount
   function claimCommission(uint256 amount) external override returns (uint256) {
     // retrieve caller pool data
     IPoolStorageManager.PoolStorage memory poolData =
@@ -256,17 +255,63 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     );
   }
 
-  // when pool is upgraded
-  // function migrateLiquidity(address newPool) external onlyPool {
-  //   // set msg.sender storage as newPool storage
-  //   // delete msg.sender storage
-  // }
+  // when pool is upgraded and liquidity transfered to a new Pool
+  function migrateLiquidity(address newPool) external {
+    // only a registered pool is allowed
+    IPoolStorageManager.PoolStorage memory poolData =
+      poolStorageManager.getPoolStorage(msg.sender);
+    require(poolData.lendingModule != address(0), 'Not allowed');
 
-  // // move from AAVE to compound
-  // function migrateLendingModule(address newLendingModule) external onlyPool {
-  //     // delegate call withdraw pool - old module - recipient proxy
-  //     // reset pool data (interest to 0)
-  //     // deposit call on new module - new interest = 0
-  //     // reset interest to old
-  // }
+    // migrate through storage manager
+    poolStorageManager.migratePool(msg.sender, newPool);
+  }
+
+  function migrateLendingModule(
+    address newLendingModule,
+    address newInterestBearingToken
+  ) external onlyPool {
+    // only a registered pool is allowed
+    IPoolStorageManager.PoolStorage memory poolData =
+      poolStorageManager.getPoolStorage(msg.sender);
+    require(poolData.lendingModule != address(0), 'Not allowed');
+
+    // delegate call withdraw collateral from old module
+    uint256 totalAmount =
+      poolData.collateralDeposited +
+        poolData.unclaimedDaoJRT +
+        poolData.unclaimedDaoCommission;
+    bytes memory withdrawRes =
+      address(poolData.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          totalAmount,
+          address(this)
+        )
+      );
+    ReturnValues memory returnValues = abi.decode(withdrawRes, (ReturnValues));
+
+    // update storage
+    newPoolData = poolStorageManager.migrateLendingModule(
+      msg.sender,
+      newLendingModule,
+      newInterestBearingToken
+    );
+    // get updated info
+    IPoolStorageManager.PoolStorage memory newPoolData =
+      poolStorageManager.getPoolStorage(msg.sender);
+
+    // delegate call deposit into new module
+    bytes memory result =
+      address(poolData.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(
+          DEPOSIT_SIG,
+          newPoolData,
+          poolStorageManager,
+          totalAmount
+        )
+      );
+
+    returnValues = abi.decode(result, (ReturnValues));
+  }
 }

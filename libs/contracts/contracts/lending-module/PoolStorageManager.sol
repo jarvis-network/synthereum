@@ -45,6 +45,42 @@ contract PoolStorageManager is IPoolStorageManager {
       : interestBearingToken;
   }
 
+  function migratePool(address oldPool, address newPool) external onlyProxy {
+    PoolStorage memory oldPoolData = poolStorage[oldPool];
+    PoolStorage storage newPoolData = poolStorage[newPool];
+
+    // copy storage to new pool
+    newPoolData.collateral = oldPoolData.collateral;
+    newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
+    newPoolData.JRTBuybackShare = oldPoolData.jrtBuybackShare;
+    newPoolData.lendingModule = oldPoolData.lendingModule;
+    newPoolData.interestBearingToken = oldPoolData.interestBearingToken;
+    newPoolData.collateralDeposited = oldPoolData.collateralDeposited;
+    newPoolData.unclaimedDaoCommission = oldPoolData.unclaimedDaoCommission;
+    newPoolData.unclaimedDaoJRT = oldPoolData.unclaimedDaoJRT;
+
+    // delete old pool slot
+    delete poolStorage[oldPool];
+  }
+
+  function migrateLendingModule(
+    address pool,
+    address newLendingModule,
+    address newInterestToken
+  ) external onlyProxy returns (PoolStorage memory) {
+    PoolStorage storage poolData = poolStorage[pool];
+    poolData.lendingModule = newLendingModule;
+    poolData.interestBearingToken = newInterestToken == address(0)
+      ? ILendingModule(newLendingModule).getInterestBearingToken(
+        collateral,
+        address(this),
+        lendingModule
+      )
+      : newInterestToken;
+
+    return poolStorage[pool];
+  }
+
   function updateValues(
     address pool,
     uint256 collateralDeposited,
