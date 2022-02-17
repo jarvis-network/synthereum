@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-pragma solidity 0.8.9;
+pragma solidity >0.8.0;
 
 import '../base/interfaces/IStandardERC20.sol';
 import '../base/utils/StringUtils.sol';
@@ -79,5 +79,7 @@ import '../fixed-rate/v1/FixedRateCreator.sol';
 import '../fixed-rate/v1/FixedRateFactory.sol';
 import '../fixed-rate/v1/FixedRateWrapper.sol';
 import '../fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
-// import '../lending-module/interfaces/ILendingProxy.sol';
 import '../lending-module/LendingProxy.sol';
+import '../lending-module/PoolStorageManager.sol';
+import '../lending-module/lending-modules/AaveV3.sol';
+import '../lending-module/swap-modules/JRTSwap.sol';

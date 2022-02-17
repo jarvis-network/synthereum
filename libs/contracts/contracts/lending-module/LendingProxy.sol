@@ -1,14 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.10;
+pragma solidity 0.8.9;
 
 import {ILendingProxy} from './interfaces/ILendingProxy.sol';
 import {IPoolStorageManager} from './interfaces/IPoolStorageManager.sol';
-import {
-  ISynthereumFinder
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
-import {
-  ISynthereumDeployment
-} from '@jarvis-network/synthereum-contracts/contracts/common/interfaces/IDeployment.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
