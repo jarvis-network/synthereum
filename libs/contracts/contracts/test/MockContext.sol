@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.3.2 (metatx/ERC2771Context.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.9;
 
 import {SynthereumLiquidityPool} from '../synthereum-pool/v5/LiquidityPool.sol';
 

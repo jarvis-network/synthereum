@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.4;
+pragma solidity 0.8.9;
 
 import {ISynthereumTrustedForwarder} from './interfaces/ITrustedForwarder.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
