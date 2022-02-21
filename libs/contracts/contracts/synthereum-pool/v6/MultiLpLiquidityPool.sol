@@ -20,6 +20,7 @@ import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -37,6 +38,7 @@ contract SynthereumMultiLpLiquidityPool is
   AccessControlEnumerable
 {
   using EnumerableSet for EnumerableSet.AddressSet;
+  using PreciseUnitMath for uint256;
 
   struct ConstructorParams {
     // Synthereum finder
@@ -59,6 +61,11 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 liquidationReward;
   }
 
+  struct PositionCache {
+    address lp;
+    LPPosition lpPosition;
+  }
+
   //----------------------------------------
   // Constants
   //----------------------------------------
@@ -66,8 +73,6 @@ contract SynthereumMultiLpLiquidityPool is
   string public constant override typology = 'POOL';
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
-
-  uint256 private constant SCALING_UNIT = 10**18;
 
   uint8 private immutable poolVersion;
 
@@ -109,7 +114,7 @@ contract SynthereumMultiLpLiquidityPool is
 
   constructor(ConstructorParams memory params) nonReentrant {
     require(
-      params.collateralRequirement > SCALING_UNIT,
+      params.collateralRequirement > PreciseUnitMath.PRECISE_UNIT,
       'Collateral requirement must be bigger than 100%'
     );
 
@@ -179,7 +184,8 @@ contract SynthereumMultiLpLiquidityPool is
     require(isRegisteredLP(msgSender), 'Sender must be a registered LP');
     require(collateralAmount > 0, 'No collateral deposited');
     require(
-      overCollateralization > liquidationThreshold - SCALING_UNIT,
+      overCollateralization >
+        liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
     require(activeLPs.add(msgSender), 'LP already active');
@@ -215,7 +221,7 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
     onlyMaintainer
   {
-    _setFee(fee);
+    _setFee(newFee);
   }
 
   /**
@@ -369,7 +375,10 @@ contract SynthereumMultiLpLiquidityPool is
    * @param newFee New fee percentage
    */
   function _setFee(uint256 newFee) internal {
-    require(newFee < SCALING_UNIT, 'Fee Percentage must be less than 100%');
+    require(
+      newFee < PreciseUnitMath.PRECISE_UNIT,
+      'Fee Percentage must be less than 100%'
+    );
     fee = newFee;
     emit SetFeePercentage(newFee);
   }
@@ -380,10 +389,119 @@ contract SynthereumMultiLpLiquidityPool is
    */
   function _setLiquidationReward(uint256 newLiquidationReward) internal {
     require(
-      newLiquidationReward > 0 && newLiquidationReward < SCALING_UNIT,
+      newLiquidationReward > 0 &&
+        newLiquidationReward < PreciseUnitMath.PRECISE_UNIT,
       'Liquidation reward must be between 0 and 100%'
     );
     liquidationBonus = newLiquidationReward;
     emit SetLiquidationReward(newLiquidationReward);
+  }
+
+  function _calculateNewPositions(uint256 totalInterests, uint256 price)
+    internal
+    view
+    returns (PositionCache[] memory positionsCache)
+  {
+    _calculateInterest(totalInterests, price, positionsCache);
+    //_calculateProfitAndLoss(positionsCache);
+  }
+
+  function _calculateInterest(
+    uint256 totalInterests,
+    uint256 price,
+    PositionCache[] memory positionsCache
+  ) internal view {
+    uint256 lpNumbers = activeLPs.length();
+    uint256[] memory capacityShares = new uint256[](lpNumbers);
+    uint256[] memory utilizationShares = new uint256[](lpNumbers);
+    (uint256 totalCapacity, uint256 totalUtilization) =
+      _calculateInterestShares(
+        price,
+        positionsCache,
+        capacityShares,
+        utilizationShares
+      );
+    uint256 remainingInterest = totalInterests;
+    for (uint256 j = 0; j < lpNumbers - 1; j++) {
+      uint256 interest =
+        totalInterests.mul(
+          ((capacityShares[j].div(totalCapacity)) +
+            (utilizationShares[j].div(totalUtilization))) / 2
+        );
+      positionsCache[j].lpPosition.actualCollateralAmount =
+        positionsCache[j].lpPosition.actualCollateralAmount +
+        interest;
+      remainingInterest = remainingInterest - interest;
+    }
+    positionsCache[lpNumbers - 1].lpPosition.actualCollateralAmount =
+      positionsCache[lpNumbers - 1].lpPosition.actualCollateralAmount +
+      remainingInterest;
+  }
+
+  function _calculateInterestShares(
+    uint256 price,
+    PositionCache[] memory positionsCache,
+    uint256[] memory capacityShares,
+    uint256[] memory utilizationShares
+  ) internal view returns (uint256 totalCapacity, uint256 totalUtilization) {
+    for (uint256 j = 0; j < positionsCache.length - 1; j++) {
+      address lp = activeLPs.at(j);
+      LPPosition storage lpPosition = lpPositions[lp];
+      uint256 actualCollateralAmount = lpPosition.actualCollateralAmount;
+      uint256 tokensCollateralized = lpPosition.tokensCollateralized;
+      uint256 overCollateralization = lpPosition.overCollateralization;
+      uint256 capacityShare =
+        _calculateCapacityShare(
+          actualCollateralAmount,
+          tokensCollateralized,
+          overCollateralization,
+          price
+        );
+      uint256 utilizationShare =
+        _calculateUtilizationShare(
+          actualCollateralAmount,
+          tokensCollateralized,
+          overCollateralization,
+          price
+        );
+      capacityShares[j] = capacityShare;
+      totalCapacity = totalCapacity + capacityShare;
+      utilizationShares[j] = utilizationShare;
+      totalCapacity = totalUtilization + utilizationShare;
+      positionsCache[j] = PositionCache(
+        lp,
+        LPPosition(
+          actualCollateralAmount,
+          tokensCollateralized,
+          overCollateralization
+        )
+      );
+    }
+  }
+
+  function _calculateUtilizationShare(
+    uint256 actualCollateralAmount,
+    uint256 tokensCollateralized,
+    uint256 overCollateralization,
+    uint256 price
+  ) internal pure returns (uint256) {
+    return
+      (actualCollateralAmount.div(overCollateralization)) -
+      (tokensCollateralized.mul(price));
+  }
+
+  function _calculateCapacityShare(
+    uint256 actualCollateralAmount,
+    uint256 tokensCollateralized,
+    uint256 overCollateralization,
+    uint256 price
+  ) internal pure returns (uint256) {
+    return
+      PreciseUnitMath.min(
+        tokensCollateralized.mul(price).mul(overCollateralization).div(
+          actualCollateralAmount
+        ),
+        PreciseUnitMath.PRECISE_UNIT
+      );
   }
 }
