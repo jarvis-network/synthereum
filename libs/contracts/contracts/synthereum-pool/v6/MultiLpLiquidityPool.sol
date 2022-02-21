@@ -100,6 +100,8 @@ contract SynthereumMultiLpLiquidityPool is
 
   mapping(address => LPPosition) private lpPositions;
 
+  uint256 totalSyntheticAssets;
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -397,13 +399,27 @@ contract SynthereumMultiLpLiquidityPool is
     emit SetLiquidationReward(newLiquidationReward);
   }
 
-  function _calculateNewPositions(uint256 totalInterests, uint256 price)
+  function _calculateNewPositions(
+    uint256 totalInterests,
+    uint256 price,
+    uint256 totalSynthTokens,
+    uint256 totalUserAmount
+  )
     internal
     view
-    returns (PositionCache[] memory positionsCache)
+    returns (
+      bool isLpGain,
+      uint256 totalProfitOrLoss,
+      PositionCache[] memory positionsCache
+    )
   {
     _calculateInterest(totalInterests, price, positionsCache);
-    //_calculateProfitAndLoss(positionsCache);
+    (isLpGain, totalProfitOrLoss) = _calculateProfitAndLoss(
+      price,
+      totalSynthTokens,
+      totalUserAmount,
+      positionsCache
+    );
   }
 
   function _calculateInterest(
@@ -428,14 +444,62 @@ contract SynthereumMultiLpLiquidityPool is
           ((capacityShares[j].div(totalCapacity)) +
             (utilizationShares[j].div(totalUtilization))) / 2
         );
-      positionsCache[j].lpPosition.actualCollateralAmount =
-        positionsCache[j].lpPosition.actualCollateralAmount +
+      LPPosition memory lpPosition = positionsCache[j].lpPosition;
+      lpPosition.actualCollateralAmount =
+        lpPosition.actualCollateralAmount +
         interest;
       remainingInterest = remainingInterest - interest;
     }
-    positionsCache[lpNumbers - 1].lpPosition.actualCollateralAmount =
-      positionsCache[lpNumbers - 1].lpPosition.actualCollateralAmount +
+    LPPosition memory lpPosition = positionsCache[lpNumbers - 1].lpPosition;
+    lpPosition.actualCollateralAmount =
+      lpPosition.actualCollateralAmount +
       remainingInterest;
+  }
+
+  function _calculateProfitAndLoss(
+    uint256 price,
+    uint256 totalSynthTokens,
+    uint256 totalUserAmount,
+    PositionCache[] memory positionsCache
+  ) internal view returns (bool isLpGain, uint256 totalProfitOrLoss) {
+    uint256 lpNumbers = positionsCache.length;
+    uint256 totalAssetValue = totalSynthTokens.mul(price);
+    bool isLpGain = totalAssetValue < totalUserAmount;
+    if (isLpGain) {
+      totalProfitOrLoss = totalUserAmount - totalAssetValue;
+      uint256 remainingProfit = totalProfitOrLoss;
+      for (uint256 j = 0; j < lpNumbers - 1; j++) {
+        LPPosition memory lpPosition = positionsCache[j].lpPosition;
+        uint256 assetRatio =
+          lpPosition.tokensCollateralized.div(totalSynthTokens);
+        uint256 lpProfit = totalProfitOrLoss.mul(assetRatio);
+        lpPosition.actualCollateralAmount =
+          lpPosition.actualCollateralAmount +
+          lpProfit;
+        remainingProfit = remainingProfit - lpProfit;
+      }
+      LPPosition memory lpPosition = positionsCache[lpNumbers - 1].lpPosition;
+      lpPosition.actualCollateralAmount =
+        lpPosition.actualCollateralAmount +
+        remainingProfit;
+    } else {
+      totalProfitOrLoss = totalAssetValue - totalUserAmount;
+      uint256 remainingLoss = totalProfitOrLoss;
+      for (uint256 j = 0; j < lpNumbers - 1; j++) {
+        LPPosition memory lpPosition = positionsCache[j].lpPosition;
+        uint256 assetRatio =
+          lpPosition.tokensCollateralized.div(totalSynthTokens);
+        uint256 lpLoss = totalProfitOrLoss.mul(assetRatio);
+        lpPosition.actualCollateralAmount =
+          lpPosition.actualCollateralAmount -
+          lpLoss;
+        remainingLoss = remainingLoss - lpLoss;
+      }
+      LPPosition memory lpPosition = positionsCache[lpNumbers - 1].lpPosition;
+      lpPosition.actualCollateralAmount =
+        lpPosition.actualCollateralAmount -
+        remainingLoss;
+    }
   }
 
   function _calculateInterestShares(
