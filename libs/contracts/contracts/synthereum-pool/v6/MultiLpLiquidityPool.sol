@@ -54,7 +54,7 @@ contract SynthereumMultiLpLiquidityPool is
     IStandardERC20 collateralToken;
     // ERC20 synthetic token
     IMintableBurnableERC20 syntheticToken;
-    // The addresses of admin, maintainer, liquidity provider
+    // The addresses of admin and maintainer
     Roles roles;
     // The fee percentage
     uint256 fee;
@@ -425,7 +425,7 @@ contract SynthereumMultiLpLiquidityPool is
   function _setLiquidationReward(uint256 newLiquidationReward) internal {
     require(
       newLiquidationReward > 0 &&
-        newLiquidationReward < PreciseUnitMath.PRECISE_UNIT,
+        newLiquidationReward <= PreciseUnitMath.PRECISE_UNIT,
       'Liquidation reward must be between 0 and 100%'
     );
     liquidationBonus = newLiquidationReward;
@@ -521,6 +521,88 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Calculate interest shares of each LP
+   * @param price Actual price of the pair
+   * @param positionsCache Temporary memory cache containing LPs positions
+   * @param capacityShares Array to be populated with the capacity shares of every LP
+   * @param utilizationShares Array to be populated with the utilization shares of every LP
+   * @return totalCapacity Sum of all the LP's capacities
+   * @return totalUtilization Sum of all the LP's utilizations
+   */
+  function _calculateInterestShares(
+    uint256 price,
+    PositionCache[] memory positionsCache,
+    uint256[] memory capacityShares,
+    uint256[] memory utilizationShares
+  ) internal view returns (uint256 totalCapacity, uint256 totalUtilization) {
+    for (uint256 j = 0; j < positionsCache.length - 1; j++) {
+      address lp = activeLPs.at(j);
+      LPPosition memory lpPosition = lpPositions[lp];
+      uint256 capacityShare =
+        _calculateCapacity(
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization,
+          price
+        );
+      uint256 utilizationShare =
+        _calculateUtilization(
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization,
+          price
+        );
+      capacityShares[j] = capacityShare;
+      totalCapacity = totalCapacity + capacityShare;
+      utilizationShares[j] = utilizationShare;
+      totalCapacity = totalUtilization + utilizationShare;
+      positionsCache[j] = PositionCache(
+        lp,
+        LPPosition(
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization
+        )
+      );
+    }
+  }
+
+  /**
+   * @notice Return the on-chain oracle price for a pair
+   * @param finder Synthereum finder
+   * @param priceIdentifier Identifier of price pair
+   * @return Latest rate of the pair
+   */
+  function _getPriceFeedRate(ISynthereumFinder finder, bytes32 priceIdentifier)
+    internal
+    view
+    returns (uint256)
+  {
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+      );
+
+    return priceFeed.getLatestPrice(priceIdentifier);
+  }
+
+  /**
+   * @notice Return the address of the lending manager
+   * @param finder Synthereum finder
+   * @return Address of the lending manager
+   */
+  function _getLendingManager(ISynthereumFinder finder)
+    internal
+    view
+    returns (ILendingProxy)
+  {
+    return
+      ILendingProxy(
+        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
+      );
+  }
+
+  /**
    * @notice Calculate profit or loss of each Lp
    * @param price Actual price of the pair
    * @param totalSynthTokens Amount of synthetic asset collateralized by the pool
@@ -578,53 +660,6 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Calculate interest shares of each LP
-   * @param price Actual price of the pair
-   * @param positionsCache Temporary memory cache containing LPs positions
-   * @param capacityShares Array to be populated with the capacity shares of every LP
-   * @param utilizationShares Array to be populated with the utilization shares of every LP
-   * @return totalCapacity Sum of all the LP's capacities
-   * @return totalUtilization Sum of all the LP's utilizations
-   */
-  function _calculateInterestShares(
-    uint256 price,
-    PositionCache[] memory positionsCache,
-    uint256[] memory capacityShares,
-    uint256[] memory utilizationShares
-  ) internal view returns (uint256 totalCapacity, uint256 totalUtilization) {
-    for (uint256 j = 0; j < positionsCache.length - 1; j++) {
-      address lp = activeLPs.at(j);
-      LPPosition memory lpPosition = lpPositions[lp];
-      uint256 capacityShare =
-        _calculateCapacity(
-          lpPosition.actualCollateralAmount,
-          lpPosition.tokensCollateralized,
-          lpPosition.overCollateralization,
-          price
-        );
-      uint256 utilizationShare =
-        _calculateUtilization(
-          lpPosition.actualCollateralAmount,
-          lpPosition.tokensCollateralized,
-          lpPosition.overCollateralization,
-          price
-        );
-      capacityShares[j] = capacityShare;
-      totalCapacity = totalCapacity + capacityShare;
-      utilizationShares[j] = utilizationShare;
-      totalCapacity = totalUtilization + utilizationShare;
-      positionsCache[j] = PositionCache(
-        lp,
-        LPPosition(
-          lpPosition.actualCollateralAmount,
-          lpPosition.tokensCollateralized,
-          lpPosition.overCollateralization
-        )
-      );
-    }
-  }
-
-  /**
    * @notice Calculate capacity of each LP
    * @dev Utilization = (actualCollateralAmount / overCollateralization) - (tokensCollateralized * price)
    * @param actualCollateralAmount Actual collateral amount holded by the LP
@@ -666,41 +701,6 @@ contract SynthereumMultiLpLiquidityPool is
           actualCollateralAmount
         ),
         PreciseUnitMath.PRECISE_UNIT
-      );
-  }
-
-  /**
-   * @notice Return the on-chain oracle price for a pair
-   * @param finder Synthereum finder
-   * @param priceIdentifier Identifier of price pair
-   * @return Latest rate of the pair
-   */
-  function _getPriceFeedRate(ISynthereumFinder finder, bytes32 priceIdentifier)
-    internal
-    view
-    returns (uint256)
-  {
-    ISynthereumPriceFeed priceFeed =
-      ISynthereumPriceFeed(
-        finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
-      );
-
-    return priceFeed.getLatestPrice(priceIdentifier);
-  }
-
-  /**
-   * @notice Return the address of the lending manager
-   * @param finder Synthereum finder
-   * @return Address of the lending manager
-   */
-  function _getLendingManager(ISynthereumFinder finder)
-    internal
-    view
-    returns (ILendingProxy)
-  {
-    return
-      ILendingProxy(
-        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
   }
 }
