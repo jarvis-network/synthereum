@@ -399,6 +399,16 @@ contract SynthereumMultiLpLiquidityPool is
     emit SetLiquidationReward(newLiquidationReward);
   }
 
+  /**
+   * @notice Calculate new positons from previous interaction
+   * @param totalInterests Amount of interests to split between active LPs
+   * @param price Actual price of the pair
+   * @param totalSynthTokens Amount of synthetic asset collateralized by the pool
+   * @param totalUserAmount Actual amount deposited by the users
+   * @return isLpGain True if the lps have a gain over users otherwise false
+   * @return totalProfitOrLoss Profit or loss of the Lps over the users
+   * @return positionsCache Temporary memory cache containing LPs positions
+   */
   function _calculateNewPositions(
     uint256 totalInterests,
     uint256 price,
@@ -422,6 +432,12 @@ contract SynthereumMultiLpLiquidityPool is
     );
   }
 
+  /**
+   * @notice Calculate interests of each Lp
+   * @param totalInterests Amount of interests to split between active LPs
+   * @param price Actual price of the pair
+   * @param positionsCache Temporary memory cache containing LPs positions
+   */
   function _calculateInterest(
     uint256 totalInterests,
     uint256 price,
@@ -456,6 +472,15 @@ contract SynthereumMultiLpLiquidityPool is
       remainingInterest;
   }
 
+  /**
+   * @notice Calculate profit or loss of each Lp
+   * @param price Actual price of the pair
+   * @param totalSynthTokens Amount of synthetic asset collateralized by the pool
+   * @param totalUserAmount Actual amount deposited by the users
+   * @param positionsCache Temporary memory cache containing LPs positions
+   * @return isLpGain True if the lps have a gain over users otherwise false
+   * @return totalProfitOrLoss Profit or loss of the Lps over the users
+   */
   function _calculateProfitAndLoss(
     uint256 price,
     uint256 totalSynthTokens,
@@ -502,6 +527,15 @@ contract SynthereumMultiLpLiquidityPool is
     }
   }
 
+  /**
+   * @notice Calculate interest shares of each LP
+   * @param price Actual price of the pair
+   * @param positionsCache Temporary memory cache containing LPs positions
+   * @param capacityShares Array to be populated with the capacity shares of every LP
+   * @param utilizationShares Array to be populated with the utilization shares of every LP
+   * @return totalCapacity Sum of all the LP's capacities
+   * @return totalUtilization Sum of all the LP's utilizations
+   */
   function _calculateInterestShares(
     uint256 price,
     PositionCache[] memory positionsCache,
@@ -515,14 +549,14 @@ contract SynthereumMultiLpLiquidityPool is
       uint256 tokensCollateralized = lpPosition.tokensCollateralized;
       uint256 overCollateralization = lpPosition.overCollateralization;
       uint256 capacityShare =
-        _calculateCapacityShare(
+        _calculateCapacity(
           actualCollateralAmount,
           tokensCollateralized,
           overCollateralization,
           price
         );
       uint256 utilizationShare =
-        _calculateUtilizationShare(
+        _calculateUtilization(
           actualCollateralAmount,
           tokensCollateralized,
           overCollateralization,
@@ -543,7 +577,16 @@ contract SynthereumMultiLpLiquidityPool is
     }
   }
 
-  function _calculateUtilizationShare(
+  /**
+   * @notice Calculate capacity of each LP
+   * @dev Utilization = (actualCollateralAmount / overCollateralization) - (tokensCollateralized * price)
+   * @param actualCollateralAmount Actual collateral amount holded by the LP
+   * @param tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
+   * @param overCollateralization Overcollateralization of the LP
+   * @param price Actual price of the pair
+   * @return Capacity of the LP
+   */
+  function _calculateCapacity(
     uint256 actualCollateralAmount,
     uint256 tokensCollateralized,
     uint256 overCollateralization,
@@ -554,7 +597,17 @@ contract SynthereumMultiLpLiquidityPool is
       (tokensCollateralized.mul(price));
   }
 
-  function _calculateCapacityShare(
+  /**
+   * @notice Calculate utilization of an LP
+   * @dev Utilization = (tokensCollateralized * price * overCollateralization) / actualCollateralAmount
+   * @dev Capped to 1 in case of underCollateralization
+   * @param actualCollateralAmount Actual collateral amount holded by the LP
+   * @param tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
+   * @param overCollateralization Overcollateralization of the LP
+   * @param price Actual price of the pair
+   * @return Utilization of the LP
+   */
+  function _calculateUtilization(
     uint256 actualCollateralAmount,
     uint256 tokensCollateralized,
     uint256 overCollateralization,
