@@ -183,11 +183,13 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Only a registered and inactive LP can call this function to add himself
    * @param _collateralAmount Collateral amount to deposit by the LP
    * @param _overCollateralization Overcollateralization to set by the LP
+   * @return collateralDeposited Net collateral deposited in the pool
    */
   function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
     external
     override
     nonReentrant
+    returns (uint256 collateralDeposited)
   {
     address msgSender = _msgSender();
 
@@ -225,8 +227,9 @@ contract SynthereumMultiLpLiquidityPool is
       ? totalUserDeposits - totalProfitOrLoss
       : totalUserDeposits + totalProfitOrLoss;
 
+    collateralDeposited = lendingValues.tokensOut;
     lpPositions[msgSender] = LPPosition(
-      lendingValues.tokensOut,
+      collateralDeposited,
       0,
       _overCollateralization
     );
@@ -234,7 +237,7 @@ contract SynthereumMultiLpLiquidityPool is
     require(activeLPs.add(msgSender), 'LP already active');
 
     emit ActivatedLP(msgSender);
-    emit DepositedLiquidity(msgSender, lendingValues.tokensOut);
+    emit DepositedLiquidity(msgSender, collateralDeposited);
     emit SetOvercollateralization(msgSender, _overCollateralization);
   }
 
@@ -242,11 +245,13 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Add collateral to an active LP position
    * @notice Only an active LP can call this function to add collateral to his position
    * @param _collateralAmount Collateral amount to deposit by the LP
+   * @param collateralDeposited Net collateral deposited in the pool
    */
   function addLiquidity(uint256 _collateralAmount)
     external
     override
     nonReentrant
+    returns (uint256 collateralDeposited)
   {
     address msgSender = _msgSender();
 
@@ -274,16 +279,17 @@ contract SynthereumMultiLpLiquidityPool is
     require(isActiveLP(msgSender), 'Sender must be an active LP');
     require(_collateralAmount > 0, 'No collateral deposited');
 
+    collateralDeposited = lendingValues.tokensOut;
     _updateAndIncreaseActualLPCollateral(
       positionsCache,
       msgSender,
-      lendingValues.tokensOut
+      collateralDeposited
     );
     totalUserDeposits = isLpGain
       ? totalUserDeposits - totalProfitOrLoss
       : totalUserDeposits + totalProfitOrLoss;
 
-    emit DepositedLiquidity(msgSender, lendingValues.tokensOut);
+    emit DepositedLiquidity(msgSender, collateralDeposited);
   }
 
   /**
