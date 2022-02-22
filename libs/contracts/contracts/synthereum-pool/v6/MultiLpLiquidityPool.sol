@@ -16,7 +16,11 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {ILendingProxy} from '../../lending-module/interfaces/ILendingProxy.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
@@ -39,6 +43,7 @@ contract SynthereumMultiLpLiquidityPool is
 {
   using EnumerableSet for EnumerableSet.AddressSet;
   using PreciseUnitMath for uint256;
+  using SafeERC20 for IStandardERC20;
 
   struct ConstructorParams {
     // Synthereum finder
@@ -100,7 +105,9 @@ contract SynthereumMultiLpLiquidityPool is
 
   mapping(address => LPPosition) private lpPositions;
 
-  uint256 totalSyntheticAssets;
+  uint256 private totalSyntheticAsset;
+
+  uint256 private totalUserDeposits;
 
   //----------------------------------------
   // Modifiers
@@ -182,7 +189,28 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
   {
     address msgSender = _msgSender();
-    LPPosition storage position = lpPositions[msgSender];
+
+    ILendingProxy lendingManager = _getLendingManager(finder);
+    collateralAsset.safeTransferFrom(
+      msgSender,
+      address(lendingManager),
+      collateralAmount
+    );
+    ILendingProxy.ReturnValues memory lendingValues =
+      lendingManager.deposit(collateralAmount);
+
+    (
+      bool isLpGain,
+      uint256 totalProfitOrLoss,
+      PositionCache[] memory positionsCache
+    ) =
+      _calculateNewPositions(
+        lendingValues.poolInterest,
+        _getPriceFeedRate(finder, priceIdentifier),
+        totalSyntheticAsset,
+        totalUserDeposits
+      );
+
     require(isRegisteredLP(msgSender), 'Sender must be a registered LP');
     require(collateralAmount > 0, 'No collateral deposited');
     require(
@@ -191,11 +219,16 @@ contract SynthereumMultiLpLiquidityPool is
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
     require(activeLPs.add(msgSender), 'LP already active');
-    //TO DO: update P&L and deposit in lending module
 
-    position.actualCollateralAmount = collateralAmount;
+    _updateActualLpCollateral(positionsCache);
+    totalUserDeposits = isLpGain
+      ? totalUserDeposits - totalProfitOrLoss
+      : totalUserDeposits + totalProfitOrLoss;
+
+    LPPosition storage position = lpPositions[msgSender];
+    position.actualCollateralAmount = lendingValues.tokensOut;
     position.overCollateralization = overCollateralization;
-    emit ActivatedLP(msgSender, collateralAmount, overCollateralization);
+    emit ActivatedLP(msgSender, lendingValues.tokensOut, overCollateralization);
   }
 
   /**
@@ -400,6 +433,21 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Update collateral amount of every LP
+   * @param positionsCache Temporary memory cache containing LPs positions
+   */
+  function _updateActualLpCollateral(PositionCache[] memory positionsCache)
+    internal
+  {
+    for (uint256 j = 0; j < positionsCache.length; j++) {
+      PositionCache memory lpCache = positionsCache[j];
+      lpPositions[lpCache.lp].actualCollateralAmount = lpCache
+        .lpPosition
+        .actualCollateralAmount;
+    }
+  }
+
+  /**
    * @notice Calculate new positons from previous interaction
    * @param totalInterests Amount of interests to split between active LPs
    * @param price Actual price of the pair
@@ -466,9 +514,9 @@ contract SynthereumMultiLpLiquidityPool is
         interest;
       remainingInterest = remainingInterest - interest;
     }
-    LPPosition memory lpPosition = positionsCache[lpNumbers - 1].lpPosition;
-    lpPosition.actualCollateralAmount =
-      lpPosition.actualCollateralAmount +
+    LPPosition memory lastLpPosition = positionsCache[lpNumbers - 1].lpPosition;
+    lastLpPosition.actualCollateralAmount =
+      lastLpPosition.actualCollateralAmount +
       remainingInterest;
   }
 
@@ -486,10 +534,10 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 totalSynthTokens,
     uint256 totalUserAmount,
     PositionCache[] memory positionsCache
-  ) internal view returns (bool isLpGain, uint256 totalProfitOrLoss) {
+  ) internal pure returns (bool isLpGain, uint256 totalProfitOrLoss) {
     uint256 lpNumbers = positionsCache.length;
     uint256 totalAssetValue = totalSynthTokens.mul(price);
-    bool isLpGain = totalAssetValue < totalUserAmount;
+    isLpGain = totalAssetValue < totalUserAmount;
     if (isLpGain) {
       totalProfitOrLoss = totalUserAmount - totalAssetValue;
       uint256 remainingProfit = totalProfitOrLoss;
@@ -503,9 +551,10 @@ contract SynthereumMultiLpLiquidityPool is
           lpProfit;
         remainingProfit = remainingProfit - lpProfit;
       }
-      LPPosition memory lpPosition = positionsCache[lpNumbers - 1].lpPosition;
-      lpPosition.actualCollateralAmount =
-        lpPosition.actualCollateralAmount +
+      LPPosition memory lastLpPosition =
+        positionsCache[lpNumbers - 1].lpPosition;
+      lastLpPosition.actualCollateralAmount =
+        lastLpPosition.actualCollateralAmount +
         remainingProfit;
     } else {
       totalProfitOrLoss = totalAssetValue - totalUserAmount;
@@ -520,9 +569,10 @@ contract SynthereumMultiLpLiquidityPool is
           lpLoss;
         remainingLoss = remainingLoss - lpLoss;
       }
-      LPPosition memory lpPosition = positionsCache[lpNumbers - 1].lpPosition;
-      lpPosition.actualCollateralAmount =
-        lpPosition.actualCollateralAmount -
+      LPPosition memory lastLpPosition =
+        positionsCache[lpNumbers - 1].lpPosition;
+      lastLpPosition.actualCollateralAmount =
+        lastLpPosition.actualCollateralAmount -
         remainingLoss;
     }
   }
@@ -544,22 +594,19 @@ contract SynthereumMultiLpLiquidityPool is
   ) internal view returns (uint256 totalCapacity, uint256 totalUtilization) {
     for (uint256 j = 0; j < positionsCache.length - 1; j++) {
       address lp = activeLPs.at(j);
-      LPPosition storage lpPosition = lpPositions[lp];
-      uint256 actualCollateralAmount = lpPosition.actualCollateralAmount;
-      uint256 tokensCollateralized = lpPosition.tokensCollateralized;
-      uint256 overCollateralization = lpPosition.overCollateralization;
+      LPPosition memory lpPosition = lpPositions[lp];
       uint256 capacityShare =
         _calculateCapacity(
-          actualCollateralAmount,
-          tokensCollateralized,
-          overCollateralization,
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization,
           price
         );
       uint256 utilizationShare =
         _calculateUtilization(
-          actualCollateralAmount,
-          tokensCollateralized,
-          overCollateralization,
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization,
           price
         );
       capacityShares[j] = capacityShare;
@@ -569,9 +616,9 @@ contract SynthereumMultiLpLiquidityPool is
       positionsCache[j] = PositionCache(
         lp,
         LPPosition(
-          actualCollateralAmount,
-          tokensCollateralized,
-          overCollateralization
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization
         )
       );
     }
@@ -619,6 +666,41 @@ contract SynthereumMultiLpLiquidityPool is
           actualCollateralAmount
         ),
         PreciseUnitMath.PRECISE_UNIT
+      );
+  }
+
+  /**
+   * @notice Return the on-chain oracle price for a pair
+   * @param finder Synthereum finder
+   * @param priceIdentifier Identifier of price pair
+   * @return Latest rate of the pair
+   */
+  function _getPriceFeedRate(ISynthereumFinder finder, bytes32 priceIdentifier)
+    internal
+    view
+    returns (uint256)
+  {
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+      );
+
+    return priceFeed.getLatestPrice(priceIdentifier);
+  }
+
+  /**
+   * @notice Return the address of the lending manager
+   * @param finder Synthereum finder
+   * @return Address of the lending manager
+   */
+  function _getLendingManager(ISynthereumFinder finder)
+    internal
+    view
+    returns (ILendingProxy)
+  {
+    return
+      ILendingProxy(
+        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
   }
 }

@@ -20,7 +20,7 @@ contract LendingStorageManager is ILendingStorageManager {
   modifier onlyProxy() {
     address proxy =
       ISynthereumFinder(finder).getImplementationAddress(
-        SynthereumInterfaces.LendingProxy
+        SynthereumInterfaces.LendingManager
       );
     require(msg.sender == proxy, 'Not allowed');
     _;
