@@ -29,9 +29,9 @@ contract AaveV3Module is ILendingModule {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
-    // retrievve pool collateral
+    // proxy should have received collateral from the pool
     IERC20 collateral = IERC20(poolData.collateral);
-    collateral.safeTransferFrom(msg.sender, address(this), amount);
+    require(collateral.balanceOf(address(this)) == amount, 'Wrong balance');
 
     // aave deposit - approve
     address moneyMarket =
@@ -64,11 +64,12 @@ contract AaveV3Module is ILendingModule {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
-    // retrieve aTokens
+    // retrieve aTokens from pool
+    uint256 aTokensAmount = collateralToInterestToken(amount);
     IERC20(poolData.interestBearingToken).safeTransferFrom(
       msg.sender,
       address(this),
-      amount
+      aTokensAmount
     );
 
     // aave withdraw - approve
@@ -76,12 +77,12 @@ contract AaveV3Module is ILendingModule {
       decodeLendingArgs(storageManager, poolData.lendingModule);
     IERC20(poolData.interestBearingToken).safeIncreaseAllowance(
       moneyMarket,
-      amount
+      aTokensAmount
     );
-    IPool(moneyMarket).withdraw(poolData.collateral, amount, recipient);
+    IPool(moneyMarket).withdraw(poolData.collateral, aTokensAmount, recipient);
 
     // aave tokens are always 1:1
-    tokensOut = amount;
+    tokensOut = aTokensAmount;
   }
 
   function getInterestBearingToken(
@@ -92,6 +93,14 @@ contract AaveV3Module is ILendingModule {
     address moneyMarket =
       decodeLendingArgs(IPoolStorageManager(storageManager), lendingModule);
     token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
+  }
+
+  function collateralToInterestToken(uint256 collateralAmount)
+    internal
+    pure
+    returns (uint256 interestBearingTokenAmount)
+  {
+    interestBearingTokenAmount = collateralAmount;
   }
 
   function decodeLendingArgs(
