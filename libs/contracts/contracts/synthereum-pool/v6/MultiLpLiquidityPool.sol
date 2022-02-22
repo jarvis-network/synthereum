@@ -179,7 +179,7 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Add the Lp to the active list of the LPs
+   * @notice Add the Lp to the active list of the LPs and initialize collateral and overcollateralization
    * @notice Only a registered and inactive LP can call this function to add himself
    * @param _collateralAmount Collateral amount to deposit by the LP
    * @param _overCollateralization Overcollateralization to set by the LP
@@ -219,21 +219,73 @@ contract SynthereumMultiLpLiquidityPool is
         liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
-    require(activeLPs.add(msgSender), 'LP already active');
 
-    _updateActualLpCollateral(positionsCache);
+    _updateActualLPCollateral(positionsCache);
     totalUserDeposits = isLpGain
       ? totalUserDeposits - totalProfitOrLoss
       : totalUserDeposits + totalProfitOrLoss;
 
-    LPPosition storage position = lpPositions[msgSender];
-    position.actualCollateralAmount = lendingValues.tokensOut;
-    position.overCollateralization = _overCollateralization;
+    lpPositions[msgSender] = LPPosition(
+      lendingValues.tokensOut,
+      0,
+      _overCollateralization
+    );
+
+    require(activeLPs.add(msgSender), 'LP already active');
+
     emit ActivatedLP(
       msgSender,
       lendingValues.tokensOut,
       _overCollateralization
     );
+  }
+
+  /**
+   * @notice Add collateral to an active LP position
+   * @notice Only an active LP can call this function to add collateral to his position
+   * @param _collateralAmount Collateral amount to deposit by the LP
+   */
+  function addLiquidity(uint256 _collateralAmount)
+    external
+    override
+    nonReentrant
+  {
+    address msgSender = _msgSender();
+
+    ILendingProxy lendingManager = _getLendingManager(finder);
+    collateralAsset.safeTransferFrom(
+      msgSender,
+      address(lendingManager),
+      _collateralAmount
+    );
+    ILendingProxy.ReturnValues memory lendingValues =
+      lendingManager.deposit(_collateralAmount);
+
+    (
+      bool isLpGain,
+      uint256 totalProfitOrLoss,
+      PositionCache[] memory positionsCache
+    ) =
+      _calculateNewPositions(
+        lendingValues.poolInterest,
+        _getPriceFeedRate(finder, priceIdentifier),
+        totalSyntheticAsset,
+        totalUserDeposits
+      );
+
+    require(isActiveLP(msgSender), 'Sender must be an active LP');
+    require(_collateralAmount > 0, 'No collateral deposited');
+
+    _updateAndIncreaseActualLPCollateral(
+      positionsCache,
+      msgSender,
+      lendingValues.tokensOut
+    );
+    totalUserDeposits = isLpGain
+      ? totalUserDeposits - totalProfitOrLoss
+      : totalUserDeposits + totalProfitOrLoss;
+
+    emit DepositedLiquidity(msgSender, lendingValues.tokensOut);
   }
 
   /**
@@ -441,7 +493,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Update collateral amount of every LP
    * @param _positionsCache Temporary memory cache containing LPs positions
    */
-  function _updateActualLpCollateral(PositionCache[] memory _positionsCache)
+  function _updateActualLPCollateral(PositionCache[] memory _positionsCache)
     internal
   {
     for (uint256 j = 0; j < _positionsCache.length; j++) {
@@ -449,6 +501,26 @@ contract SynthereumMultiLpLiquidityPool is
       lpPositions[lpCache.lp].actualCollateralAmount = lpCache
         .lpPosition
         .actualCollateralAmount;
+    }
+  }
+
+  /**
+   * @notice Update collateral amount of every LP and add the new deposit for one LP
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   * @param _depositingLp Address of the LP depositing collateral
+   * @param _depositedCollateral Amount of collateral deposited by the LP
+   */
+  function _updateAndIncreaseActualLPCollateral(
+    PositionCache[] memory _positionsCache,
+    address _depositingLp,
+    uint256 _depositedCollateral
+  ) internal {
+    for (uint256 j = 0; j < _positionsCache.length; j++) {
+      PositionCache memory lpCache = _positionsCache[j];
+      address lp = lpCache.lp;
+      lpPositions[lp].actualCollateralAmount = (lp != _depositingLp)
+        ? lpCache.lpPosition.actualCollateralAmount
+        : lpCache.lpPosition.actualCollateralAmount + _depositedCollateral;
     }
   }
 

@@ -21,6 +21,13 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
   );
 
   /**
+   * @notice Emitted when a LP is activated in the pool by himself
+   * @param lp Address of the LP to be activated
+   * @param collateralDeposited Collateral amount deposited
+   */
+  event DepositedLiquidity(address indexed lp, uint256 collateralDeposited);
+
+  /**
    * @notice Emitted when new fee percentage is set in the pool by the maintainer
    * @param newFee New fee percentage
    */

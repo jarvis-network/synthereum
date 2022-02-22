@@ -45,6 +45,13 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     external;
 
   /**
+   * @notice Add collateral to an active LP position
+   * @notice Only an active LP can call this function to add collateral to his position
+   * @param _collateralAmount Collateral amount to deposit by the LP
+   */
+  function addLiquidity(uint256 _collateralAmount) external;
+
+  /**
    * @notice Set new liquidation reward percentage
    * @notice This can be called only by the maintainer
    * @param _newLiquidationReward New liquidation reward percentage
