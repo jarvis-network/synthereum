@@ -31,32 +31,32 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   /**
    * @notice Register a liquidity provider to the LP's whitelist
    * @notice This can be called only by the maintainer
-   * @param lp Address of the LP
+   * @param _lp Address of the LP
    */
-  function registerLP(address lp) external;
+  function registerLP(address _lp) external;
 
   /**
    * @notice Add the Lp to the active list of the LPs
    * @notice Only a registered and inactive LP can call this function to add himself
-   * @param collateralAmount Collateral amount to deposit by the LP
-   * @param overCollateralization Overcollateralization to set by the LP
+   * @param _collateralAmount Collateral amount to deposit by the LP
+   * @param _overCollateralization Overcollateralization to set by the LP
    */
-  function activateLP(uint256 collateralAmount, uint256 overCollateralization)
+  function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
     external;
 
   /**
    * @notice Set new liquidation reward percentage
    * @notice This can be called only by the maintainer
-   * @param newLiquidationReward New liquidation reward percentage
+   * @param _newLiquidationReward New liquidation reward percentage
    */
-  function setLiquidationReward(uint256 newLiquidationReward) external;
+  function setLiquidationReward(uint256 _newLiquidationReward) external;
 
   /**
    * @notice Set new fee percentage
    * @notice This can be called only by the maintainer
-   * @param fee New fee percentage
+   * @param _fee New fee percentage
    */
-  function setFee(uint256 fee) external;
+  function setFee(uint256 _fee) external;
 
   /**
    * @notice Get all the registered LPs of this pool
@@ -72,24 +72,24 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
 
   /**
    * @notice Get the position of an LP
-   * @notice Address of the LP
+   * @param _lp Address of the LP
    * @return Return the position of the LP if it's active, otherwise revert
    */
-  function getLpPosition(address lp) external view returns (LPPosition memory);
+  function getLpPosition(address _lp) external view returns (LPPosition memory);
 
   /**
    * @notice Check if the input LP is registered
-   * @notice Address of the LP
+   * @param _lp Address of the LP
    * @return Return true if the LP is regitered, otherwise false
    */
-  function isRegisteredLP(address lp) external view returns (bool);
+  function isRegisteredLP(address _lp) external view returns (bool);
 
   /**
    * @notice Check if the input LP is active
-   * @notice Address of the LP
+   * @param _lp Address of the LP
    * @return Return true if the LP is active, otherwise false
    */
-  function isActiveLP(address lp) external view returns (bool);
+  function isActiveLP(address _lp) external view returns (bool);
 
   /**
    * @notice Returns the percentage of overcollateralization to which a liquidation can triggered

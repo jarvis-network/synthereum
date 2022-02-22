@@ -85,6 +85,8 @@ contract SynthereumMultiLpLiquidityPool is
 
   IStandardERC20 private immutable collateralAsset;
 
+  uint8 private immutable collateralDecimals;
+
   IMintableBurnableERC20 private immutable syntheticAsset;
 
   bytes32 private immutable priceIdentifier;
@@ -121,69 +123,68 @@ contract SynthereumMultiLpLiquidityPool is
     _;
   }
 
-  constructor(ConstructorParams memory params) nonReentrant {
+  constructor(ConstructorParams memory _params) nonReentrant {
     require(
-      params.collateralRequirement > PreciseUnitMath.PRECISE_UNIT,
+      _params.collateralRequirement > PreciseUnitMath.PRECISE_UNIT,
       'Collateral requirement must be bigger than 100%'
     );
 
-    require(
-      params.collateralToken.decimals() <= 18,
-      'Collateral has more than 18 decimals'
-    );
+    uint8 collTokenDecimals = _params.collateralToken.decimals();
+    require(collTokenDecimals <= 18, 'Collateral has more than 18 decimals');
 
     require(
-      params.syntheticToken.decimals() == 18,
+      _params.syntheticToken.decimals() == 18,
       'Synthetic token has more or less than 18 decimals'
     );
 
     ISynthereumPriceFeed priceFeed =
       ISynthereumPriceFeed(
-        params.finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+        _params.finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
       );
     require(
-      priceFeed.isPriceSupported(params.priceIdentifier),
+      priceFeed.isPriceSupported(_params.priceIdentifier),
       'Price identifier not supported'
     );
 
-    finder = params.finder;
-    poolVersion = params.version;
-    collateralAsset = params.collateralToken;
-    syntheticAsset = params.syntheticToken;
-    priceIdentifier = params.priceIdentifier;
-    liquidationThreshold = params.collateralRequirement;
+    finder = _params.finder;
+    poolVersion = _params.version;
+    collateralAsset = _params.collateralToken;
+    collateralDecimals = collTokenDecimals;
+    syntheticAsset = _params.syntheticToken;
+    priceIdentifier = _params.priceIdentifier;
+    liquidationThreshold = _params.collateralRequirement;
 
-    _setLiquidationReward(params.liquidationReward);
-    _setFee(params.fee);
+    _setLiquidationReward(_params.liquidationReward);
+    _setFee(_params.fee);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, params.roles.admin);
-    _setupRole(MAINTAINER_ROLE, params.roles.maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, _params.roles.admin);
+    _setupRole(MAINTAINER_ROLE, _params.roles.maintainer);
   }
 
   /**
    * @notice Register a liquidity provider to the LP's whitelist
    * @notice This can be called only by the maintainer
-   * @param lp Address of the LP
+   * @param _lp Address of the LP
    */
-  function registerLP(address lp)
+  function registerLP(address _lp)
     external
     override
     nonReentrant
     onlyMaintainer
   {
-    require(registeredLPs.add(lp), 'LP already registered');
-    emit RegisteredLp(lp);
+    require(registeredLPs.add(_lp), 'LP already registered');
+    emit RegisteredLp(_lp);
   }
 
   /**
    * @notice Add the Lp to the active list of the LPs
    * @notice Only a registered and inactive LP can call this function to add himself
-   * @param collateralAmount Collateral amount to deposit by the LP
-   * @param overCollateralization Overcollateralization to set by the LP
+   * @param _collateralAmount Collateral amount to deposit by the LP
+   * @param _overCollateralization Overcollateralization to set by the LP
    */
-  function activateLP(uint256 collateralAmount, uint256 overCollateralization)
+  function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
     external
     override
     nonReentrant
@@ -194,10 +195,10 @@ contract SynthereumMultiLpLiquidityPool is
     collateralAsset.safeTransferFrom(
       msgSender,
       address(lendingManager),
-      collateralAmount
+      _collateralAmount
     );
     ILendingProxy.ReturnValues memory lendingValues =
-      lendingManager.deposit(collateralAmount);
+      lendingManager.deposit(_collateralAmount);
 
     (
       bool isLpGain,
@@ -212,9 +213,9 @@ contract SynthereumMultiLpLiquidityPool is
       );
 
     require(isRegisteredLP(msgSender), 'Sender must be a registered LP');
-    require(collateralAmount > 0, 'No collateral deposited');
+    require(_collateralAmount > 0, 'No collateral deposited');
     require(
-      overCollateralization >
+      _overCollateralization >
         liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
@@ -227,36 +228,40 @@ contract SynthereumMultiLpLiquidityPool is
 
     LPPosition storage position = lpPositions[msgSender];
     position.actualCollateralAmount = lendingValues.tokensOut;
-    position.overCollateralization = overCollateralization;
-    emit ActivatedLP(msgSender, lendingValues.tokensOut, overCollateralization);
+    position.overCollateralization = _overCollateralization;
+    emit ActivatedLP(
+      msgSender,
+      lendingValues.tokensOut,
+      _overCollateralization
+    );
   }
 
   /**
    * @notice Set new liquidation reward percentage
    * @notice This can be called only by the maintainer
-   * @param newLiquidationReward New liquidation reward percentage
+   * @param _newLiquidationReward New liquidation reward percentage
    */
-  function setLiquidationReward(uint256 newLiquidationReward)
+  function setLiquidationReward(uint256 _newLiquidationReward)
     external
     override
     nonReentrant
     onlyMaintainer
   {
-    _setLiquidationReward(newLiquidationReward);
+    _setLiquidationReward(_newLiquidationReward);
   }
 
   /**
    * @notice Set new fee percentage
    * @notice This can be called only by the maintainer
-   * @param newFee New fee percentage
+   * @param _newFee New fee percentage
    */
-  function setFee(uint256 newFee)
+  function setFee(uint256 _newFee)
     external
     override
     nonReentrant
     onlyMaintainer
   {
-    _setFee(newFee);
+    _setFee(_newFee);
   }
 
   /**
@@ -292,17 +297,17 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Get the position of an LP
-   * @notice Address of the LP
+   * @param _lp Address of the LP
    * @return Return the position of the LP if it's active, otherwise revert
    */
-  function getLpPosition(address lp)
+  function getLpPosition(address _lp)
     external
     view
     override
     returns (LPPosition memory)
   {
-    require(isActiveLP(lp), 'Lp is not active');
-    return lpPositions[lp];
+    require(isActiveLP(_lp), 'Lp is not active');
+    return lpPositions[_lp];
   }
 
   /**
@@ -389,58 +394,58 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Check if the input LP is registered
-   * @notice Address of the LP
+   * @param _lp Address of the LP
    * @return Return true if the LP is regitered, otherwise false
    */
-  function isRegisteredLP(address lp) public view override returns (bool) {
-    return registeredLPs.contains(lp);
+  function isRegisteredLP(address _lp) public view override returns (bool) {
+    return registeredLPs.contains(_lp);
   }
 
   /**
    * @notice Check if the input LP is active
-   * @notice Address of the LP
+   * @param _lp Address of the LP
    * @return Return true if the LP is active, otherwise false
    */
-  function isActiveLP(address lp) public view override returns (bool) {
-    return activeLPs.contains(lp);
+  function isActiveLP(address _lp) public view override returns (bool) {
+    return activeLPs.contains(_lp);
   }
 
   /**
    * @notice Set new fee percentage
-   * @param newFee New fee percentage
+   * @param _newFee New fee percentage
    */
-  function _setFee(uint256 newFee) internal {
+  function _setFee(uint256 _newFee) internal {
     require(
-      newFee < PreciseUnitMath.PRECISE_UNIT,
+      _newFee < PreciseUnitMath.PRECISE_UNIT,
       'Fee Percentage must be less than 100%'
     );
-    fee = newFee;
-    emit SetFeePercentage(newFee);
+    fee = _newFee;
+    emit SetFeePercentage(_newFee);
   }
 
   /**
    * @notice Set new liquidation reward percentage
-   * @param newLiquidationReward New liquidation reward percentage
+   * @param _newLiquidationReward New liquidation reward percentage
    */
-  function _setLiquidationReward(uint256 newLiquidationReward) internal {
+  function _setLiquidationReward(uint256 _newLiquidationReward) internal {
     require(
-      newLiquidationReward > 0 &&
-        newLiquidationReward <= PreciseUnitMath.PRECISE_UNIT,
+      _newLiquidationReward > 0 &&
+        _newLiquidationReward <= PreciseUnitMath.PRECISE_UNIT,
       'Liquidation reward must be between 0 and 100%'
     );
-    liquidationBonus = newLiquidationReward;
-    emit SetLiquidationReward(newLiquidationReward);
+    liquidationBonus = _newLiquidationReward;
+    emit SetLiquidationReward(_newLiquidationReward);
   }
 
   /**
    * @notice Update collateral amount of every LP
-   * @param positionsCache Temporary memory cache containing LPs positions
+   * @param _positionsCache Temporary memory cache containing LPs positions
    */
-  function _updateActualLpCollateral(PositionCache[] memory positionsCache)
+  function _updateActualLpCollateral(PositionCache[] memory _positionsCache)
     internal
   {
-    for (uint256 j = 0; j < positionsCache.length; j++) {
-      PositionCache memory lpCache = positionsCache[j];
+    for (uint256 j = 0; j < _positionsCache.length; j++) {
+      PositionCache memory lpCache = _positionsCache[j];
       lpPositions[lpCache.lp].actualCollateralAmount = lpCache
         .lpPosition
         .actualCollateralAmount;
@@ -449,19 +454,19 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Calculate new positons from previous interaction
-   * @param totalInterests Amount of interests to split between active LPs
-   * @param price Actual price of the pair
-   * @param totalSynthTokens Amount of synthetic asset collateralized by the pool
-   * @param totalUserAmount Actual amount deposited by the users
+   * @param _totalInterests Amount of interests to split between active LPs
+   * @param _price Actual price of the pair
+   * @param _totalSynthTokens Amount of synthetic asset collateralized by the pool
+   * @param _totalUserAmount Actual amount deposited by the users
    * @return isLpGain True if the lps have a gain over users otherwise false
    * @return totalProfitOrLoss Profit or loss of the Lps over the users
    * @return positionsCache Temporary memory cache containing LPs positions
    */
   function _calculateNewPositions(
-    uint256 totalInterests,
-    uint256 price,
-    uint256 totalSynthTokens,
-    uint256 totalUserAmount
+    uint256 _totalInterests,
+    uint256 _price,
+    uint256 _totalSynthTokens,
+    uint256 _totalUserAmount
   )
     internal
     view
@@ -471,50 +476,51 @@ contract SynthereumMultiLpLiquidityPool is
       PositionCache[] memory positionsCache
     )
   {
-    _calculateInterest(totalInterests, price, positionsCache);
+    _calculateInterest(_totalInterests, _price, positionsCache);
     (isLpGain, totalProfitOrLoss) = _calculateProfitAndLoss(
-      price,
-      totalSynthTokens,
-      totalUserAmount,
+      _price,
+      _totalSynthTokens,
+      _totalUserAmount,
       positionsCache
     );
   }
 
   /**
    * @notice Calculate interests of each Lp
-   * @param totalInterests Amount of interests to split between active LPs
-   * @param price Actual price of the pair
-   * @param positionsCache Temporary memory cache containing LPs positions
+   * @param _totalInterests Amount of interests to split between active LPs
+   * @param _price Actual price of the pair
+   * @param _positionsCache Temporary memory cache containing LPs positions
    */
   function _calculateInterest(
-    uint256 totalInterests,
-    uint256 price,
-    PositionCache[] memory positionsCache
+    uint256 _totalInterests,
+    uint256 _price,
+    PositionCache[] memory _positionsCache
   ) internal view {
     uint256 lpNumbers = activeLPs.length();
     uint256[] memory capacityShares = new uint256[](lpNumbers);
     uint256[] memory utilizationShares = new uint256[](lpNumbers);
     (uint256 totalCapacity, uint256 totalUtilization) =
       _calculateInterestShares(
-        price,
-        positionsCache,
+        _price,
+        _positionsCache,
         capacityShares,
         utilizationShares
       );
-    uint256 remainingInterest = totalInterests;
+    uint256 remainingInterest = _totalInterests;
     for (uint256 j = 0; j < lpNumbers - 1; j++) {
       uint256 interest =
-        totalInterests.mul(
+        _totalInterests.mul(
           ((capacityShares[j].div(totalCapacity)) +
             (utilizationShares[j].div(totalUtilization))) / 2
         );
-      LPPosition memory lpPosition = positionsCache[j].lpPosition;
+      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
       lpPosition.actualCollateralAmount =
         lpPosition.actualCollateralAmount +
         interest;
       remainingInterest = remainingInterest - interest;
     }
-    LPPosition memory lastLpPosition = positionsCache[lpNumbers - 1].lpPosition;
+    LPPosition memory lastLpPosition =
+      _positionsCache[lpNumbers - 1].lpPosition;
     lastLpPosition.actualCollateralAmount =
       lastLpPosition.actualCollateralAmount +
       remainingInterest;
@@ -522,20 +528,20 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Calculate interest shares of each LP
-   * @param price Actual price of the pair
-   * @param positionsCache Temporary memory cache containing LPs positions
-   * @param capacityShares Array to be populated with the capacity shares of every LP
-   * @param utilizationShares Array to be populated with the utilization shares of every LP
+   * @param _price Actual price of the pair
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   * @param _capacityShares Array to be populated with the capacity shares of every LP
+   * @param _utilizationShares Array to be populated with the utilization shares of every LP
    * @return totalCapacity Sum of all the LP's capacities
    * @return totalUtilization Sum of all the LP's utilizations
    */
   function _calculateInterestShares(
-    uint256 price,
-    PositionCache[] memory positionsCache,
-    uint256[] memory capacityShares,
-    uint256[] memory utilizationShares
+    uint256 _price,
+    PositionCache[] memory _positionsCache,
+    uint256[] memory _capacityShares,
+    uint256[] memory _utilizationShares
   ) internal view returns (uint256 totalCapacity, uint256 totalUtilization) {
-    for (uint256 j = 0; j < positionsCache.length - 1; j++) {
+    for (uint256 j = 0; j < _positionsCache.length - 1; j++) {
       address lp = activeLPs.at(j);
       LPPosition memory lpPosition = lpPositions[lp];
       uint256 capacityShare =
@@ -543,20 +549,20 @@ contract SynthereumMultiLpLiquidityPool is
           lpPosition.actualCollateralAmount,
           lpPosition.tokensCollateralized,
           lpPosition.overCollateralization,
-          price
+          _price
         );
       uint256 utilizationShare =
         _calculateUtilization(
           lpPosition.actualCollateralAmount,
           lpPosition.tokensCollateralized,
           lpPosition.overCollateralization,
-          price
+          _price
         );
-      capacityShares[j] = capacityShare;
+      _capacityShares[j] = capacityShare;
       totalCapacity = totalCapacity + capacityShare;
-      utilizationShares[j] = utilizationShare;
+      _utilizationShares[j] = utilizationShare;
       totalCapacity = totalUtilization + utilizationShare;
-      positionsCache[j] = PositionCache(
+      _positionsCache[j] = PositionCache(
         lp,
         LPPosition(
           lpPosition.actualCollateralAmount,
@@ -569,64 +575,122 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Return the on-chain oracle price for a pair
-   * @param finder Synthereum finder
-   * @param priceIdentifier Identifier of price pair
+   * @param _finder Synthereum finder
+   * @param _priceIdentifier Identifier of price pair
    * @return Latest rate of the pair
    */
-  function _getPriceFeedRate(ISynthereumFinder finder, bytes32 priceIdentifier)
-    internal
-    view
-    returns (uint256)
-  {
+  function _getPriceFeedRate(
+    ISynthereumFinder _finder,
+    bytes32 _priceIdentifier
+  ) internal view returns (uint256) {
     ISynthereumPriceFeed priceFeed =
       ISynthereumPriceFeed(
-        finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+        _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
       );
 
-    return priceFeed.getLatestPrice(priceIdentifier);
+    return priceFeed.getLatestPrice(_priceIdentifier);
   }
 
   /**
    * @notice Return the address of the lending manager
-   * @param finder Synthereum finder
+   * @param _finder Synthereum finder
    * @return Address of the lending manager
    */
-  function _getLendingManager(ISynthereumFinder finder)
+  function _getLendingManager(ISynthereumFinder _finder)
     internal
     view
     returns (ILendingProxy)
   {
     return
       ILendingProxy(
-        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
+        _finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
   }
 
   /**
+   * @notice Calculate capacity of each LP
+   * @dev Utilization = (actualCollateralAmount / overCollateralization) - (tokensCollateralized * price)
+   * @param _actualCollateralAmount Actual collateral amount holded by the LP
+   * @param _tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
+   * @param _overCollateralization Overcollateralization of the LP
+   * @param _price Actual price of the pair
+   * @return Capacity of the LP
+   */
+  function _calculateCapacity(
+    uint256 _actualCollateralAmount,
+    uint256 _tokensCollateralized,
+    uint256 _overCollateralization,
+    uint256 _price
+  ) internal view returns (uint256) {
+    return
+      (_actualCollateralAmount.div(_overCollateralization)) -
+      calculateCollateralAmount(_tokensCollateralized, _price);
+  }
+
+  /**
+   * @notice Calculate utilization of an LP
+   * @dev Utilization = (tokensCollateralized * price * overCollateralization) / actualCollateralAmount
+   * @dev Capped to 1 in case of underCollateralization
+   * @param _actualCollateralAmount Actual collateral amount holded by the LP
+   * @param _tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
+   * @param _overCollateralization Overcollateralization of the LP
+   * @param _price Actual price of the pair
+   * @return Utilization of the LP
+   */
+  function _calculateUtilization(
+    uint256 _actualCollateralAmount,
+    uint256 _tokensCollateralized,
+    uint256 _overCollateralization,
+    uint256 _price
+  ) internal view returns (uint256) {
+    return
+      PreciseUnitMath.min(
+        calculateCollateralAmount(_tokensCollateralized, _price)
+          .mul(_overCollateralization)
+          .div(_actualCollateralAmount),
+        PreciseUnitMath.PRECISE_UNIT
+      );
+  }
+
+  /**
+   * @notice Calculate collateral amount starting from an amount of synthtic token
+   * @param _numTokens Amount of synthetic tokens used for the conversion
+   * @param _price Actual price of the pair
+   * @return Amount of collateral after on-chain oracle conversion
+   */
+  function calculateCollateralAmount(uint256 _numTokens, uint256 _price)
+    internal
+    view
+    returns (uint256)
+  {
+    return _numTokens.mul(_price) / (10**(18 - collateralDecimals));
+  }
+
+  /**
    * @notice Calculate profit or loss of each Lp
-   * @param price Actual price of the pair
-   * @param totalSynthTokens Amount of synthetic asset collateralized by the pool
-   * @param totalUserAmount Actual amount deposited by the users
-   * @param positionsCache Temporary memory cache containing LPs positions
+   * @param _price Actual price of the pair
+   * @param _totalSynthTokens Amount of synthetic asset collateralized by the pool
+   * @param _totalUserAmount Actual amount deposited by the users
+   * @param _positionsCache Temporary memory cache containing LPs positions
    * @return isLpGain True if the lps have a gain over users otherwise false
    * @return totalProfitOrLoss Profit or loss of the Lps over the users
    */
   function _calculateProfitAndLoss(
-    uint256 price,
-    uint256 totalSynthTokens,
-    uint256 totalUserAmount,
-    PositionCache[] memory positionsCache
+    uint256 _price,
+    uint256 _totalSynthTokens,
+    uint256 _totalUserAmount,
+    PositionCache[] memory _positionsCache
   ) internal pure returns (bool isLpGain, uint256 totalProfitOrLoss) {
-    uint256 lpNumbers = positionsCache.length;
-    uint256 totalAssetValue = totalSynthTokens.mul(price);
-    isLpGain = totalAssetValue < totalUserAmount;
+    uint256 lpNumbers = _positionsCache.length;
+    uint256 totalAssetValue = _totalSynthTokens.mul(_price);
+    isLpGain = totalAssetValue < _totalUserAmount;
     if (isLpGain) {
-      totalProfitOrLoss = totalUserAmount - totalAssetValue;
+      totalProfitOrLoss = _totalUserAmount - totalAssetValue;
       uint256 remainingProfit = totalProfitOrLoss;
       for (uint256 j = 0; j < lpNumbers - 1; j++) {
-        LPPosition memory lpPosition = positionsCache[j].lpPosition;
+        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
         uint256 assetRatio =
-          lpPosition.tokensCollateralized.div(totalSynthTokens);
+          lpPosition.tokensCollateralized.div(_totalSynthTokens);
         uint256 lpProfit = totalProfitOrLoss.mul(assetRatio);
         lpPosition.actualCollateralAmount =
           lpPosition.actualCollateralAmount +
@@ -634,17 +698,17 @@ contract SynthereumMultiLpLiquidityPool is
         remainingProfit = remainingProfit - lpProfit;
       }
       LPPosition memory lastLpPosition =
-        positionsCache[lpNumbers - 1].lpPosition;
+        _positionsCache[lpNumbers - 1].lpPosition;
       lastLpPosition.actualCollateralAmount =
         lastLpPosition.actualCollateralAmount +
         remainingProfit;
     } else {
-      totalProfitOrLoss = totalAssetValue - totalUserAmount;
+      totalProfitOrLoss = totalAssetValue - _totalUserAmount;
       uint256 remainingLoss = totalProfitOrLoss;
       for (uint256 j = 0; j < lpNumbers - 1; j++) {
-        LPPosition memory lpPosition = positionsCache[j].lpPosition;
+        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
         uint256 assetRatio =
-          lpPosition.tokensCollateralized.div(totalSynthTokens);
+          lpPosition.tokensCollateralized.div(_totalSynthTokens);
         uint256 lpLoss = totalProfitOrLoss.mul(assetRatio);
         lpPosition.actualCollateralAmount =
           lpPosition.actualCollateralAmount -
@@ -652,55 +716,10 @@ contract SynthereumMultiLpLiquidityPool is
         remainingLoss = remainingLoss - lpLoss;
       }
       LPPosition memory lastLpPosition =
-        positionsCache[lpNumbers - 1].lpPosition;
+        _positionsCache[lpNumbers - 1].lpPosition;
       lastLpPosition.actualCollateralAmount =
         lastLpPosition.actualCollateralAmount -
         remainingLoss;
     }
-  }
-
-  /**
-   * @notice Calculate capacity of each LP
-   * @dev Utilization = (actualCollateralAmount / overCollateralization) - (tokensCollateralized * price)
-   * @param actualCollateralAmount Actual collateral amount holded by the LP
-   * @param tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
-   * @param overCollateralization Overcollateralization of the LP
-   * @param price Actual price of the pair
-   * @return Capacity of the LP
-   */
-  function _calculateCapacity(
-    uint256 actualCollateralAmount,
-    uint256 tokensCollateralized,
-    uint256 overCollateralization,
-    uint256 price
-  ) internal pure returns (uint256) {
-    return
-      (actualCollateralAmount.div(overCollateralization)) -
-      (tokensCollateralized.mul(price));
-  }
-
-  /**
-   * @notice Calculate utilization of an LP
-   * @dev Utilization = (tokensCollateralized * price * overCollateralization) / actualCollateralAmount
-   * @dev Capped to 1 in case of underCollateralization
-   * @param actualCollateralAmount Actual collateral amount holded by the LP
-   * @param tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
-   * @param overCollateralization Overcollateralization of the LP
-   * @param price Actual price of the pair
-   * @return Utilization of the LP
-   */
-  function _calculateUtilization(
-    uint256 actualCollateralAmount,
-    uint256 tokensCollateralized,
-    uint256 overCollateralization,
-    uint256 price
-  ) internal pure returns (uint256) {
-    return
-      PreciseUnitMath.min(
-        tokensCollateralized.mul(price).mul(overCollateralization).div(
-          actualCollateralAmount
-        ),
-        PreciseUnitMath.PRECISE_UNIT
-      );
   }
 }
