@@ -52,7 +52,7 @@ contract PoolStorageManager is IPoolStorageManager {
     // copy storage to new pool
     newPoolData.collateral = oldPoolData.collateral;
     newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
-    newPoolData.JRTBuybackShare = oldPoolData.jrtBuybackShare;
+    newPoolData.JRTBuybackShare = oldPoolData.JRTBuybackShare;
     newPoolData.lendingModule = oldPoolData.lendingModule;
     newPoolData.interestBearingToken = oldPoolData.interestBearingToken;
     newPoolData.collateralDeposited = oldPoolData.collateralDeposited;
@@ -72,9 +72,9 @@ contract PoolStorageManager is IPoolStorageManager {
     poolData.lendingModule = newLendingModule;
     poolData.interestBearingToken = newInterestToken == address(0)
       ? ILendingModule(newLendingModule).getInterestBearingToken(
-        collateral,
+        poolData.collateral,
         address(this),
-        lendingModule
+        poolData.lendingModule
       )
       : newInterestToken;
 

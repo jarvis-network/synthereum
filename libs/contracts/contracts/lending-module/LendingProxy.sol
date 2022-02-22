@@ -30,6 +30,11 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   string public JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 
+  string public CONVERSION_SIG = 'collateralToInterestToken(uint256)';
+
+  string public INTEREST_TOKEN_SIG =
+    'getInterestBearingToken(address,address,address)';
+
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
@@ -51,10 +56,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (ReturnValues memory returnValues)
   {
-    // retrieve caller pool data
-    IPoolStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // delegate call implementation
     bytes memory result =
@@ -96,10 +98,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (ReturnValues memory returnValues)
   {
-    // retrieve caller pool data
-    IPoolStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // delegate call implementation
     bytes memory result =
@@ -138,10 +137,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   }
 
   function claimCommission(uint256 amount) external override returns (uint256) {
-    // retrieve caller pool data
-    IPoolStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
@@ -183,10 +179,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (uint256 amountOut)
   {
-    // retrieve caller pool data
-    IPoolStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // delegate call withdraw into collateral
     bytes memory withdrawRes =
@@ -257,10 +250,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   // when pool is upgraded and liquidity transfered to a new Pool
   function migrateLiquidity(address newPool) external {
-    // only a registered pool is allowed
-    IPoolStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // migrate through storage manager
     poolStorageManager.migratePool(msg.sender, newPool);
@@ -269,11 +259,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   function migrateLendingModule(
     address newLendingModule,
     address newInterestBearingToken
-  ) external onlyPool {
-    // only a registered pool is allowed
-    IPoolStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+  ) external {
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // delegate call withdraw collateral from old module
     uint256 totalAmount =
@@ -291,27 +278,41 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       );
     ReturnValues memory returnValues = abi.decode(withdrawRes, (ReturnValues));
 
-    // update storage
-    newPoolData = poolStorageManager.migrateLendingModule(
+    // update storage and copy updated data
+    poolData = poolStorageManager.migrateLendingModule(
       msg.sender,
       newLendingModule,
       newInterestBearingToken
     );
-    // get updated info
-    IPoolStorageManager.PoolStorage memory newPoolData =
-      poolStorageManager.getPoolStorage(msg.sender);
 
     // delegate call deposit into new module
     bytes memory result =
       address(poolData.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           DEPOSIT_SIG,
-          newPoolData,
+          poolData,
           poolStorageManager,
           totalAmount
         )
       );
 
     returnValues = abi.decode(result, (ReturnValues));
+  }
+
+  function getInterestBearingToken(address collateral)
+    external
+    view
+    returns (address interestTokenAddr)
+  {
+    interestTokenAddr = onlyPool().interestBearingToken;
+  }
+
+  function onlyPool()
+    internal
+    view
+    returns (IPoolStorageManager.PoolStorage memory poolData)
+  {
+    poolData = poolStorageManager.getPoolStorage(msg.sender);
+    require(poolData.lendingModule != address(0), 'Not allowed');
   }
 }

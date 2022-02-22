@@ -22,6 +22,14 @@ interface IPoolStorageManager {
     uint256 jrtBuybackShare
   ) external;
 
+  function migratePool(address oldPool, address newPool) external;
+
+  function migrateLendingModule(
+    address pool,
+    address newLendingModule,
+    address newInterestToken
+  ) external returns (PoolStorage memory);
+
   function updateValues(
     address pool,
     uint256 collateralDeposited,

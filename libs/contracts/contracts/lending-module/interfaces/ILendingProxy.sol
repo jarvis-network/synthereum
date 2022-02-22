@@ -42,4 +42,16 @@ interface ILendingProxy {
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external;
+
+  function migrateLendingModule(
+    address newLendingModule,
+    address newInterestBearingToken
+  ) external;
+
+  function migrateLiquidity(address newPool) external;
+
+  function getInterestBearingToken(address collateral)
+    external
+    view
+    returns (address interestTokenAddr);
 }
