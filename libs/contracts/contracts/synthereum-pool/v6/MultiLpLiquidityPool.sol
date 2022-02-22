@@ -233,11 +233,9 @@ contract SynthereumMultiLpLiquidityPool is
 
     require(activeLPs.add(msgSender), 'LP already active');
 
-    emit ActivatedLP(
-      msgSender,
-      lendingValues.tokensOut,
-      _overCollateralization
-    );
+    emit ActivatedLP(msgSender);
+    emit DepositedLiquidity(msgSender, lendingValues.tokensOut);
+    emit SetOvercollateralization(msgSender, _overCollateralization);
   }
 
   /**

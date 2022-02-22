@@ -6,23 +6,27 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
    * @notice Emitted when a LP is registered in the pool by the maintainer
    * @param lp Address of the LP to be registered
    */
-  event RegisteredLp(address lp);
+  event RegisteredLp(address indexed lp);
 
   /**
    * @notice Emitted when a LP is activated in the pool by himself
    * @param lp Address of the LP to be activated
-   * @param collateralAmount Initial deposited collateral amount
-   * @param overCollateralization Initial overCollateralization set
    */
-  event ActivatedLP(
-    address lp,
-    uint256 collateralAmount,
+  event ActivatedLP(address indexed lp);
+
+  /**
+   * @notice Emitted when a LP set his overCollateralization
+   * @param lp Address of the LP to set overCollateralization
+   * @param overCollateralization OverCollateralization percentage set
+   */
+  event SetOvercollateralization(
+    address indexed lp,
     uint256 overCollateralization
   );
 
   /**
-   * @notice Emitted when a LP is activated in the pool by himself
-   * @param lp Address of the LP to be activated
+   * @notice Emitted when a LP deposits collateral
+   * @param lp Address of the LP depositing
    * @param collateralDeposited Collateral amount deposited
    */
   event DepositedLiquidity(address indexed lp, uint256 collateralDeposited);
