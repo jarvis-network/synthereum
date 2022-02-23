@@ -2,6 +2,7 @@
 pragma solidity 0.8.9;
 
 import {ILendingProxy} from './interfaces/ILendingProxy.sol';
+import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {IPoolStorageManager} from './interfaces/IPoolStorageManager.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
@@ -299,7 +300,25 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returnValues = abi.decode(result, (ReturnValues));
   }
 
-  function getInterestBearingToken(address collateral)
+  function collateralToInterestToken(uint256 collateralAmount)
+    external
+    view
+    returns (uint256 interestBearingTokenAmount)
+  {
+    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    bytes memory extraArgs =
+      poolStorageManager.getLendingArgs(poolData.lendingModule);
+
+    interestBearingTokenAmount = ILendingModule(poolData.lendingModule)
+      .collateralToInterestToken(
+      collateralAmount,
+      poolData.collateral,
+      poolData.interestBearingToken,
+      extraArgs
+    );
+  }
+
+  function getInterestBearingToken()
     external
     view
     returns (address interestTokenAddr)

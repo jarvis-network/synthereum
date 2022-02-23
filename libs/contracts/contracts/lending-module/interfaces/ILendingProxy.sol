@@ -50,8 +50,13 @@ interface ILendingProxy {
 
   function migrateLiquidity(address newPool) external;
 
-  function getInterestBearingToken(address collateral)
+  function getInterestBearingToken()
     external
     view
     returns (address interestTokenAddr);
+
+  function collateralToInterestToken(uint256 collateralAmount)
+    external
+    view
+    returns (uint256 interestBearingTokenAmount);
 }
