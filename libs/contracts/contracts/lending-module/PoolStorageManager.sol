@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
+
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IPoolStorageManager} from './interfaces/IPoolStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
 
 contract PoolStorageManager is IPoolStorageManager {
   mapping(string => address) public idToLending; // ie 'aave' -> address(AaveModule)
@@ -9,15 +12,19 @@ contract PoolStorageManager is IPoolStorageManager {
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
   mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
 
-  address lendingProxy;
+  address immutable finder;
 
   modifier onlyProxy() {
-    require(msg.sender == lendingProxy, 'Not allowed');
+    address proxy =
+      ISynthereumFinder(finder).getImplementationAddress(
+        SynthereumInterfaces.LendingProxy
+      );
+    require(msg.sender == proxy, 'Not allowed');
     _;
   }
 
-  constructor(address _lendingProxy) {
-    lendingProxy = _lendingProxy;
+  constructor(address _finder) {
+    finder = _finder;
   }
 
   // todo onlyMaintainerOrFactory

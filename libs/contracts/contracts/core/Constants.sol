@@ -19,6 +19,7 @@ library SynthereumInterfaces {
   bytes32 public constant FixedRateRegistry = 'FixedRateRegistry';
   bytes32 public constant MoneyMarketManager = 'MoneyMarketManager';
   bytes32 public constant JarvisBrrrrr = 'JarvisBrrrrr';
+  bytes32 public constant LendingProxy = 'LendingProxy';
 }
 
 library FactoryInterfaces {
