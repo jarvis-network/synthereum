@@ -303,7 +303,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   function collateralToInterestToken(uint256 collateralAmount)
     external
     view
-    returns (uint256 interestBearingTokenAmount)
+    returns (uint256 interestBearingTokenAmount, address interestTokenAddr)
   {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
     bytes memory extraArgs =
@@ -316,14 +316,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       poolData.interestBearingToken,
       extraArgs
     );
+    interestTokenAddr = poolData.interestBearingToken;
   }
 
-  function getInterestBearingToken()
+  function getInterestBearingToken(address pool)
     external
     view
     returns (address interestTokenAddr)
   {
-    interestTokenAddr = onlyPool().interestBearingToken;
+    interestTokenAddr = poolStorageManager
+      .getPoolStorage(pool)
+      .interestBearingToken;
   }
 
   function onlyPool()
