@@ -34,4 +34,11 @@ interface ILendingModule {
     address storageManager,
     address lendingModule
   ) external returns (address token);
+
+  function collateralToInterestToken(
+    uint256 collateralAmount,
+    address collateral,
+    address interestToken,
+    bytes memory extraArgs
+  ) external view returns (uint256 interestBearingTokenAmount);
 }

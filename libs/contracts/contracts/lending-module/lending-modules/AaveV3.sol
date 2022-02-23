@@ -31,7 +31,7 @@ contract AaveV3Module is ILendingModule {
 
     // proxy should have received collateral from the pool
     IERC20 collateral = IERC20(poolData.collateral);
-    require(collateral.balanceOf(address(this)) == amount, 'Wrong balance');
+    require(collateral.balanceOf(address(this)) >= amount, 'Wrong balance');
 
     // aave deposit - approve
     address moneyMarket =
@@ -51,7 +51,7 @@ contract AaveV3Module is ILendingModule {
   function withdraw(
     IPoolStorageManager.PoolStorage calldata poolData,
     IPoolStorageManager storageManager,
-    uint256 amount,
+    uint256 aTokensAmount,
     address recipient
   )
     external
@@ -64,21 +64,17 @@ contract AaveV3Module is ILendingModule {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
-    // retrieve aTokens from pool
-    uint256 aTokensAmount = collateralToInterestToken(amount);
-    IERC20(poolData.interestBearingToken).safeTransferFrom(
-      msg.sender,
-      address(this),
-      aTokensAmount
+    // proxy should have received interest tokens from the pool
+    IERC20 interestToken = IERC20(poolData.interestBearingToken);
+    require(
+      interestToken.balanceOf(address(this)) >= aTokensAmount,
+      'Wrong balance'
     );
 
     // aave withdraw - approve
     address moneyMarket =
       decodeLendingArgs(storageManager, poolData.lendingModule);
-    IERC20(poolData.interestBearingToken).safeIncreaseAllowance(
-      moneyMarket,
-      aTokensAmount
-    );
+    interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
     IPool(moneyMarket).withdraw(poolData.collateral, aTokensAmount, recipient);
 
     // aave tokens are always 1:1
@@ -95,11 +91,12 @@ contract AaveV3Module is ILendingModule {
     token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
   }
 
-  function collateralToInterestToken(uint256 collateralAmount)
-    internal
-    pure
-    returns (uint256 interestBearingTokenAmount)
-  {
+  function collateralToInterestToken(
+    uint256 collateralAmount,
+    address collateral,
+    address interestToken,
+    bytes memory extraArgs
+  ) external view returns (uint256 interestBearingTokenAmount) {
     interestBearingTokenAmount = collateralAmount;
   }
 
