@@ -44,6 +44,7 @@ contract SynthereumMultiLpLiquidityPool is
   using EnumerableSet for EnumerableSet.AddressSet;
   using PreciseUnitMath for uint256;
   using SafeERC20 for IStandardERC20;
+  using SafeERC20 for IERC20;
 
   struct ConstructorParams {
     // Synthereum finder
@@ -183,7 +184,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Only a registered and inactive LP can call this function to add himself
    * @param _collateralAmount Collateral amount to deposit by the LP
    * @param _overCollateralization Overcollateralization to set by the LP
-   * @return collateralDeposited Net collateral deposited in the pool
+   * @return collateralDeposited Net collateral deposited in the LP position
    */
   function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
     external
@@ -192,6 +193,14 @@ contract SynthereumMultiLpLiquidityPool is
     returns (uint256 collateralDeposited)
   {
     address msgSender = _msgSender();
+
+    require(isRegisteredLP(msgSender), 'Sender must be a registered LP');
+    require(_collateralAmount > 0, 'No collateral deposited');
+    require(
+      _overCollateralization >
+        liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
+      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
+    );
 
     ILendingProxy lendingManager = _getLendingManager(finder);
     collateralAsset.safeTransferFrom(
@@ -213,14 +222,6 @@ contract SynthereumMultiLpLiquidityPool is
         totalSyntheticAsset,
         totalUserDeposits
       );
-
-    require(isRegisteredLP(msgSender), 'Sender must be a registered LP');
-    require(_collateralAmount > 0, 'No collateral deposited');
-    require(
-      _overCollateralization >
-        liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
-      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
-    );
 
     _updateActualLPCollateral(positionsCache);
     totalUserDeposits = isLpGain
@@ -237,7 +238,7 @@ contract SynthereumMultiLpLiquidityPool is
     require(activeLPs.add(msgSender), 'LP already active');
 
     emit ActivatedLP(msgSender);
-    emit DepositedLiquidity(msgSender, collateralDeposited);
+    emit DepositedLiquidity(msgSender, _collateralAmount, collateralDeposited);
     emit SetOvercollateralization(msgSender, _overCollateralization);
   }
 
@@ -245,7 +246,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Add collateral to an active LP position
    * @notice Only an active LP can call this function to add collateral to his position
    * @param _collateralAmount Collateral amount to deposit by the LP
-   * @param collateralDeposited Net collateral deposited in the pool
+   * @return collateralDeposited Net collateral deposited in the LP position
    */
   function addLiquidity(uint256 _collateralAmount)
     external
@@ -254,6 +255,9 @@ contract SynthereumMultiLpLiquidityPool is
     returns (uint256 collateralDeposited)
   {
     address msgSender = _msgSender();
+
+    require(_collateralAmount > 0, 'No collateral deposited');
+    require(isActiveLP(msgSender), 'Sender must be an active LP');
 
     ILendingProxy lendingManager = _getLendingManager(finder);
     collateralAsset.safeTransferFrom(
@@ -276,20 +280,68 @@ contract SynthereumMultiLpLiquidityPool is
         totalUserDeposits
       );
 
-    require(isActiveLP(msgSender), 'Sender must be an active LP');
-    require(_collateralAmount > 0, 'No collateral deposited');
-
     collateralDeposited = lendingValues.tokensOut;
-    _updateAndIncreaseActualLPCollateral(
+    _updateAndModifyActualLPCollateral(
       positionsCache,
       msgSender,
+      true,
       collateralDeposited
     );
     totalUserDeposits = isLpGain
       ? totalUserDeposits - totalProfitOrLoss
       : totalUserDeposits + totalProfitOrLoss;
 
-    emit DepositedLiquidity(msgSender, collateralDeposited);
+    emit DepositedLiquidity(msgSender, _collateralAmount, collateralDeposited);
+  }
+
+  /**
+   * @notice Withdraw collateral from an active LP position
+   * @notice Only an active LP can call this function to withdraw collateral from his position
+   * @param _collateralAmount Collateral amount to withdraw by the LP
+   * @param collateralWithdrawn Net collateral withdrawn from the LP position
+   */
+  function removeLiquidity(uint256 _collateralAmount)
+    external
+    override
+    nonReentrant
+    returns (uint256 collateralWithdrawn)
+  {
+    address msgSender = _msgSender();
+
+    require(isActiveLP(msgSender), 'Sender must be an active LP');
+    require(_collateralAmount > 0, 'No collateral deposited');
+
+    ILendingProxy lendingManager = _getLendingManager(finder);
+    (uint256 bearingAmount, address bearingToken) =
+      lendingManager.collateralToInterestToken(_collateralAmount, true);
+    IERC20(bearingToken).safeTransfer(address(lendingManager), bearingAmount);
+    ILendingProxy.ReturnValues memory lendingValues =
+      lendingManager.withdraw(bearingAmount, msgSender);
+
+    (
+      bool isLpGain,
+      uint256 totalProfitOrLoss,
+      PositionCache[] memory positionsCache
+    ) =
+      _calculateNewPositions(
+        lendingValues.poolInterest,
+        _getPriceFeedRate(finder, priceIdentifier),
+        totalSyntheticAsset,
+        totalUserDeposits
+      );
+
+    collateralWithdrawn = lendingValues.tokensOut;
+    _updateAndModifyActualLPCollateral(
+      positionsCache,
+      msgSender,
+      false,
+      collateralWithdrawn
+    );
+    totalUserDeposits = isLpGain
+      ? totalUserDeposits - totalProfitOrLoss
+      : totalUserDeposits + totalProfitOrLoss;
+
+    emit WithdrawnLiquidity(msgSender, _collateralAmount, collateralWithdrawn);
   }
 
   /**
@@ -512,19 +564,25 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Update collateral amount of every LP and add the new deposit for one LP
    * @param _positionsCache Temporary memory cache containing LPs positions
    * @param _depositingLp Address of the LP depositing collateral
-   * @param _depositedCollateral Amount of collateral deposited by the LP
+   * @param _isIncreased True if collateral to add for the LP, otherwise false
+   * @param _changingCollateral Amount of collateral to increase/decrease to/from the LP
    */
-  function _updateAndIncreaseActualLPCollateral(
+  function _updateAndModifyActualLPCollateral(
     PositionCache[] memory _positionsCache,
     address _depositingLp,
-    uint256 _depositedCollateral
+    bool _isIncreased,
+    uint256 _changingCollateral
   ) internal {
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       PositionCache memory lpCache = _positionsCache[j];
       address lp = lpCache.lp;
+      uint256 actualCollateralAmount =
+        lpCache.lpPosition.actualCollateralAmount;
       lpPositions[lp].actualCollateralAmount = (lp != _depositingLp)
-        ? lpCache.lpPosition.actualCollateralAmount
-        : lpCache.lpPosition.actualCollateralAmount + _depositedCollateral;
+        ? actualCollateralAmount
+        : _isIncreased
+        ? actualCollateralAmount + _changingCollateral
+        : actualCollateralAmount - _changingCollateral;
     }
   }
 

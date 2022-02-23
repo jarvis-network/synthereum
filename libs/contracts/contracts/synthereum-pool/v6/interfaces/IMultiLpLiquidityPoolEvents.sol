@@ -27,9 +27,26 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
   /**
    * @notice Emitted when a LP deposits collateral
    * @param lp Address of the LP depositing
-   * @param collateralDeposited Collateral amount deposited
+   * @param collateralSent Collateral sent to the the pool by the LP
+   * @param collateralDeposited Net collateral amount added to the LP position
    */
-  event DepositedLiquidity(address indexed lp, uint256 collateralDeposited);
+  event DepositedLiquidity(
+    address indexed lp,
+    uint256 collateralSent,
+    uint256 collateralDeposited
+  );
+
+  /**
+   * @notice Emitted when a LP withdraws collateral
+   * @param lp Address of the LP withdrawing
+   * @param collateralReceived Collateral received from the pool by the LP
+   * @param collateralWithdrawn Net collateral amount removed from the LP position
+   */
+  event WithdrawnLiquidity(
+    address indexed lp,
+    uint256 collateralReceived,
+    uint256 collateralWithdrawn
+  );
 
   /**
    * @notice Emitted when new fee percentage is set in the pool by the maintainer

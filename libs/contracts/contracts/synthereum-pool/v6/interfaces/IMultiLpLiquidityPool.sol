@@ -40,7 +40,7 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @notice Only a registered and inactive LP can call this function to add himself
    * @param _collateralAmount Collateral amount to deposit by the LP
    * @param _overCollateralization Overcollateralization to set by the LP
-   * @return collateralDeposited Net collateral deposited in the pool
+   * @return collateralDeposited Net collateral deposited in the LP position
    */
   function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
     external
@@ -50,11 +50,21 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @notice Add collateral to an active LP position
    * @notice Only an active LP can call this function to add collateral to his position
    * @param _collateralAmount Collateral amount to deposit by the LP
-   * @return collateralDeposited Net collateral deposited in the pool
+   * @return collateralDeposited Net collateral deposited in the LP position
    */
   function addLiquidity(uint256 _collateralAmount)
     external
     returns (uint256 collateralDeposited);
+
+  /**
+   * @notice Withdraw collateral from an active LP position
+   * @notice Only an active LP can call this function to withdraw collateral from his position
+   * @param _collateralAmount Collateral amount to withdraw by the LP
+   * @param collateralWithdrawn Net collateral withdrawn from the LP position
+   */
+  function removeLiquidity(uint256 _collateralAmount)
+    external
+    returns (uint256 collateralWithdrawn);
 
   /**
    * @notice Set new liquidation reward percentage
