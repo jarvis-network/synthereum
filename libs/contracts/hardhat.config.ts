@@ -4,7 +4,10 @@ import { resolve } from 'path';
 
 import '@nomiclabs/hardhat-ethers';
 
-import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
+import {
+  addPublicNetwork,
+  setForkingUrl,
+} from '@jarvis-network/hardhat-utils/dist/networks';
 import { addEtherscanApiKeys } from '@jarvis-network/hardhat-utils/dist/etherscan';
 import {
   modifiyGetMinimumBuild,
@@ -85,5 +88,14 @@ addPublicNetwork(config, 4002);
 addPublicNetwork(config, 80001, process.env.POLYGON_PROJECT_ID!);
 addPublicNetwork(config, 43113);
 addPublicNetwork(config, 43114);
+
+// set hardat forking for public testnets
+if (process.env.FORKCHAINID !== undefined && process.env.BLOCK !== undefined) {
+  setForkingUrl(
+    config,
+    parseInt(process.env.FORKCHAINID, 10),
+    parseInt(process.env.BLOCK, 10),
+  );
+}
 
 export default config;
