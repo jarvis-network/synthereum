@@ -49,7 +49,7 @@ interface ILendingProxy {
     address newLendingModule,
     address newInterestBearingToken,
     address interestTokenAmount
-  ) external;
+  ) external returns (ReturnValues memory);
 
   function migrateLiquidity(address newPool) external;
 
