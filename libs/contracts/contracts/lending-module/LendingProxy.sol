@@ -44,12 +44,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     _;
   }
 
-  constructor(address _finder, address _poolStorage) {
+  constructor(
+    address _finder,
+    address _poolStorage,
+    address maintainer
+  ) {
     finder = _finder;
     poolStorageManager = IPoolStorageManager(_poolStorage);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(MAINTAINER_ROLE, maintainer);
   }
 
   function deposit(uint256 amount)
@@ -230,7 +235,15 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     amountOut = abi.decode(result, (uint256));
   }
 
-  // clled by factory
+  // called by factory
+  function setLendingModule(address lendingModule, string memory id)
+    external
+    onlyMaintainer
+  {
+    poolStorageManager.setLendingModule(lendingModule, id);
+  }
+
+  // called by factory
   function setPool(
     address pool,
     address collateral,

@@ -34,6 +34,8 @@ interface ILendingProxy {
     external
     returns (uint256 amountOut);
 
+  function setLendingModule(address lendingModule, string memory id) external;
+
   function setPool(
     address pool,
     address collateral,

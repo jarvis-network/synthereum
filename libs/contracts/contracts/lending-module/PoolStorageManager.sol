@@ -27,6 +27,13 @@ contract PoolStorageManager is IPoolStorageManager {
     finder = _finder;
   }
 
+  function setLendingModule(address lendingModule, string memory id)
+    external
+    onlyProxy
+  {
+    idToLending[id] = lendingModule;
+  }
+
   // todo onlyMaintainerOrFactory
   function setPoolStorage(
     address pool,

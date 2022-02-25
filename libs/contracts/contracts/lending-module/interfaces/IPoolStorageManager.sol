@@ -13,6 +13,8 @@ interface IPoolStorageManager {
     uint256 unclaimedDaoCommission;
   }
 
+  function setLendingModule(address lendingModule, string memory id) external;
+
   function setPoolStorage(
     address pool,
     address collateral,
