@@ -274,7 +274,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     address newLendingModule,
     address newInterestBearingToken,
     address interestTokenAmount
-  ) external {
+  ) external returns (ReturnValues memory returnValues) {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // delegate call withdraw collateral from old module
@@ -287,7 +287,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
           address(this)
         )
       );
-    ReturnValues memory returnValues = abi.decode(withdrawRes, (ReturnValues));
+    returnValues = abi.decode(withdrawRes, (ReturnValues));
 
     // update storage with accumulated interest
     uint256 newCollateralDeposited =
@@ -328,7 +328,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         )
       );
 
-    returnValues = abi.decode(result, (ReturnValues));
+    // set the return values tokensOut
+    returnValues.tokensOut = abi.decode(result, (ReturnValues)).tokensOut;
   }
 
   function collateralToInterestToken(uint256 collateralAmount)
