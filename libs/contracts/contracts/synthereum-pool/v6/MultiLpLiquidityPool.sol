@@ -675,7 +675,7 @@ contract SynthereumMultiLpLiquidityPool is
     uint256[] memory _capacityShares,
     uint256[] memory _utilizationShares
   ) internal view returns (uint256 totalCapacity, uint256 totalUtilization) {
-    for (uint256 j = 0; j < _positionsCache.length - 1; j++) {
+    for (uint256 j = 0; j < _positionsCache.length; j++) {
       address lp = activeLPs.at(j);
       LPPosition memory lpPosition = lpPositions[lp];
       uint256 capacityShare =
@@ -704,6 +704,64 @@ contract SynthereumMultiLpLiquidityPool is
           lpPosition.overCollateralization
         )
       );
+    }
+  }
+
+  /**
+   * @notice Calculate profit or loss of each Lp
+   * @param _price Actual price of the pair
+   * @param _totalSynthTokens Amount of synthetic asset collateralized by the pool
+   * @param _totalUserAmount Actual amount deposited by the users
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   * @return isLpGain True if the lps have a gain over users otherwise false
+   * @return totalProfitOrLoss Profit or loss of the Lps over the users
+   */
+  function _calculateProfitAndLoss(
+    uint256 _price,
+    uint256 _totalSynthTokens,
+    uint256 _totalUserAmount,
+    PositionCache[] memory _positionsCache
+  ) internal view returns (bool isLpGain, uint256 totalProfitOrLoss) {
+    uint256 lpNumbers = _positionsCache.length;
+    uint256 totalAssetValue =
+      calculateCollateralAmount(_totalSynthTokens, _price);
+    isLpGain = totalAssetValue < _totalUserAmount;
+    if (isLpGain) {
+      totalProfitOrLoss = _totalUserAmount - totalAssetValue;
+      uint256 remainingProfit = totalProfitOrLoss;
+      for (uint256 j = 0; j < lpNumbers - 1; j++) {
+        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+        uint256 assetRatio =
+          lpPosition.tokensCollateralized.div(_totalSynthTokens);
+        uint256 lpProfit = totalProfitOrLoss.mul(assetRatio);
+        lpPosition.actualCollateralAmount =
+          lpPosition.actualCollateralAmount +
+          lpProfit;
+        remainingProfit = remainingProfit - lpProfit;
+      }
+      LPPosition memory lastLpPosition =
+        _positionsCache[lpNumbers - 1].lpPosition;
+      lastLpPosition.actualCollateralAmount =
+        lastLpPosition.actualCollateralAmount +
+        remainingProfit;
+    } else {
+      totalProfitOrLoss = totalAssetValue - _totalUserAmount;
+      uint256 remainingLoss = totalProfitOrLoss;
+      for (uint256 j = 0; j < lpNumbers - 1; j++) {
+        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+        uint256 assetRatio =
+          lpPosition.tokensCollateralized.div(_totalSynthTokens);
+        uint256 lpLoss = totalProfitOrLoss.mul(assetRatio);
+        lpPosition.actualCollateralAmount =
+          lpPosition.actualCollateralAmount -
+          lpLoss;
+        remainingLoss = remainingLoss - lpLoss;
+      }
+      LPPosition memory lastLpPosition =
+        _positionsCache[lpNumbers - 1].lpPosition;
+      lastLpPosition.actualCollateralAmount =
+        lastLpPosition.actualCollateralAmount -
+        remainingLoss;
     }
   }
 
@@ -798,62 +856,5 @@ contract SynthereumMultiLpLiquidityPool is
     returns (uint256)
   {
     return _numTokens.mul(_price) / (10**(18 - collateralDecimals));
-  }
-
-  /**
-   * @notice Calculate profit or loss of each Lp
-   * @param _price Actual price of the pair
-   * @param _totalSynthTokens Amount of synthetic asset collateralized by the pool
-   * @param _totalUserAmount Actual amount deposited by the users
-   * @param _positionsCache Temporary memory cache containing LPs positions
-   * @return isLpGain True if the lps have a gain over users otherwise false
-   * @return totalProfitOrLoss Profit or loss of the Lps over the users
-   */
-  function _calculateProfitAndLoss(
-    uint256 _price,
-    uint256 _totalSynthTokens,
-    uint256 _totalUserAmount,
-    PositionCache[] memory _positionsCache
-  ) internal pure returns (bool isLpGain, uint256 totalProfitOrLoss) {
-    uint256 lpNumbers = _positionsCache.length;
-    uint256 totalAssetValue = _totalSynthTokens.mul(_price);
-    isLpGain = totalAssetValue < _totalUserAmount;
-    if (isLpGain) {
-      totalProfitOrLoss = _totalUserAmount - totalAssetValue;
-      uint256 remainingProfit = totalProfitOrLoss;
-      for (uint256 j = 0; j < lpNumbers - 1; j++) {
-        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
-        uint256 assetRatio =
-          lpPosition.tokensCollateralized.div(_totalSynthTokens);
-        uint256 lpProfit = totalProfitOrLoss.mul(assetRatio);
-        lpPosition.actualCollateralAmount =
-          lpPosition.actualCollateralAmount +
-          lpProfit;
-        remainingProfit = remainingProfit - lpProfit;
-      }
-      LPPosition memory lastLpPosition =
-        _positionsCache[lpNumbers - 1].lpPosition;
-      lastLpPosition.actualCollateralAmount =
-        lastLpPosition.actualCollateralAmount +
-        remainingProfit;
-    } else {
-      totalProfitOrLoss = totalAssetValue - _totalUserAmount;
-      uint256 remainingLoss = totalProfitOrLoss;
-      for (uint256 j = 0; j < lpNumbers - 1; j++) {
-        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
-        uint256 assetRatio =
-          lpPosition.tokensCollateralized.div(_totalSynthTokens);
-        uint256 lpLoss = totalProfitOrLoss.mul(assetRatio);
-        lpPosition.actualCollateralAmount =
-          lpPosition.actualCollateralAmount -
-          lpLoss;
-        remainingLoss = remainingLoss - lpLoss;
-      }
-      LPPosition memory lastLpPosition =
-        _positionsCache[lpNumbers - 1].lpPosition;
-      lastLpPosition.actualCollateralAmount =
-        lastLpPosition.actualCollateralAmount -
-        remainingLoss;
-    }
   }
 }
