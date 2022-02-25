@@ -34,7 +34,6 @@ contract PoolStorageManager is IPoolStorageManager {
     idToLending[id] = lendingModule;
   }
 
-  // todo onlyMaintainerOrFactory
   function setPoolStorage(
     address pool,
     address collateral,
@@ -42,7 +41,7 @@ contract PoolStorageManager is IPoolStorageManager {
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
-  ) external {
+  ) external onlyProxy {
     address lendingModule = idToLending[lendingID];
 
     PoolStorage storage poolData = poolStorage[pool];

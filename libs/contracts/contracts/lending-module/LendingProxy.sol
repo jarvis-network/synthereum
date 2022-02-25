@@ -120,7 +120,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
     returnValues = abi.decode(result, (ReturnValues));
 
-    // update pool storage values
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest - amount;
     uint256 newUnclaimedDaoJRT =
@@ -270,29 +269,46 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     poolStorageManager.migratePool(msg.sender, newPool);
   }
 
+  // to migrate liquidity to another lending module
   function migrateLendingModule(
     address newLendingModule,
-    address newInterestBearingToken
+    address newInterestBearingToken,
+    address interestTokenAmount
   ) external {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     // delegate call withdraw collateral from old module
-    uint256 totalAmount =
-      poolData.collateralDeposited +
-        poolData.unclaimedDaoJRT +
-        poolData.unclaimedDaoCommission;
     bytes memory withdrawRes =
       address(poolData.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
-          totalAmount,
+          interestTokenAmount,
           address(this)
         )
       );
     ReturnValues memory returnValues = abi.decode(withdrawRes, (ReturnValues));
 
-    // update storage and copy updated data
+    // update storage with accumulated interest
+    uint256 newCollateralDeposited =
+      poolData.collateralDeposited + returnValues.poolInterest;
+    uint256 newUnclaimedDaoJRT =
+      poolData.unclaimedDaoJRT +
+        returnValues.daoInterest *
+        poolData.JRTBuybackShare;
+    uint256 newUnclaimedDaoCommission =
+      poolData.unclaimedDaoCommission +
+        returnValues.daoInterest *
+        (1 - poolData.JRTBuybackShare);
+
+    poolStorageManager.updateValues(
+      msg.sender,
+      newCollateralDeposited,
+      newUnclaimedDaoJRT,
+      newUnclaimedDaoCommission
+    );
+
+    // set new lending module and obtain new pool data
     poolData = poolStorageManager.migrateLendingModule(
       msg.sender,
       newLendingModule,
@@ -306,7 +322,9 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
           DEPOSIT_SIG,
           poolData,
           poolStorageManager,
-          totalAmount
+          newCollateralDeposited +
+            newUnclaimedDaoCommission +
+            newUnclaimedDaoJRT
         )
       );
 

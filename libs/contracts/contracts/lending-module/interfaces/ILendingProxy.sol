@@ -47,7 +47,8 @@ interface ILendingProxy {
 
   function migrateLendingModule(
     address newLendingModule,
-    address newInterestBearingToken
+    address newInterestBearingToken,
+    address interestTokenAmount
   ) external;
 
   function migrateLiquidity(address newPool) external;
