@@ -8,6 +8,10 @@ import {
   IPoolStorageManager
 } from '../lending-module/interfaces/IPoolStorageManager.sol';
 
+interface ATokenMock {
+  function UNDERLYING_ASSET_ADDRESS() external view returns (address);
+}
+
 contract PoolLendingMock is ISynthereumDeployment {
   IERC20 collToken;
   IERC20 synthToken;

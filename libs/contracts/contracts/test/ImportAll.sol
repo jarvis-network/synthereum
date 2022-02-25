@@ -19,6 +19,7 @@ import '../test/PriceFeedGetter.sol';
 import '../test/UtilsMock.sol';
 import '../test/DerivativeMock.sol';
 import '../test/PoolMock.sol';
+import '../test/PoolLendingMock.sol';
 import '../test/WrongTypology.sol';
 import '../test/PoolRegistryMock.sol';
 import '../test/MockContext.sol';
