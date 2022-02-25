@@ -1,32 +1,37 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
-import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {ILendingModule} from '../lending-module/interfaces/ILendingModule.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {ILendingProxy} from '../lending-module/interfaces/ILendingProxy.sol';
 import {
   IPoolStorageManager
 } from '../lending-module/interfaces/IPoolStorageManager.sol';
+import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 
 interface ATokenMock {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
 }
 
 contract PoolLendingMock is ISynthereumDeployment {
+  using SafeERC20 for IERC20;
+
   IERC20 collToken;
   IERC20 synthToken;
-  ILendingModule module;
+  ILendingProxy proxy;
   IPoolStorageManager storageManager;
 
   constructor(
     address collateral,
     address synth,
-    address lending,
+    address lendingProxy,
     address _storageManager
   ) {
     collToken = IERC20(collateral);
     synthToken = IERC20(synth);
-    module = ILendingModule(lending);
+    proxy = ILendingProxy(lendingProxy);
     storageManager = IPoolStorageManager(_storageManager);
   }
 
@@ -50,18 +55,19 @@ contract PoolLendingMock is ISynthereumDeployment {
     return 'test';
   }
 
-  function deposit(
-    IPoolStorageManager.PoolStorage calldata poolData,
-    uint256 amount
-  ) external {
-    module.deposit(poolData, storageManager, amount);
+  function deposit(uint256 amount, address token) external {
+    IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+    IERC20(token).safeIncreaseAllowance(address(proxy), amount);
+    proxy.deposit(amount);
   }
 
   function withdraw(
-    IPoolStorageManager.PoolStorage calldata poolData,
     uint256 amount,
-    address recipient
+    address recipient,
+    address token
   ) external {
-    module.withdraw(poolData, storageManager, amount, recipient);
+    IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+    IERC20(token).safeIncreaseAllowance(address(proxy), amount);
+    proxy.withdraw(amount, recipient);
   }
 }
