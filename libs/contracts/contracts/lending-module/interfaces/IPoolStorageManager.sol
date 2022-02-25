@@ -19,6 +19,7 @@ interface IPoolStorageManager {
     address pool,
     address collateral,
     string memory lendingID,
+    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare

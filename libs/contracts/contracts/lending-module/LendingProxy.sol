@@ -57,6 +57,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     _setupRole(MAINTAINER_ROLE, maintainer);
   }
 
+  receive() external payable {}
+
   function deposit(uint256 amount)
     external
     override
@@ -247,6 +249,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     address pool,
     address collateral,
     string memory lendingID,
+    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
@@ -255,6 +258,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       pool,
       collateral,
       lendingID,
+      lendingArgs,
       interestBearingToken,
       daoInterestShare,
       jrtBuybackShare

@@ -38,12 +38,16 @@ contract PoolStorageManager is IPoolStorageManager {
     address pool,
     address collateral,
     string memory lendingID,
+    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external onlyProxy {
+    // set lending args (ie moneyMarket)
     address lendingModule = idToLending[lendingID];
+    lendingToArgs[lendingModule] = lendingArgs;
 
+    // set pool storage
     PoolStorage storage poolData = poolStorage[pool];
     poolData.collateral = collateral;
     poolData.daoInterestShare = daoInterestShare;
