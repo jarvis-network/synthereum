@@ -268,6 +268,8 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingProxy.ReturnValues memory lendingValues =
       lendingManager.deposit(_collateralAmount);
 
+    uint256 price = _getPriceFeedRate(finder, priceIdentifier);
+
     (
       bool isLpGain,
       uint256 totalProfitOrLoss,
@@ -275,7 +277,7 @@ contract SynthereumMultiLpLiquidityPool is
     ) =
       _calculateNewPositions(
         lendingValues.poolInterest,
-        _getPriceFeedRate(finder, priceIdentifier),
+        price,
         totalSyntheticAsset,
         totalUserDeposits
       );
@@ -285,7 +287,8 @@ contract SynthereumMultiLpLiquidityPool is
       positionsCache,
       msgSender,
       true,
-      collateralDeposited
+      collateralDeposited,
+      price
     );
     totalUserDeposits = isLpGain
       ? totalUserDeposits - totalProfitOrLoss
@@ -318,6 +321,8 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingProxy.ReturnValues memory lendingValues =
       lendingManager.withdraw(bearingAmount, msgSender);
 
+    uint256 price = _getPriceFeedRate(finder, priceIdentifier);
+
     (
       bool isLpGain,
       uint256 totalProfitOrLoss,
@@ -325,7 +330,7 @@ contract SynthereumMultiLpLiquidityPool is
     ) =
       _calculateNewPositions(
         lendingValues.poolInterest,
-        _getPriceFeedRate(finder, priceIdentifier),
+        price,
         totalSyntheticAsset,
         totalUserDeposits
       );
@@ -335,7 +340,8 @@ contract SynthereumMultiLpLiquidityPool is
       positionsCache,
       msgSender,
       false,
-      collateralWithdrawn
+      collateralWithdrawn,
+      price
     );
     totalUserDeposits = isLpGain
       ? totalUserDeposits - totalProfitOrLoss
@@ -566,23 +572,42 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _depositingLp Address of the LP depositing collateral
    * @param _isIncreased True if collateral to add for the LP, otherwise false
    * @param _changingCollateral Amount of collateral to increase/decrease to/from the LP
+   * @param _price Actual price of the pair
    */
   function _updateAndModifyActualLPCollateral(
     PositionCache[] memory _positionsCache,
     address _depositingLp,
     bool _isIncreased,
-    uint256 _changingCollateral
+    uint256 _changingCollateral,
+    uint256 _price
   ) internal {
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       PositionCache memory lpCache = _positionsCache[j];
       address lp = lpCache.lp;
-      uint256 actualCollateralAmount =
-        lpCache.lpPosition.actualCollateralAmount;
-      lpPositions[lp].actualCollateralAmount = (lp != _depositingLp)
-        ? actualCollateralAmount
-        : _isIncreased
-        ? actualCollateralAmount + _changingCollateral
-        : actualCollateralAmount - _changingCollateral;
+      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+      uint256 actualCollateralAmount = lpPosition.actualCollateralAmount;
+      if (lp == _depositingLp) {
+        if (_isIncreased) {
+          lpPositions[lp].actualCollateralAmount =
+            actualCollateralAmount +
+            _changingCollateral;
+        } else {
+          uint256 newCollateralAmount =
+            actualCollateralAmount - _changingCollateral;
+          require(
+            _isOvercollateralizedLP(
+              newCollateralAmount,
+              lpPosition.tokensCollateralized,
+              lpPosition.overCollateralization,
+              _price
+            ),
+            'LP is undercollateralized'
+          );
+          lpPositions[lp].actualCollateralAmount = newCollateralAmount;
+        }
+      } else {
+        lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
+      }
     }
   }
 
@@ -842,6 +867,25 @@ contract SynthereumMultiLpLiquidityPool is
           .div(_actualCollateralAmount),
         PreciseUnitMath.PRECISE_UNIT
       );
+  }
+
+  /**
+   * @notice Return if an LP is overcollateralized
+   * @param _actualCollateralAmount Actual collateral amount holded by the LP
+   * @param _tokensCollateralized Actual amount of syntehtic asset collateralized by the LP
+   * @param _overCollateralization Overcollateralization of the LP
+   * @param _price Actual price of the pair
+   * @return True if LP is overcollateralized otherwise false
+   */
+  function _isOvercollateralizedLP(
+    uint256 _actualCollateralAmount,
+    uint256 _tokensCollateralized,
+    uint256 _overCollateralization,
+    uint256 _price
+  ) internal view returns (bool) {
+    return
+      _actualCollateralAmount.div(_overCollateralization) >=
+      calculateCollateralAmount(_tokensCollateralized, _price);
   }
 
   /**
