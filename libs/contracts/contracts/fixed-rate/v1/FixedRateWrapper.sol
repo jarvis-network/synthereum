@@ -84,10 +84,10 @@ contract SynthereumFixedRateWrapper is
     _;
   }
 
-  modifier onlyMaintaner() {
+  modifier onlyMaintainer() {
     require(
-      _msgSender() == getRoleMember(MAINTAINER_ROLE, 0),
-      'Only contract maintainer can call this function'
+      hasRole(MAINTAINER_ROLE, _msgSender()),
+      'Sender must be the maintainer'
     );
     _;
   }
@@ -150,8 +150,8 @@ contract SynthereumFixedRateWrapper is
   {
     pegCollateralToken.transferFrom(_msgSender(), address(this), _collateral);
     amountTokens =
-      (_collateral * (10**(18 - pegCollateralToken.decimals())) * PRECISION) /
-      rate;
+      (_collateral * (10**(18 - pegCollateralToken.decimals())) * rate) /
+      PRECISION;
     totalDeposited = totalDeposited + _collateral;
     fixedRateToken.mint(_recipient, amountTokens);
     emit Wrap(amountTokens, _recipient);
@@ -175,8 +175,9 @@ contract SynthereumFixedRateWrapper is
     );
     fixedRateToken.transferFrom(_msgSender(), address(this), _tokenAmount);
     amountCollateral =
-      (totalDeposited * _tokenAmount) /
-      fixedRateToken.totalSupply();
+      (totalDeposited *
+        ((_tokenAmount * PRECISION) / fixedRateToken.totalSupply())) /
+      PRECISION;
     fixedRateToken.burn(_tokenAmount);
     totalDeposited = totalDeposited - amountCollateral;
     pegCollateralToken.transfer(_recipient, amountCollateral);
@@ -186,7 +187,7 @@ contract SynthereumFixedRateWrapper is
   /** @notice Allows the maintainer to pause the contract in case of emergency
    * which blocks minting of new fixed rate synthetic tokens
    */
-  function pauseContract() external override onlyMaintaner() {
+  function pauseContract() external override onlyMaintainer {
     paused = true;
     emit ContractPaused();
   }
@@ -194,7 +195,7 @@ contract SynthereumFixedRateWrapper is
   /** @notice Allows the maintainer to resume the contract functionalities
    * unblocking the minting of new fixed rate synthetic tokens
    */
-  function resumeContract() external override onlyMaintaner() {
+  function resumeContract() external override onlyMaintainer {
     paused = false;
     emit ContractResumed();
   }
