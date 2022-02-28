@@ -15,5 +15,13 @@
       "rate": "1955830000000000000",
       "collateralAddress": "0xEB0BAD2BcDA7C095295445807f7ab6452D6cCdDA"
     }
+  ],
+  "56": [
+    {
+      "syntheticName": "Dunia Franc CFA",
+      "syntheticSymbol": "cXOF",
+      "rate": "1524490172374103",
+      "collateralAddress": "0x23b8683Ff98F9E4781552DFE6f12Aa32814924e8"
+    }
   ]
 }

@@ -10,5 +10,11 @@
       "version": 1,
       "isEnabled": true
     }
+  },
+  "56": {
+    "FixedRateFactory": {
+      "version": 1,
+      "isEnabled": true
+    }
   }
 }
