@@ -53,7 +53,7 @@ module.exports = async function (deployer, network, accounts) {
           asset.priceFeedIdentifier,
           asset.syntheticName,
           asset.syntheticSymbol,
-          deployment[networkId].SyntheticTokenAddress[asset.syntheticSymbol],
+          deployment[networkId].SynthToken[asset.syntheticSymbol],
           asset.collateralRequirement,
           asset.minSponsorTokens,
           synthereumConfig[networkId].excessTokenBeneficiary,
@@ -70,17 +70,12 @@ module.exports = async function (deployer, network, accounts) {
       });
     });
     for (let j = 0; j < txData.length; j++) {
-      if (deployment[networkId].SynthToken == {}) {
-        log(`   Deploying '${txData[j].asset}'`);
-        log('   ------------------------------------- ');
-      } else {
-        log(
-          ` Token instance used '${
-            deployment[networkId].SynthToken[txData[j].asset]
-          }' `,
-        );
-        log(' ------------------------------------- ');
-      }
+      log(
+        ` Token instance used '${
+          deployment[networkId].SynthToken[txData[j].asset]
+        }' `,
+      );
+      log(' ------------------------------------- ');
       const gasEstimation = await synthereumDeployer.methods
         .deploySelfMintingDerivative(
           txData[j].creditLineDerivativeVersion,

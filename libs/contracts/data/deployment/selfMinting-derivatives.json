@@ -2,7 +2,7 @@
   "42": {
     "isEnabled": true,
     "SelfMintingDerivative": 1,
-    "SyntheticTokenAddress": {
+    "SynthToken": {
       "jCHF": "0x7AF02727268E1914eF39241B9Aa3220c9B9CF0a3",
       "jGBP": "0x08654C14d7807cEc6042e86F19B79Bab64c3D648"
     }
@@ -10,7 +10,7 @@
   "1": {
     "isEnabled": true,
     "SelfMintingDerivative": 1,
-    "SyntheticTokenAddress": {
+    "SynthToken": {
       "jEUR": "0x0f17BC9a994b87b5225cFb6a2Cd4D667ADb4F20B",
       "jCHF": "0x53dfEa0A8CC2A2A2e425E1C174Bc162999723ea0",
       "jGBP": "0x7409856CAE628f5d578B285B45669b36E7005283"
@@ -19,14 +19,14 @@
   "97": {
     "isEnabled": true,
     "SelfMintingDerivative": 2,
-    "SyntheticTokenAddress": {
+    "SynthToken": {
       "jEUR": "0xAe40B3E4AD42fFCc26F7112cAFD657E208287024"
     }
   },
   "80001": {
     "isEnabled": true,
     "SelfMintingDerivative": 2,
-    "SyntheticTokenAddress": {
+    "SynthToken": {
       "jEUR": "0x02CBE6055F8aad745321f70d6aDD4711455c7F45",
       "jGBP": "0x915E1f55eC2dc1524101ef44d4a0EebFe10Bc6bc",
       "jCHF": "0x2b7D8FB31676Ab02DA37a124Acfa726125b1B95b"
