@@ -19,7 +19,6 @@
     "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
-    "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"
   },
   "author": "Alessandro Bergamaschi",
@@ -40,8 +39,6 @@
     "@uma/core": "2.7.0",
     "child-process-promise": "^2.2.1",
     "fs-extra": "^10.0.0",
-    "ganache-cli": "^6.12.1",
-    "ganache-time-traveler": "^1.0.15",
     "globby": "^11.0.3",
     "hardhat-gas-reporter": "^1.0.4",
     "rmrf": "^2.0.3",
