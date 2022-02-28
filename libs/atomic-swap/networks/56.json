@@ -1,0 +1,12 @@
+[
+  {
+    "contractName": "OnChainLiquidityRouterV2",
+    "address": "0x49E88C9036e4F888069a354465F1738B372DF03B",
+    "transactionHash": "0x886d28ba5f66efab0ec8396f345be91c39ae3931ca654f0c75f4a00fce5b813e"
+  },
+  {
+    "contractName": "FixedRateSwap",
+    "address": "0xDA03443cab512e55D672d725B7Fa98275009DdCc",
+    "transactionHash": "0xa6bdcc4c3da7ab149104c9180e0914e41c8afc898d29898cfa6258c3ad65c9de"
+  }
+]

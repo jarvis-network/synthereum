@@ -23,5 +23,8 @@
       "WETHUSDC": "0xbF5974Be42474eB2791c1E320F774eF0F167E6fd"
     },
     "deploy": true
+  },
+  "56": {
+    "deploy": false
   }
 }

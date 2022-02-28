@@ -19,5 +19,9 @@
     "routerV3": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
     "deployV2": true,
     "deployV3": true
+  },
+  "56": {
+    "deployV2": false,
+    "deployV3": false
   }
 }
