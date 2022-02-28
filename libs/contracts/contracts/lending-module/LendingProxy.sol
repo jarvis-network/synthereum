@@ -24,7 +24,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string public constant DEPOSIT_SIG =
-    'deposit((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256)';
+    'deposit((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256)';
 
   string public constant WITHDRAW_SIG =
     'withdraw((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256,address)';
@@ -72,7 +72,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         abi.encodeWithSignature(
           DEPOSIT_SIG,
           poolData,
-          poolStorageManager,
+          address(poolStorageManager),
           amount
         )
       );
@@ -89,7 +89,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
         returnValues.daoInterest *
-        (1 - poolData.JRTBuybackShare);
+        (10**18 - poolData.JRTBuybackShare);
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -131,7 +131,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
         returnValues.daoInterest *
-        (1 - poolData.JRTBuybackShare);
+        (10**18 - poolData.JRTBuybackShare);
 
     poolStorageManager.updateValues(
       msg.sender,
