@@ -27,7 +27,6 @@ import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
 import {
   NetworkName,
   networkNameToId,
-  toNetworkId,
 } from '@jarvis-network/core-utils/dist/eth/networks';
 import {
   Config,
@@ -40,12 +39,9 @@ import globby from 'globby';
 import rmrf from 'rmrf';
 import { exec } from 'child-process-promise';
 import removeComments from 'strip-comments';
-import {
-  assertNotNull,
-  parseBoolean,
-} from '@jarvis-network/core-utils/dist/base/asserts';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
-import fse from 'fs-extra';
+// import fse from 'fs-extra';
 
 const TASK_DEPLOY = 'deploy';
 
@@ -153,13 +149,11 @@ export function modifyDeploy(module: string): void {
         {
           migrationScript,
           noVerify,
-          skipUma,
           skipTest,
           skipClean,
         }: {
           migrationScript: string;
           noVerify: boolean;
-          skipUma: false;
           skipTest: boolean;
           skipClean: boolean;
         },
@@ -167,55 +161,9 @@ export function modifyDeploy(module: string): void {
       ) => {
         if (!skipClean) await clean(hre.config.paths);
 
-        console.log('1', { skipTest, skipUma, migrationScript, skipClean });
+        console.log('1', { skipTest, migrationScript, skipClean });
 
         const { name: network } = hre.network;
-        const networkId = toNetworkId(network as NetworkName);
-        if (
-          !skipUma &&
-          ((shouldDeployUma(networkId) ||
-            parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE)) ??
-            false)
-        ) {
-          await fse.copy(
-            resolve(
-              dirname(require.resolve('@uma/core/package.json')),
-              'contracts',
-            ),
-            './deploy',
-          );
-          (hre as {
-            migrationScript?: string;
-          }).migrationScript = 'uma'; // Used in test/truffle-fixture.js
-          const testPath = `./cache/test-uma.js`;
-          await fs.writeFile(
-            testPath,
-            `
-    contract('uma', accounts => {
-      it('Migration is ok', async () => {
-        assert.equal(1, 1);
-      });
-    });
-          `,
-            'utf-8',
-          );
-
-          (hre as {
-            fromDeployScript?: boolean;
-          }).fromDeployScript = true;
-          await hre.run(TASK_TEST, { testFiles: [testPath] });
-          delete (hre as {
-            fromDeployScript?: boolean;
-          }).fromDeployScript;
-
-          process.env.NEW_UMA_INFRASTRUCTURE = 'true';
-
-          await clean(hre.config.paths);
-        }
-
-        if (migrationScript === 'uma') {
-          return;
-        }
         const migrationsGlobPattern = `${module}/migrations/??_deploy_*.js`;
 
         if (migrationScript === 'all') {
@@ -230,7 +178,6 @@ export function modifyDeploy(module: string): void {
                 .split('_deploy_')[1]
                 .split('.js')[0],
               noVerify,
-              skipUma: true,
               skipTest,
               skipClean,
             });
@@ -472,23 +419,6 @@ async function clean(
     fs.mkdir(artifacts),
     fs.mkdir(cache),
   ]);
-}
-
-function shouldDeployUma(networkId: number) {
-  return (
-    networkId !== 1 &&
-    networkId !== 3 &&
-    networkId !== 4 &&
-    networkId !== 42 &&
-    networkId !== 56 &&
-    networkId !== 77 &&
-    networkId !== 97 &&
-    networkId !== 100 &&
-    networkId !== 137 &&
-    networkId !== 250 &&
-    networkId !== 4002 &&
-    networkId !== 80001
-  );
 }
 
 async function exists(path: string) {
