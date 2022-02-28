@@ -21,9 +21,9 @@ contract AaveV3Module is ILendingModule {
   )
     external
     returns (
-      uint256 tokensOut,
       uint256 poolInterest,
-      uint256 daoInterest
+      uint256 daoInterest,
+      uint256 tokensOut
     )
   {
     // calculate accrued interest since last operation
@@ -56,14 +56,13 @@ contract AaveV3Module is ILendingModule {
   )
     external
     returns (
-      uint256 tokensOut,
       uint256 poolInterest,
-      uint256 daoInterest
+      uint256 daoInterest,
+      uint256 tokensOut
     )
   {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
-
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(poolData.interestBearingToken);
     require(
@@ -110,6 +109,10 @@ contract AaveV3Module is ILendingModule {
   function calculateGeneratedInterest(
     IPoolStorageManager.PoolStorage calldata pool
   ) internal view returns (uint256 poolInterest, uint256 daoInterest) {
+    if (pool.collateralDeposited == 0) {
+      return (0, 0);
+    }
+
     uint256 ratio = pool.daoInterestShare;
 
     // get current pool scaled balance of collateral
@@ -117,7 +120,6 @@ contract AaveV3Module is ILendingModule {
       IScaledBalanceToken(pool.interestBearingToken).scaledBalanceOf(
         msg.sender
       );
-
     // the total interest is delta between current balance and lastBalance
     uint256 totalInterestGenerated =
       poolBalance -
@@ -125,6 +127,6 @@ contract AaveV3Module is ILendingModule {
         pool.unclaimedDaoCommission -
         pool.unclaimedDaoJRT;
     daoInterest = (totalInterestGenerated * ratio) / 100;
-    poolInterest = (totalInterestGenerated * (100 - ratio)) / 100;
+    poolInterest = (totalInterestGenerated * (10**18 - ratio)) / 100;
   }
 }
