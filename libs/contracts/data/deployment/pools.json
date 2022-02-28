@@ -31,12 +31,7 @@
   "56": {
     "isEnabled": true,
     "Pool": 5,
-    "SynthToken": {
-      "jEUR": "0x23b8683Ff98F9E4781552DFE6f12Aa32814924e8",
-      "jGBP": "0x048E9b1ddF9EBbb224812372280e94Ccac443f9e",
-      "jCHF": "0x7c869b5A294b1314E985283d01C702B62224a05f",
-      "jNGN": "0x2e3E3e3CAD5478F63549b7207c860A7f8FEDf4C9"
-    }
+    "SynthToken": {}
   },
   "100": {
     "isEnabled": true,
@@ -44,6 +39,11 @@
     "SynthToken": {}
   },
   "250": {
+    "isEnabled": true,
+    "Pool": 5,
+    "SynthToken": {}
+  },
+  "43114": {
     "isEnabled": true,
     "Pool": 5,
     "SynthToken": {}

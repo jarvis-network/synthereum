@@ -66,7 +66,7 @@
   "56": {
     "feePercentage": 0.0015,
     "feeRecipients": [
-      "0x8eF00583bAa186094D9A34a0A4750C1D1BB86831",
+      "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc",
       "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
     ],
     "feeProportions": [50, 50]
@@ -83,5 +83,13 @@
     "feePercentage": 0.0025,
     "feeRecipients": ["0xc31249BA48763dF46388BA5C4E7565d62ed4801C"],
     "feeProportions": [100]
+  },
+  "43114": {
+    "feePercentage": 0.0015,
+    "feeRecipients": [
+      "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc",
+      "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
+    ],
+    "feeProportions": [50, 50]
   }
 }

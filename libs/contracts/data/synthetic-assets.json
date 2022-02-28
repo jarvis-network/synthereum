@@ -251,43 +251,13 @@
   ],
   "56": [
     {
-      "syntheticName": "Jarvis Synthetic Euro",
-      "syntheticSymbol": "jEUR",
-      "priceFeedIdentifier": "EURUSD",
-      "collateralRequirement": "1025000000000000000",
-      "minSponsorTokens": "",
-      "capMintAmount": "",
-      "overCollateralization": "100000000000000000",
-      "liquidationReward": "700000000000000000"
-    },
-    {
-      "syntheticName": "Jarvis Synthetic British Pound",
-      "syntheticSymbol": "jGBP",
-      "priceFeedIdentifier": "GBPUSD",
-      "collateralRequirement": "1025000000000000000",
-      "minSponsorTokens": "",
-      "capMintAmount": "",
-      "overCollateralization": "100000000000000000",
-      "liquidationReward": "700000000000000000"
-    },
-    {
-      "syntheticName": "Jarvis Synthetic Swiss Franc",
-      "syntheticSymbol": "jCHF",
-      "priceFeedIdentifier": "CHFUSD",
-      "collateralRequirement": "1025000000000000000",
-      "minSponsorTokens": "",
-      "capMintAmount": "",
-      "overCollateralization": "100000000000000000",
-      "liquidationReward": "700000000000000000"
-    },
-    {
-      "syntheticName": "Jarvis Synthetic Nigerian Naira",
-      "syntheticSymbol": "jNGN",
-      "priceFeedIdentifier": "NGNUSD",
+      "syntheticName": "Jarvis Synthetic South African Rand",
+      "syntheticSymbol": "jZAR",
+      "priceFeedIdentifier": "ZARUSD",
       "collateralRequirement": "1050000000000000000",
       "minSponsorTokens": "",
       "capMintAmount": "",
-      "overCollateralization": "250000000000000000",
+      "overCollateralization": "500000000000000000",
       "liquidationReward": "700000000000000000"
     }
   ],
@@ -308,6 +278,18 @@
       "syntheticName": "Jarvis Synthetic Euro",
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
+      "collateralRequirement": "1025000000000000000",
+      "minSponsorTokens": "",
+      "capMintAmount": "",
+      "overCollateralization": "100000000000000000",
+      "liquidationReward": "700000000000000000"
+    }
+  ],
+  "43114": [
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1025000000000000000",
       "minSponsorTokens": "",
       "capMintAmount": "",

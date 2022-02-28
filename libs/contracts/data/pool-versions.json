@@ -58,5 +58,11 @@
       "version": 5,
       "isEnabled": true
     }
+  },
+  "43114": {
+    "LiquidityPoolFactory": {
+      "version": 5,
+      "isEnabled": true
+    }
   }
 }

@@ -42,7 +42,7 @@
   },
   "56": {
     "admin": "0xC198a2baBd2F00E968A296684e238e7B34123b54",
-    "maintainer": "0x685723B9dC89BDF28BA5F98F9A8c0aC899bD6E77",
+    "maintainer": "0x88e350b6681a8Fcf9aB17455206034C09Cbb1c14",
     "liquidityProvider": "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
   },
   "100": {
@@ -58,6 +58,11 @@
   "250": {
     "admin": "0x24435F5f12Ea2977F4B4A3AD990600fD5387732f",
     "maintainer": "0x685723B9dC89BDF28BA5F98F9A8c0aC899bD6E77",
+    "liquidityProvider": "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
+  },
+  "43114": {
+    "admin": "0x20c7ec810e723c8c486b9345b1A6D23e615c946c",
+    "maintainer": "0xe3F130DcECF408bCc679e4FE269FbcDE6aC86d17",
     "liquidityProvider": "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
   }
 }

@@ -9,5 +9,6 @@
   "3": ["GBPUSD"],
   "77": ["EURUSD", "GBPUSD"],
   "100": ["CHFUSD", "EURUSD"],
-  "250": ["EURUSD"]
+  "250": ["EURUSD"],
+  "43114": ["CHFUSD"]
 }
