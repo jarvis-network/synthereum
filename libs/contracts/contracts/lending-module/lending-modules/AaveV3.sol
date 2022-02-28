@@ -109,17 +109,14 @@ contract AaveV3Module is ILendingModule {
   function calculateGeneratedInterest(
     IPoolStorageManager.PoolStorage calldata pool
   ) internal view returns (uint256 poolInterest, uint256 daoInterest) {
-    if (pool.collateralDeposited == 0) {
-      return (0, 0);
-    }
+    if (pool.collateralDeposited == 0) return (0, 0);
 
     uint256 ratio = pool.daoInterestShare;
 
-    // get current pool scaled balance of collateral
+    // get current pool total amount of collateral
     uint256 poolBalance =
-      IScaledBalanceToken(pool.interestBearingToken).scaledBalanceOf(
-        msg.sender
-      );
+      IERC20(pool.interestBearingToken).balanceOf(msg.sender);
+
     // the total interest is delta between current balance and lastBalance
     uint256 totalInterestGenerated =
       poolBalance -
