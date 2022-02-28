@@ -16,6 +16,36 @@ interface ATokenMock is IERC20 {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
 }
 
+interface AAVEMock {
+  function borrow(
+    address asset,
+    uint256 amount,
+    uint256 interestRateMode,
+    uint16 referralCode,
+    address onBehalfOf
+  ) external;
+
+  function supply(
+    address asset,
+    uint256 amount,
+    address onBehalfOf,
+    uint16 referralCode
+  ) external;
+
+  function withdraw(
+    address asset,
+    uint256 amount,
+    address to
+  ) external returns (uint256);
+
+  function repay(
+    address asset,
+    uint256 amount,
+    uint256 interestRateMode,
+    address onBehalfOf
+  ) external returns (uint256);
+}
+
 contract PoolLendingMock is ISynthereumDeployment {
   using SafeERC20 for IERC20;
 
