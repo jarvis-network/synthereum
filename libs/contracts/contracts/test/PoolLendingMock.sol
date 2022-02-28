@@ -10,8 +10,9 @@ import {
 } from '../lending-module/interfaces/IPoolStorageManager.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import 'hardhat/console.sol';
 
-interface ATokenMock {
+interface ATokenMock is IERC20 {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
 }
 
@@ -55,19 +56,20 @@ contract PoolLendingMock is ISynthereumDeployment {
     return 'test';
   }
 
-  function deposit(uint256 amount, address token) external {
-    IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-    IERC20(token).safeIncreaseAllowance(address(proxy), amount);
-    proxy.deposit(amount);
+  function deposit(uint256 amount, address token)
+    external
+    returns (ILendingProxy.ReturnValues memory)
+  {
+    IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
+    return proxy.deposit(amount);
   }
 
   function withdraw(
     uint256 amount,
     address recipient,
     address token
-  ) external {
-    IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-    IERC20(token).safeIncreaseAllowance(address(proxy), amount);
-    proxy.withdraw(amount, recipient);
+  ) external returns (ILendingProxy.ReturnValues memory) {
+    IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
+    return proxy.withdraw(amount, recipient);
   }
 }
