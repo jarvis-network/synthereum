@@ -10,6 +10,7 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const { utf8ToHex } = require('web3-utils');
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');
+const fixedRateData = require('../data/test/fixedRate.json');
 const {
   deploy,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
@@ -34,6 +35,7 @@ module.exports = async function (deployer, network, accounts) {
   )[0].address;
 
   // deploy proxy
+
   await deploy(
     web3,
     deployer,
@@ -88,6 +90,18 @@ module.exports = async function (deployer, network, accounts) {
       )
     : null;
 
+  fixedRateData[networkId].deploy
+    ? await deployFixedRateSwap(
+        web3,
+        proxyInstance,
+        deployer,
+        network,
+        networkId,
+        admin,
+        maintainer,
+      )
+    : null;
+
   // deploy Fixed Rate Swaps module
   await deployFixedRateSwap(
     web3,
@@ -121,6 +135,7 @@ const deployFixedRateSwap = async (
   // const finderInstance = await SynthereumFinder.at(synthereumFinderAddress);
   // await finderInstance.changeImplementationAddress(utf8ToHex('FixedRateSwap'), contract.contract.address, {from:maintainer});
 };
+
 const deployUniV2 = async (
   web3,
   proxyInstance,
