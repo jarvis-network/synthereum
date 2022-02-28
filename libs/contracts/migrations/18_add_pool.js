@@ -82,8 +82,17 @@ module.exports = async function (deployer, network, accounts) {
       });
     });
     for (let j = 0; j < txData.length; j++) {
-      log(`   Deploying '${txData[j].asset}'`);
-      log('   -------------------------------------');
+      if (deployment[networkId].SynthToken == {}) {
+        log(`   Deploying '${txData[j].asset}'`);
+        log('   ------------------------------------- ');
+      } else {
+        log(
+          ` Token instance used '${
+            deployment[networkId].SynthToken[txData[j].asset]
+          }' `,
+        );
+        log(' ------------------------------------- ');
+      }
       const gasEstimation = await synthereumDeployer.methods
         .deployPool(txData[j].poolVersion, txData[j].poolPayload)
         .estimateGas({ from: maintainer });

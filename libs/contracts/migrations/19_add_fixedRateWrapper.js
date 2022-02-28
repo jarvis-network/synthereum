@@ -71,21 +71,30 @@ module.exports = async function (deployer, network, accounts) {
       });
     });
     for (let j = 0; j < txData.length; j++) {
-      log(`   Deploying '${txData[j].asset}'`);
-      log('   -------------------------------------');
+      if (deployment[networkId].SynthToken == {}) {
+        log(`   Deploying '${txData[j].asset}'`);
+        log('   ------------------------------------- ');
+      } else {
+        log(
+          ` Token instance used '${
+            deployment[networkId].SynthToken[txData[j].asset]
+          }' `,
+        );
+        log(' ------------------------------------- ');
+      }
       const gasEstimation = await synthereumDeployer.methods
         .deployFixedRate(
           txData[j].fixedRateWrapperVersion,
           txData[j].fixedRatePayload,
         )
-        .estimateGas({ from: maintainer });
+        .estimateGas({ from: accounts[0] });
       if (gasEstimation != undefined) {
         const tx = await synthereumDeployer.methods
           .deployFixedRate(
             txData[j].fixedRateWrapperVersion,
             txData[j].fixedRatePayload,
           )
-          .send({ from: maintainer });
+          .send({ from: accounts[0] });
         const { transactionHash } = tx;
         await logTransactionOutput({
           log,
