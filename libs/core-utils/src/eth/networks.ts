@@ -19,9 +19,11 @@ export const networkIdToName = {
   97: 'bscTestnet',
   100: 'xDAI',
   137: 'polygon',
+  80001: 'mumbai',
   250: 'fantom',
   4002: 'ftmTestnet',
-  80001: 'mumbai',
+  43113: 'avalancheFujiTestnet',
+  43114: 'avalanche',
   31337: 'hardhat',
 } as const;
 
@@ -36,9 +38,11 @@ export const networkNameToId: InverseOf<typeof networkIdToName> = {
   bscTestnet: 97,
   xDAI: 100,
   polygon: 137,
+  mumbai: 80001,
   fantom: 250,
   ftmTestnet: 4002,
-  mumbai: 80001,
+  avalancheFujiTestnet: 43113,
+  avalanche: 43114,
   hardhat: 31337,
 } as const;
 
@@ -64,9 +68,11 @@ const networkIdToId: KeysToKeys<typeof networkIdToName> = {
   97: 97,
   100: 100,
   137: 137,
+  80001: 80001,
   250: 250,
   4002: 4002,
-  80001: 80001,
+  43113: 43113,
+  43114: 43114,
   31337: 31337,
 };
 
@@ -81,9 +87,11 @@ const networkNameToName: KeysToKeys<typeof networkNameToId> = {
   bscTestnet: 'bscTestnet',
   xDAI: 'xDAI',
   polygon: 'polygon',
+  mumbai: 'mumbai',
   fantom: 'fantom',
   ftmTestnet: 'ftmTestnet',
-  mumbai: 'mumbai',
+  avalancheFujiTestnet: 'avalancheFujiTestnet',
+  avalanche: 'avalanche',
   hardhat: 'hardhat',
 };
 

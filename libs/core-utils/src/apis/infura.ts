@@ -62,6 +62,18 @@ export function getFantomOperaEndpoint<Net extends Network>(
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 
+export function getAvalancheEndpoint<Net extends Network>(
+  network: Net,
+  protocol: Protocol = 'https',
+): ValueOnNetwork<string, Net> {
+  const networkName = toNetworkName(network);
+  const endpoint =
+    networkName === 'avalanche'
+      ? 'api.avax.network/ext/bc/C/rpc'
+      : 'api.avax-test.network/ext/bc/C/rpc';
+  return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
+}
+
 export function getInfuraWeb3<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',

@@ -16,6 +16,8 @@ export function addEtherscanApiKeys(config: HardhatUserConfig) {
       ftmTestnet: process.env.ETHERSCAN_FANTOM_API_KEY,
       xdai: process.env.BLOCKSCOUT_XDAI_API_KEY,
       sokol: process.env.BLOCKSCOUT_XDAI_API_KEY,
+      avalancheFujiTestnet: process.env.ETHERSCAN_AVALANCHE_API_KEY,
+      avalanche: process.env.ETHERSCAN_AVALANCHE_API_KEY,
     },
   };
 }

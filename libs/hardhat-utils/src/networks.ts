@@ -15,6 +15,7 @@ import {
   getMoralisEndpoint,
   getFantomTestnetEndpoint,
   getFantomOperaEndpoint,
+  getAvalancheEndpoint,
 } from '@jarvis-network/core-utils/dist/apis/infura';
 
 export function addPublicNetwork(
@@ -35,6 +36,8 @@ export function addPublicNetwork(
         ? getFantomOperaEndpoint(chainId, 'https')
         : chainId === 4002
         ? getFantomTestnetEndpoint(chainId, 'https')
+        : chainId === 43113 || chainId === 43114
+        ? getAvalancheEndpoint(chainId, 'https')
         : getInfuraEndpoint(chainId, 'https', projectId),
     accounts: {
       mnemonic:
