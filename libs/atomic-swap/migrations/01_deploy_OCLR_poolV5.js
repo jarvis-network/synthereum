@@ -101,17 +101,6 @@ module.exports = async function (deployer, network, accounts) {
         maintainer,
       )
     : null;
-
-  // deploy Fixed Rate Swaps module
-  await deployFixedRateSwap(
-    web3,
-    proxyInstance,
-    deployer,
-    network,
-    networkId,
-    admin,
-    maintainer,
-  );
 };
 
 const deployFixedRateSwap = async (
