@@ -61,7 +61,12 @@
   },
   {
     "contractName": "SynthereumFixedRateRegistry",
-    "address": "0x613Dd3Df8C8716FA5F33a3D5e072fEb5FEF1f7B3",
-    "transactionHash": "0x9018975354243fdbfdcc293e424decae3e25311963f9de07b87273be10e46ea8"
+    "address": "0xaD2aBa16506652150f1763CEC98e39b32F4aC174",
+    "transactionHash": "0xd3de0c22e5c652a6a04e4a063f0cb2c02bf8fa3113845d504a6793538340e577"
+  },
+  {
+    "contractName": "SynthereumFixedRateFactory",
+    "address": "0x1654D963828616f5E127a9Bf654945E11F416069",
+    "transactionHash": "0x1c53a293ba8e779f85e731aec40b850706fb89a65d29b3cee9743b83dc679dd3"
   }
 ]
