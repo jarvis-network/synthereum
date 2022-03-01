@@ -2,6 +2,15 @@
 pragma solidity >=0.8.0;
 
 interface ISynthereumMultiLpLiquidityPoolEvents {
+  struct MintValues {
+    // Net collateral amount (CollateralAmount - feePercentage)
+    uint256 netCollateralAmount;
+    // Fee to be paid according to the fee percentage
+    uint256 feeAmount;
+    // Number of synthetic tokens will be received according to the actual price in exchange for netCollateralAmount
+    uint256 numTokens;
+  }
+
   /**
    * @notice Emitted when a LP is registered in the pool by the maintainer
    * @param lp Address of the LP to be registered
@@ -46,6 +55,20 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
     address indexed lp,
     uint256 collateralReceived,
     uint256 collateralWithdrawn
+  );
+
+  /**
+   * @notice Emitted when a user mint the synthetic asset
+   * @param user Address of the user minting
+   * @param collateralSent Collateral sent to the the pool by the user
+   * @param mintvalues Include netCollateralAmount, feeAmount and numTokens
+   * @param recipient Address receiving minted tokens
+   */
+  event Mint(
+    address indexed user,
+    uint256 collateralSent,
+    MintValues mintvalues,
+    address recipient
   );
 
   /**

@@ -28,6 +28,17 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint256 overCollateralization;
   }
 
+  struct MintParams {
+    // Minimum amount of synthetic tokens that a user wants to mint using collateral (anti-slippage)
+    uint256 minNumTokens;
+    // Amount of collateral that a user wants to spend for minting
+    uint256 collateralAmount;
+    // Expiration time of the transaction
+    uint256 expiration;
+    // Address to which send synthetic tokens minted
+    address recipient;
+  }
+
   /**
    * @notice Register a liquidity provider to the LP's whitelist
    * @notice This can be called only by the maintainer
@@ -65,6 +76,18 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function removeLiquidity(uint256 _collateralAmount)
     external
     returns (uint256 collateralWithdrawn);
+
+  /**
+   * @notice Mint synthetic tokens using fixed amount of collateral
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve collateral transfer for the mint request to succeed
+   * @param mintParams Input parameters for minting (see MintParams struct)
+   * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
+   * @return feePaid Amount of collateral paid by the user as fee
+   */
+  function mint(MintParams calldata mintParams)
+    external
+    returns (uint256 syntheticTokensMinted, uint256 feePaid);
 
   /**
    * @notice Set new liquidation reward percentage
