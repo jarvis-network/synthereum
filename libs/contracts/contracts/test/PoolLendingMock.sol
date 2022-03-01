@@ -17,6 +17,18 @@ interface ATokenMock is IERC20 {
 }
 
 interface AAVEMock {
+  function getUserAccountData(address user)
+    external
+    view
+    returns (
+      uint256 totalCollateralBase,
+      uint256 totalDebtBase,
+      uint256 availableBorrowsBase,
+      uint256 currentLiquidationThreshold,
+      uint256 ltv,
+      uint256 healthFactor
+    );
+
   function borrow(
     address asset,
     uint256 amount,

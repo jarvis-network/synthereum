@@ -25,24 +25,53 @@ contract('AaveV3 Lending module', accounts => {
   let aUSDC, USDC, USDCInstance, aaveInstance;
   const maintainer = accounts[1];
   const daoInterestShare = toWei('0.04');
-  const jrtShare = toWei('0.04');
-  const commissionShare = toWei('0.06');
+  const jrtShare = toWei('0.4');
+  const commissionShare = toWei('0.6');
 
   const openCDP = async (deposit, borrow, from) => {
-    let am = toBN(deposit).divn(10).toString();
+    let am = toBN(deposit).divn(50).toString();
     let half = toBN(deposit).divn(2).toString();
     await USDCInstance.mint(from, deposit);
     await USDCInstance.approve(data[networkId].AaveV3, deposit, { from });
     await aaveInstance.supply(USDC, half, from, toHex('0'), { from });
     await aaveInstance.borrow(USDC, borrow, 2, toHex('0'), from, { from });
 
-    console.log(await web3.eth.getBlockNumber());
+    // produce more blocks and interest
     await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
     await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
     await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
     await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
     await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
-    console.log(await web3.eth.getBlockNumber());
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+    await aaveInstance.supply(USDC, am, from, toHex('0'), { from });
+
+    // repay all debt
+    let tx = await aaveInstance.getUserAccountData.call(from);
+    await USDCInstance.increaseAllowance(
+      data[networkId].AaveV3,
+      tx.totalDebtBase.toString(),
+      { from },
+    );
+    await aaveInstance.repay(USDC, tx.totalDebtBase.toString(), 2, from, {
+      from,
+    });
   };
 
   before(async () => {
@@ -112,8 +141,8 @@ contract('AaveV3 Lending module', accounts => {
   });
   describe('AAVe module', () => {
     const user = accounts[2];
-    let amountMint = 1000;
-    let amountFirstDeposit = 340;
+    let amountMint = toWei('1000000', 'ether');
+    let amountFirstDeposit = toWei('340000', 'ether');
 
     it('First deposit- Correctly deposits and update values', async () => {
       console.log(await web3.eth.getBlockNumber());
@@ -133,9 +162,6 @@ contract('AaveV3 Lending module', accounts => {
         from: user,
       });
       await poolMock.deposit(amountFirstDeposit, USDC, { from: user });
-
-      // borrow on aave to generate interest
-      await openCDP(10000000, 50000, accounts[3]);
 
       let poolStorage = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -175,9 +201,15 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(poolStorage.unclaimedDaoCommission.toString(), '0');
     });
 
-    it('Subsequent deposit- Correctly deposits and update values', async () => {
-      console.log(await web3.eth.getBlockNumber());
-      let amountDeposit = 250;
+    it('Subsequent deposit- Correctly deposits and update values, interest', async () => {
+      let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
+
+      // borrow on aave to generate interest
+      await openCDP(
+        toWei('100000000', 'ether'),
+        toWei('40000000', 'ether'),
+        accounts[3],
+      );
 
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
       assert.equal(
@@ -188,17 +220,17 @@ contract('AaveV3 Lending module', accounts => {
         poolMock.address,
       );
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
-      let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
+
+      // deposit to trigger interest split update
+      let amountDeposit = toWei('1', 'ether');
       await USDCInstance.approve(poolMock.address, amountDeposit, {
         from: user,
       });
-      console.log(await web3.eth.getBlockNumber());
 
       let returnValues = await poolMock.deposit.call(amountDeposit, USDC, {
         from: user,
       });
-      console.log(returnValues);
       await poolMock.deposit(amountDeposit, USDC, { from: user });
       let poolStorage = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -209,10 +241,24 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCAfter = await aUSDC.balanceOf.call(poolMock.address);
       let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
 
+      let expectedInterest = poolAUSDCAfter
+        .sub(poolAUSDCBefore)
+        .sub(toBN(amountDeposit));
+      let expectedDaoInterest = expectedInterest
+        .mul(toBN(daoInterestShare))
+        .div(toBN(Math.pow(10, 18)));
+      let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+
       // check return values to pool
-      // assert.equal(returnValues.tokensOut.toString(), amountDeposit.toString());
-      // assert.equal(returnValues.poolInterest.gt(toBN(0)), true);
-      // assert.equal(returnValues.poolInterest.gt(toBN(0)), true);
+      assert.equal(returnValues.tokensOut.toString(), amountDeposit.toString());
+      assert.equal(
+        returnValues.poolInterest.toString().substr(0, 14),
+        expectedPoolInterest.toString().substr(0, 14),
+      );
+      assert.equal(
+        returnValues.daoInterest.toString().substr(0, 14),
+        expectedDaoInterest.toString().substr(0, 14),
+      );
 
       // check tokens have moved correctly
       assert.equal(
@@ -221,18 +267,43 @@ contract('AaveV3 Lending module', accounts => {
       );
       assert.equal(userAUSDCBefore.toString(), userAUSDCAfter.toString());
       assert.equal(
-        poolAUSDCAfter.toString(),
-        poolAUSDCBefore.add(toBN(amountDeposit)).toString(),
+        poolAUSDCAfter.toString().substr(0, 14),
+        poolAUSDCBefore
+          .add(toBN(amountDeposit))
+          .add(toBN(returnValues.poolInterest))
+          .add(toBN(returnValues.daoInterest))
+          .toString()
+          .substr(0, 14),
       );
       assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
       assert.equal(
-        poolStorage.collateralDeposited.toString(),
-        toBN(amountFirstDeposit).add(toBN(amountDeposit)).toString(),
+        poolStorage.collateralDeposited.toString().substr(0, 20),
+        toBN(amountFirstDeposit)
+          .add(toBN(amountDeposit))
+          .add(expectedPoolInterest)
+          .toString()
+          .substr(0, 20),
       );
-      // assert.equal(poolStorage.unclaimedDaoJRT, poolStorageBefore.unclaimedDaoJRT.add(returnValues.daoInterest.mul(toBN(jrtShare)).div(toBN(Math.pow(10, 18)))), true);
-      // assert.equal(poolStorage.unclaimedDaoCommission, poolStorageBefore.unclaimedDaoCommission.add(returnValues.daoInterest.mul(toBN(commissionShare)).div(toBN(Math.pow(10, 18)))), true);
+      let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(jrtShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      assert.equal(
+        poolStorage.unclaimedDaoCommission.toString(),
+        toBN(poolStorageBefore.unclaimedDaoCommission)
+          .add(
+            toBN(returnValues.daoInterest)
+              .mul(toBN(commissionShare))
+              .div(toBN(Math.pow(10, 18))),
+          )
+          .toString(),
+      );
     });
   });
 });
