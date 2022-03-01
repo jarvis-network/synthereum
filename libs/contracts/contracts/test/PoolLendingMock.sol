@@ -111,7 +111,7 @@ contract PoolLendingMock is ISynthereumDeployment {
     address recipient,
     address token
   ) external returns (ILendingProxy.ReturnValues memory) {
-    IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
+    IERC20(token).transfer(address(proxy), amount);
     return proxy.withdraw(amount, recipient);
   }
 }
