@@ -27,7 +27,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     'deposit((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256)';
 
   string public constant WITHDRAW_SIG =
-    'withdraw((address,address,address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256,address)';
+    'withdraw((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256,address)';
 
   string public JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 

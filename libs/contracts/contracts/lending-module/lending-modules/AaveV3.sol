@@ -27,7 +27,11 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+    (poolInterest, daoInterest) = calculateGeneratedInterest(
+      poolData,
+      amount,
+      true
+    );
 
     // proxy should have received collateral from the pool
     IERC20 collateral = IERC20(poolData.collateral);
@@ -62,7 +66,11 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
+    (poolInterest, daoInterest) = calculateGeneratedInterest(
+      poolData,
+      aTokensAmount,
+      false
+    );
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(poolData.interestBearingToken);
     require(
@@ -107,7 +115,9 @@ contract AaveV3Module is ILendingModule {
   }
 
   function calculateGeneratedInterest(
-    IPoolStorageManager.PoolStorage calldata pool
+    IPoolStorageManager.PoolStorage calldata pool,
+    uint256 amount,
+    bool isDeposit
   ) internal view returns (uint256 poolInterest, uint256 daoInterest) {
     if (pool.collateralDeposited == 0) return (0, 0);
 
@@ -117,11 +127,21 @@ contract AaveV3Module is ILendingModule {
       IERC20(pool.interestBearingToken).balanceOf(msg.sender);
 
     // the total interest is delta between current balance and lastBalance
-    uint256 totalInterestGenerated =
-      poolBalance -
+    uint256 totalInterestGenerated;
+    if (isDeposit) {
+      totalInterestGenerated =
+        poolBalance -
         pool.collateralDeposited -
         pool.unclaimedDaoCommission -
         pool.unclaimedDaoJRT;
+    } else {
+      totalInterestGenerated =
+        poolBalance +
+        amount -
+        pool.collateralDeposited -
+        pool.unclaimedDaoCommission -
+        pool.unclaimedDaoJRT;
+    }
 
     daoInterest = (totalInterestGenerated * ratio) / 10**18;
     poolInterest = totalInterestGenerated - daoInterest;
