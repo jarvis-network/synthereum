@@ -84,12 +84,12 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       poolData.collateralDeposited + amount + returnValues.poolInterest;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        returnValues.daoInterest *
-        poolData.JRTBuybackShare;
+        (returnValues.daoInterest * poolData.JRTBuybackShare) /
+        10**18;
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        returnValues.daoInterest *
-        (10**18 - poolData.JRTBuybackShare);
+        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
+        10**18;
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -126,12 +126,12 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       poolData.collateralDeposited + returnValues.poolInterest - amount;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        returnValues.daoInterest *
-        poolData.JRTBuybackShare;
+        (returnValues.daoInterest * poolData.JRTBuybackShare) /
+        10**18;
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        returnValues.daoInterest *
-        (10**18 - poolData.JRTBuybackShare);
+        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
+        10**18;
 
     poolStorageManager.updateValues(
       msg.sender,

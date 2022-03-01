@@ -112,7 +112,6 @@ contract AaveV3Module is ILendingModule {
     if (pool.collateralDeposited == 0) return (0, 0);
 
     uint256 ratio = pool.daoInterestShare;
-
     // get current pool total amount of collateral
     uint256 poolBalance =
       IERC20(pool.interestBearingToken).balanceOf(msg.sender);
@@ -123,7 +122,8 @@ contract AaveV3Module is ILendingModule {
         pool.collateralDeposited -
         pool.unclaimedDaoCommission -
         pool.unclaimedDaoJRT;
-    daoInterest = (totalInterestGenerated * ratio) / 100;
-    poolInterest = (totalInterestGenerated * (10**18 - ratio)) / 100;
+
+    daoInterest = (totalInterestGenerated * ratio) / 10**18;
+    poolInterest = totalInterestGenerated - daoInterest;
   }
 }
