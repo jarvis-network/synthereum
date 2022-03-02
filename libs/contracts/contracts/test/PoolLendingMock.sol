@@ -117,9 +117,18 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   function claimCommission(uint256 amount, address interestToken)
     external
-    returns (uint256)
+    returns (ILendingProxy.ReturnValues memory)
   {
     IERC20(interestToken).transfer(address(proxy), amount);
     return proxy.claimCommission(amount);
+  }
+
+  function claimJRT(
+    address interestToken,
+    uint256 amount,
+    bytes memory swapParams
+  ) external returns (ILendingProxy.ReturnValues memory) {
+    IERC20(interestToken).transfer(address(proxy), amount);
+    return proxy.executeBuyback(amount, swapParams);
   }
 }
