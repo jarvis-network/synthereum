@@ -152,23 +152,29 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     // delegate call withdraw
     bytes memory result =
       address(poolData.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount, recipient)
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          poolStorageManager,
+          amount,
+          recipient
+        )
       );
-
     ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
 
     //update pool storage
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest;
     uint256 newUnclaimedDaoCommission =
-      poolData.unclaimedDaoCommission +
-        returnValues.daoInterest *
-        (1 - poolData.JRTBuybackShare) -
-        amount;
+      poolData.unclaimedDaoCommission -
+        amount +
+        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
+        10**18;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        returnValues.daoInterest *
-        poolData.JRTBuybackShare;
+        (returnValues.daoInterest *
+          (returnValues.daoInterest * poolData.JRTBuybackShare)) /
+        10**18;
 
     poolStorageManager.updateValues(
       msg.sender,
