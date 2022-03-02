@@ -246,12 +246,12 @@ contract('AaveV3 Lending module', accounts => {
       // check return values to pool
       assert.equal(returnValues.tokensOut.toString(), amountDeposit.toString());
       assert.equal(
-        returnValues.poolInterest.toString().substr(0, 14),
-        expectedPoolInterest.toString().substr(0, 14),
+        returnValues.poolInterest.toString().substr(0, 13),
+        expectedPoolInterest.toString().substr(0, 13),
       );
       assert.equal(
-        returnValues.daoInterest.toString().substr(0, 14),
-        expectedDaoInterest.toString().substr(0, 14),
+        returnValues.daoInterest.toString().substr(0, 13),
+        expectedDaoInterest.toString().substr(0, 13),
       );
 
       // check tokens have moved correctly
@@ -288,7 +288,10 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      assert.equal(
+        poolStorage.unclaimedDaoJRT.substr(0, 13),
+        expectedUnclaimedJRT.substr(0, 13),
+      );
 
       let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
         .add(
@@ -298,18 +301,20 @@ contract('AaveV3 Lending module', accounts => {
         )
         .toString();
       assert.equal(
-        poolStorage.unclaimedDaoCommission.toString(),
-        expectedDaoCommisson,
+        poolStorage.unclaimedDaoCommission.toString().substr(0, 14),
+        expectedDaoCommisson.substr(0, 14),
       );
     });
 
     it('First Withdraw - Correctly withdraw and update values, interest', async () => {
+      let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
+
       // borrow on aave to generate interest
       await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
 
       let amountWithdraw = toWei('1');
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
-      let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
+      let userUSDCBefore = await USDCInstance.balanceOf.call(user);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
       let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -344,6 +349,7 @@ contract('AaveV3 Lending module', accounts => {
       let expectedDaoInterest = expectedInterest
         .mul(toBN(daoInterestShare))
         .div(toBN(Math.pow(10, 18)));
+
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
       // check return values to pool
@@ -352,12 +358,12 @@ contract('AaveV3 Lending module', accounts => {
         amountWithdraw.toString(),
       );
       assert.equal(
-        returnValues.poolInterest.toString(),
-        expectedPoolInterest.toString(),
+        returnValues.poolInterest.toString().substr(0, 13),
+        expectedPoolInterest.toString().substr(0, 13),
       );
       assert.equal(
-        returnValues.daoInterest.toString(),
-        expectedDaoInterest.toString(),
+        returnValues.daoInterest.toString().substr(0, 14),
+        expectedDaoInterest.toString().substr(0, 14),
       );
 
       // check tokens have moved correctly
@@ -370,7 +376,7 @@ contract('AaveV3 Lending module', accounts => {
         poolAUSDCAfter.toString().substr(0, 14),
         poolAUSDCBefore
           .sub(toBN(amountWithdraw))
-          .add(expectedPoolInterest)
+          .add(toBN(returnValues.poolInterest))
           .add(toBN(returnValues.daoInterest))
           .toString()
           .substr(0, 14),
@@ -410,6 +416,25 @@ contract('AaveV3 Lending module', accounts => {
         poolStorage.unclaimedDaoCommission.toString(),
         expectedDaoCommisson,
       );
+    });
+
+    it('Correctly claim commissions', async () => {
+      // sets recipient
+      let commissionReceiver = accounts[4];
+      await finder.changeImplementationAddress(
+        web3Utils.utf8ToHex('CommissionReceiver'),
+        commissionReceiver,
+        { from: maintainer },
+      );
+
+      // claim commission
+      let amount = (
+        await await storageManager.getPoolStorage.call(poolMock.address)
+      ).unclaimedDaoCommission;
+      console.log(amount.toString());
+      let tx = await poolMock.claimCommission(amount, aUSDC.address, {
+        from: accounts[0],
+      });
     });
   });
 });
