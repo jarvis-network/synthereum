@@ -143,7 +143,11 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     emit Withdraw(msg.sender, amount, recipient);
   }
 
-  function claimCommission(uint256 amount) external override returns (uint256) {
+  function claimCommission(uint256 amount)
+    external
+    override
+    returns (ReturnValues memory returnValues)
+  {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
     address recipient =
@@ -160,7 +164,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
           recipient
         )
       );
-    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
+    returnValues = abi.decode(result, (ReturnValues));
 
     //update pool storage
     uint256 newCollateralDeposited =
@@ -172,8 +176,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         10**18;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        (returnValues.daoInterest *
-          (returnValues.daoInterest * poolData.JRTBuybackShare)) /
+        (returnValues.daoInterest * poolData.JRTBuybackShare) /
         10**18;
 
     poolStorageManager.updateValues(
@@ -182,15 +185,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       newUnclaimedDaoJRT,
       newUnclaimedDaoCommission
     );
-
-    return amount;
   }
 
   // add amount
   function executeBuyback(uint256 amount, bytes memory swapParams)
     external
     override
-    returns (uint256 amountOut)
+    returns (ReturnValues memory returnValues)
   {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
@@ -199,20 +200,20 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       address(poolData.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount, address(this))
       );
-    ReturnValues memory returnValues = abi.decode(withdrawRes, (ReturnValues));
+    returnValues = abi.decode(withdrawRes, (ReturnValues));
 
     //update pool storage
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest;
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        returnValues.daoInterest *
-        (1 - poolData.JRTBuybackShare);
+        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
+        10**18;
     uint256 newUnclaimedDaoJRT =
-      poolData.unclaimedDaoJRT +
-        returnValues.daoInterest *
-        poolData.JRTBuybackShare -
-        amount;
+      poolData.unclaimedDaoJRT -
+        amount +
+        (returnValues.daoInterest * poolData.JRTBuybackShare) /
+        10**18;
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -239,7 +240,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         )
       );
 
-    amountOut = abi.decode(result, (uint256));
+    returnValues.tokensOut = abi.decode(result, (uint256));
   }
 
   // called by factory
@@ -248,6 +249,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     onlyMaintainer
   {
     poolStorageManager.setLendingModule(lendingModule, id);
+  }
+
+  function setSwapModule(address swapModule, address collateral)
+    external
+    onlyMaintainer
+  {
+    poolStorageManager.setSwapModule(swapModule, collateral);
   }
 
   // called by factory

@@ -34,6 +34,13 @@ contract PoolStorageManager is IPoolStorageManager {
     idToLending[id] = lendingModule;
   }
 
+  function setSwapModule(address swapModule, address collateral)
+    external
+    onlyProxy
+  {
+    collateralToSwapModule[collateral] = swapModule;
+  }
+
   function setPoolStorage(
     address pool,
     address collateral,

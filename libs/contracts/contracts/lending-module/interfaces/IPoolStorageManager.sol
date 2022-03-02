@@ -15,6 +15,8 @@ interface IPoolStorageManager {
 
   function setLendingModule(address lendingModule, string memory id) external;
 
+  function setSwapModule(address swapModule, address collateral) external;
+
   function setPoolStorage(
     address pool,
     address collateral,

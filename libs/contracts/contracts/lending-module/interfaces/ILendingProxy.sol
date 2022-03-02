@@ -28,13 +28,15 @@ interface ILendingProxy {
 
   function claimCommission(uint256 amount)
     external
-    returns (uint256 amountClaimed);
+    returns (ReturnValues memory returnValues);
 
   function executeBuyback(uint256 amount, bytes memory swapParams)
     external
-    returns (uint256 amountOut);
+    returns (ReturnValues memory returnValues);
 
   function setLendingModule(address lendingModule, string memory id) external;
+
+  function setSwapModule(address swapModule, address collateral) external;
 
   function setPool(
     address pool,
