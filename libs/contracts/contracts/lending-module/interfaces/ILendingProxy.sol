@@ -6,13 +6,7 @@ interface ILendingProxy {
     uint256 poolInterest;
     uint256 daoInterest;
     uint256 tokensOut;
-  }
-
-  struct ConversionValues {
-    uint256 interestBearingTokenAmount;
-    uint256 interestTokenFee;
-    uint256 collateralFee;
-    bool isFeePositive;
+    uint256 tokensTransferred;
   }
 
   event PoolRegistered(
@@ -72,6 +66,9 @@ interface ILendingProxy {
 
   function collateralToInterestToken(
     uint256 collateralAmount,
-    bool isExactAmount
-  ) external view returns (ConversionValues memory, address interestTokenAddr);
+    bool isExactTransfer
+  )
+    external
+    view
+    returns (uint256 interestTokenAmount, address interestTokenAddr);
 }

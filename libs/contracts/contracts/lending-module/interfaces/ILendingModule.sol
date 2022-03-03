@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import {IPoolStorageManager} from './IPoolStorageManager.sol';
-import {ILendingProxy} from './ILendingProxy.sol';
 
 interface ILendingModule {
   function deposit(
@@ -12,9 +11,10 @@ interface ILendingModule {
   )
     external
     returns (
-      uint256 tokensOut,
       uint256 poolInterest,
-      uint256 daoInterest
+      uint256 daoInterest,
+      uint256 tokensOut,
+      uint256 tokensTransferred
     );
 
   function withdraw(
@@ -25,9 +25,10 @@ interface ILendingModule {
   )
     external
     returns (
-      uint256 tokensOut,
       uint256 poolInterest,
-      uint256 daoInterest
+      uint256 daoInterest,
+      uint256 tokensOut,
+      uint256 tokensTransferred
     );
 
   function getInterestBearingToken(
@@ -41,6 +42,6 @@ interface ILendingModule {
     address collateral,
     address interestToken,
     bytes memory extraArgs,
-    bool isExactAmount
-  ) external view returns (ILendingProxy.ConversionValues memory);
+    bool isExactTransfer
+  ) external view returns (uint256 interestTokenAmount);
 }

@@ -9,7 +9,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {ILendingModule, ILendingProxy} from '../interfaces/ILendingModule.sol';
+import {ILendingModule} from '../interfaces/ILendingModule.sol';
 
 contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
@@ -23,7 +23,8 @@ contract AaveV3Module is ILendingModule {
     returns (
       uint256 poolInterest,
       uint256 daoInterest,
-      uint256 tokensOut
+      uint256 tokensOut,
+      uint256 tokensTransferred
     )
   {
     // calculate accrued interest since last operation
@@ -51,6 +52,7 @@ contract AaveV3Module is ILendingModule {
 
     // aave tokens are always 1:1
     tokensOut = amount;
+    tokensTransferred = amount;
   }
 
   function withdraw(
@@ -63,7 +65,8 @@ contract AaveV3Module is ILendingModule {
     returns (
       uint256 poolInterest,
       uint256 daoInterest,
-      uint256 tokensOut
+      uint256 tokensOut,
+      uint256 tokensTransferred
     )
   {
     // calculate accrued interest since last operation
@@ -87,6 +90,7 @@ contract AaveV3Module is ILendingModule {
 
     // aave tokens are always 1:1
     tokensOut = aTokensAmount;
+    tokensTransferred = aTokensAmount;
   }
 
   function getInterestBearingToken(
@@ -105,8 +109,8 @@ contract AaveV3Module is ILendingModule {
     address interestToken,
     bytes memory extraArgs,
     bool isExactAmount
-  ) external view returns (ILendingProxy.ConversionValues memory values) {
-    values.interestBearingTokenAmount = collateralAmount;
+  ) external view returns (uint256 interestTokenAmount) {
+    interestTokenAmount = collateralAmount;
   }
 
   function decodeLendingArgs(

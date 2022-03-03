@@ -362,26 +362,23 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   function collateralToInterestToken(
     uint256 collateralAmount,
-    bool isExactAmount
+    bool isExactTransfer
   )
     external
     view
-    returns (
-      ConversionValues memory conversionValues,
-      address interestTokenAddr
-    )
+    returns (uint256 interestTokenAmount, address interestTokenAddr)
   {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
     bytes memory extraArgs =
       poolStorageManager.getLendingArgs(poolData.lendingModule);
 
-    conversionValues = ILendingModule(poolData.lendingModule)
+    interestTokenAmount = ILendingModule(poolData.lendingModule)
       .collateralToInterestToken(
       collateralAmount,
       poolData.collateral,
       poolData.interestBearingToken,
       extraArgs,
-      isExactAmount
+      isExactTransfer
     );
     interestTokenAddr = poolData.interestBearingToken;
   }
