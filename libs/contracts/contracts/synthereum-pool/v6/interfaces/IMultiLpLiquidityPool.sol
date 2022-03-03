@@ -39,6 +39,17 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     address recipient;
   }
 
+  struct RedeemParams {
+    // Amount of synthetic tokens that user wants to use for redeeming
+    uint256 numTokens;
+    // Minimium amount of collateral that user wants to redeem (anti-slippage)
+    uint256 minCollateral;
+    // Expiration time of the transaction
+    uint256 expiration;
+    // Address to which send collateral tokens redeemed
+    address recipient;
+  }
+
   /**
    * @notice Register a liquidity provider to the LP's whitelist
    * @notice This can be called only by the maintainer
@@ -88,6 +99,18 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function mint(MintParams calldata mintParams)
     external
     returns (uint256 syntheticTokensMinted, uint256 feePaid);
+
+  /**
+   * @notice Redeem amount of collateral using fixed number of synthetic token
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
+   * @return collateralRedeemed Amount of collateral redeem by user
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function redeem(RedeemParams calldata redeemParams)
+    external
+    returns (uint256 collateralRedeemed, uint256 feePaid);
 
   /**
    * @notice Set new liquidation reward percentage

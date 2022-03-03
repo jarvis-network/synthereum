@@ -3,12 +3,21 @@ pragma solidity >=0.8.0;
 
 interface ISynthereumMultiLpLiquidityPoolEvents {
   struct MintValues {
-    // Net collateral amount (CollateralAmount - feePercentage)
-    uint256 netCollateralAmount;
+    // numTokens * price
+    uint256 exchangeAmount;
     // Fee to be paid according to the fee percentage
     uint256 feeAmount;
-    // Number of synthetic tokens will be received according to the actual price in exchange for netCollateralAmount
+    // Number of synthetic tokens will be received ((totalCollateral - feeAmount - lending fee/bonus) / price)
     uint256 numTokens;
+  }
+
+  struct RedeemValues {
+    // numTokens * price
+    uint256 exchangeAmount;
+    // Fee to be paid according to the fee percentage
+    uint256 feeAmount;
+    // Net collateral amount will be received (totCollateral - feeAmount -lending fee/bonus )
+    uint256 collateralAmount;
   }
 
   /**
@@ -68,6 +77,20 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
     address indexed user,
     uint256 collateralSent,
     MintValues mintvalues,
+    address recipient
+  );
+
+  /**
+   * @notice Emitted when a user redeem the synthetic asset
+   * @param user Address of the user redeeming
+   * @param synthTokensSent Amount of synthetic asset sent by the user
+   * @param redeemvalues Include exchangeAmount, feeAmount and collateralAmount
+   * @param recipient Address receiving collateral unlocked
+   */
+  event Redeem(
+    address indexed user,
+    uint256 synthTokensSent,
+    RedeemValues redeemvalues,
     address recipient
   );
 
