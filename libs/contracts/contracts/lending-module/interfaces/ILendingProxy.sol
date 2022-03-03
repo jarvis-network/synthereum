@@ -45,6 +45,8 @@ interface ILendingProxy {
 
   function setSwapModule(address swapModule, address collateral) external;
 
+  function setLendingArgs(address lendingModule, bytes memory args) external;
+
   function setPool(
     address pool,
     address collateral,

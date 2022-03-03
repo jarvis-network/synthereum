@@ -31,11 +31,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   string public JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 
-  string public CONVERSION_SIG = 'collateralToInterestToken(uint256)';
-
-  string public INTEREST_TOKEN_SIG =
-    'getInterestBearingToken(address,address,address)';
-
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
@@ -264,6 +259,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     poolStorageManager.setSwapModule(swapModule, collateral);
   }
 
+  function setLendingArgs(address lendingModule, bytes memory args)
+    external
+    onlyMaintainer
+  {
+    poolStorageManager.setLendingArgs(lendingModule, args);
+  }
+
   // called by factory
   function setPool(
     address pool,
@@ -325,15 +327,15 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
         10**18;
 
+    // temporary set pool storage collateral to 0 to freshly deposit
+    poolStorageManager.updateValues(msg.sender, 0, 0, 0);
+
     // set new lending module and obtain new pool data
     poolData = poolStorageManager.migrateLendingModule(
       msg.sender,
       newLendingModule,
       newInterestBearingToken
     );
-
-    // temporary set pool storage collateral to 0 to freshly deposit
-    poolStorageManager.updateValues(msg.sender, 0, 0, 0);
 
     // delegate call deposit into new module
     bytes memory result =

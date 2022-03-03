@@ -40,6 +40,7 @@ contract AaveV3Module is ILendingModule {
     // aave deposit - approve
     address moneyMarket =
       decodeLendingArgs(storageManager, poolData.lendingModule);
+
     collateral.safeIncreaseAllowance(moneyMarket, amount);
     IPool(moneyMarket).deposit(
       address(collateral),
