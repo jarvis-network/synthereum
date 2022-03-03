@@ -72,7 +72,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         abi.encodeWithSignature(
           DEPOSIT_SIG,
           poolData,
-          address(poolStorageManager),
+          poolStorageManager,
           amount
         )
       );
@@ -198,7 +198,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     // delegate call withdraw into collateral
     bytes memory withdrawRes =
       address(poolData.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(WITHDRAW_SIG, poolData, amount, address(this))
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          poolStorageManager,
+          amount,
+          address(this)
+        )
       );
     returnValues = abi.decode(withdrawRes, (ReturnValues));
 
@@ -291,7 +297,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   function migrateLendingModule(
     address newLendingModule,
     address newInterestBearingToken,
-    address interestTokenAmount
+    uint256 interestTokenAmount
   ) external returns (ReturnValues memory returnValues) {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
 
@@ -301,30 +307,23 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
+          poolStorageManager,
           interestTokenAmount,
           address(this)
         )
       );
     returnValues = abi.decode(withdrawRes, (ReturnValues));
-
     // update storage with accumulated interest
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        returnValues.daoInterest *
-        poolData.JRTBuybackShare;
+        (returnValues.daoInterest * poolData.JRTBuybackShare) /
+        10**18;
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        returnValues.daoInterest *
-        (1 - poolData.JRTBuybackShare);
-
-    poolStorageManager.updateValues(
-      msg.sender,
-      newCollateralDeposited,
-      newUnclaimedDaoJRT,
-      newUnclaimedDaoCommission
-    );
+        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
+        10**18;
 
     // set new lending module and obtain new pool data
     poolData = poolStorageManager.migrateLendingModule(
@@ -333,6 +332,9 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       newInterestBearingToken
     );
 
+    // temporary set pool storage collateral to 0 to freshly deposit
+    poolStorageManager.updateValues(msg.sender, 0, 0, 0);
+
     // delegate call deposit into new module
     bytes memory result =
       address(poolData.lendingModule).functionDelegateCall(
@@ -340,31 +342,44 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
           DEPOSIT_SIG,
           poolData,
           poolStorageManager,
-          newCollateralDeposited +
-            newUnclaimedDaoCommission +
-            newUnclaimedDaoJRT
+          returnValues.tokensOut
         )
       );
+
+    // set pool storage
+    poolStorageManager.updateValues(
+      msg.sender,
+      newCollateralDeposited,
+      newUnclaimedDaoJRT,
+      newUnclaimedDaoCommission
+    );
 
     // set the return values tokensOut
     returnValues.tokensOut = abi.decode(result, (ReturnValues)).tokensOut;
   }
 
-  function collateralToInterestToken(uint256 collateralAmount)
+  function collateralToInterestToken(
+    uint256 collateralAmount,
+    bool isExactAmount
+  )
     external
     view
-    returns (uint256 interestBearingTokenAmount, address interestTokenAddr)
+    returns (
+      ConversionValues memory conversionValues,
+      address interestTokenAddr
+    )
   {
     IPoolStorageManager.PoolStorage memory poolData = onlyPool();
     bytes memory extraArgs =
       poolStorageManager.getLendingArgs(poolData.lendingModule);
 
-    interestBearingTokenAmount = ILendingModule(poolData.lendingModule)
+    conversionValues = ILendingModule(poolData.lendingModule)
       .collateralToInterestToken(
       collateralAmount,
       poolData.collateral,
       poolData.interestBearingToken,
-      extraArgs
+      extraArgs,
+      isExactAmount
     );
     interestTokenAddr = poolData.interestBearingToken;
   }

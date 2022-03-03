@@ -9,7 +9,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {ILendingModule} from '../interfaces/ILendingModule.sol';
+import {ILendingModule, ILendingProxy} from '../interfaces/ILendingModule.sol';
 
 contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
@@ -102,9 +102,10 @@ contract AaveV3Module is ILendingModule {
     uint256 collateralAmount,
     address collateral,
     address interestToken,
-    bytes memory extraArgs
-  ) external view returns (uint256 interestBearingTokenAmount) {
-    interestBearingTokenAmount = collateralAmount;
+    bytes memory extraArgs,
+    bool isExactAmount
+  ) external view returns (ILendingProxy.ConversionValues memory values) {
+    values.interestBearingTokenAmount = collateralAmount;
   }
 
   function decodeLendingArgs(

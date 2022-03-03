@@ -8,6 +8,13 @@ interface ILendingProxy {
     uint256 tokensOut;
   }
 
+  struct ConversionValues {
+    uint256 interestBearingTokenAmount;
+    uint256 interestTokenFee;
+    uint256 collateralFee;
+    bool isFeePositive;
+  }
+
   event PoolRegistered(
     address pool,
     address moneyMarket,
@@ -51,7 +58,7 @@ interface ILendingProxy {
   function migrateLendingModule(
     address newLendingModule,
     address newInterestBearingToken,
-    address interestTokenAmount
+    uint256 interestTokenAmount
   ) external returns (ReturnValues memory);
 
   function migrateLiquidity(address newPool) external;
@@ -61,8 +68,8 @@ interface ILendingProxy {
     view
     returns (address interestTokenAddr);
 
-  function collateralToInterestToken(uint256 collateralAmount)
-    external
-    view
-    returns (uint256 interestBearingTokenAmount, address interestTokenAddr);
+  function collateralToInterestToken(
+    uint256 collateralAmount,
+    bool isExactAmount
+  ) external view returns (ConversionValues memory, address interestTokenAddr);
 }

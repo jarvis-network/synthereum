@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import {IPoolStorageManager} from './IPoolStorageManager.sol';
+import {ILendingProxy} from './ILendingProxy.sol';
 
 interface ILendingModule {
   function deposit(
@@ -39,6 +40,7 @@ interface ILendingModule {
     uint256 collateralAmount,
     address collateral,
     address interestToken,
-    bytes memory extraArgs
-  ) external view returns (uint256 interestBearingTokenAmount);
+    bytes memory extraArgs,
+    bool isExactAmount
+  ) external view returns (ILendingProxy.ConversionValues memory);
 }
