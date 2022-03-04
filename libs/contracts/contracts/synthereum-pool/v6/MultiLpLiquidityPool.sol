@@ -464,7 +464,6 @@ contract SynthereumMultiLpLiquidityPool is
       totalSynthTokens,
       redeemParams.numTokens,
       redeemValues.feeAmount,
-      price,
       positionsCache
     );
 
@@ -482,6 +481,33 @@ contract SynthereumMultiLpLiquidityPool is
       redeemValues,
       redeemParams.recipient
     );
+
+    return (redeemValues.collateralAmount, redeemValues.feeAmount);
+  }
+
+  /**
+   * @notice Set the overCollateralization by an active LP
+   * @notice This can be called only by an active LP
+   * @param _overCollateralization New overCollateralizations
+   */
+  function setOvercollateralization(uint256 _overCollateralization)
+    external
+    override
+    nonReentrant
+  {
+    address msgSender = _msgSender();
+
+    require(isActiveLP(msgSender), 'Sender must be an active LP');
+
+    require(
+      _overCollateralization >
+        liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
+      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
+    );
+
+    lpPositions[msgSender].overCollateralization = _overCollateralization;
+
+    emit SetOvercollateralization(msgSender, _overCollateralization);
   }
 
   /**
@@ -724,8 +750,7 @@ contract SynthereumMultiLpLiquidityPool is
         _isExactTransfer
       );
     IERC20(bearingToken).safeTransfer(address(lendingManager), bearingAmount);
-    ILendingProxy.ReturnValues memory lendingValues =
-      lendingManager.withdraw(bearingAmount, _recipient);
+    return lendingManager.withdraw(bearingAmount, _recipient);
   }
 
   /**
@@ -1121,50 +1146,6 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Calculate fee and synthetic asset of each Lp in a redeem transaction
-   * @param _totalNumTokens Total amount of synethtic asset in the pool
-   * @param _redeemNumTokens Total amount of synethtic asset to redeem
-   * @param _feeAmount Total amount of fee to charge to the LPs
-   * @param _price Actual price of the pair
-   * @param _positionsCache Temporary memory cache containing LPs positions
-   */
-  function _calculateRedeemTokensAndFee(
-    uint256 _totalNumTokens,
-    uint256 _redeemNumTokens,
-    uint256 _feeAmount,
-    uint256 _price,
-    PositionCache[] memory _positionsCache
-  ) internal view {
-    uint256 lpNumbers = _positionsCache.length;
-    uint256 remainingTokens = _redeemNumTokens;
-    uint256 remainingFees = _feeAmount;
-    for (uint256 j = 0; j < lpNumbers - 1; j++) {
-      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
-      uint256 shareProportion =
-        (lpPosition.tokensCollateralized).div(_totalNumTokens);
-      uint256 tokens = _redeemNumTokens.mul(shareProportion);
-      uint256 fees = _feeAmount.mul(shareProportion);
-      lpPosition.tokensCollateralized =
-        lpPosition.tokensCollateralized -
-        tokens;
-      lpPosition.actualCollateralAmount =
-        lpPosition.actualCollateralAmount +
-        fees;
-      remainingTokens = remainingTokens - tokens;
-      remainingFees = remainingFees - fees;
-    }
-
-    LPPosition memory lastLpPosition =
-      _positionsCache[lpNumbers - 1].lpPosition;
-    lastLpPosition.tokensCollateralized =
-      lastLpPosition.tokensCollateralized -
-      remainingTokens;
-    lastLpPosition.actualCollateralAmount =
-      lastLpPosition.actualCollateralAmount +
-      remainingFees;
-  }
-
-  /**
    * @notice Return the on-chain oracle price for a pair
    * @param _finder Synthereum finder
    * @param _priceIdentifier Identifier of price pair
@@ -1290,5 +1271,47 @@ contract SynthereumMultiLpLiquidityPool is
     returns (uint256)
   {
     return (_collateralAmount * (10**(18 - collateralDecimals))).div(_price);
+  }
+
+  /**
+   * @notice Calculate fee and synthetic asset of each Lp in a redeem transaction
+   * @param _totalNumTokens Total amount of synethtic asset in the pool
+   * @param _redeemNumTokens Total amount of synethtic asset to redeem
+   * @param _feeAmount Total amount of fee to charge to the LPs
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   */
+  function _calculateRedeemTokensAndFee(
+    uint256 _totalNumTokens,
+    uint256 _redeemNumTokens,
+    uint256 _feeAmount,
+    PositionCache[] memory _positionsCache
+  ) internal pure {
+    uint256 lpNumbers = _positionsCache.length;
+    uint256 remainingTokens = _redeemNumTokens;
+    uint256 remainingFees = _feeAmount;
+    for (uint256 j = 0; j < lpNumbers - 1; j++) {
+      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+      uint256 shareProportion =
+        (lpPosition.tokensCollateralized).div(_totalNumTokens);
+      uint256 tokens = _redeemNumTokens.mul(shareProportion);
+      uint256 fees = _feeAmount.mul(shareProportion);
+      lpPosition.tokensCollateralized =
+        lpPosition.tokensCollateralized -
+        tokens;
+      lpPosition.actualCollateralAmount =
+        lpPosition.actualCollateralAmount +
+        fees;
+      remainingTokens = remainingTokens - tokens;
+      remainingFees = remainingFees - fees;
+    }
+
+    LPPosition memory lastLpPosition =
+      _positionsCache[lpNumbers - 1].lpPosition;
+    lastLpPosition.tokensCollateralized =
+      lastLpPosition.tokensCollateralized -
+      remainingTokens;
+    lastLpPosition.actualCollateralAmount =
+      lastLpPosition.actualCollateralAmount +
+      remainingFees;
   }
 }

@@ -113,6 +113,13 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     returns (uint256 collateralRedeemed, uint256 feePaid);
 
   /**
+   * @notice Set the overCollateralization by an active LP
+   * @notice This can be called only by an active LP
+   * @param _overCollateralization New overCollateralizations
+   */
+  function setOvercollateralization(uint256 _overCollateralization) external;
+
+  /**
    * @notice Set new liquidation reward percentage
    * @notice This can be called only by the maintainer
    * @param _newLiquidationReward New liquidation reward percentage
