@@ -1218,12 +1218,16 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 _price
   ) internal view returns (uint256) {
     return
-      PreciseUnitMath.min(
-        _calculateCollateralAmount(_tokensCollateralized, _price)
-          .mul(_overCollateralization)
-          .div(_actualCollateralAmount),
-        PreciseUnitMath.PRECISE_UNIT
-      );
+      _actualCollateralAmount != 0
+        ? PreciseUnitMath.min(
+          _calculateCollateralAmount(_tokensCollateralized, _price)
+            .mul(_overCollateralization)
+            .div(_actualCollateralAmount),
+          PreciseUnitMath.PRECISE_UNIT
+        )
+        : _tokensCollateralized > 0
+        ? PreciseUnitMath.PRECISE_UNIT
+        : 0;
   }
 
   /**
