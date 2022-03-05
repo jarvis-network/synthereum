@@ -95,6 +95,20 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
   );
 
   /**
+   * @notice Emitted when a user liquidate an LP
+   * @param user Address of the user liquidating
+   * @param synthTokensInLiquidation Amount of synthetic asset in liquidation
+   * @param collateralAmount Value of synthetic tokens in liquidation expressed in collateral (synthTokensInLiquidation * price)
+   * @param collateralReceived Amount of collateral received by liquidator (collateralAmount + liquidation bonus - lending fee/bonus)
+   */
+  event Liquidate(
+    address indexed user,
+    uint256 synthTokensInLiquidation,
+    uint256 collateralAmount,
+    uint256 collateralReceived
+  );
+
+  /**
    * @notice Emitted when new fee percentage is set in the pool by the maintainer
    * @param newFee New fee percentage
    */
