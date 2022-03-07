@@ -23,13 +23,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
-  string public constant DEPOSIT_SIG =
+  string private constant DEPOSIT_SIG =
     'deposit((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256)';
 
-  string public constant WITHDRAW_SIG =
+  string private constant WITHDRAW_SIG =
     'withdraw((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256,address)';
 
-  string public JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
+  string private JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 
   modifier onlyMaintainer() {
     require(
@@ -42,17 +42,16 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   constructor(
     address _finder,
     address _poolStorage,
-    address maintainer
+    Roles memory _roles
   ) {
     finder = _finder;
     poolStorageManager = IPoolStorageManager(_poolStorage);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(MAINTAINER_ROLE, maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
-
-  receive() external payable {}
 
   function deposit(uint256 amount)
     external

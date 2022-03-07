@@ -2,6 +2,11 @@
 pragma solidity >=0.8.0;
 
 interface ILendingProxy {
+  struct Roles {
+    address admin;
+    address maintainer;
+  }
+
   struct ReturnValues {
     uint256 poolInterest;
     uint256 daoInterest;
