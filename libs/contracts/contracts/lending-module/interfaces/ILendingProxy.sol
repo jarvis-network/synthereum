@@ -48,15 +48,6 @@ interface ILendingProxy {
 
   function setSwapModule(address swapModule, address collateral) external;
 
-  function setPool(
-    address pool,
-    address collateral,
-    string memory lendingID,
-    address interestBearingToken,
-    uint256 daoInterestShare,
-    uint256 jrtBuybackShare
-  ) external;
-
   function migrateLendingModule(
     address newLendingModule,
     address newInterestBearingToken,

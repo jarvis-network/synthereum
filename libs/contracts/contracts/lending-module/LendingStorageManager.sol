@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
-import {SynthereumInterfaces} from '../core/Constants.sol';
+import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
 
 contract LendingStorageManager is ILendingStorageManager {
   mapping(string => address) public idToLending; // ie 'aave' -> address(AaveModule)
@@ -20,6 +20,15 @@ contract LendingStorageManager is ILendingStorageManager {
         SynthereumInterfaces.LendingProxy
       );
     require(msg.sender == proxy, 'Not allowed');
+    _;
+  }
+
+  modifier onlyPoolFactory() {
+    address factory =
+      ISynthereumFinder(finder).getImplementationAddress(
+        FactoryInterfaces.PoolFactory
+      );
+    require(msg.sender == factory, 'Not allowed');
     _;
   }
 
@@ -50,7 +59,7 @@ contract LendingStorageManager is ILendingStorageManager {
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
-  ) external onlyProxy {
+  ) external onlyPoolFactory {
     // set lending args (ie moneyMarket)
     address lendingModule = idToLending[lendingID];
 
