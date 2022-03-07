@@ -13,17 +13,18 @@ interface ILendingStorageManager {
     uint256 unclaimedDaoCommission;
   }
 
-  function setLendingModule(address lendingModule, string memory id) external;
+  function setLendingModule(
+    address lendingModule,
+    bytes memory args,
+    string memory id
+  ) external;
 
   function setSwapModule(address swapModule, address collateral) external;
-
-  function setLendingArgs(address lendingModule, bytes memory args) external;
 
   function setPoolStorage(
     address pool,
     address collateral,
     string memory lendingID,
-    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
@@ -34,7 +35,8 @@ interface ILendingStorageManager {
   function migrateLendingModule(
     address pool,
     address newLendingModule,
-    address newInterestToken
+    address newInterestToken,
+    bytes memory newArgs
   ) external returns (PoolStorage memory);
 
   function updateValues(

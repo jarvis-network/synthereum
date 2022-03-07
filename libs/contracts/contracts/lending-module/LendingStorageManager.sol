@@ -27,11 +27,13 @@ contract LendingStorageManager is ILendingStorageManager {
     finder = _finder;
   }
 
-  function setLendingModule(address lendingModule, string memory id)
-    external
-    onlyProxy
-  {
+  function setLendingModule(
+    address lendingModule,
+    bytes memory args,
+    string memory id
+  ) external onlyProxy {
     idToLending[id] = lendingModule;
+    lendingToArgs[lendingModule] = args;
   }
 
   function setSwapModule(address swapModule, address collateral)
@@ -41,25 +43,16 @@ contract LendingStorageManager is ILendingStorageManager {
     collateralToSwapModule[collateral] = swapModule;
   }
 
-  function setLendingArgs(address lendingModule, bytes memory args)
-    external
-    onlyProxy
-  {
-    lendingToArgs[lendingModule] = args;
-  }
-
   function setPoolStorage(
     address pool,
     address collateral,
     string memory lendingID,
-    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external onlyProxy {
     // set lending args (ie moneyMarket)
     address lendingModule = idToLending[lendingID];
-    lendingToArgs[lendingModule] = lendingArgs;
 
     // set pool storage
     PoolStorage storage poolData = poolStorage[pool];
@@ -97,8 +90,10 @@ contract LendingStorageManager is ILendingStorageManager {
   function migrateLendingModule(
     address pool,
     address newLendingModule,
-    address newInterestToken
+    address newInterestToken,
+    bytes memory newArgs
   ) external onlyProxy returns (PoolStorage memory) {
+    // set lending module
     PoolStorage storage poolData = poolStorage[pool];
     poolData.lendingModule = newLendingModule;
     poolData.interestBearingToken = newInterestToken == address(0)
@@ -108,6 +103,9 @@ contract LendingStorageManager is ILendingStorageManager {
         poolData.lendingModule
       )
       : newInterestToken;
+
+    // set lending args
+    lendingToArgs[newLendingModule] = newArgs;
 
     return poolStorage[pool];
   }

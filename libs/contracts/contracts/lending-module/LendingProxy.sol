@@ -251,12 +251,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   }
 
   // called by factory
-  function setLendingModule(address lendingModule, string memory id)
-    external
-    onlyMaintainer
-  {
+  function setLendingModule(
+    address lendingModule,
+    bytes memory args,
+    string memory id
+  ) external onlyMaintainer {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setLendingModule(lendingModule, id);
+    poolStorageManager.setLendingModule(lendingModule, args, id);
   }
 
   function setSwapModule(address swapModule, address collateral)
@@ -267,20 +268,11 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     poolStorageManager.setSwapModule(swapModule, collateral);
   }
 
-  function setLendingArgs(address lendingModule, bytes memory args)
-    external
-    onlyMaintainer
-  {
-    ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setLendingArgs(lendingModule, args);
-  }
-
   // called by factory
   function setPool(
     address pool,
     address collateral,
     string memory lendingID,
-    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
@@ -290,7 +282,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       pool,
       collateral,
       lendingID,
-      lendingArgs,
       interestBearingToken,
       daoInterestShare,
       jrtBuybackShare
@@ -312,7 +303,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   function migrateLendingModule(
     address newLendingModule,
     address newInterestBearingToken,
-    uint256 interestTokenAmount
+    uint256 interestTokenAmount,
+    bytes memory newArgs
   ) external returns (ReturnValues memory returnValues) {
     (
       ILendingStorageManager.PoolStorage memory poolData,
@@ -350,7 +342,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     poolData = poolStorageManager.migrateLendingModule(
       msg.sender,
       newLendingModule,
-      newInterestBearingToken
+      newInterestBearingToken,
+      newArgs
     );
 
     // delegate call deposit into new module

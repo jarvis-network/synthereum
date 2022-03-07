@@ -40,17 +40,18 @@ interface ILendingProxy {
     external
     returns (ReturnValues memory returnValues);
 
-  function setLendingModule(address lendingModule, string memory id) external;
+  function setLendingModule(
+    address lendingModule,
+    bytes memory args,
+    string memory id
+  ) external;
 
   function setSwapModule(address swapModule, address collateral) external;
-
-  function setLendingArgs(address lendingModule, bytes memory args) external;
 
   function setPool(
     address pool,
     address collateral,
     string memory lendingID,
-    bytes memory lendingArgs,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
@@ -59,7 +60,8 @@ interface ILendingProxy {
   function migrateLendingModule(
     address newLendingModule,
     address newInterestBearingToken,
-    uint256 interestTokenAmount
+    uint256 interestTokenAmount,
+    bytes memory newArgs
   ) external returns (ReturnValues memory);
 
   function migrateLiquidity(address newPool) external;
