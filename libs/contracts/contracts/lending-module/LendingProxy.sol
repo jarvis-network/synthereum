@@ -89,8 +89,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       newUnclaimedDaoJRT,
       newUnclaimedDaoCommission
     );
-
-    emit Deposit(msg.sender, amount);
   }
 
   function withdraw(uint256 amount, address recipient)
@@ -134,8 +132,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       newUnclaimedDaoJRT,
       newUnclaimedDaoCommission
     );
-
-    emit Withdraw(msg.sender, amount, recipient);
   }
 
   function claimCommission(uint256 amount)

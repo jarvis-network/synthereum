@@ -21,8 +21,6 @@ interface ILendingProxy {
     address jrtSwapModule,
     address interestBearingToken
   );
-  event Deposit(address pool, uint256 amount);
-  event Withdraw(address pool, uint256 amount, address recipient);
 
   function deposit(uint256 amount)
     external
