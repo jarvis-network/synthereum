@@ -146,4 +146,8 @@ contract PoolLendingMock is ISynthereumDeployment {
         interestTokenAmount
       );
   }
+
+  function migratePool(address newPool) external {
+    proxy.migrateLiquidity(newPool);
+  }
 }

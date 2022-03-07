@@ -15,9 +15,6 @@ const AToken = artifacts.require('ATokenMock');
 const AAVE = artifacts.require('AAVEMock');
 const JRTSWAP = artifacts.require('JRTSwapModule');
 const data = require('../../data/test/lendingTestnet.json');
-const {
-  collapseTextChangeRangesAcrossMultipleVersions,
-} = require('typescript');
 
 const { toBN, toWei, toHex } = web3Utils;
 
@@ -539,8 +536,8 @@ contract('AaveV3 Lending module', accounts => {
         .toString();
 
       assert.equal(
-        poolStorage.unclaimedDaoCommission.toString().substr(0, 13),
-        expectedDaoCommisson.substr(0, 13),
+        poolStorage.unclaimedDaoCommission.toString().substr(0, 12),
+        expectedDaoCommisson.substr(0, 12),
       );
     });
 
@@ -655,6 +652,72 @@ contract('AaveV3 Lending module', accounts => {
       // check lending module changed
       assert.equal(poolStorage.lendingModule, newModule.address);
       assert.equal(poolStorage.interestBearingToken, aUSDC.address);
+    });
+
+    it('Correctly migrate pool data to a new one', async () => {
+      // deploy new pool
+      let newPool = await PoolMock.new(
+        USDC,
+        jEUR.address,
+        proxy.address,
+        storageManager.address,
+        { from: maintainer },
+      );
+
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+
+      // call migration from pool
+      await poolMock.migratePool(newPool.address);
+
+      let poolStorageAft = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+      let newPoolStorageAft = await storageManager.getPoolStorage.call(
+        newPool.address,
+      );
+
+      // check storage have been copied on new pool
+      assert.equal(
+        poolStorageBefore.lendingModule,
+        newPoolStorageAft.lendingModule,
+      );
+      assert.equal(poolStorageBefore.collateral, newPoolStorageAft.collateral);
+      assert.equal(
+        poolStorageBefore.interestBearingToken,
+        newPoolStorageAft.interestBearingToken,
+      );
+      assert.equal(
+        poolStorageBefore.JRTBuybackShare,
+        newPoolStorageAft.JRTBuybackShare,
+      );
+      assert.equal(
+        poolStorageBefore.daoInterestShare,
+        newPoolStorageAft.daoInterestShare,
+      );
+      assert.equal(
+        poolStorageBefore.collateralDeposited,
+        newPoolStorageAft.collateralDeposited,
+      );
+      assert.equal(
+        poolStorageBefore.unclaimedDaoJRT,
+        newPoolStorageAft.unclaimedDaoJRT,
+      );
+      assert.equal(
+        poolStorageBefore.unclaimedDaoCommission,
+        newPoolStorageAft.unclaimedDaoCommission,
+      );
+
+      // check old pool data is reset
+      assert.equal(poolStorageAft.lendingModule, ZERO_ADDRESS);
+      assert.equal(poolStorageAft.collateral, ZERO_ADDRESS);
+      assert.equal(poolStorageAft.interestBearingToken, ZERO_ADDRESS);
+      assert.equal(poolStorageAft.JRTBuybackShare, toWei('0'));
+      assert.equal(poolStorageAft.daoInterestShare, toWei('0'));
+      assert.equal(poolStorageAft.collateralDeposited, toWei('0'));
+      assert.equal(poolStorageAft.unclaimedDaoJRT, toWei('0'));
+      assert.equal(poolStorageAft.unclaimedDaoCommission, toWei('0'));
     });
 
     // it('Correctly claim and swap to JRT', async () => {
