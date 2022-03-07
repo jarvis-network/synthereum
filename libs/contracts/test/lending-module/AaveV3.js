@@ -9,7 +9,7 @@ const LendingModule = artifacts.require('AaveV3Module');
 const PoolMock = artifacts.require('PoolLendingMock');
 const LendingProxy = artifacts.require('LendingProxy');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const PoolStorageManager = artifacts.require('PoolStorageManager');
+const LendingStorageManager = artifacts.require('LendingStorageManager');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const AToken = artifacts.require('ATokenMock');
 const AAVE = artifacts.require('AAVEMock');
@@ -22,6 +22,8 @@ contract('AaveV3 Lending module', accounts => {
   let finder, poolMock, module, proxy, storageManager, networkId;
   let aUSDC, USDC, USDCInstance, aaveInstance;
   const maintainer = accounts[1];
+  const admin = accounts[0];
+  const Roles = { admin, maintainer };
   const daoInterestShare = toWei('0.4');
   const jrtShare = toWei('0.5');
   const commissionShare = toWei('0.5');
@@ -75,12 +77,8 @@ contract('AaveV3 Lending module', accounts => {
   before(async () => {
     networkId = await web3.eth.net.getId();
     finder = await SynthereumFinder.deployed();
-    storageManager = await PoolStorageManager.new(finder.address);
-    proxy = await LendingProxy.new(
-      finder.address,
-      storageManager.address,
-      maintainer,
-    );
+    storageManager = await LendingStorageManager.new(finder.address);
+    proxy = await LendingProxy.new(finder.address, Roles);
     aUSDC = await AToken.at(data[networkId].aUSDC);
     USDC = await aUSDC.UNDERLYING_ASSET_ADDRESS.call();
     USDCInstance = await TestnetSelfMintingERC20.at(USDC);
@@ -90,34 +88,34 @@ contract('AaveV3 Lending module', accounts => {
     });
     aaveInstance = await AAVE.at(data[networkId].AaveV3);
     module = await LendingModule.new();
-    poolMock = await PoolMock.new(
-      USDC,
-      jEUR.address,
-      proxy.address,
-      storageManager.address,
-      { from: maintainer },
-    );
+    poolMock = await PoolMock.new(USDC, jEUR.address, proxy.address, {
+      from: maintainer,
+    });
     await finder.changeImplementationAddress(
       web3Utils.utf8ToHex('LendingProxy'),
       proxy.address,
+      { from: maintainer },
+    );
+    await finder.changeImplementationAddress(
+      web3Utils.utf8ToHex('LendingStorageManager'),
+      storageManager.address,
       { from: maintainer },
     );
   });
 
   describe('Pool storage manager', async () => {
     it('Allows maintainer to set a pool', async () => {
-      await proxy.setLendingModule(module.address, 'aave', {
-        from: maintainer,
-      });
       let args = web3.eth.abi.encodeParameters(
         ['address'],
         [data[networkId].AaveV3],
       );
+      await proxy.setLendingModule(module.address, args, 'aave', {
+        from: maintainer,
+      });
       await proxy.setPool(
         poolMock.address,
         USDC,
         'aave',
-        args,
         aUSDC.address,
         daoInterestShare,
         jrtShare,
@@ -556,7 +554,6 @@ contract('AaveV3 Lending module', accounts => {
         ['address'],
         [data[networkId].AaveV3],
       );
-      await proxy.setLendingArgs(newModule.address, args, { from: maintainer });
 
       let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -568,12 +565,14 @@ contract('AaveV3 Lending module', accounts => {
         aUSDC.address,
         newModule.address,
         aUSDC.address,
+        args,
         amount,
       );
       await poolMock.migrateLendingModule(
         aUSDC.address,
         newModule.address,
         aUSDC.address,
+        args,
         amount,
       );
 
@@ -656,13 +655,9 @@ contract('AaveV3 Lending module', accounts => {
 
     it('Correctly migrate pool data to a new one', async () => {
       // deploy new pool
-      let newPool = await PoolMock.new(
-        USDC,
-        jEUR.address,
-        proxy.address,
-        storageManager.address,
-        { from: maintainer },
-      );
+      let newPool = await PoolMock.new(USDC, jEUR.address, proxy.address, {
+        from: maintainer,
+      });
 
       let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
