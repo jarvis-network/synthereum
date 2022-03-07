@@ -101,10 +101,15 @@ contract('AaveV3 Lending module', accounts => {
       storageManager.address,
       { from: maintainer },
     );
+    await finder.changeImplementationAddress(
+      web3Utils.utf8ToHex('PoolFactory'),
+      maintainer,
+      { from: maintainer },
+    );
   });
 
   describe('Pool storage manager', async () => {
-    it('Allows maintainer to set a pool', async () => {
+    it('Allows pool factory to set a pool and lending module', async () => {
       let args = web3.eth.abi.encodeParameters(
         ['address'],
         [data[networkId].AaveV3],
@@ -112,7 +117,7 @@ contract('AaveV3 Lending module', accounts => {
       await proxy.setLendingModule(module.address, args, 'aave', {
         from: maintainer,
       });
-      await proxy.setPool(
+      await storageManager.setPoolStorage(
         poolMock.address,
         USDC,
         'aave',
@@ -133,6 +138,50 @@ contract('AaveV3 Lending module', accounts => {
         daoInterestShare.toString(),
       );
       assert.equal(poolStorage.JRTBuybackShare.toString(), jrtShare.toString());
+    });
+
+    it('Allows maintainer to set new shares', async () => {
+      let newJRTShare = toWei('0.4');
+      let newDaoInterestShare = toWei('0.4');
+
+      await proxy.setShares(
+        poolMock.address,
+        newDaoInterestShare,
+        newJRTShare,
+        { from: maintainer },
+      );
+
+      let poolStorageAfter = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+
+      assert.equal(
+        poolStorageAfter.JRTBuybackShare.toString(),
+        newJRTShare.toString(),
+      );
+      assert.equal(
+        poolStorageAfter.daoInterestShare.toString(),
+        newDaoInterestShare.toString(),
+      );
+
+      // reset to original
+      await proxy.setShares(poolMock.address, daoInterestShare, jrtShare, {
+        from: maintainer,
+      });
+    });
+
+    it('Allows maintainer to set new swap module', async () => {
+      let newSwapModule = accounts[10];
+
+      await proxy.setSwapModule(newSwapModule, USDC, { from: maintainer });
+
+      let expectedModule = await storageManager.getCollateralSwapModule.call(
+        USDC,
+      );
+      assert.equal(expectedModule, newSwapModule);
+
+      // reset to original
+      await proxy.setSwapModule(ZERO_ADDRESS, USDC, { from: maintainer });
     });
   });
   describe('AAVe module', () => {
