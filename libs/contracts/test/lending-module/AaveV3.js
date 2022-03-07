@@ -254,6 +254,10 @@ contract('AaveV3 Lending module', accounts => {
       // borrow on aave to generate interest
       await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
 
+      let generatedInterest = await proxy.getAccumulatedInterest.call(
+        poolMock.address,
+      );
+
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
       assert.equal(
         userUSDCBefore.toString(),
@@ -301,6 +305,10 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(
         returnValues.daoInterest.toString().substr(0, 13),
         expectedDaoInterest.toString().substr(0, 13),
+      );
+      assert.equal(
+        generatedInterest.toString().substr(0, 14),
+        expectedPoolInterest.toString().substr(0, 14),
       );
 
       // check tokens have moved correctly
