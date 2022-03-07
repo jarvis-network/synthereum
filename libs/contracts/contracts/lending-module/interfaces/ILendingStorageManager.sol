@@ -21,6 +21,12 @@ interface ILendingStorageManager {
 
   function setSwapModule(address swapModule, address collateral) external;
 
+  function setShares(
+    address pool,
+    uint256 daoInterestShare,
+    uint256 jrtBuybackShare
+  ) external;
+
   function setPoolStorage(
     address pool,
     address collateral,

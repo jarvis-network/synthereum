@@ -268,6 +268,15 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     poolStorageManager.setSwapModule(swapModule, collateral);
   }
 
+  function setShares(
+    address pool,
+    uint256 daoInterestShare,
+    uint256 jrtBuybackShare
+  ) external onlyMaintainer {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    poolStorageManager.setShares(pool, daoInterestShare, jrtBuybackShare);
+  }
+
   // when pool is upgraded and liquidity transfered to a new Pool
   function migrateLiquidity(address newPool) external {
     (

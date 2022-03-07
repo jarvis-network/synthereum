@@ -52,6 +52,18 @@ contract LendingStorageManager is ILendingStorageManager {
     collateralToSwapModule[collateral] = swapModule;
   }
 
+  function setShares(
+    address pool,
+    uint256 daoInterestShare,
+    uint256 jrtBuybackShare
+  ) external onlyProxy {
+    PoolStorage storage poolData = poolStorage[pool];
+    require(poolData.lendingModule != address(0), 'Bad pool');
+
+    poolData.JRTBuybackShare = jrtBuybackShare;
+    poolData.daoInterestShare = daoInterestShare;
+  }
+
   function setPoolStorage(
     address pool,
     address collateral,
@@ -62,6 +74,7 @@ contract LendingStorageManager is ILendingStorageManager {
   ) external onlyPoolFactory {
     // set lending args (ie moneyMarket)
     address lendingModule = idToLending[lendingID];
+    require(lendingModule != address(0), 'Id not existent');
 
     // set pool storage
     PoolStorage storage poolData = poolStorage[pool];
