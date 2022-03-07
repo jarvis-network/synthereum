@@ -31,6 +31,11 @@ interface ILendingModule {
       uint256 tokensTransferred
     );
 
+  function getAccumulatedInterest(
+    address poolAddress,
+    ILendingStorageManager.PoolStorage calldata poolData
+  ) external view returns (uint256 poolInterest, uint256 daoInterest);
+
   function getInterestBearingToken(
     address collateral,
     address storageManager,

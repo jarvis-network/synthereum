@@ -29,6 +29,7 @@ contract AaveV3Module is ILendingModule {
   {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(
+      msg.sender,
       poolData,
       amount,
       true
@@ -71,6 +72,7 @@ contract AaveV3Module is ILendingModule {
   {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(
+      msg.sender,
       poolData,
       aTokensAmount,
       false
@@ -91,6 +93,18 @@ contract AaveV3Module is ILendingModule {
     // aave tokens are always 1:1
     tokensOut = aTokensAmount;
     tokensTransferred = aTokensAmount;
+  }
+
+  function getAccumulatedInterest(
+    address poolAddress,
+    ILendingStorageManager.PoolStorage calldata poolData
+  ) external view returns (uint256 poolInterest, uint256 daoInterest) {
+    (poolInterest, daoInterest) = calculateGeneratedInterest(
+      poolAddress,
+      poolData,
+      0,
+      true
+    );
   }
 
   function getInterestBearingToken(
@@ -121,6 +135,7 @@ contract AaveV3Module is ILendingModule {
   }
 
   function calculateGeneratedInterest(
+    address poolAddress,
     ILendingStorageManager.PoolStorage calldata pool,
     uint256 amount,
     bool isDeposit
@@ -130,7 +145,7 @@ contract AaveV3Module is ILendingModule {
     uint256 ratio = pool.daoInterestShare;
     // get current pool total amount of collateral
     uint256 poolBalance =
-      IERC20(pool.interestBearingToken).balanceOf(msg.sender);
+      IERC20(pool.interestBearingToken).balanceOf(poolAddress);
 
     // the total interest is delta between current balance and lastBalance
     uint256 totalInterestGenerated;

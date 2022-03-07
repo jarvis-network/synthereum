@@ -392,6 +392,19 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       .interestBearingToken;
   }
 
+  function getAccumulatedInterest(address pool)
+    external
+    view
+    returns (uint256 poolInterest)
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    ILendingStorageManager.PoolStorage memory poolData =
+      poolStorageManager.getPoolStorage(pool);
+
+    (poolInterest, ) = ILendingModule(poolData.lendingModule)
+      .getAccumulatedInterest(pool, poolData);
+  }
+
   function onlyPool()
     internal
     view
