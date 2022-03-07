@@ -81,6 +81,6 @@ import '../fixed-rate/v1/FixedRateFactory.sol';
 import '../fixed-rate/v1/FixedRateWrapper.sol';
 import '../fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
 import '../lending-module/LendingProxy.sol';
-import '../lending-module/PoolStorageManager.sol';
+import '../lending-module/LendingStorageManager.sol';
 import '../lending-module/lending-modules/AaveV3.sol';
 import '../lending-module/swap-modules/JRTSwap.sol';

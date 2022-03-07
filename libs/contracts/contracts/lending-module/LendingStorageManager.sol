@@ -2,11 +2,11 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {IPoolStorageManager} from './interfaces/IPoolStorageManager.sol';
+import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 
-contract PoolStorageManager is IPoolStorageManager {
+contract LendingStorageManager is ILendingStorageManager {
   mapping(string => address) public idToLending; // ie 'aave' -> address(AaveModule)
   mapping(address => bytes) lendingToArgs; // info to be decoded in lending module (ie moneyMarket)
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address

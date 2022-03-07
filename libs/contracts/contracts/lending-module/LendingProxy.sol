@@ -3,8 +3,9 @@ pragma solidity 0.8.9;
 
 import {ILendingProxy} from './interfaces/ILendingProxy.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
-import {IPoolStorageManager} from './interfaces/IPoolStorageManager.sol';
+import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
@@ -19,7 +20,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   using SafeERC20 for IERC20;
 
   address immutable finder;
-  IPoolStorageManager immutable poolStorageManager;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
@@ -39,13 +39,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     _;
   }
 
-  constructor(
-    address _finder,
-    address _poolStorage,
-    Roles memory _roles
-  ) {
+  constructor(address _finder, Roles memory _roles) {
     finder = _finder;
-    poolStorageManager = IPoolStorageManager(_poolStorage);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -58,7 +53,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (ReturnValues memory returnValues)
   {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
 
     // delegate call implementation
     bytes memory result =
@@ -100,7 +98,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (ReturnValues memory returnValues)
   {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
 
     // delegate call implementation
     bytes memory result =
@@ -142,7 +143,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (ReturnValues memory returnValues)
   {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
 
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
@@ -187,7 +191,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     override
     returns (ReturnValues memory returnValues)
   {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
 
     // delegate call withdraw into collateral
     bytes memory withdrawRes =
@@ -248,6 +255,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     external
     onlyMaintainer
   {
+    ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setLendingModule(lendingModule, id);
   }
 
@@ -255,6 +263,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     external
     onlyMaintainer
   {
+    ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setSwapModule(swapModule, collateral);
   }
 
@@ -262,6 +271,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     external
     onlyMaintainer
   {
+    ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setLendingArgs(lendingModule, args);
   }
 
@@ -275,6 +285,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external override onlyMaintainer {
+    ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setPoolStorage(
       pool,
       collateral,
@@ -288,7 +299,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   // when pool is upgraded and liquidity transfered to a new Pool
   function migrateLiquidity(address newPool) external {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
 
     // migrate through storage manager
     poolStorageManager.migratePool(msg.sender, newPool);
@@ -300,7 +314,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     address newInterestBearingToken,
     uint256 interestTokenAmount
   ) external returns (ReturnValues memory returnValues) {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
 
     // delegate call withdraw collateral from old module
     bytes memory withdrawRes =
@@ -367,7 +384,11 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     view
     returns (uint256 interestTokenAmount, address interestTokenAddr)
   {
-    IPoolStorageManager.PoolStorage memory poolData = onlyPool();
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
+
     bytes memory extraArgs =
       poolStorageManager.getLendingArgs(poolData.lendingModule);
 
@@ -387,6 +408,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     view
     returns (address interestTokenAddr)
   {
+    ILendingStorageManager poolStorageManager = getStorageManager();
     interestTokenAddr = poolStorageManager
       .getPoolStorage(pool)
       .interestBearingToken;
@@ -395,9 +417,22 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   function onlyPool()
     internal
     view
-    returns (IPoolStorageManager.PoolStorage memory poolData)
+    returns (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager poolStorageManager
+    )
   {
+    poolStorageManager = getStorageManager();
     poolData = poolStorageManager.getPoolStorage(msg.sender);
     require(poolData.lendingModule != address(0), 'Not allowed');
+  }
+
+  function getStorageManager() internal view returns (ILendingStorageManager) {
+    return
+      ILendingStorageManager(
+        ISynthereumFinder(finder).getImplementationAddress(
+          SynthereumInterfaces.LendingStorageManager
+        )
+      );
   }
 }

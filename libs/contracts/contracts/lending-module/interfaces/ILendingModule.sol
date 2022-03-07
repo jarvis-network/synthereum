@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
-import {IPoolStorageManager} from './IPoolStorageManager.sol';
+import {ILendingStorageManager} from './ILendingStorageManager.sol';
 
 interface ILendingModule {
   function deposit(
-    IPoolStorageManager.PoolStorage calldata poolData,
-    IPoolStorageManager storageManager,
+    ILendingStorageManager.PoolStorage calldata poolData,
+    ILendingStorageManager storageManager,
     uint256 amount
   )
     external
@@ -18,8 +18,8 @@ interface ILendingModule {
     );
 
   function withdraw(
-    IPoolStorageManager.PoolStorage calldata poolData,
-    IPoolStorageManager storageManager,
+    ILendingStorageManager.PoolStorage calldata poolData,
+    ILendingStorageManager storageManager,
     uint256 amount,
     address recipient
   )

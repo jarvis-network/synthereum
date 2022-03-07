@@ -6,8 +6,8 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {ILendingProxy} from '../lending-module/interfaces/ILendingProxy.sol';
 import {
-  IPoolStorageManager
-} from '../lending-module/interfaces/IPoolStorageManager.sol';
+  ILendingStorageManager
+} from '../lending-module/interfaces/ILendingStorageManager.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import 'hardhat/console.sol';
@@ -64,18 +64,15 @@ contract PoolLendingMock is ISynthereumDeployment {
   IERC20 collToken;
   IERC20 synthToken;
   ILendingProxy proxy;
-  IPoolStorageManager storageManager;
 
   constructor(
     address collateral,
     address synth,
-    address lendingProxy,
-    address _storageManager
+    address lendingProxy
   ) {
     collToken = IERC20(collateral);
     synthToken = IERC20(synth);
     proxy = ILendingProxy(lendingProxy);
-    storageManager = IPoolStorageManager(_storageManager);
   }
 
   function synthereumFinder() external pure returns (ISynthereumFinder finder) {

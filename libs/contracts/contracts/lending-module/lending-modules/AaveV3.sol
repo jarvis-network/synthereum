@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {IPoolStorageManager} from '../interfaces/IPoolStorageManager.sol';
+import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
 import {IPool} from '../interfaces/IAaveV3.sol';
 import {IScaledBalanceToken} from '../interfaces/IScaledBalanceToken.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
@@ -15,8 +15,8 @@ contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
 
   function deposit(
-    IPoolStorageManager.PoolStorage calldata poolData,
-    IPoolStorageManager storageManager,
+    ILendingStorageManager.PoolStorage calldata poolData,
+    ILendingStorageManager storageManager,
     uint256 amount
   )
     external
@@ -56,8 +56,8 @@ contract AaveV3Module is ILendingModule {
   }
 
   function withdraw(
-    IPoolStorageManager.PoolStorage calldata poolData,
-    IPoolStorageManager storageManager,
+    ILendingStorageManager.PoolStorage calldata poolData,
+    ILendingStorageManager storageManager,
     uint256 aTokensAmount,
     address recipient
   )
@@ -99,7 +99,7 @@ contract AaveV3Module is ILendingModule {
     address lendingModule
   ) external returns (address token) {
     address moneyMarket =
-      decodeLendingArgs(IPoolStorageManager(storageManager), lendingModule);
+      decodeLendingArgs(ILendingStorageManager(storageManager), lendingModule);
     token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
   }
 
@@ -114,14 +114,14 @@ contract AaveV3Module is ILendingModule {
   }
 
   function decodeLendingArgs(
-    IPoolStorageManager storageManager,
+    ILendingStorageManager storageManager,
     address lendingModule
   ) internal view returns (address) {
     return abi.decode(storageManager.getLendingArgs(lendingModule), (address));
   }
 
   function calculateGeneratedInterest(
-    IPoolStorageManager.PoolStorage calldata pool,
+    ILendingStorageManager.PoolStorage calldata pool,
     uint256 amount,
     bool isDeposit
   ) internal view returns (uint256 poolInterest, uint256 daoInterest) {
