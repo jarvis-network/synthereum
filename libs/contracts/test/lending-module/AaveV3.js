@@ -363,6 +363,13 @@ contract('AaveV3 Lending module', accounts => {
       );
     });
 
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.deposit(10, { from: user }),
+        'Not allowed',
+      );
+    });
+
     it('First Withdraw - Correctly withdraw and update values, interest', async () => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
@@ -476,6 +483,13 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(
         poolStorage.unclaimedDaoCommission.toString().substr(0, 14),
         expectedDaoCommisson.substr(0, 14),
+      );
+    });
+
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.withdraw(10, user, { from: user }),
+        'Not allowed',
       );
     });
 
@@ -596,6 +610,13 @@ contract('AaveV3 Lending module', accounts => {
       );
     });
 
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.claimCommission(10, { from: user }),
+        'Not allowed',
+      );
+    });
+
     it('Correctly migrate lending module', async () => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
@@ -710,6 +731,14 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(poolStorage.interestBearingToken, aUSDC.address);
     });
 
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.migrateLendingModule(accounts[5], accounts[5], 10, toHex(0), {
+          from: user,
+        }),
+        'Not allowed',
+      );
+    });
     it('Correctly migrate pool data to a new one', async () => {
       // deploy new pool
       let newPool = await PoolMock.new(USDC, jEUR.address, proxy.address, {
@@ -772,6 +801,15 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(poolStorageAft.unclaimedDaoCommission, toWei('0'));
     });
 
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      let fakePool = await PoolMock.new(USDC, jEUR.address, proxy.address, {
+        from: maintainer,
+      });
+      await truffleAssert.reverts(
+        proxy.migrateLiquidity(fakePool.address, { from: user }),
+        'Not allowed',
+      );
+    });
     // it('Correctly claim and swap to JRT', async () => {
     //   let jrtSwap = await JRTSWAP.new();
     //   await proxy.setSwapModule(jrtSwap.address, USDC);
@@ -879,5 +917,12 @@ contract('AaveV3 Lending module', accounts => {
     //     expectedDaoCommisson.substr(0, 14),
     //   );
     // });
+
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.executeBuyback(10, toHex(0), { from: user }),
+        'Not allowed',
+      );
+    });
   });
 });
