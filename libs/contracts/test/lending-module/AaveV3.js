@@ -117,6 +117,8 @@ contract('AaveV3 Lending module', accounts => {
       await proxy.setLendingModule(module.address, args, 'aave', {
         from: maintainer,
       });
+
+      // by specifying the aAtoken
       await storageManager.setPoolStorage(
         poolMock.address,
         USDC,
@@ -148,6 +150,52 @@ contract('AaveV3 Lending module', accounts => {
       );
       assert.equal(expectedBearingToken, aUSDC.address);
       assert.equal(moduleBearingToken, aUSDC.address);
+
+      // by not specifying the aToken
+      await storageManager.setPoolStorage(
+        poolMock.address,
+        USDC,
+        'aave',
+        ZERO_ADDRESS,
+        daoInterestShare,
+        jrtShare,
+        { from: maintainer },
+      );
+
+      poolStorage = await storageManager.getPoolStorage.call(poolMock.address);
+      assert.equal(poolStorage.lendingModule, module.address);
+      assert.equal(poolStorage.collateral, USDC);
+      assert.equal(poolStorage.interestBearingToken, aUSDC.address);
+      assert.equal(
+        poolStorage.daoInterestShare.toString(),
+        daoInterestShare.toString(),
+      );
+      assert.equal(poolStorage.JRTBuybackShare.toString(), jrtShare.toString());
+
+      expectedBearingToken = await proxy.getInterestBearingToken.call(
+        poolMock.address,
+      );
+      moduleBearingToken = await module.getInterestBearingToken.call(
+        USDC,
+        storageManager.address,
+      );
+      assert.equal(expectedBearingToken, aUSDC.address);
+      assert.equal(moduleBearingToken, aUSDC.address);
+    });
+
+    it('Reverts if msg.sender is not the synthereum pool factory', async () => {
+      await truffleAssert.reverts(
+        storageManager.setPoolStorage(
+          poolMock.address,
+          USDC,
+          'aave',
+          aUSDC.address,
+          daoInterestShare,
+          jrtShare,
+          { from: accounts[4] },
+        ),
+        'Not allowed',
+      );
     });
 
     it('Allows maintainer to set new shares', async () => {
@@ -192,6 +240,62 @@ contract('AaveV3 Lending module', accounts => {
 
       // reset to original
       await proxy.setSwapModule(ZERO_ADDRESS, USDC, { from: maintainer });
+    });
+
+    it('Reverts if msg.sender is not the maintainer', async () => {
+      let newJRTShare = toWei('0.4');
+      let newDaoInterestShare = toWei('0.4');
+      let newSwapModule = accounts[10];
+
+      await truffleAssert.reverts(
+        proxy.setShares(poolMock.address, newDaoInterestShare, newJRTShare, {
+          from: accounts[4],
+        }),
+        'Sender must be the maintainer',
+      );
+      await truffleAssert.reverts(
+        proxy.setSwapModule(newSwapModule, USDC, { from: accounts[4] }),
+        'Sender must be the maintainer',
+      );
+    });
+
+    it('Reverts if not proxy is trying to modify pool storage contract', async () => {
+      await truffleAssert.reverts(
+        storageManager.setShares(poolMock.address, 0, 0, { from: accounts[4] }),
+        'Not allowed',
+      );
+      await truffleAssert.reverts(
+        storageManager.setSwapModule(accounts[5], USDC, { from: accounts[4] }),
+        'Not allowed',
+      );
+      await truffleAssert.reverts(
+        storageManager.setLendingModule(accounts[5], toHex(0), 'fake', {
+          from: accounts[4],
+        }),
+        'Not allowed',
+      );
+      await truffleAssert.reverts(
+        storageManager.updateValues(poolMock.address, 100, 100, 100, {
+          from: accounts[4],
+        }),
+        'Not allowed',
+      );
+      await truffleAssert.reverts(
+        storageManager.migratePool(accounts[5], accounts[6], {
+          from: accounts[4],
+        }),
+        'Not allowed',
+      );
+      await truffleAssert.reverts(
+        storageManager.migrateLendingModule(
+          accounts[5],
+          accounts[6],
+          accounts[7],
+          toHex(0),
+          { from: accounts[4] },
+        ),
+        'Not allowed',
+      );
     });
   });
   describe('AAVe module', () => {
