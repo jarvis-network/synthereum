@@ -36,11 +36,9 @@ interface ILendingModule {
     ILendingStorageManager.PoolStorage calldata poolData
   ) external view returns (uint256 poolInterest, uint256 daoInterest);
 
-  function getInterestBearingToken(
-    address collateral,
-    address storageManager,
-    address lendingModule
-  ) external returns (address token);
+  function getInterestBearingToken(address collateral, address storageManager)
+    external
+    returns (address token);
 
   function collateralToInterestToken(
     uint256 collateralAmount,

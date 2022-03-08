@@ -85,8 +85,7 @@ contract LendingStorageManager is ILendingStorageManager {
     poolData.interestBearingToken = interestBearingToken == address(0)
       ? ILendingModule(lendingModule).getInterestBearingToken(
         collateral,
-        address(this),
-        lendingModule
+        address(this)
       )
       : interestBearingToken;
   }
@@ -121,8 +120,7 @@ contract LendingStorageManager is ILendingStorageManager {
     poolData.interestBearingToken = newInterestToken == address(0)
       ? ILendingModule(newLendingModule).getInterestBearingToken(
         poolData.collateral,
-        address(this),
-        poolData.lendingModule
+        address(this)
       )
       : newInterestToken;
 

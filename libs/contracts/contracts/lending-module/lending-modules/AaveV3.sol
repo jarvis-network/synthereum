@@ -107,13 +107,12 @@ contract AaveV3Module is ILendingModule {
     );
   }
 
-  function getInterestBearingToken(
-    address collateral,
-    address storageManager,
-    address lendingModule
-  ) external returns (address token) {
+  function getInterestBearingToken(address collateral, address storageManager)
+    external
+    returns (address token)
+  {
     address moneyMarket =
-      decodeLendingArgs(ILendingStorageManager(storageManager), lendingModule);
+      decodeLendingArgs(ILendingStorageManager(storageManager), address(this));
     token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
   }
 
