@@ -47,7 +47,15 @@ addEtherscanApiKeys(config);
 
 // set hardat forking
 if (process.env.FORKCHAINID !== undefined) {
-  setForkingUrl(config, parseInt(process.env.FORKCHAINID, 10), 11909616);
+  if (process.env.BLOCK !== undefined) {
+    setForkingUrl(
+      config,
+      parseInt(process.env.FORKCHAINID, 10),
+      parseInt(process.env.BLOCK, 10),
+    );
+  } else {
+    setForkingUrl(config, parseInt(process.env.FORKCHAINID, 10));
+  }
 }
 
 addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);

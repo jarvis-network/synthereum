@@ -1,5 +1,8 @@
 {
   "56": {
     "deploy": false
+  },
+  "3": {
+    "deploy": true
   }
 }
