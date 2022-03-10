@@ -11,6 +11,9 @@ const LendingProxy = artifacts.require('LendingProxy');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const LendingStorageManager = artifacts.require('LendingStorageManager');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
+const SynthereumFactoryVersioning = artifacts.require(
+  'SynthereumFactoryVersioning',
+);
 const AToken = artifacts.require('ATokenMock');
 const AAVE = artifacts.require('AAVEMock');
 const JRTSWAP = artifacts.require('JRTSwapModule');
@@ -20,7 +23,7 @@ const { toBN, toWei, toHex } = web3Utils;
 
 contract('AaveV3 Lending module', accounts => {
   let finder, poolMock, module, proxy, storageManager, networkId, expiration;
-  let aUSDC, USDC, USDCInstance, JRT, JRTInstance, aaveInstance;
+  let aUSDC, USDC, USDCInstance, JRT, JRTInstance, aaveInstance, factoryVers;
   const maintainer = accounts[1];
   const admin = accounts[0];
   const Roles = { admin, maintainer };
@@ -78,6 +81,7 @@ contract('AaveV3 Lending module', accounts => {
     expiration = (await web3.eth.getBlock('latest')).timestamp + 60000;
     networkId = await web3.eth.net.getId();
     finder = await SynthereumFinder.deployed();
+    factoryVers = await SynthereumFactoryVersioning.deployed();
     storageManager = await LendingStorageManager.new(finder.address);
     proxy = await LendingProxy.new(finder.address, Roles);
     aUSDC = await AToken.at(data[networkId].aUSDC);
@@ -107,6 +111,12 @@ contract('AaveV3 Lending module', accounts => {
     );
     await finder.changeImplementationAddress(
       web3Utils.utf8ToHex('PoolFactory'),
+      maintainer,
+      { from: maintainer },
+    );
+    await factoryVers.setFactory(
+      web3Utils.utf8ToHex('PoolFactory'),
+      1,
       maintainer,
       { from: maintainer },
     );
