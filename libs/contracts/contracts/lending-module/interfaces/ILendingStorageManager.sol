@@ -40,9 +40,8 @@ interface ILendingStorageManager {
 
   function migrateLendingModule(
     address pool,
-    address newLendingModule,
-    address newInterestToken,
-    bytes memory newArgs
+    string memory newLendingID,
+    address newInterestToken
   ) external returns (PoolStorage memory);
 
   function updateValues(

@@ -145,18 +145,16 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   function migrateLendingModule(
     address interestToken,
-    address newLendingModule,
+    string memory newLendingModuleID,
     address newInterestBearingToken,
-    bytes memory newArgs,
     uint256 interestTokenAmount
   ) external returns (ILendingProxy.ReturnValues memory) {
     IERC20(interestToken).transfer(address(proxy), interestTokenAmount);
     return
       proxy.migrateLendingModule(
-        newLendingModule,
+        newLendingModuleID,
         newInterestBearingToken,
-        interestTokenAmount,
-        newArgs
+        interestTokenAmount
       );
   }
 

@@ -53,10 +53,9 @@ interface ILendingProxy {
   ) external;
 
   function migrateLendingModule(
-    address newLendingModule,
+    string memory newLendingID,
     address newInterestBearingToken,
-    uint256 interestTokenAmount,
-    bytes memory newArgs
+    uint256 interestTokenAmount
   ) external returns (ReturnValues memory);
 
   function migrateLiquidity(address newPool) external;

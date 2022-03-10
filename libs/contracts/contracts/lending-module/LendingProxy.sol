@@ -134,6 +134,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     );
   }
 
+  // batch
   function claimCommission(uint256 amount)
     external
     override
@@ -286,10 +287,9 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
   // to migrate liquidity to another lending module
   function migrateLendingModule(
-    address newLendingModule,
+    string memory newLendingID,
     address newInterestBearingToken,
-    uint256 interestTokenAmount,
-    bytes memory newArgs
+    uint256 interestTokenAmount
   ) external returns (ReturnValues memory returnValues) {
     (
       ILendingStorageManager.PoolStorage memory poolData,
@@ -326,9 +326,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     // set new lending module and obtain new pool data
     poolData = poolStorageManager.migrateLendingModule(
       msg.sender,
-      newLendingModule,
-      newInterestBearingToken,
-      newArgs
+      newLendingID,
+      newInterestBearingToken
     );
 
     // delegate call deposit into new module

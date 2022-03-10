@@ -72,7 +72,6 @@ contract LendingStorageManager is ILendingStorageManager {
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external onlyPoolFactory {
-    // set lending args (ie moneyMarket)
     address lendingModule = idToLending[lendingID];
     require(lendingModule != address(0), 'Id not existent');
 
@@ -110,10 +109,12 @@ contract LendingStorageManager is ILendingStorageManager {
 
   function migrateLendingModule(
     address pool,
-    address newLendingModule,
-    address newInterestToken,
-    bytes memory newArgs
+    string memory newLendingID,
+    address newInterestToken
   ) external onlyProxy returns (PoolStorage memory) {
+    address newLendingModule = idToLending[newLendingID];
+    require(newLendingModule != address(0), 'Id not existent');
+
     // set lending module
     PoolStorage storage poolData = poolStorage[pool];
     poolData.lendingModule = newLendingModule;
@@ -123,9 +124,6 @@ contract LendingStorageManager is ILendingStorageManager {
         address(this)
       )
       : newInterestToken;
-
-    // set lending args
-    lendingToArgs[newLendingModule] = newArgs;
 
     return poolStorage[pool];
   }
