@@ -184,19 +184,19 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function totalSyntheticTokens() external view returns (uint256);
 
   /**
-   * @notice Returns the total amount of collateral used for collateralizing tokens
-   * @return Total collateral amount holded by users
-   * @return Total collateral amount holded by LPs
-   * @return Total collateral amount holded by users + LPs
+   * @notice Returns the total amounts of collateral
+   * @return usersCollateral Total collateral amount currently holded by users
+   * @return lpsCollateral Total collateral amount currently holded by LPs
+   * @return totalCollateral Total collateral amount currently holded by users + LPs
    */
-  /* function totalCollateralAmount()
+  function totalCollateralAmount()
     external
     view
     returns (
-      uint256,
-      uint256,
-      uint256
-    );*/
+      uint256 usersCollateral,
+      uint256 lpsCollateral,
+      uint256 totalCollateral
+    );
 
   /**
    * @notice Returns the percentage of overcollateralization to which a liquidation can triggered
