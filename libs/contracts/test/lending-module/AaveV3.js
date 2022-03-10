@@ -748,6 +748,34 @@ contract('AaveV3 Lending module', accounts => {
       );
     });
 
+    it('Cant claim more commission than due', async () => {
+      // borrow on aave to generate interest
+      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+
+      // sets recipient
+      let commissionReceiver = accounts[4];
+      await finder.changeImplementationAddress(
+        web3Utils.utf8ToHex('CommissionReceiver'),
+        commissionReceiver,
+        { from: maintainer },
+      );
+
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+      let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
+
+      // claim commission
+      let amount = (await storageManager.getPoolStorage.call(poolMock.address))
+        .unclaimedDaoCommission;
+      amount = toBN(amount).muln(2);
+      await truffleAssert.reverts(
+        poolMock.claimCommission(amount, aUSDC.address, {
+          from: accounts[0],
+        }),
+      );
+    });
+
     it('Reverts if msg.sender is not a registered pool', async () => {
       await truffleAssert.reverts(
         proxy.claimCommission(10, { from: user }),
