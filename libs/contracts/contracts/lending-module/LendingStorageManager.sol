@@ -35,10 +35,6 @@ contract LendingStorageManager is ILendingStorageManager {
       );
     uint8 numberOfPoolFactories =
       factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
-    uint8 numberOfFixedRateFactories =
-      factoryVersioning.numberOfFactoryVersions(
-        FactoryInterfaces.FixedRateFactory
-      );
     require(
       _checkSenderIsFactory(
         factoryVersioning,
