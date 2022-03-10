@@ -700,6 +700,41 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Returns the total available liquidity of the LPs
+   * @return totalLiquidity Total available liquidity for minting operation
+   */
+  function totalAvailableLiquidity()
+    external
+    view
+    override
+    returns (uint256 totalLiquidity)
+  {
+    uint256 price = _getPriceFeedRate();
+
+    uint256 poolInterest = _getLendingInterest(_getLendingManager());
+
+    (, PositionCache[] memory positionsCache) =
+      _calculateNewPositions(
+        poolInterest,
+        price,
+        totalSyntheticAsset,
+        totalUserDeposits
+      );
+
+    for (uint256 j = 0; j < positionsCache.length; j++) {
+      LPPosition memory lpPosition = positionsCache[j].lpPosition;
+      uint256 lpLiquidity =
+        _calculateCapacity(
+          lpPosition.actualCollateralAmount,
+          lpPosition.tokensCollateralized,
+          lpPosition.overCollateralization,
+          price
+        );
+      totalLiquidity += lpLiquidity;
+    }
+  }
+
+  /**
    * @notice Get Synthereum finder of the pool
    * @return Finder contract
    */

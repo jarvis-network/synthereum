@@ -199,6 +199,15 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     );
 
   /**
+   * @notice Returns the total available liquidity of the LPs
+   * @return totalLiquidity Total available liquidity for minting operation
+   */
+  function totalAvailableLiquidity()
+    external
+    view
+    returns (uint256 totalLiquidity);
+
+  /**
    * @notice Returns the percentage of overcollateralization to which a liquidation can triggered
    * @return Thresold percentage on a liquidation can be triggered
    */
