@@ -291,13 +291,9 @@ contract('AaveV3 Lending module', accounts => {
         'Not allowed',
       );
       await truffleAssert.reverts(
-        storageManager.migrateLendingModule(
-          accounts[5],
-          accounts[6],
-          accounts[7],
-          toHex(0),
-          { from: accounts[4] },
-        ),
+        storageManager.migrateLendingModule(accounts[5], 'aave', accounts[7], {
+          from: accounts[4],
+        }),
         'Not allowed',
       );
     });
@@ -936,11 +932,14 @@ contract('AaveV3 Lending module', accounts => {
         // deploy new module
         newModule = await LendingModule.new();
 
-        // register its money market address
+        // set new module args and id
         let args = web3.eth.abi.encodeParameters(
           ['address'],
           [data[networkId].AaveV3],
         );
+        await proxy.setLendingModule(newModule.address, args, 'new', {
+          from: maintainer,
+        });
 
         let poolStorageBefore = await storageManager.getPoolStorage.call(
           poolMock.address,
@@ -950,16 +949,14 @@ contract('AaveV3 Lending module', accounts => {
         let amount = await aUSDC.balanceOf.call(poolMock.address);
         let returnValues = await poolMock.migrateLendingModule.call(
           aUSDC.address,
-          newModule.address,
+          'new',
           aUSDC.address,
-          args,
           amount,
         );
         await poolMock.migrateLendingModule(
           aUSDC.address,
-          newModule.address,
+          'new',
           aUSDC.address,
-          args,
           amount,
         );
 
@@ -1044,7 +1041,7 @@ contract('AaveV3 Lending module', accounts => {
 
       it('Reverts if msg.sender is not a registered pool', async () => {
         await truffleAssert.reverts(
-          proxy.migrateLendingModule(accounts[5], accounts[5], 10, toHex(0), {
+          proxy.migrateLendingModule('aave', accounts[5], 10, {
             from: user,
           }),
           'Not allowed',
