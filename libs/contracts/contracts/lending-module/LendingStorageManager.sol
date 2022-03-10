@@ -2,6 +2,9 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {
+  ISynthereumFactoryVersioning
+} from '../core/interfaces/IFactoryVersioning.sol';
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
@@ -24,11 +27,26 @@ contract LendingStorageManager is ILendingStorageManager {
   }
 
   modifier onlyPoolFactory() {
-    address factory =
-      ISynthereumFinder(finder).getImplementationAddress(
-        FactoryInterfaces.PoolFactory
+    ISynthereumFactoryVersioning factoryVersioning =
+      ISynthereumFactoryVersioning(
+        ISynthereumFinder(finder).getImplementationAddress(
+          SynthereumInterfaces.FactoryVersioning
+        )
       );
-    require(msg.sender == factory, 'Not allowed');
+    uint8 numberOfPoolFactories =
+      factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
+    uint8 numberOfFixedRateFactories =
+      factoryVersioning.numberOfFactoryVersions(
+        FactoryInterfaces.FixedRateFactory
+      );
+    require(
+      _checkSenderIsFactory(
+        factoryVersioning,
+        numberOfPoolFactories,
+        FactoryInterfaces.PoolFactory
+      ),
+      'Not allowed'
+    );
     _;
   }
 
@@ -166,5 +184,28 @@ contract LendingStorageManager is ILendingStorageManager {
     returns (bytes memory)
   {
     return lendingToArgs[lendingModule];
+  }
+
+  function _checkSenderIsFactory(
+    ISynthereumFactoryVersioning factoryVersioning,
+    uint8 numberOfFactories,
+    bytes32 factoryKind
+  ) internal view returns (bool isFactory) {
+    uint8 counterFactory;
+    for (uint8 i = 0; counterFactory < numberOfFactories; i++) {
+      try factoryVersioning.getFactoryVersion(factoryKind, i) returns (
+        address factory
+      ) {
+        if (msg.sender == factory) {
+          isFactory = true;
+          break;
+        } else {
+          counterFactory++;
+          if (counterFactory == numberOfFactories) {
+            isFactory = false;
+          }
+        }
+      } catch {}
+    }
   }
 }
