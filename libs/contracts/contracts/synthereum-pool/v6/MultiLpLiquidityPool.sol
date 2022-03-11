@@ -66,7 +66,7 @@ contract SynthereumMultiLpLiquidityPool is
     // Identifier of price to be used in the price feed
     bytes32 priceIdentifier;
     // Percentage of overcollateralization to which a liquidation can triggered
-    uint256 collateralRequirement;
+    uint256 overCollateralRequirement;
     // Percentage of reward for correct liquidation by a liquidator
     uint256 liquidationReward;
   }
@@ -105,7 +105,7 @@ contract SynthereumMultiLpLiquidityPool is
 
   bytes32 private immutable priceIdentifier;
 
-  uint256 private immutable liquidationThreshold;
+  uint256 private immutable overCollateralRequirement;
 
   //----------------------------------------
   // Storage
@@ -144,8 +144,8 @@ contract SynthereumMultiLpLiquidityPool is
 
   constructor(ConstructorParams memory _params) nonReentrant {
     require(
-      _params.collateralRequirement > PreciseUnitMath.PRECISE_UNIT,
-      'Collateral requirement must be bigger than 100%'
+      _params.overCollateralRequirement > 0,
+      'Overcollateral requirement must be bigger than 0%'
     );
 
     uint8 collTokenDecimals = _params.collateralToken.decimals();
@@ -171,7 +171,7 @@ contract SynthereumMultiLpLiquidityPool is
     collateralDecimals = collTokenDecimals;
     syntheticAsset = _params.syntheticToken;
     priceIdentifier = _params.priceIdentifier;
-    liquidationThreshold = _params.collateralRequirement;
+    overCollateralRequirement = _params.overCollateralRequirement;
 
     _setLiquidationReward(_params.liquidationReward);
     _setFee(_params.fee);
@@ -215,9 +215,8 @@ contract SynthereumMultiLpLiquidityPool is
     require(isRegisteredLP(msgSender), 'Sender must be a registered LP');
     require(_collateralAmount > 0, 'No collateral deposited');
     require(
-      _overCollateralization >
-        liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
-      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
+      _overCollateralization > overCollateralRequirement,
+      'Overcollateralization must be bigger than Overcollateral requirement'
     );
 
     ILendingProxy.ReturnValues memory lendingValues =
@@ -577,9 +576,8 @@ contract SynthereumMultiLpLiquidityPool is
     require(isActiveLP(msgSender), 'Sender must be an active LP');
 
     require(
-      _overCollateralization >
-        liquidationThreshold - PreciseUnitMath.PRECISE_UNIT,
-      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
+      _overCollateralization > overCollateralRequirement,
+      'Overcollateralization must be bigger than Overcollateral requirement'
     );
 
     lpPositions[msgSender].overCollateralization = _overCollateralization;
@@ -644,21 +642,6 @@ contract SynthereumMultiLpLiquidityPool is
       lpList[j] = activeLPs.at(j);
     }
     return lpList;
-  }
-
-  /**
-   * @notice Get the position of an LP
-   * @param _lp Address of the LP
-   * @return Return the position of the LP if it's active, otherwise revert
-   */
-  function getLpPosition(address _lp)
-    external
-    view
-    override
-    returns (LPPosition memory)
-  {
-    require(isActiveLP(_lp), 'Lp is not active');
-    return lpPositions[_lp];
   }
 
   /**
@@ -735,6 +718,81 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Returns the LP parametrs info
+   * @return lpInfo Info of the input lp (see LPInfo struct)
+   */
+  function lpInfo(address _lp)
+    external
+    view
+    override
+    returns (LPInfo memory lpInfo)
+  {
+    require(isActiveLP(_lp), 'LP not active');
+
+    uint256 price = _getPriceFeedRate();
+
+    uint256 poolInterest = _getLendingInterest(_getLendingManager());
+
+    uint256 totalSynthTokens = totalSyntheticAsset;
+
+    (, PositionCache[] memory positionsCache) =
+      _calculateNewPositions(
+        poolInterest,
+        price,
+        totalSynthTokens,
+        totalUserDeposits
+      );
+
+    uint256 overCollateralLimit = overCollateralRequirement;
+
+    uint256[] memory capacityShares = new uint256[](positionsCache.length);
+    uint256 totalCapacity =
+      _calculateMintShares(price, positionsCache, capacityShares);
+
+    for (uint256 j = 0; j < positionsCache.length; j++) {
+      if (positionsCache[j].lp == _lp) {
+        LPPosition memory lpPosition = positionsCache[j].lpPosition;
+        uint256 tokensValue =
+          _calculateCollateralAmount(lpPosition.tokensCollateralized, price);
+        uint256 utilization =
+          (tokensValue.mul(lpPosition.overCollateralization)).div(
+            lpPosition.actualCollateralAmount
+          );
+        uint256 coverage =
+          PreciseUnitMath.PRECISE_UNIT +
+            (
+              overCollateralLimit.mul(
+                lpPosition.actualCollateralAmount.div(
+                  tokensValue.mul(overCollateralLimit)
+                )
+              )
+            );
+        uint256 mintShares = capacityShares[j].div(totalCapacity);
+        uint256 redeemShares =
+          lpPosition.tokensCollateralized.div(totalSynthTokens);
+        bool isOverCollaterlized =
+          _isOvercollateralizedLP(
+            lpPosition.actualCollateralAmount,
+            overCollateralLimit,
+            tokensValue
+          );
+        return
+          LPInfo(
+            lpPosition.actualCollateralAmount,
+            lpPosition.tokensCollateralized,
+            lpPosition.overCollateralization,
+            capacityShares[j],
+            utilization,
+            coverage,
+            mintShares,
+            redeemShares,
+            isOverCollaterlized
+          );
+      }
+    }
+  }
+
+  /**
    * @notice Get Synthereum finder of the pool
    * @return Finder contract
    */
@@ -789,7 +847,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @return Thresold percentage on a liquidation can be triggered
    */
   function collateralRequirement() external view override returns (uint256) {
-    return liquidationThreshold;
+    return PreciseUnitMath.PRECISE_UNIT + overCollateralRequirement;
   }
 
   /**
@@ -1021,7 +1079,7 @@ contract SynthereumMultiLpLiquidityPool is
         require(
           !_isOvercollateralizedLP(
             actualCollateralAmount,
-            liquidationThreshold,
+            overCollateralRequirement,
             tokensValue
           ),
           'LP is overcollateralized'
@@ -1302,8 +1360,8 @@ contract SynthereumMultiLpLiquidityPool is
       uint256 tokens = _mintValues.numTokens.mul(shareProportion);
       uint256 fees = _mintValues.feeAmount.mul(shareProportion);
       LPPosition memory lpPosition = _positionsCache[j].lpPosition;
-      lpPosition.tokensCollateralized += lpPosition.tokensCollateralized;
-      lpPosition.actualCollateralAmount += lpPosition.actualCollateralAmount;
+      lpPosition.tokensCollateralized += tokens;
+      lpPosition.actualCollateralAmount += fees;
       remainingTokens = remainingTokens - tokens;
       remainingFees = remainingFees - fees;
     }

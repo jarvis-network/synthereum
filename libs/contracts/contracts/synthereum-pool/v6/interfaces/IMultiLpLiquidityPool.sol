@@ -24,7 +24,7 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint256 actualCollateralAmount;
     // Number of tokens collateralized
     uint256 tokensCollateralized;
-    // Overcolalteralization percentage
+    // Overcollateralization percentage
     uint256 overCollateralization;
   }
 
@@ -48,6 +48,27 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint256 expiration;
     // Address to which send collateral tokens redeemed
     address recipient;
+  }
+
+  struct LPInfo {
+    // Actual collateral owned
+    uint256 actualCollateralAmount;
+    // Number of tokens collateralized
+    uint256 tokensCollateralized;
+    // Overcollateralization percentage
+    uint256 overCollateralization;
+    // Available liquidity for minting
+    uint256 availableLiquidity;
+    // Utilization ratio: (numTokens * price * overCollateralization) / actualCollateralAmount
+    uint256 utilization;
+    // Collateral coverage: (actualCollateralAmount + numTokens * price) / (numTokens * price)
+    uint256 coverage;
+    // Mint shares percentage
+    uint256 mintShares;
+    // Redeem shares percentage
+    uint256 redeemShares;
+    // True if it's overcollateralized, otherwise false
+    bool isOvercollateralized;
   }
 
   /**
@@ -157,13 +178,6 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function getActiveLPs() external view returns (address[] memory);
 
   /**
-   * @notice Get the position of an LP
-   * @param _lp Address of the LP
-   * @return Return the position of the LP if it's active, otherwise revert
-   */
-  function getLpPosition(address _lp) external view returns (LPPosition memory);
-
-  /**
    * @notice Check if the input LP is registered
    * @param _lp Address of the LP
    * @return Return true if the LP is regitered, otherwise false
@@ -206,6 +220,12 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     external
     view
     returns (uint256 totalLiquidity);
+
+  /**
+   * @notice Returns the LP parametrs info
+   * @return lpInfo Info of the input lp (see LPInfo struct)
+   */
+  function lpInfo(address _lp) external view returns (LPInfo memory lpInfo);
 
   /**
    * @notice Returns the percentage of overcollateralization to which a liquidation can triggered
