@@ -30,9 +30,10 @@ interface ILendingProxy {
     external
     returns (ReturnValues memory returnValues);
 
-  function claimCommission(uint256 amount)
-    external
-    returns (ReturnValues memory returnValues);
+  function batchClaimCommission(
+    address[] memory pools,
+    uint256[] memory amounts
+  ) external;
 
   function executeBuyback(uint256 amount, bytes memory swapParams)
     external

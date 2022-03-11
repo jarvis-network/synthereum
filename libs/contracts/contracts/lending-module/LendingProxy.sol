@@ -134,19 +134,28 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     );
   }
 
-  // batch
-  function claimCommission(uint256 amount)
-    external
-    override
-    returns (ReturnValues memory returnValues)
-  {
-    (
-      ILendingStorageManager.PoolStorage memory poolData,
-      ILendingStorageManager poolStorageManager
-    ) = onlyPool();
-
+  function batchClaimCommission(
+    address[] memory pools,
+    uint256[] memory amounts
+  ) external override onlyMaintainer {
+    require(pools.length == amounts.length, 'Invalid call');
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
+    for (uint8 i = 0; i < pools.length; i++) {
+      claimCommission(pools[i], amounts[i], recipient);
+    }
+  }
+
+  function claimCommission(
+    address pool,
+    uint256 amount,
+    address recipient
+  ) internal {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    ILendingStorageManager.PoolStorage memory poolData =
+      poolStorageManager.getPoolStorage(pool);
+
+    // TODO trigger transfer of funds from pool
 
     // delegate call withdraw
     bytes memory result =
@@ -159,7 +168,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
           recipient
         )
       );
-    returnValues = abi.decode(result, (ReturnValues));
+    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
 
     //update pool storage
     uint256 newCollateralDeposited =
