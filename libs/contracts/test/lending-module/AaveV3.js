@@ -658,7 +658,7 @@ contract('AaveV3 Lending module', accounts => {
       let amount = (await storageManager.getPoolStorage.call(poolMock.address))
         .unclaimedDaoCommission;
 
-      let returnValues = await poolMock.claimCommission.call(
+      let returnValues = await proxy.claimCommission.call(
         amount,
         aUSDC.address,
         {
@@ -933,7 +933,8 @@ contract('AaveV3 Lending module', accounts => {
       let collateralAmount = toWei('10');
 
       // passed as exact transfer to do
-      let res = await poolMock.collateralToInterestToken.call(
+      let res = await proxy.collateralToInterestToken.call(
+        poolMock.address,
         collateralAmount,
         true,
         { from: user },
@@ -945,7 +946,8 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(res.interestTokenAddr.toString(), aUSDC.address);
 
       // passed as exact transfer to receive
-      res = await poolMock.collateralToInterestToken.call(
+      res = await proxy.collateralToInterestToken.call(
+        poolMock.address,
         collateralAmount,
         false,
         { from: user },

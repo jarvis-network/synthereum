@@ -84,4 +84,4 @@ import '../fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
 import '../lending-module/LendingProxy.sol';
 import '../lending-module/LendingStorageManager.sol';
 import '../lending-module/lending-modules/AaveV3.sol';
-import '../lending-module/swap-modules/JRTSwap.sol';
+import '../lending-module/swap-modules/Univ2JRTSwap.sol';

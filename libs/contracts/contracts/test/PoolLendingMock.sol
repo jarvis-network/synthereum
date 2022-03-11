@@ -126,13 +126,13 @@ contract PoolLendingMock is ISynthereumDeployment {
     return proxy.withdraw(amount, recipient);
   }
 
-  function claimCommission(uint256 amount, address interestToken)
-    external
-    returns (ILendingProxy.ReturnValues memory)
-  {
-    IERC20(interestToken).transfer(address(proxy), amount);
-    return proxy.claimCommission(amount);
-  }
+  // function claimCommission(uint256 amount, address interestToken)
+  //   external
+  //   returns (ILendingProxy.ReturnValues memory)
+  // {
+  //   IERC20(interestToken).transfer(address(proxy), amount);
+  //   return proxy.claimCommission(amount);
+  // }
 
   function claimJRT(
     address interestToken,
@@ -160,21 +160,5 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   function migratePool(address newPool) external {
     proxy.migrateLiquidity(newPool);
-  }
-
-  function collateralToInterestToken(
-    uint256 collateralAmount,
-    bool isExactTransfer
-  )
-    external
-    view
-    returns (uint256 interestTokenAmount, address interestTokenAddr)
-  {
-    return
-      proxy.collateralToInterestToken(
-        address(this),
-        collateralAmount,
-        isExactTransfer
-      );
   }
 }

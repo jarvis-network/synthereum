@@ -7,16 +7,16 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
-import {
-  IUniswapV2Router02
-} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
+import {IBalancerVault} from '../interfaces/IBalancerVault.sol';
 
-contract JRTSwapModule {
+contract BalancerJRTSwapModule {
   using SafeERC20 for IERC20;
 
   struct SwapInfo {
+    bytes32 poolId;
     address routerAddress;
-    address[] tokenSwapPath;
+    address jrtAddress;
+    uint256 minTokensOut; // anti slippage
     uint256 expiration;
   }
 
@@ -30,16 +30,27 @@ contract JRTSwapModule {
     // decode swapInfo
     SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
 
+    // build params 
+    IBalancerVault.SingleSwap memory singleSwap = IBalancerVault.SingleSwap(
+        swapInfo.poolId,
+        IBalancerVault.SwapKind.GIVEN_IN,
+        collateral.address,
+        swapInfo.jrtAddress,
+        amountIn,
+        '0x00'
+    );
+
+    IBalancerVault.FundManagement memory funds = IBalancerVault.FundManagement(
+        address(this),
+        false,
+        recipient,
+        false
+    );
+
     // swap to JRT to final recipient
-    IUniswapV2Router02 router = IUniswapV2Router02(swapInfo.routerAddress);
+    IBalancerVault router = IBalancerVault(swapInfo.routerAddress);
 
     collateral.safeIncreaseAllowance(address(router), amountIn);
-    amountOut = router.swapExactTokensForTokens(
-      amountIn,
-      0,
-      swapInfo.tokenSwapPath,
-      recipient,
-      swapInfo.expiration
-    )[swapInfo.tokenSwapPath.length - 1];
+    amountOut = router.swap(singleSwap, funds, swapInfo.minTokensOut, swapInfo.expiration);
   }
 }
