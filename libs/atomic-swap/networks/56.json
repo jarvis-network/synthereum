@@ -8,5 +8,10 @@
     "contractName": "FixedRateSwap",
     "address": "0xDA03443cab512e55D672d725B7Fa98275009DdCc",
     "transactionHash": "0xa6bdcc4c3da7ab149104c9180e0914e41c8afc898d29898cfa6258c3ad65c9de"
+  },
+  {
+    "contractName": "OCLRV2UniswapV2",
+    "address": "0x6CAd830F1A839761E6ab6Ef4d3b7F10422058B9D",
+    "transactionHash": "0x34147e8e0eb686b33d05e7ddc02414712b6edeffe7db8e49d142b96146e0c8e1"
   }
 ]

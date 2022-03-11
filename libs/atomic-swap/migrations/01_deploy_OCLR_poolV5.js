@@ -11,6 +11,7 @@ const { utf8ToHex } = require('web3-utils');
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');
 const fixedRateData = require('../data/test/fixedRate.json');
+const routerData = require('../data/test/router.json');
 const {
   deploy,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
@@ -36,7 +37,7 @@ module.exports = async function (deployer, network, accounts) {
 
   // deploy proxy
 
-  await deploy(
+  routerData[networkId].deployRouter ? await deploy(
     web3,
     deployer,
     network,
@@ -46,7 +47,7 @@ module.exports = async function (deployer, network, accounts) {
     {
       from: admin,
     },
-  );
+  ) : null;
 
   // get proxy instance
   const proxyInstance = await getExistingInstance(web3, OnChainLiquidityRouter);
