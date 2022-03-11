@@ -170,6 +170,11 @@ contract PoolLendingMock is ISynthereumDeployment {
     view
     returns (uint256 interestTokenAmount, address interestTokenAddr)
   {
-    return proxy.collateralToInterestToken(collateralAmount, isExactTransfer);
+    return
+      proxy.collateralToInterestToken(
+        address(this),
+        collateralAmount,
+        isExactTransfer
+      );
   }
 }

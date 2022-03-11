@@ -354,6 +354,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   }
 
   function collateralToInterestToken(
+    address pool,
     uint256 collateralAmount,
     bool isExactTransfer
   )
@@ -361,10 +362,9 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     view
     returns (uint256 interestTokenAmount, address interestTokenAddr)
   {
-    (
-      ILendingStorageManager.PoolStorage memory poolData,
-      ILendingStorageManager poolStorageManager
-    ) = onlyPool();
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    ILendingStorageManager.PoolStorage memory poolData =
+      poolStorageManager.getPoolStorage(pool);
 
     bytes memory extraArgs =
       poolStorageManager.getLendingArgs(poolData.lendingModule);

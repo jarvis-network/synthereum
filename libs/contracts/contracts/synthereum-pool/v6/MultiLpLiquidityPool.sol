@@ -634,6 +634,7 @@ contract SynthereumMultiLpLiquidityPool is
 
     (uint256 poolBearingValue, address bearingToken) =
       lendingManager.collateralToInterestToken(
+        address(this),
         totalActualCollateral + poolInterest,
         true
       );
@@ -988,6 +989,7 @@ contract SynthereumMultiLpLiquidityPool is
   ) internal returns (ILendingProxy.ReturnValues memory) {
     (uint256 bearingAmount, address bearingToken) =
       _lendingManager.collateralToInterestToken(
+        address(this),
         _collateralAmount,
         _isExactTransfer
       );

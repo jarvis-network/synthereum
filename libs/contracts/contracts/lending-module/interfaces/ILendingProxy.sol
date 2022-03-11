@@ -61,6 +61,7 @@ interface ILendingProxy {
   function migrateLiquidity(address newPool) external;
 
   function collateralToInterestToken(
+    address pool,
     uint256 collateralAmount,
     bool isExactTransfer
   )
