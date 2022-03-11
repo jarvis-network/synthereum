@@ -1,5 +1,8 @@
 {
     "56": {
         "deployRouter": false
-  }
+  },
+    "3": {
+        "deployRouter": true
+    }
 }
