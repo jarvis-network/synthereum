@@ -719,13 +719,13 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Returns the LP parametrs info
-   * @return lpInfo Info of the input lp (see LPInfo struct)
+   * @return info Info of the input lp (see LPInfo struct)
    */
   function lpInfo(address _lp)
     external
     view
     override
-    returns (LPInfo memory lpInfo)
+    returns (LPInfo memory info)
   {
     require(isActiveLP(_lp), 'LP not active');
 
@@ -1244,49 +1244,36 @@ contract SynthereumMultiLpLiquidityPool is
     PositionCache[] memory _positionsCache
   ) internal view returns (ProfitOrLoss memory) {
     uint256 lpNumbers = _positionsCache.length;
+
     uint256 totalAssetValue =
       _calculateCollateralAmount(_totalSynthTokens, _price);
+
     bool isLpGain = totalAssetValue < _totalUserAmount;
-    uint256 totalProfitOrLoss;
-    if (isLpGain) {
-      totalProfitOrLoss = _totalUserAmount - totalAssetValue;
 
-      uint256 remainingProfit = totalProfitOrLoss;
-      for (uint256 j = 0; j < lpNumbers - 1; j++) {
-        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
-        uint256 assetRatio =
-          lpPosition.tokensCollateralized.div(_totalSynthTokens);
-        uint256 lpProfit = totalProfitOrLoss.mul(assetRatio);
-        lpPosition.actualCollateralAmount += lpProfit;
-        remainingProfit -= lpProfit;
-      }
+    uint256 totalProfitOrLoss =
+      isLpGain
+        ? _totalUserAmount - totalAssetValue
+        : totalAssetValue - _totalUserAmount;
 
-      LPPosition memory lastLpPosition =
-        _positionsCache[lpNumbers - 1].lpPosition;
-      lastLpPosition.actualCollateralAmount =
-        lastLpPosition.actualCollateralAmount +
-        remainingProfit;
-    } else {
-      totalProfitOrLoss = totalAssetValue - _totalUserAmount;
+    uint256 remainingProfitOrLoss = totalProfitOrLoss;
 
-      uint256 remainingLoss = totalProfitOrLoss;
-      for (uint256 j = 0; j < lpNumbers - 1; j++) {
-        LPPosition memory lpPosition = _positionsCache[j].lpPosition;
-        uint256 assetRatio =
-          lpPosition.tokensCollateralized.div(_totalSynthTokens);
-        uint256 lpLoss = totalProfitOrLoss.mul(assetRatio);
-        lpPosition.actualCollateralAmount =
-          lpPosition.actualCollateralAmount -
-          lpLoss;
-        remainingLoss = remainingLoss - lpLoss;
-      }
-
-      LPPosition memory lastLpPosition =
-        _positionsCache[lpNumbers - 1].lpPosition;
-      lastLpPosition.actualCollateralAmount =
-        lastLpPosition.actualCollateralAmount -
-        remainingLoss;
+    for (uint256 j = 0; j < lpNumbers - 1; j++) {
+      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+      uint256 assetRatio =
+        lpPosition.tokensCollateralized.div(_totalSynthTokens);
+      uint256 lpProfitOrLoss = totalProfitOrLoss.mul(assetRatio);
+      lpPosition.actualCollateralAmount = isLpGain
+        ? lpPosition.actualCollateralAmount + lpProfitOrLoss
+        : lpPosition.actualCollateralAmount - lpProfitOrLoss;
+      remainingProfitOrLoss -= lpProfitOrLoss;
     }
+
+    LPPosition memory lastLpPosition =
+      _positionsCache[lpNumbers - 1].lpPosition;
+    lastLpPosition.actualCollateralAmount = isLpGain
+      ? lastLpPosition.actualCollateralAmount + remainingProfitOrLoss
+      : lastLpPosition.actualCollateralAmount - remainingProfitOrLoss;
+
     return ProfitOrLoss(isLpGain, totalProfitOrLoss);
   }
 
