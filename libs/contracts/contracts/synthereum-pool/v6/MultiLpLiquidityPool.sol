@@ -614,6 +614,38 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Transfer a bearing amount to the lending manager
+   * @notice Only the lending manager can call the function
+   * @param _bearingAmount Amount of bearing token to transfer
+   */
+  function transferToLendingManager(uint256 _bearingAmount) external override {
+    address msgSender = _msgSender();
+
+    ILendingProxy lendingManager = _getLendingManager();
+    require(
+      msgSender == address(lendingManager),
+      'Sender must be lending manager'
+    );
+
+    uint256 totalActualCollateral =
+      _getTotalCollateral(_getLendingStorageManager());
+
+    uint256 poolInterest = _getLendingInterest(lendingManager);
+
+    (uint256 poolBearingValue, address bearingToken) =
+      lendingManager.collateralToInterestToken(
+        totalActualCollateral + poolInterest,
+        true
+      );
+
+    IERC20 bearingCurrency = IERC20(bearingToken);
+    bearingCurrency.safeTransfer(msgSender, _bearingAmount);
+
+    uint256 remainingBearingValue = bearingCurrency.balanceOf(address(this));
+    require(remainingBearingValue >= poolBearingValue, 'Unfunded pool');
+  }
+
+  /**
    * @notice Get all the registered LPs of this pool
    * @return The list of addresses of all the registered LPs in the pool.
    */

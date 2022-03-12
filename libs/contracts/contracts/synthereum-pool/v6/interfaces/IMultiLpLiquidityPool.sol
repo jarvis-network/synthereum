@@ -166,6 +166,13 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function setFee(uint256 _fee) external;
 
   /**
+   * @notice Transfer a bearing amount to the lending manager
+   * @notice Only the lending manager can call the function
+   * @param _bearingAmount Amount of bearing token to transfer
+   */
+  function transferToLendingManager(uint256 _bearingAmount) external;
+
+  /**
    * @notice Get all the registered LPs of this pool
    * @return lps The list of addresses of all the registered LPs in the pool.
    */
