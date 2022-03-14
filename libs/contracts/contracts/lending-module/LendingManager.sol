@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {ILendingProxy} from './interfaces/ILendingProxy.sol';
+import {ILendingManager} from './interfaces/ILendingManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
@@ -19,7 +19,7 @@ import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract LendingProxy is ILendingProxy, AccessControlEnumerable {
+contract LendingManager is ILendingManager, AccessControlEnumerable {
   using Address for address;
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;

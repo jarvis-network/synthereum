@@ -16,7 +16,9 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
-import {ILendingProxy} from '../../lending-module/interfaces/ILendingProxy.sol';
+import {
+  ILendingManager
+} from '../../lending-module/interfaces/ILendingManager.sol';
 import {
   ILendingStorageManager
 } from '../../lending-module/interfaces/ILendingStorageManager.sol';
@@ -219,7 +221,7 @@ contract SynthereumMultiLpLiquidityPool is
       'Overcollateralization must be bigger than Overcollateral requirement'
     );
 
-    ILendingProxy.ReturnValues memory lendingValues =
+    ILendingManager.ReturnValues memory lendingValues =
       _lendingDeposit(_getLendingManager(), msgSender, _collateralAmount);
 
     (ProfitOrLoss memory profitOrLoss, PositionCache[] memory positionsCache) =
@@ -267,7 +269,7 @@ contract SynthereumMultiLpLiquidityPool is
     require(_collateralAmount > 0, 'No collateral deposited');
     require(isActiveLP(msgSender), 'Sender must be an active LP');
 
-    ILendingProxy.ReturnValues memory lendingValues =
+    ILendingManager.ReturnValues memory lendingValues =
       _lendingDeposit(_getLendingManager(), msgSender, _collateralAmount);
 
     uint256 price = _getPriceFeedRate();
@@ -313,7 +315,7 @@ contract SynthereumMultiLpLiquidityPool is
     require(isActiveLP(msgSender), 'Sender must be an active LP');
     require(_collateralAmount > 0, 'No collateral deposited');
 
-    ILendingProxy.ReturnValues memory lendingValues =
+    ILendingManager.ReturnValues memory lendingValues =
       _lendingWithdraw(
         _getLendingManager(),
         msgSender,
@@ -366,7 +368,7 @@ contract SynthereumMultiLpLiquidityPool is
 
     require(_mintParams.collateralAmount > 0, 'No collateral sent');
 
-    ILendingProxy.ReturnValues memory lendingValues =
+    ILendingManager.ReturnValues memory lendingValues =
       _lendingDeposit(
         _getLendingManager(),
         msgSender,
@@ -442,7 +444,7 @@ contract SynthereumMultiLpLiquidityPool is
     RedeemValues memory redeemValues =
       _calculateRedeem(_redeemParams.numTokens, price);
 
-    ILendingProxy.ReturnValues memory lendingValues =
+    ILendingManager.ReturnValues memory lendingValues =
       _lendingWithdraw(
         _getLendingManager(),
         _redeemParams.recipient,
@@ -517,7 +519,7 @@ contract SynthereumMultiLpLiquidityPool is
 
     uint256 price = _getPriceFeedRate();
 
-    ILendingProxy lendingManager = _getLendingManager();
+    ILendingManager lendingManager = _getLendingManager();
 
     uint256 poolInterest = _getLendingInterest(lendingManager);
 
@@ -539,7 +541,7 @@ contract SynthereumMultiLpLiquidityPool is
       ? totalUserDeposits - profitOrLoss.totalProfitOrLoss - collateralAmount
       : totalUserDeposits + profitOrLoss.totalProfitOrLoss - collateralAmount;
 
-    ILendingProxy.ReturnValues memory lendingValues =
+    ILendingManager.ReturnValues memory lendingValues =
       _lendingWithdraw(
         lendingManager,
         msgSender,
@@ -621,7 +623,7 @@ contract SynthereumMultiLpLiquidityPool is
   function transferToLendingManager(uint256 _bearingAmount) external override {
     address msgSender = _msgSender();
 
-    ILendingProxy lendingManager = _getLendingManager();
+    ILendingManager lendingManager = _getLendingManager();
     require(
       msgSender == address(lendingManager),
       'Sender must be lending manager'
@@ -960,10 +962,10 @@ contract SynthereumMultiLpLiquidityPool is
    * @return Return values parameters from lending manager
    */
   function _lendingDeposit(
-    ILendingProxy _lendingManager,
+    ILendingManager _lendingManager,
     address _msgSender,
     uint256 _collateralAmount
-  ) internal returns (ILendingProxy.ReturnValues memory) {
+  ) internal returns (ILendingManager.ReturnValues memory) {
     collateralAsset.safeTransferFrom(
       _msgSender,
       address(_lendingManager),
@@ -982,11 +984,11 @@ contract SynthereumMultiLpLiquidityPool is
    * @return Return values parameters from lending manager
    */
   function _lendingWithdraw(
-    ILendingProxy _lendingManager,
+    ILendingManager _lendingManager,
     address _recipient,
     uint256 _collateralAmount,
     bool _isExactTransfer
-  ) internal returns (ILendingProxy.ReturnValues memory) {
+  ) internal returns (ILendingManager.ReturnValues memory) {
     (uint256 bearingAmount, address bearingToken) =
       _lendingManager.collateralToInterestToken(
         address(this),
@@ -1436,9 +1438,9 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Return the address of the lendingManager
    * @return Address of the lendingManager
    */
-  function _getLendingManager() internal view returns (ILendingProxy) {
+  function _getLendingManager() internal view returns (ILendingManager) {
     return
-      ILendingProxy(
+      ILendingManager(
         finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
   }
@@ -1544,7 +1546,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _lendingManager Address of lendingManager
    * @return Return interest generated by the pool
    */
-  function _getLendingInterest(ILendingProxy _lendingManager)
+  function _getLendingInterest(ILendingManager _lendingManager)
     internal
     view
     returns (uint256)

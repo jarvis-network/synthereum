@@ -4,7 +4,9 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {ILendingProxy} from '../lending-module/interfaces/ILendingProxy.sol';
+import {
+  ILendingManager
+} from '../lending-module/interfaces/ILendingManager.sol';
 import {
   ILendingStorageManager
 } from '../lending-module/interfaces/ILendingStorageManager.sol';
@@ -63,16 +65,19 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   IERC20 collToken;
   IERC20 synthToken;
-  ILendingProxy proxy;
+  ILendingManager proxy;
+  ILendingStorageManager storageManager;
 
   constructor(
     address collateral,
     address synth,
-    address lendingProxy
+    address lendingProxy,
+    address storageMan
   ) {
     collToken = IERC20(collateral);
     synthToken = IERC20(synth);
-    proxy = ILendingProxy(lendingProxy);
+    proxy = ILendingManager(lendingProxy);
+    storageManager = ILendingStorageManager(storageMan);
   }
 
   function synthereumFinder() external pure returns (ISynthereumFinder finder) {
@@ -97,7 +102,7 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   function deposit(uint256 amount, address token)
     external
-    returns (ILendingProxy.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory)
   {
     IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
     return proxy.deposit(amount);
@@ -105,7 +110,7 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   function depositShouldRevert(uint256 amount)
     external
-    returns (ILendingProxy.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory)
   {
     return proxy.deposit(amount);
   }
@@ -114,33 +119,31 @@ contract PoolLendingMock is ISynthereumDeployment {
     uint256 amount,
     address recipient,
     address token
-  ) external returns (ILendingProxy.ReturnValues memory) {
+  ) external returns (ILendingManager.ReturnValues memory) {
     IERC20(token).transfer(address(proxy), amount);
     return proxy.withdraw(amount, recipient);
   }
 
   function withdrawShouldRevert(uint256 amount, address recipient)
     external
-    returns (ILendingProxy.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory)
   {
     return proxy.withdraw(amount, recipient);
   }
-
-  // function claimCommission(uint256 amount, address interestToken)
-  //   external
-  //   returns (ILendingProxy.ReturnValues memory)
-  // {
-  //   IERC20(interestToken).transfer(address(proxy), amount);
-  //   return proxy.claimCommission(amount);
-  // }
 
   function claimJRT(
     address interestToken,
     uint256 amount,
     bytes memory swapParams
-  ) external returns (ILendingProxy.ReturnValues memory) {
+  ) external returns (ILendingManager.ReturnValues memory) {
     IERC20(interestToken).transfer(address(proxy), amount);
     return proxy.executeBuyback(amount, swapParams);
+  }
+
+  function transferToLendingManager(uint256 bearingAmount) external {
+    address interestAddr =
+      storageManager.getInterestBearingToken(address(this));
+    IERC20(interestAddr).transfer(address(proxy), bearingAmount);
   }
 
   function migrateLendingModule(
@@ -148,7 +151,7 @@ contract PoolLendingMock is ISynthereumDeployment {
     string memory newLendingModuleID,
     address newInterestBearingToken,
     uint256 interestTokenAmount
-  ) external returns (ILendingProxy.ReturnValues memory) {
+  ) external returns (ILendingManager.ReturnValues memory) {
     IERC20(interestToken).transfer(address(proxy), interestTokenAmount);
     return
       proxy.migrateLendingModule(
