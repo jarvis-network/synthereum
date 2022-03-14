@@ -73,6 +73,10 @@ contract LendingStorageManager is ILendingStorageManager {
       idToLendingInfo[poolData.lendingModuleId].lendingModule != address(0),
       'Bad pool'
     );
+    require(
+      jrtBuybackShare <= 10**18 && daoInterestShare <= 10**18,
+      'Invalid share'
+    );
 
     poolData.JRTBuybackShare = jrtBuybackShare;
     poolData.daoInterestShare = daoInterestShare;
