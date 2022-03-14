@@ -10,8 +10,7 @@ import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
 
 contract LendingStorageManager is ILendingStorageManager {
-  mapping(string => address) public idToLending; // ie 'aave' -> address(AaveModule)
-  mapping(address => bytes) lendingToArgs; // info to be decoded in lending module (ie moneyMarket)
+  mapping(string => LendingInfo) public idToLendingInfo;
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
   mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
 
@@ -50,13 +49,11 @@ contract LendingStorageManager is ILendingStorageManager {
     finder = _finder;
   }
 
-  function setLendingModule(
-    address lendingModule,
-    bytes memory args,
-    string memory id
-  ) external onlyProxy {
-    idToLending[id] = lendingModule;
-    lendingToArgs[lendingModule] = args;
+  function setLendingModule(LendingInfo memory lendingInfo, string memory id)
+    external
+    onlyPoolFactory
+  {
+    idToLendingInfo[id] = lendingInfo;
   }
 
   function setSwapModule(address swapModule, address collateral)
@@ -72,7 +69,10 @@ contract LendingStorageManager is ILendingStorageManager {
     uint256 jrtBuybackShare
   ) external onlyProxy {
     PoolStorage storage poolData = poolStorage[pool];
-    require(poolData.lendingModule != address(0), 'Bad pool');
+    require(
+      idToLendingInfo[poolData.lendingModuleId].lendingModule != address(0),
+      'Bad pool'
+    );
 
     poolData.JRTBuybackShare = jrtBuybackShare;
     poolData.daoInterestShare = daoInterestShare;
@@ -86,7 +86,8 @@ contract LendingStorageManager is ILendingStorageManager {
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external onlyPoolFactory {
-    address lendingModule = idToLending[lendingID];
+    LendingInfo memory lendingInfo = idToLendingInfo[lendingID];
+    address lendingModule = lendingInfo.lendingModule;
     require(lendingModule != address(0), 'Id not existent');
 
     // set pool storage
@@ -94,11 +95,11 @@ contract LendingStorageManager is ILendingStorageManager {
     poolData.collateral = collateral;
     poolData.daoInterestShare = daoInterestShare;
     poolData.JRTBuybackShare = jrtBuybackShare;
-    poolData.lendingModule = lendingModule;
+    poolData.lendingModuleId = lendingID;
     poolData.interestBearingToken = interestBearingToken == address(0)
       ? ILendingModule(lendingModule).getInterestBearingToken(
         collateral,
-        address(this)
+        lendingInfo.args
       )
       : interestBearingToken;
   }
@@ -111,7 +112,7 @@ contract LendingStorageManager is ILendingStorageManager {
     newPoolData.collateral = oldPoolData.collateral;
     newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
     newPoolData.JRTBuybackShare = oldPoolData.JRTBuybackShare;
-    newPoolData.lendingModule = oldPoolData.lendingModule;
+    newPoolData.lendingModuleId = oldPoolData.lendingModuleId;
     newPoolData.interestBearingToken = oldPoolData.interestBearingToken;
     newPoolData.collateralDeposited = oldPoolData.collateralDeposited;
     newPoolData.unclaimedDaoCommission = oldPoolData.unclaimedDaoCommission;
@@ -125,21 +126,22 @@ contract LendingStorageManager is ILendingStorageManager {
     address pool,
     string memory newLendingID,
     address newInterestToken
-  ) external onlyProxy returns (PoolStorage memory) {
-    address newLendingModule = idToLending[newLendingID];
+  ) external onlyProxy returns (PoolStorage memory, LendingInfo memory) {
+    LendingInfo memory newLendingInfo = idToLendingInfo[newLendingID];
+    address newLendingModule = newLendingInfo.lendingModule;
     require(newLendingModule != address(0), 'Id not existent');
 
     // set lending module
     PoolStorage storage poolData = poolStorage[pool];
-    poolData.lendingModule = newLendingModule;
+    poolData.lendingModuleId = newLendingID;
     poolData.interestBearingToken = newInterestToken == address(0)
       ? ILendingModule(newLendingModule).getInterestBearingToken(
         poolData.collateral,
-        address(this)
+        newLendingInfo.args
       )
       : newInterestToken;
 
-    return poolStorage[pool];
+    return (poolStorage[pool], newLendingInfo);
   }
 
   function updateValues(
@@ -161,9 +163,18 @@ contract LendingStorageManager is ILendingStorageManager {
   function getPoolStorage(address pool)
     external
     view
-    returns (PoolStorage memory)
+    returns (PoolStorage memory poolData, LendingInfo memory lendingInfo)
   {
-    return poolStorage[pool];
+    poolData = poolStorage[pool];
+    lendingInfo = idToLendingInfo[poolData.lendingModuleId];
+  }
+
+  function getPoolData(address pool)
+    external
+    view
+    returns (PoolStorage memory poolData)
+  {
+    poolData = poolStorage[pool];
   }
 
   function getCollateralSwapModule(address collateral)
@@ -172,14 +183,6 @@ contract LendingStorageManager is ILendingStorageManager {
     returns (address)
   {
     return collateralToSwapModule[collateral];
-  }
-
-  function getLendingArgs(address lendingModule)
-    external
-    view
-    returns (bytes memory)
-  {
-    return lendingToArgs[lendingModule];
   }
 
   function _checkSenderIsFactory(

@@ -6,7 +6,7 @@ import {ILendingStorageManager} from './ILendingStorageManager.sol';
 interface ILendingModule {
   function deposit(
     ILendingStorageManager.PoolStorage calldata poolData,
-    ILendingStorageManager storageManager,
+    bytes memory lendingArgs,
     uint256 amount
   )
     external
@@ -19,7 +19,7 @@ interface ILendingModule {
 
   function withdraw(
     ILendingStorageManager.PoolStorage calldata poolData,
-    ILendingStorageManager storageManager,
+    bytes memory lendingArgs,
     uint256 amount,
     address recipient
   )
@@ -36,7 +36,7 @@ interface ILendingModule {
     ILendingStorageManager.PoolStorage calldata poolData
   ) external view returns (uint256 poolInterest, uint256 daoInterest);
 
-  function getInterestBearingToken(address collateral, address storageManager)
+  function getInterestBearingToken(address collateral, bytes memory args)
     external
     returns (address token);
 

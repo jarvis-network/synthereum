@@ -24,10 +24,10 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string private constant DEPOSIT_SIG =
-    'deposit((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256)';
+    'deposit((string,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256)';
 
   string private constant WITHDRAW_SIG =
-    'withdraw((address,address,address,uint256,uint256,uint256,uint256,uint256),address,uint256,address)';
+    'withdraw((string,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256,address)';
 
   string private JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 
@@ -55,18 +55,14 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   {
     (
       ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
     ) = onlyPool();
 
     // delegate call implementation
     bytes memory result =
-      address(poolData.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          DEPOSIT_SIG,
-          poolData,
-          poolStorageManager,
-          amount
-        )
+      address(lendingInfo.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(DEPOSIT_SIG, poolData, lendingInfo.args, amount)
       );
 
     returnValues = abi.decode(result, (ReturnValues));
@@ -98,16 +94,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   {
     (
       ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
     ) = onlyPool();
 
     // delegate call implementation
     bytes memory result =
-      address(poolData.lendingModule).functionDelegateCall(
+      address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
-          poolStorageManager,
+          lendingInfo.args,
           amount,
           recipient
         )
@@ -152,18 +149,20 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     address recipient
   ) internal {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    ILendingStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(pool);
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo
+    ) = poolStorageManager.getPoolStorage(pool);
 
     // TODO trigger transfer of funds from pool
 
     // delegate call withdraw
     bytes memory result =
-      address(poolData.lendingModule).functionDelegateCall(
+      address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
-          poolStorageManager,
+          lendingInfo.args,
           amount,
           recipient
         )
@@ -199,16 +198,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   {
     (
       ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
     ) = onlyPool();
 
     // delegate call withdraw into collateral
     bytes memory withdrawRes =
-      address(poolData.lendingModule).functionDelegateCall(
+      address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
-          poolStorageManager,
+          lendingInfo.args,
           amount,
           address(this)
         )
@@ -256,16 +256,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returnValues.tokensOut = abi.decode(result, (uint256));
   }
 
-  // called by factory
-  function setLendingModule(
-    address lendingModule,
-    bytes memory args,
-    string memory id
-  ) external onlyMaintainer {
-    ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setLendingModule(lendingModule, args, id);
-  }
-
   function setSwapModule(address swapModule, address collateral)
     external
     onlyMaintainer
@@ -287,6 +277,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   function migrateLiquidity(address newPool) external {
     (
       ILendingStorageManager.PoolStorage memory poolData,
+      ,
       ILendingStorageManager poolStorageManager
     ) = onlyPool();
 
@@ -302,16 +293,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   ) external returns (ReturnValues memory returnValues) {
     (
       ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
     ) = onlyPool();
 
     // delegate call withdraw collateral from old module
     bytes memory withdrawRes =
-      address(poolData.lendingModule).functionDelegateCall(
+      address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
-          poolStorageManager,
+          lendingInfo.args,
           interestTokenAmount,
           address(this)
         )
@@ -333,7 +325,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     poolStorageManager.updateValues(msg.sender, 0, 0, 0);
 
     // set new lending module and obtain new pool data
-    poolData = poolStorageManager.migrateLendingModule(
+    ILendingStorageManager.LendingInfo memory newLendingInfo;
+    (poolData, newLendingInfo) = poolStorageManager.migrateLendingModule(
       msg.sender,
       newLendingID,
       newInterestBearingToken
@@ -341,11 +334,11 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
 
     // delegate call deposit into new module
     bytes memory result =
-      address(poolData.lendingModule).functionDelegateCall(
+      address(newLendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           DEPOSIT_SIG,
           poolData,
-          poolStorageManager,
+          newLendingInfo.args,
           returnValues.tokensOut
         )
       );
@@ -372,18 +365,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returns (uint256 interestTokenAmount, address interestTokenAddr)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    ILendingStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(pool);
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo
+    ) = poolStorageManager.getPoolStorage(pool);
 
-    bytes memory extraArgs =
-      poolStorageManager.getLendingArgs(poolData.lendingModule);
-
-    interestTokenAmount = ILendingModule(poolData.lendingModule)
+    interestTokenAmount = ILendingModule(lendingInfo.lendingModule)
       .collateralToInterestToken(
       collateralAmount,
       poolData.collateral,
       poolData.interestBearingToken,
-      extraArgs,
+      lendingInfo.args,
       isExactTransfer
     );
     interestTokenAddr = poolData.interestBearingToken;
@@ -395,9 +387,9 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returns (address interestTokenAddr)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    interestTokenAddr = poolStorageManager
-      .getPoolStorage(pool)
-      .interestBearingToken;
+    (ILendingStorageManager.PoolStorage memory data, ) =
+      poolStorageManager.getPoolStorage(pool);
+    interestTokenAddr = data.interestBearingToken;
   }
 
   function getAccumulatedInterest(address pool)
@@ -406,10 +398,12 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     returns (uint256 poolInterest)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    ILendingStorageManager.PoolStorage memory poolData =
-      poolStorageManager.getPoolStorage(pool);
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo
+    ) = poolStorageManager.getPoolStorage(pool);
 
-    (poolInterest, ) = ILendingModule(poolData.lendingModule)
+    (poolInterest, ) = ILendingModule(lendingInfo.lendingModule)
       .getAccumulatedInterest(pool, poolData);
   }
 
@@ -418,12 +412,13 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     view
     returns (
       ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
     )
   {
     poolStorageManager = getStorageManager();
-    poolData = poolStorageManager.getPoolStorage(msg.sender);
-    require(poolData.lendingModule != address(0), 'Not allowed');
+    (poolData, lendingInfo) = poolStorageManager.getPoolStorage(msg.sender);
+    require(lendingInfo.lendingModule != address(0), 'Not allowed');
   }
 
   function getStorageManager() internal view returns (ILendingStorageManager) {

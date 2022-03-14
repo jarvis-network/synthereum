@@ -16,7 +16,7 @@ contract AaveV3Module is ILendingModule {
 
   function deposit(
     ILendingStorageManager.PoolStorage calldata poolData,
-    ILendingStorageManager storageManager,
+    bytes memory lendingArgs,
     uint256 amount
   )
     external
@@ -40,8 +40,7 @@ contract AaveV3Module is ILendingModule {
     require(collateral.balanceOf(address(this)) >= amount, 'Wrong balance');
 
     // aave deposit - approve
-    address moneyMarket =
-      decodeLendingArgs(storageManager, poolData.lendingModule);
+    address moneyMarket = abi.decode(lendingArgs, (address));
 
     collateral.safeIncreaseAllowance(moneyMarket, amount);
     IPool(moneyMarket).deposit(
@@ -58,7 +57,7 @@ contract AaveV3Module is ILendingModule {
 
   function withdraw(
     ILendingStorageManager.PoolStorage calldata poolData,
-    ILendingStorageManager storageManager,
+    bytes memory lendingArgs,
     uint256 aTokensAmount,
     address recipient
   )
@@ -85,8 +84,8 @@ contract AaveV3Module is ILendingModule {
     );
 
     // aave withdraw - approve
-    address moneyMarket =
-      decodeLendingArgs(storageManager, poolData.lendingModule);
+    address moneyMarket = abi.decode(lendingArgs, (address));
+
     interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
     IPool(moneyMarket).withdraw(poolData.collateral, aTokensAmount, recipient);
 
@@ -107,12 +106,11 @@ contract AaveV3Module is ILendingModule {
     );
   }
 
-  function getInterestBearingToken(address collateral, address storageManager)
+  function getInterestBearingToken(address collateral, bytes memory args)
     external
     returns (address token)
   {
-    address moneyMarket =
-      decodeLendingArgs(ILendingStorageManager(storageManager), address(this));
+    address moneyMarket = abi.decode(args, (address));
     token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
   }
 
@@ -124,13 +122,6 @@ contract AaveV3Module is ILendingModule {
     bool isExactAmount
   ) external view returns (uint256 interestTokenAmount) {
     interestTokenAmount = collateralAmount;
-  }
-
-  function decodeLendingArgs(
-    ILendingStorageManager storageManager,
-    address lendingModule
-  ) internal view returns (address) {
-    return abi.decode(storageManager.getLendingArgs(lendingModule), (address));
   }
 
   function calculateGeneratedInterest(

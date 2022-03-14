@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 interface ILendingStorageManager {
   struct PoolStorage {
-    address lendingModule;
+    string lendingModuleId;
     address collateral;
     address interestBearingToken;
     uint256 JRTBuybackShare;
@@ -13,11 +13,13 @@ interface ILendingStorageManager {
     uint256 unclaimedDaoCommission;
   }
 
-  function setLendingModule(
-    address lendingModule,
-    bytes memory args,
-    string memory id
-  ) external;
+  struct LendingInfo {
+    address lendingModule;
+    bytes args;
+  }
+
+  function setLendingModule(LendingInfo memory lendingInfo, string memory id)
+    external;
 
   function setSwapModule(address swapModule, address collateral) external;
 
@@ -42,7 +44,7 @@ interface ILendingStorageManager {
     address pool,
     string memory newLendingID,
     address newInterestToken
-  ) external returns (PoolStorage memory);
+  ) external returns (PoolStorage memory, LendingInfo memory);
 
   function updateValues(
     address pool,
@@ -54,15 +56,15 @@ interface ILendingStorageManager {
   function getPoolStorage(address pool)
     external
     view
-    returns (PoolStorage memory);
+    returns (PoolStorage memory poolData, LendingInfo memory lendingInfo);
+
+  function getPoolData(address pool)
+    external
+    view
+    returns (PoolStorage memory poolData);
 
   function getCollateralSwapModule(address collateral)
     external
     view
     returns (address);
-
-  function getLendingArgs(address lendingModule)
-    external
-    view
-    returns (bytes memory);
 }

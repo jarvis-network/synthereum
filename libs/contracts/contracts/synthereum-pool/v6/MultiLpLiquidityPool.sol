@@ -1562,7 +1562,7 @@ contract SynthereumMultiLpLiquidityPool is
     view
     returns (uint256)
   {
-    ILendingStorageManager.PoolStorage memory poolStorage =
+    (ILendingStorageManager.PoolStorage memory poolStorage, ) =
       _lendingStorageManager.getPoolStorage(address(this));
     return poolStorage.collateralDeposited;
   }
