@@ -9,6 +9,7 @@ import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   ISynthereumMultiLpLiquidityPool
 } from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
+import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
@@ -21,6 +22,7 @@ import {
 contract LendingProxy is ILendingProxy, AccessControlEnumerable {
   using Address for address;
   using SafeERC20 for IERC20;
+  using PreciseUnitMath for uint256;
 
   address immutable finder;
 
@@ -75,12 +77,12 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       poolData.collateralDeposited + amount + returnValues.poolInterest;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        (returnValues.daoInterest * poolData.JRTBuybackShare) /
-        10**18;
+        returnValues.daoInterest.mul(poolData.JRTBuybackShare);
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
-        10**18;
+        returnValues.daoInterest.mul(
+          PreciseUnitMath.PRECISE_UNIT - poolData.JRTBuybackShare
+        );
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -119,12 +121,12 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       poolData.collateralDeposited + returnValues.poolInterest - amount;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        (returnValues.daoInterest * poolData.JRTBuybackShare) /
-        10**18;
+        returnValues.daoInterest.mul(poolData.JRTBuybackShare);
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
-        10**18;
+        returnValues.daoInterest.mul(
+          PreciseUnitMath.PRECISE_UNIT - poolData.JRTBuybackShare
+        );
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -157,7 +159,7 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       ILendingStorageManager.LendingInfo memory lendingInfo
     ) = poolStorageManager.getPoolStorage(pool);
 
-    // trigger transfer of funds from pool
+    // trigger transfer of funds from pool TODO calculate a tokens amount
     ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(amount);
 
     // delegate call withdraw
@@ -176,15 +178,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     //update pool storage
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest;
+
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission -
         amount +
-        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
-        10**18;
+        returnValues.daoInterest.mul(
+          PreciseUnitMath.PRECISE_UNIT - poolData.JRTBuybackShare
+        );
+
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        (returnValues.daoInterest * poolData.JRTBuybackShare) /
-        10**18;
+        returnValues.daoInterest.mul(poolData.JRTBuybackShare);
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -222,15 +226,17 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     //update pool storage
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest;
+
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
-        10**18;
+        returnValues.daoInterest.mul(
+          PreciseUnitMath.PRECISE_UNIT - poolData.JRTBuybackShare
+        );
+
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT -
         amount +
-        (returnValues.daoInterest * poolData.JRTBuybackShare) /
-        10**18;
+        returnValues.daoInterest.mul(poolData.JRTBuybackShare);
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -316,14 +322,16 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
     // update storage with accumulated interest
     uint256 newCollateralDeposited =
       poolData.collateralDeposited + returnValues.poolInterest;
+
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
-        (returnValues.daoInterest * poolData.JRTBuybackShare) /
-        10**18;
+        returnValues.daoInterest.mul(poolData.JRTBuybackShare);
+
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission +
-        (returnValues.daoInterest * (10**18 - poolData.JRTBuybackShare)) /
-        10**18;
+        returnValues.daoInterest.mul(
+          PreciseUnitMath.PRECISE_UNIT - poolData.JRTBuybackShare
+        );
 
     // temporary set pool storage collateral to 0 to freshly deposit
     poolStorageManager.updateValues(msg.sender, 0, 0, 0);
