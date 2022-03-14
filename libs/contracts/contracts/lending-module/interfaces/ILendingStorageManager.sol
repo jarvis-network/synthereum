@@ -67,4 +67,9 @@ interface ILendingStorageManager {
     external
     view
     returns (address);
+
+  function getInterestBearingToken(address pool)
+    external
+    view
+    returns (address interestTokenAddr);
 }

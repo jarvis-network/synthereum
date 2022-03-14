@@ -185,6 +185,14 @@ contract LendingStorageManager is ILendingStorageManager {
     return collateralToSwapModule[collateral];
   }
 
+  function getInterestBearingToken(address pool)
+    external
+    view
+    returns (address interestTokenAddr)
+  {
+    interestTokenAddr = poolStorage[pool].interestBearingToken;
+  }
+
   function _checkSenderIsFactory(
     ISynthereumFactoryVersioning factoryVersioning,
     uint8 numberOfFactories,

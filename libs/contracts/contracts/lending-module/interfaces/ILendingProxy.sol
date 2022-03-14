@@ -64,11 +64,6 @@ interface ILendingProxy {
     view
     returns (uint256 interestTokenAmount, address interestTokenAddr);
 
-  function getInterestBearingToken(address pool)
-    external
-    view
-    returns (address interestTokenAddr);
-
   function getAccumulatedInterest(address pool)
     external
     view

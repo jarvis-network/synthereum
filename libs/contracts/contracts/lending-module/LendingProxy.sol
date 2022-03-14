@@ -6,6 +6,9 @@ import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
+import {
+  ISynthereumMultiLpLiquidityPool
+} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
@@ -154,7 +157,8 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       ILendingStorageManager.LendingInfo memory lendingInfo
     ) = poolStorageManager.getPoolStorage(pool);
 
-    // TODO trigger transfer of funds from pool
+    // trigger transfer of funds from pool
+    ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(amount);
 
     // delegate call withdraw
     bytes memory result =
@@ -379,17 +383,6 @@ contract LendingProxy is ILendingProxy, AccessControlEnumerable {
       isExactTransfer
     );
     interestTokenAddr = poolData.interestBearingToken;
-  }
-
-  function getInterestBearingToken(address pool)
-    external
-    view
-    returns (address interestTokenAddr)
-  {
-    ILendingStorageManager poolStorageManager = getStorageManager();
-    (ILendingStorageManager.PoolStorage memory data, ) =
-      poolStorageManager.getPoolStorage(pool);
-    interestTokenAddr = data.interestBearingToken;
   }
 
   function getAccumulatedInterest(address pool)
