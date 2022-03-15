@@ -22,20 +22,20 @@ interface ILendingManager {
     address interestBearingToken
   );
 
-  function deposit(uint256 amount)
+  function deposit(uint256 collateralAmount)
     external
     returns (ReturnValues memory returnValues);
 
-  function withdraw(uint256 amount, address recipient)
+  function withdraw(uint256 interestTokenAmount, address recipient)
     external
     returns (ReturnValues memory returnValues);
 
   function batchClaimCommission(
     address[] memory pools,
-    uint256[] memory amounts
+    uint256[] memory collateralAmounts
   ) external;
 
-  function executeBuyback(uint256 amount, bytes memory swapParams)
+  function executeBuyback(uint256 collateralAmount, bytes memory swapParams)
     external
     returns (ReturnValues memory returnValues);
 
@@ -67,5 +67,5 @@ interface ILendingManager {
   function getAccumulatedInterest(address pool)
     external
     view
-    returns (uint256 poolInterest);
+    returns (uint256 poolInterest, uint256 collateralDeposited);
 }

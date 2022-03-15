@@ -19,6 +19,7 @@ interface ILendingModule {
 
   function withdraw(
     ILendingStorageManager.PoolStorage calldata poolData,
+    address pool,
     bytes memory lendingArgs,
     uint256 amount,
     address recipient

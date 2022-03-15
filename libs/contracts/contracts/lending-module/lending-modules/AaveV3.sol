@@ -57,6 +57,7 @@ contract AaveV3Module is ILendingModule {
 
   function withdraw(
     ILendingStorageManager.PoolStorage calldata poolData,
+    address pool,
     bytes memory lendingArgs,
     uint256 aTokensAmount,
     address recipient
@@ -71,7 +72,7 @@ contract AaveV3Module is ILendingModule {
   {
     // calculate accrued interest since last operation
     (poolInterest, daoInterest) = calculateGeneratedInterest(
-      msg.sender,
+      pool,
       poolData,
       aTokensAmount,
       false

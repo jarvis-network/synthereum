@@ -32,7 +32,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     'deposit((string,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256)';
 
   string private constant WITHDRAW_SIG =
-    'withdraw((string,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256,address)';
+    'withdraw((string,address,address,uint256,uint256,uint256,uint256,uint256),address,bytes,uint256,address)';
 
   string private JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 
@@ -92,7 +92,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     );
   }
 
-  function withdraw(uint256 amount, address recipient)
+  function withdraw(uint256 interestTokenAmount, address recipient)
     external
     override
     returns (ReturnValues memory returnValues)
@@ -109,8 +109,9 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
+          msg.sender,
           lendingInfo.args,
-          amount,
+          interestTokenAmount,
           recipient
         )
       );
@@ -118,7 +119,9 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     returnValues = abi.decode(result, (ReturnValues));
 
     uint256 newCollateralDeposited =
-      poolData.collateralDeposited + returnValues.poolInterest - amount;
+      poolData.collateralDeposited +
+        returnValues.poolInterest -
+        interestTokenAmount;
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT +
         returnValues.daoInterest.mul(poolData.JRTBuybackShare);
@@ -146,11 +149,13 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     for (uint8 i = 0; i < pools.length; i++) {
       claimCommission(pools[i], amounts[i], recipient);
     }
+
+    // todo emit event
   }
 
   function claimCommission(
     address pool,
-    uint256 amount,
+    uint256 collateralAmount,
     address recipient
   ) internal {
     ILendingStorageManager poolStorageManager = getStorageManager();
@@ -159,8 +164,16 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
       ILendingStorageManager.LendingInfo memory lendingInfo
     ) = poolStorageManager.getPoolStorage(pool);
 
-    // trigger transfer of funds from pool TODO calculate a tokens amount
-    ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(amount);
+    // trigger transfer of funds from pool
+    (uint256 interestTokenAmount, ) =
+      ILendingManager(address(this)).collateralToInterestToken(
+        pool,
+        collateralAmount,
+        true
+      );
+    ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(
+      interestTokenAmount
+    );
 
     // delegate call withdraw
     bytes memory result =
@@ -168,8 +181,9 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
+          pool,
           lendingInfo.args,
-          amount,
+          interestTokenAmount,
           recipient
         )
       );
@@ -181,7 +195,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
 
     uint256 newUnclaimedDaoCommission =
       poolData.unclaimedDaoCommission -
-        amount +
+        collateralAmount +
         returnValues.daoInterest.mul(
           PreciseUnitMath.PRECISE_UNIT - poolData.JRTBuybackShare
         );
@@ -199,7 +213,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   }
 
   // add amount
-  function executeBuyback(uint256 amount, bytes memory swapParams)
+  function executeBuyback(uint256 collateralAmount, bytes memory swapParams)
     external
     override
     returns (ReturnValues memory returnValues)
@@ -211,13 +225,20 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     ) = onlyPool();
 
     // delegate call withdraw into collateral
+    (uint256 interestTokenAmount, ) =
+      ILendingManager(address(this)).collateralToInterestToken(
+        msg.sender,
+        collateralAmount,
+        true
+      );
     bytes memory withdrawRes =
       address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
+          msg.sender,
           lendingInfo.args,
-          amount,
+          interestTokenAmount,
           address(this)
         )
       );
@@ -235,7 +256,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
 
     uint256 newUnclaimedDaoJRT =
       poolData.unclaimedDaoJRT -
-        amount +
+        collateralAmount +
         returnValues.daoInterest.mul(poolData.JRTBuybackShare);
 
     poolStorageManager.updateValues(
@@ -313,6 +334,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
+          msg.sender,
           lendingInfo.args,
           interestTokenAmount,
           address(this)
@@ -396,7 +418,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   function getAccumulatedInterest(address pool)
     external
     view
-    returns (uint256 poolInterest)
+    returns (uint256 poolInterest, uint256 collateralDeposited)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
     (
@@ -406,6 +428,8 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
 
     (poolInterest, ) = ILendingModule(lendingInfo.lendingModule)
       .getAccumulatedInterest(pool, poolData);
+
+    collateralDeposited = poolData.collateralDeposited;
   }
 
   function onlyPool()
