@@ -29,10 +29,10 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string private constant DEPOSIT_SIG =
-    'deposit((string,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256)';
+    'deposit((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256)';
 
   string private constant WITHDRAW_SIG =
-    'withdraw((string,address,address,uint256,uint256,uint256,uint256,uint256),address,bytes,uint256,address)';
+    'withdraw((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),address,bytes,uint256,address)';
 
   string private JRTSWAP_SIG = 'swapToJRT(address,uint256,bytes)';
 

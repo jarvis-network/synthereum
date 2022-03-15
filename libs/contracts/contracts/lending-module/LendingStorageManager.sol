@@ -10,7 +10,7 @@ import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
 
 contract LendingStorageManager is ILendingStorageManager {
-  mapping(string => LendingInfo) public idToLendingInfo;
+  mapping(bytes32 => LendingInfo) public idToLendingInfo;
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
   mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
 
@@ -53,7 +53,7 @@ contract LendingStorageManager is ILendingStorageManager {
     external
     onlyPoolFactory
   {
-    idToLendingInfo[id] = lendingInfo;
+    idToLendingInfo[keccak256(abi.encode(id))] = lendingInfo;
   }
 
   function setSwapModule(address swapModule, address collateral)
@@ -90,7 +90,8 @@ contract LendingStorageManager is ILendingStorageManager {
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
   ) external onlyPoolFactory {
-    LendingInfo memory lendingInfo = idToLendingInfo[lendingID];
+    bytes32 id = keccak256(abi.encode(lendingID));
+    LendingInfo memory lendingInfo = idToLendingInfo[id];
     address lendingModule = lendingInfo.lendingModule;
     require(lendingModule != address(0), 'Id not existent');
 
@@ -99,7 +100,7 @@ contract LendingStorageManager is ILendingStorageManager {
     poolData.collateral = collateral;
     poolData.daoInterestShare = daoInterestShare;
     poolData.JRTBuybackShare = jrtBuybackShare;
-    poolData.lendingModuleId = lendingID;
+    poolData.lendingModuleId = id;
     poolData.interestBearingToken = interestBearingToken == address(0)
       ? ILendingModule(lendingModule).getInterestBearingToken(
         collateral,
@@ -131,13 +132,14 @@ contract LendingStorageManager is ILendingStorageManager {
     string memory newLendingID,
     address newInterestToken
   ) external onlyProxy returns (PoolStorage memory, LendingInfo memory) {
-    LendingInfo memory newLendingInfo = idToLendingInfo[newLendingID];
+    bytes32 id = keccak256(abi.encode(newLendingID));
+    LendingInfo memory newLendingInfo = idToLendingInfo[id];
     address newLendingModule = newLendingInfo.lendingModule;
     require(newLendingModule != address(0), 'Id not existent');
 
     // set lending module
     PoolStorage storage poolData = poolStorage[pool];
-    poolData.lendingModuleId = newLendingID;
+    poolData.lendingModuleId = id;
     poolData.interestBearingToken = newInterestToken == address(0)
       ? ILendingModule(newLendingModule).getInterestBearingToken(
         poolData.collateral,
