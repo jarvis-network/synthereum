@@ -14,6 +14,12 @@ interface ILendingManager {
     uint256 tokensTransferred;
   }
 
+  struct InterestSplit {
+    uint256 poolInterest;
+    uint256 jrtInterest;
+    uint256 commissionInterest;
+  }
+
   event PoolRegistered(
     address pool,
     address moneyMarket,
