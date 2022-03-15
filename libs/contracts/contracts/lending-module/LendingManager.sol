@@ -74,7 +74,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
       abi.decode(result, (ILendingModule.ReturnValues));
 
     // split interest
-    InterestSplit memory interestPlit =
+    InterestSplit memory interestSplit =
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
@@ -84,18 +84,18 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     // update pool storage values
     poolStorageManager.updateValues(
       msg.sender,
-      poolData.collateralDeposited + res.tokensOut + interestPlit.poolInterest,
-      poolData.unclaimedDaoJRT + interestPlit.jrtInterest,
-      poolData.unclaimedDaoCommission + interestPlit.commissionInterest
+      poolData.collateralDeposited + res.tokensOut + interestSplit.poolInterest,
+      poolData.unclaimedDaoJRT + interestSplit.jrtInterest,
+      poolData.unclaimedDaoCommission + interestSplit.commissionInterest
     );
 
     // set return values
     returnValues.tokensOut = res.tokensOut;
     returnValues.tokensTransferred = res.tokensTransferred;
-    returnValues.poolInterest = interestPlit.poolInterest;
+    returnValues.poolInterest = interestSplit.poolInterest;
     returnValues.daoInterest =
-      interestPlit.commissionInterest +
-      interestPlit.jrtInterest;
+      interestSplit.commissionInterest +
+      interestSplit.jrtInterest;
   }
 
   function withdraw(uint256 interestTokenAmount, address recipient)
@@ -126,7 +126,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
       abi.decode(result, (ILendingModule.ReturnValues));
 
     // split interest
-    InterestSplit memory interestPlit =
+    InterestSplit memory interestSplit =
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
@@ -136,18 +136,18 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     // update storage value
     poolStorageManager.updateValues(
       msg.sender,
-      poolData.collateralDeposited + interestPlit.poolInterest - res.tokensOut,
-      poolData.unclaimedDaoJRT + interestPlit.jrtInterest,
-      poolData.unclaimedDaoCommission + interestPlit.commissionInterest
+      poolData.collateralDeposited + interestSplit.poolInterest - res.tokensOut,
+      poolData.unclaimedDaoJRT + interestSplit.jrtInterest,
+      poolData.unclaimedDaoCommission + interestSplit.commissionInterest
     );
 
     // set return values
     returnValues.tokensOut = res.tokensOut;
     returnValues.tokensTransferred = res.tokensTransferred;
-    returnValues.poolInterest = interestPlit.poolInterest;
+    returnValues.poolInterest = interestSplit.poolInterest;
     returnValues.daoInterest =
-      interestPlit.commissionInterest +
-      interestPlit.jrtInterest;
+      interestSplit.commissionInterest +
+      interestSplit.jrtInterest;
   }
 
   function batchClaimCommission(
@@ -201,7 +201,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
       abi.decode(withdrawRes, (ILendingModule.ReturnValues));
 
     // split interest
-    InterestSplit memory interestPlit =
+    InterestSplit memory interestSplit =
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
@@ -211,9 +211,9 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     //update pool storage
     poolStorageManager.updateValues(
       msg.sender,
-      poolData.collateralDeposited + interestPlit.poolInterest,
-      poolData.unclaimedDaoJRT - collateralAmount + interestPlit.jrtInterest,
-      poolData.unclaimedDaoCommission + interestPlit.commissionInterest
+      poolData.collateralDeposited + interestSplit.poolInterest,
+      poolData.unclaimedDaoJRT - collateralAmount + interestSplit.jrtInterest,
+      poolData.unclaimedDaoCommission + interestSplit.commissionInterest
     );
 
     // retrieve address
@@ -237,10 +237,10 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     // set return values
     returnValues.tokensTransferred = res.tokensTransferred;
     returnValues.tokensOut = abi.decode(result, (uint256));
-    returnValues.poolInterest = interestPlit.poolInterest;
+    returnValues.poolInterest = interestSplit.poolInterest;
     returnValues.daoInterest =
-      interestPlit.jrtInterest +
-      interestPlit.commissionInterest;
+      interestSplit.jrtInterest +
+      interestSplit.commissionInterest;
   }
 
   function setSwapModule(address swapModule, address collateral)
@@ -302,7 +302,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
       res = abi.decode(withdrawRes, (ILendingModule.ReturnValues));
     }
     // split interest
-    InterestSplit memory interestPlit =
+    InterestSplit memory interestSplit =
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
@@ -311,10 +311,10 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
 
     // add interest to pool data
     uint256 newCollateralDeposited =
-      poolData.collateralDeposited + interestPlit.poolInterest;
-    uint256 newDaoJRT = poolData.unclaimedDaoJRT + interestPlit.jrtInterest;
+      poolData.collateralDeposited + interestSplit.poolInterest;
+    uint256 newDaoJRT = poolData.unclaimedDaoJRT + interestSplit.jrtInterest;
     uint256 newDaoCommission =
-      poolData.unclaimedDaoCommission + interestPlit.commissionInterest;
+      poolData.unclaimedDaoCommission + interestSplit.commissionInterest;
 
     // temporary set pool data collateral and interest to 0 to freshly deposit
     poolStorageManager.updateValues(msg.sender, 0, 0, 0);
@@ -352,10 +352,10 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     // set the return values tokensOut
     returnValues.tokensOut = depositRes.tokensOut;
     returnValues.tokensTransferred = depositRes.tokensTransferred;
-    returnValues.poolInterest = interestPlit.poolInterest;
+    returnValues.poolInterest = interestSplit.poolInterest;
     returnValues.daoInterest =
-      interestPlit.commissionInterest +
-      interestPlit.jrtInterest;
+      interestSplit.commissionInterest +
+      interestSplit.jrtInterest;
   }
 
   function collateralToInterestToken(
@@ -401,13 +401,13 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
         poolData
       );
 
-    InterestSplit memory interestPlit =
+    InterestSplit memory interestSplit =
       splitGeneratedInterest(
         totalInterest,
         poolData.daoInterestShare,
         poolData.JRTBuybackShare
       );
-    poolInterest = interestPlit.poolInterest;
+    poolInterest = interestSplit.poolInterest;
     collateralDeposited = poolData.collateralDeposited;
   }
 
@@ -423,36 +423,33 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     ) = poolStorageManager.getPoolStorage(pool);
 
     // trigger transfer of funds from pool
-    bytes memory result;
-    {
-      (uint256 interestTokenAmount, ) =
-        ILendingManager(address(this)).collateralToInterestToken(
-          pool,
-          collateralAmount,
-          true
-        );
-      ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(
-        interestTokenAmount
+    (uint256 interestTokenAmount, ) =
+      ILendingManager(address(this)).collateralToInterestToken(
+        pool,
+        collateralAmount,
+        true
       );
+    ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(
+      interestTokenAmount
+    );
 
-      // delegate call withdraw
-      bytes memory result =
-        address(lendingInfo.lendingModule).functionDelegateCall(
-          abi.encodeWithSignature(
-            WITHDRAW_SIG,
-            poolData,
-            pool,
-            lendingInfo.args,
-            interestTokenAmount,
-            recipient
-          )
-        );
-    }
+    // delegate call withdraw
+    bytes memory result =
+      address(lendingInfo.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          pool,
+          lendingInfo.args,
+          interestTokenAmount,
+          recipient
+        )
+      );
     ILendingModule.ReturnValues memory res =
       abi.decode(result, (ILendingModule.ReturnValues));
 
     // split interest
-    InterestSplit memory interestPlit =
+    InterestSplit memory interestSplit =
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
@@ -462,11 +459,11 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     //update pool storage
     poolStorageManager.updateValues(
       pool,
-      poolData.collateralDeposited + interestPlit.poolInterest,
-      poolData.unclaimedDaoJRT + interestPlit.jrtInterest,
+      poolData.collateralDeposited + interestSplit.poolInterest,
+      poolData.unclaimedDaoJRT + interestSplit.jrtInterest,
       poolData.unclaimedDaoCommission -
         collateralAmount +
-        interestPlit.commissionInterest
+        interestSplit.commissionInterest
     );
   }
 
