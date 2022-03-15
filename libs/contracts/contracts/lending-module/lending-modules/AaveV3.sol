@@ -21,19 +21,22 @@ contract AaveV3Module is ILendingModule {
   )
     external
     returns (
-      uint256 poolInterest,
-      uint256 daoInterest,
+      uint256 totalInterest,
       uint256 tokensOut,
       uint256 tokensTransferred
     )
   {
     // calculate accrued interest since last operation
-    (poolInterest, daoInterest) = calculateGeneratedInterest(
+    totalInterest = calculateGeneratedInterest(
       msg.sender,
       poolData,
       amount,
       true
     );
+
+    // aave tokens are always 1:1
+    tokensOut = amount;
+    tokensTransferred = amount;
 
     // proxy should have received collateral from the pool
     IERC20 collateral = IERC20(poolData.collateral);
@@ -49,10 +52,6 @@ contract AaveV3Module is ILendingModule {
       msg.sender,
       uint16(0)
     );
-
-    // aave tokens are always 1:1
-    tokensOut = amount;
-    tokensTransferred = amount;
   }
 
   function withdraw(
@@ -64,19 +63,23 @@ contract AaveV3Module is ILendingModule {
   )
     external
     returns (
-      uint256 poolInterest,
-      uint256 daoInterest,
+      uint256 totalInterest,
       uint256 tokensOut,
       uint256 tokensTransferred
     )
   {
     // calculate accrued interest since last operation
-    (poolInterest, daoInterest) = calculateGeneratedInterest(
+    totalInterest = calculateGeneratedInterest(
       pool,
       poolData,
       aTokensAmount,
       false
     );
+
+    // aave tokens are always 1:1
+    tokensOut = aTokensAmount;
+    tokensTransferred = aTokensAmount;
+
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(poolData.interestBearingToken);
     require(
@@ -89,22 +92,13 @@ contract AaveV3Module is ILendingModule {
 
     interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
     IPool(moneyMarket).withdraw(poolData.collateral, aTokensAmount, recipient);
-
-    // aave tokens are always 1:1
-    tokensOut = aTokensAmount;
-    tokensTransferred = aTokensAmount;
   }
 
   function getAccumulatedInterest(
     address poolAddress,
     ILendingStorageManager.PoolStorage calldata poolData
-  ) external view returns (uint256 poolInterest, uint256 daoInterest) {
-    (poolInterest, daoInterest) = calculateGeneratedInterest(
-      poolAddress,
-      poolData,
-      0,
-      true
-    );
+  ) external view returns (uint256 totalInterest) {
+    totalInterest = calculateGeneratedInterest(poolAddress, poolData, 0, true);
   }
 
   function getInterestBearingToken(address collateral, bytes memory args)
@@ -130,16 +124,14 @@ contract AaveV3Module is ILendingModule {
     ILendingStorageManager.PoolStorage calldata pool,
     uint256 amount,
     bool isDeposit
-  ) internal view returns (uint256 poolInterest, uint256 daoInterest) {
-    if (pool.collateralDeposited == 0) return (0, 0);
+  ) internal view returns (uint256 totalInterestGenerated) {
+    if (pool.collateralDeposited == 0) return 0;
 
-    uint256 ratio = pool.daoInterestShare;
     // get current pool total amount of collateral
     uint256 poolBalance =
       IERC20(pool.interestBearingToken).balanceOf(poolAddress);
 
     // the total interest is delta between current balance and lastBalance
-    uint256 totalInterestGenerated;
     if (isDeposit) {
       totalInterestGenerated =
         poolBalance -
@@ -154,8 +146,5 @@ contract AaveV3Module is ILendingModule {
         pool.unclaimedDaoCommission -
         pool.unclaimedDaoJRT;
     }
-
-    daoInterest = (totalInterestGenerated * ratio) / 10**18;
-    poolInterest = totalInterestGenerated - daoInterest;
   }
 }
