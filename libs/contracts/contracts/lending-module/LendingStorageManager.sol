@@ -16,12 +16,12 @@ contract LendingStorageManager is ILendingStorageManager {
 
   address immutable finder;
 
-  modifier onlyProxy() {
-    address proxy =
+  modifier onlyLendingManager() {
+    address lendingManager =
       ISynthereumFinder(finder).getImplementationAddress(
         SynthereumInterfaces.LendingManager
       );
-    require(msg.sender == proxy, 'Not allowed');
+    require(msg.sender == lendingManager, 'Not allowed');
     _;
   }
 
@@ -58,7 +58,7 @@ contract LendingStorageManager is ILendingStorageManager {
 
   function setSwapModule(address swapModule, address collateral)
     external
-    onlyProxy
+    onlyLendingManager
   {
     collateralToSwapModule[collateral] = swapModule;
   }
@@ -67,7 +67,7 @@ contract LendingStorageManager is ILendingStorageManager {
     address pool,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
-  ) external onlyProxy {
+  ) external onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
     require(
       idToLendingInfo[poolData.lendingModuleId].lendingModule != address(0),
@@ -109,7 +109,10 @@ contract LendingStorageManager is ILendingStorageManager {
       : interestBearingToken;
   }
 
-  function migratePool(address oldPool, address newPool) external onlyProxy {
+  function migratePool(address oldPool, address newPool)
+    external
+    onlyLendingManager
+  {
     PoolStorage memory oldPoolData = poolStorage[oldPool];
     PoolStorage storage newPoolData = poolStorage[newPool];
 
@@ -131,7 +134,11 @@ contract LendingStorageManager is ILendingStorageManager {
     address pool,
     string memory newLendingID,
     address newInterestToken
-  ) external onlyProxy returns (PoolStorage memory, LendingInfo memory) {
+  )
+    external
+    onlyLendingManager
+    returns (PoolStorage memory, LendingInfo memory)
+  {
     bytes32 id = keccak256(abi.encode(newLendingID));
     LendingInfo memory newLendingInfo = idToLendingInfo[id];
     address newLendingModule = newLendingInfo.lendingModule;
@@ -155,7 +162,7 @@ contract LendingStorageManager is ILendingStorageManager {
     uint256 collateralDeposited,
     uint256 daoJRT,
     uint256 daoInterest
-  ) external onlyProxy {
+  ) external onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
 
     // update collateral deposit amount of the pool
