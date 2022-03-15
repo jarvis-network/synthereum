@@ -7,7 +7,7 @@ const truffleAssert = require('truffle-assertions');
 const TestnetSelfMintingERC20 = artifacts.require('MintableBurnableERC20');
 const LendingModule = artifacts.require('AaveV3Module');
 const PoolMock = artifacts.require('PoolLendingMock');
-const LendingProxy = artifacts.require('LendingProxy');
+const LendingProxy = artifacts.require('LendingManager');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const LendingStorageManager = artifacts.require('LendingStorageManager');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
@@ -447,7 +447,7 @@ contract('AaveV3 Lending module', accounts => {
         expectedDaoInterest.toString().substr(0, 13),
       );
       assert.equal(
-        generatedInterest.toString().substr(0, 14),
+        generatedInterest.poolInterest.toString().substr(0, 14),
         expectedPoolInterest.toString().substr(0, 14),
       );
 
@@ -662,7 +662,6 @@ contract('AaveV3 Lending module', accounts => {
       let commissionUSDCBefore = await USDCInstance.balanceOf.call(
         commissionReceiver,
       );
-
       let poolStorageBefore = await storageManager.getPoolData.call(
         poolMock.address,
       );
@@ -671,13 +670,6 @@ contract('AaveV3 Lending module', accounts => {
       // claim commission
       let amount = poolStorageBefore.unclaimedDaoCommission;
 
-      let returnValues = await proxy.batchClaimCommission.call(
-        [poolMock.address],
-        [amount],
-        {
-          from: maintainer,
-        },
-      );
       await proxy.batchClaimCommission([poolMock.address], [amount], {
         from: maintainer,
       });
