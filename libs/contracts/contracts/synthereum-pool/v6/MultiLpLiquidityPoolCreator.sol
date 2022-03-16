@@ -19,6 +19,9 @@ import {
   BaseControlledMintableBurnableERC20
 } from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {
+  SynthereumMultiLpLiquidityPoolCreatorLib
+} from './MultiLpLiquidityPoolCreatorLib.sol';
 import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';
 
 contract SynthereumMultiLpLiquidityPoolCreator {
@@ -86,7 +89,7 @@ contract SynthereumMultiLpLiquidityPoolCreator {
       bytes(params.syntheticSymbol).length != 0,
       'Missing synthetic symbol'
     );
-
+    BaseControlledMintableBurnableERC20 tokenCurrency;
     if (params.syntheticToken == address(0)) {
       IMintableBurnableTokenFactory tokenFactory =
         IMintableBurnableTokenFactory(
@@ -94,13 +97,12 @@ contract SynthereumMultiLpLiquidityPoolCreator {
             SynthereumInterfaces.TokenFactory
           )
         );
-      BaseControlledMintableBurnableERC20 tokenCurrency =
-        tokenFactory.createToken(
-          params.syntheticName,
-          params.syntheticSymbol,
-          18
-        );
-      pool = new SynthereumMultiLpLiquidityPool(
+      tokenCurrency = tokenFactory.createToken(
+        params.syntheticName,
+        params.syntheticSymbol,
+        18
+      );
+      pool = SynthereumMultiLpLiquidityPoolCreatorLib.deployPool(
         _convertParams(params, tokenCurrency)
       );
       // Give permissions to new pool contract and then hand over ownership.
@@ -111,8 +113,9 @@ contract SynthereumMultiLpLiquidityPoolCreator {
       );
       tokenCurrency.renounceAdmin();
     } else {
-      BaseControlledMintableBurnableERC20 tokenCurrency =
-        BaseControlledMintableBurnableERC20(params.syntheticToken);
+      tokenCurrency = BaseControlledMintableBurnableERC20(
+        params.syntheticToken
+      );
       require(
         keccak256(abi.encodePacked(tokenCurrency.name())) ==
           keccak256(abi.encodePacked(params.syntheticName)),
@@ -123,7 +126,7 @@ contract SynthereumMultiLpLiquidityPoolCreator {
           keccak256(abi.encodePacked(params.syntheticSymbol)),
         'Wrong synthetic token symbol'
       );
-      pool = new SynthereumMultiLpLiquidityPool(
+      pool = SynthereumMultiLpLiquidityPoolCreatorLib.deployPool(
         _convertParams(params, tokenCurrency)
       );
     }
