@@ -18,8 +18,15 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-contract LendingManager is ILendingManager, AccessControlEnumerable {
+contract LendingManager is
+  ILendingManager,
+  AccessControlEnumerable,
+  ReentrancyGuard
+{
   using Address for address;
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
@@ -44,7 +51,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     _;
   }
 
-  constructor(address _finder, Roles memory _roles) {
+  constructor(address _finder, Roles memory _roles) nonReentrant {
     finder = _finder;
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
@@ -56,6 +63,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   function deposit(uint256 amount)
     external
     override
+    nonReentrant
     returns (ReturnValues memory returnValues)
   {
     (
@@ -101,6 +109,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   function withdraw(uint256 interestTokenAmount, address recipient)
     external
     override
+    nonReentrant
     returns (ReturnValues memory returnValues)
   {
     (
@@ -153,7 +162,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   function batchClaimCommission(
     address[] memory pools,
     uint256[] memory amounts
-  ) external override onlyMaintainer {
+  ) external override onlyMaintainer nonReentrant {
     require(pools.length == amounts.length, 'Invalid call');
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
@@ -168,6 +177,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   function executeBuyback(uint256 collateralAmount, bytes memory swapParams)
     external
     override
+    nonReentrant
     returns (ReturnValues memory returnValues)
   {
     (
@@ -261,12 +271,8 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
   }
 
   // when pool is upgraded and liquidity transfered to a new Pool
-  function migrateLiquidity(address newPool) external {
-    (
-      ILendingStorageManager.PoolStorage memory poolData,
-      ,
-      ILendingStorageManager poolStorageManager
-    ) = onlyPool();
+  function migrateLiquidity(address newPool) external nonReentrant {
+    (, , ILendingStorageManager poolStorageManager) = onlyPool();
 
     // migrate through storage manager
     poolStorageManager.migratePool(msg.sender, newPool);
@@ -277,7 +283,7 @@ contract LendingManager is ILendingManager, AccessControlEnumerable {
     string memory newLendingID,
     address newInterestBearingToken,
     uint256 interestTokenAmount
-  ) external returns (ReturnValues memory returnValues) {
+  ) external nonReentrant returns (ReturnValues memory returnValues) {
     (
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo,
