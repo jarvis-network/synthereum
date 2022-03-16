@@ -323,8 +323,6 @@ contract LendingManager is
       );
 
     // add interest to pool data
-    uint256 newCollateralDeposited =
-      poolData.collateralDeposited + interestSplit.poolInterest;
     uint256 newDaoJRT = poolData.unclaimedDaoJRT + interestSplit.jrtInterest;
     uint256 newDaoCommission =
       poolData.unclaimedDaoCommission + interestSplit.commissionInterest;
@@ -358,7 +356,7 @@ contract LendingManager is
     // update storage with accumulated interest
     poolStorageManager.updateValues(
       msg.sender,
-      newCollateralDeposited,
+      depositRes.tokensOut + interestSplit.poolInterest,
       newDaoJRT,
       newDaoCommission
     );
