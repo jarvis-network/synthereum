@@ -36,7 +36,7 @@ contract LendingManager is
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string private constant DEPOSIT_SIG =
-    'deposit((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256)';
+    'deposit((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256,address)';
 
   string private constant WITHDRAW_SIG =
     'withdraw((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),address,bytes,uint256,address)';
@@ -60,7 +60,7 @@ contract LendingManager is
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
-  function deposit(uint256 amount)
+  function deposit(uint256 amount, address recipient)
     external
     override
     nonReentrant
@@ -75,7 +75,13 @@ contract LendingManager is
     // delegate call implementation
     bytes memory result =
       address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(DEPOSIT_SIG, poolData, lendingInfo.args, amount)
+        abi.encodeWithSignature(
+          DEPOSIT_SIG,
+          poolData,
+          lendingInfo.args,
+          amount,
+          recipient
+        )
       );
 
     ILendingModule.ReturnValues memory res =
@@ -196,6 +202,11 @@ contract LendingManager is
           true
         );
 
+      // trigger transfer of interest token from the pool
+      ISynthereumMultiLpLiquidityPool(msg.sender).transferToLendingManager(
+        interestTokenAmount
+      );
+
       withdrawRes = address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
@@ -226,19 +237,15 @@ contract LendingManager is
       poolData.unclaimedDaoCommission + interestSplit.commissionInterest
     );
 
-    // retrieve address
-    address recipient =
-      ISynthereumFinder(finder).getImplementationAddress(
-        'BuybackProgramReceiver'
-      );
-
     // delegate call the swap to JRT
     bytes memory result =
       address(poolStorageManager.getCollateralSwapModule(poolData.collateral))
         .functionDelegateCall(
         abi.encodeWithSignature(
           JRTSWAP_SIG,
-          recipient,
+          ISynthereumFinder(finder).getImplementationAddress(
+            'BuybackProgramReceiver'
+          ),
           res.tokensOut,
           swapParams
         )
@@ -340,7 +347,8 @@ contract LendingManager is
           DEPOSIT_SIG,
           poolData,
           newLendingInfo.args,
-          res.tokensOut
+          res.tokensOut,
+          msg.sender
         )
       );
 

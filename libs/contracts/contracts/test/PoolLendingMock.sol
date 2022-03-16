@@ -105,14 +105,14 @@ contract PoolLendingMock is ISynthereumDeployment {
     returns (ILendingManager.ReturnValues memory)
   {
     IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
-    return proxy.deposit(amount);
+    return proxy.deposit(amount, address(this));
   }
 
   function depositShouldRevert(uint256 amount)
     external
     returns (ILendingManager.ReturnValues memory)
   {
-    return proxy.deposit(amount);
+    return proxy.deposit(amount, address(this));
   }
 
   function withdraw(
@@ -131,12 +131,10 @@ contract PoolLendingMock is ISynthereumDeployment {
     return proxy.withdraw(amount, recipient);
   }
 
-  function claimJRT(
-    address interestToken,
-    uint256 amount,
-    bytes memory swapParams
-  ) external returns (ILendingManager.ReturnValues memory) {
-    IERC20(interestToken).transfer(address(proxy), amount);
+  function claimJRT(uint256 amount, bytes memory swapParams)
+    external
+    returns (ILendingManager.ReturnValues memory)
+  {
     return proxy.executeBuyback(amount, swapParams);
   }
 

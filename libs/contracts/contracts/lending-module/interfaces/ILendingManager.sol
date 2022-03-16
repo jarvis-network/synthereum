@@ -28,7 +28,7 @@ interface ILendingManager {
     address interestBearingToken
   );
 
-  function deposit(uint256 collateralAmount)
+  function deposit(uint256 collateralAmount, address recipient)
     external
     returns (ReturnValues memory returnValues);
 

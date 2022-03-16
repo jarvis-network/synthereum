@@ -17,7 +17,8 @@ contract AaveV3Module is ILendingModule {
   function deposit(
     ILendingStorageManager.PoolStorage calldata poolData,
     bytes memory lendingArgs,
-    uint256 amount
+    uint256 amount,
+    address recipient
   )
     external
     returns (
@@ -49,7 +50,7 @@ contract AaveV3Module is ILendingModule {
     IPool(moneyMarket).deposit(
       address(collateral),
       amount,
-      msg.sender,
+      recipient,
       uint16(0)
     );
   }

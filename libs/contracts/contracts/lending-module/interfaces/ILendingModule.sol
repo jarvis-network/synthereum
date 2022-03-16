@@ -13,7 +13,8 @@ interface ILendingModule {
   function deposit(
     ILendingStorageManager.PoolStorage calldata poolData,
     bytes memory lendingArgs,
-    uint256 amount
+    uint256 amount,
+    address recipient
   )
     external
     returns (
