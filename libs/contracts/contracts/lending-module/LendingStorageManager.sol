@@ -111,7 +111,7 @@ contract LendingStorageManager is ILendingStorageManager {
 
   function migratePool(address oldPool, address newPool)
     external
-    onlyLendingManager
+    onlyPoolFactory
   {
     PoolStorage memory oldPoolData = poolStorage[oldPool];
     PoolStorage storage newPoolData = poolStorage[newPool];

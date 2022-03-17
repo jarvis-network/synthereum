@@ -278,14 +278,6 @@ contract LendingManager is
     poolStorageManager.setShares(pool, daoInterestShare, jrtBuybackShare);
   }
 
-  // when pool is upgraded and liquidity transfered to a new Pool
-  function migrateLiquidity(address newPool) external nonReentrant {
-    (, , ILendingStorageManager poolStorageManager) = onlyPool();
-
-    // migrate through storage manager
-    poolStorageManager.migratePool(msg.sender, newPool);
-  }
-
   // to migrate liquidity to another lending module
   function migrateLendingModule(
     string memory newLendingID,

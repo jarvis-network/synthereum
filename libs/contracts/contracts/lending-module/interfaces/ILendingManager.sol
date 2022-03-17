@@ -59,8 +59,6 @@ interface ILendingManager {
     uint256 interestTokenAmount
   ) external returns (ReturnValues memory);
 
-  function migrateLiquidity(address newPool) external;
-
   function collateralToInterestToken(
     address pool,
     uint256 collateralAmount,
