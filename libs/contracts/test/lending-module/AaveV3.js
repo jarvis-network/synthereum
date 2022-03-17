@@ -138,15 +138,15 @@ contract('AaveV3 Lending module', accounts => {
         lendingModule: module.address,
         args,
       };
-      await storageManager.setLendingModule(lendingInfo, 'aave', {
+      await storageManager.setLendingModule('aave', lendingInfo, {
         from: maintainer,
       });
 
       // by specifying the aAtoken
       await storageManager.setPoolStorage(
+        'aave',
         poolMock.address,
         USDC,
-        'aave',
         aUSDC.address,
         daoInterestShare,
         jrtShare,
@@ -180,9 +180,9 @@ contract('AaveV3 Lending module', accounts => {
 
       // by not specifying the aToken
       await storageManager.setPoolStorage(
+        'aave',
         poolMock.address,
         USDC,
-        'aave',
         ZERO_ADDRESS,
         daoInterestShare,
         jrtShare,
@@ -216,9 +216,9 @@ contract('AaveV3 Lending module', accounts => {
     it('Reverts if msg.sender is not the synthereum pool factory', async () => {
       await truffleAssert.reverts(
         storageManager.setPoolStorage(
+          'aave',
           poolMock.address,
           USDC,
-          'aave',
           aUSDC.address,
           daoInterestShare,
           jrtShare,
@@ -261,7 +261,7 @@ contract('AaveV3 Lending module', accounts => {
     it('Allows maintainer to set new swap module', async () => {
       let newSwapModule = accounts[10];
 
-      await proxy.setSwapModule(newSwapModule, USDC, { from: maintainer });
+      await proxy.setSwapModule(USDC, newSwapModule, { from: maintainer });
 
       let expectedModule = await storageManager.getCollateralSwapModule.call(
         USDC,
@@ -269,7 +269,7 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(expectedModule, newSwapModule);
 
       // reset to original
-      await proxy.setSwapModule(ZERO_ADDRESS, USDC, { from: maintainer });
+      await proxy.setSwapModule(USDC, ZERO_ADDRESS, { from: maintainer });
     });
 
     it('Reverts if msg.sender is not the maintainer', async () => {
@@ -284,7 +284,7 @@ contract('AaveV3 Lending module', accounts => {
         'Sender must be the maintainer',
       );
       await truffleAssert.reverts(
-        proxy.setSwapModule(newSwapModule, USDC, { from: accounts[4] }),
+        proxy.setSwapModule(USDC, newSwapModule, { from: accounts[4] }),
         'Sender must be the maintainer',
       );
     });
@@ -295,13 +295,13 @@ contract('AaveV3 Lending module', accounts => {
         'Not allowed',
       );
       await truffleAssert.reverts(
-        storageManager.setSwapModule(accounts[5], USDC, { from: accounts[4] }),
+        storageManager.setSwapModule(USDC, accounts[5], { from: accounts[4] }),
         'Not allowed',
       );
       await truffleAssert.reverts(
         storageManager.setLendingModule(
-          { lendingModule: accounts[5], args: '0x00' },
           'fake',
+          { lendingModule: accounts[5], args: '0x00' },
           {
             from: accounts[4],
           },
@@ -321,7 +321,7 @@ contract('AaveV3 Lending module', accounts => {
         'Not allowed',
       );
       await truffleAssert.reverts(
-        storageManager.migrateLendingModule(accounts[5], 'aave', accounts[7], {
+        storageManager.migrateLendingModule('aave', accounts[5], accounts[7], {
           from: accounts[4],
         }),
         'Not allowed',
@@ -505,7 +505,7 @@ contract('AaveV3 Lending module', accounts => {
 
     it('Reverts if msg.sender is not a registered pool', async () => {
       await truffleAssert.reverts(
-        proxy.deposit(10, { from: user }),
+        proxy.deposit(10, user, { from: user }),
         'Not allowed',
       );
     });
@@ -736,9 +736,6 @@ contract('AaveV3 Lending module', accounts => {
     });
 
     it('Cant claim more commission than due', async () => {
-      // borrow on aave to generate interest
-      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
-
       // sets recipient
       let commissionReceiver = accounts[4];
       await finder.changeImplementationAddress(
@@ -749,7 +746,7 @@ contract('AaveV3 Lending module', accounts => {
 
       // claim commission
       let amount = (await storageManager.getPoolData.call(poolMock.address))
-        .unclaimedDaoCommission;
+        .unclaimedDaoJRT;
       amount = toBN(amount).muln(2);
       await truffleAssert.reverts(
         proxy.batchClaimCommission([poolMock.address], [amount], {
@@ -767,7 +764,7 @@ contract('AaveV3 Lending module', accounts => {
 
     it('Correctly claim and swap to JRT', async () => {
       let jrtSwap = await JRTSWAP.new();
-      await proxy.setSwapModule(jrtSwap.address, USDC, { from: maintainer });
+      await proxy.setSwapModule(USDC, jrtSwap.address, { from: maintainer });
 
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
@@ -775,7 +772,7 @@ contract('AaveV3 Lending module', accounts => {
       await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
 
       // sets recipient
-      let buybackReceiver = accounts[4];
+      let buybackReceiver = accounts[5];
       await finder.changeImplementationAddress(
         web3Utils.utf8ToHex('BuybackProgramReceiver'),
         buybackReceiver,
@@ -790,8 +787,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
 
       // claim commission
-      let amount = (await storageManager.getPoolData.call(poolMock.address))
-        .unclaimedDaoJRT;
+      let amount = poolStorageBefore.unclaimedDaoJRT;
       let encodedParams = web3.eth.abi.encodeParameters(
         [
           {
@@ -810,16 +806,10 @@ contract('AaveV3 Lending module', accounts => {
           },
         ],
       );
-
-      let returnValues = await poolMock.claimJRT.call(
-        aUSDC.address,
-        amount,
-        encodedParams,
-        {
-          from: accounts[0],
-        },
-      );
-      await poolMock.claimJRT(aUSDC.address, amount, encodedParams, {
+      let returnValues = await poolMock.claimJRT.call(amount, encodedParams, {
+        from: accounts[0],
+      });
+      await poolMock.claimJRT(amount, encodedParams, {
         from: accounts[0],
       });
 
@@ -899,7 +889,7 @@ contract('AaveV3 Lending module', accounts => {
 
       assert.equal(
         poolStorage.unclaimedDaoCommission.toString().substr(0, 12),
-        expectedDaoCommisson.substr(0, 12),
+        expectedDaoCommisson.toString().substr(0, 12),
       );
     });
 
@@ -961,7 +951,7 @@ contract('AaveV3 Lending module', accounts => {
           lendingModule: newModule.address,
           args,
         };
-        await storageManager.setLendingModule(newLendingInfo, 'new', {
+        await storageManager.setLendingModule('new', newLendingInfo, {
           from: maintainer,
         });
 
@@ -1025,7 +1015,7 @@ contract('AaveV3 Lending module', accounts => {
 
         // check pool storage update on proxy
         let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-          .add(expectedPoolInterest)
+          .add(toBN(returnValues.poolInterest))
           .toString();
         assert.equal(
           poolStorage.poolData.collateralDeposited.toString().substr(0, 20),

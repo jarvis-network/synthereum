@@ -18,10 +18,10 @@ interface ILendingStorageManager {
     bytes args;
   }
 
-  function setLendingModule(LendingInfo memory lendingInfo, string memory id)
+  function setLendingModule(string memory id, LendingInfo memory lendingInfo)
     external;
 
-  function setSwapModule(address swapModule, address collateral) external;
+  function setSwapModule(address collateral, address swapModule) external;
 
   function setShares(
     address pool,
@@ -30,9 +30,9 @@ interface ILendingStorageManager {
   ) external;
 
   function setPoolStorage(
+    string memory lendingID,
     address pool,
     address collateral,
-    string memory lendingID,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
@@ -41,8 +41,8 @@ interface ILendingStorageManager {
   function migratePool(address oldPool, address newPool) external;
 
   function migrateLendingModule(
-    address pool,
     string memory newLendingID,
+    address pool,
     address newInterestToken
   ) external returns (PoolStorage memory, LendingInfo memory);
 

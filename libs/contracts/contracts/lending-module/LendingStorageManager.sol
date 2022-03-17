@@ -49,14 +49,14 @@ contract LendingStorageManager is ILendingStorageManager {
     finder = _finder;
   }
 
-  function setLendingModule(LendingInfo memory lendingInfo, string memory id)
+  function setLendingModule(string memory id, LendingInfo memory lendingInfo)
     external
     onlyPoolFactory
   {
     idToLendingInfo[keccak256(abi.encode(id))] = lendingInfo;
   }
 
-  function setSwapModule(address swapModule, address collateral)
+  function setSwapModule(address collateral, address swapModule)
     external
     onlyLendingManager
   {
@@ -83,9 +83,9 @@ contract LendingStorageManager is ILendingStorageManager {
   }
 
   function setPoolStorage(
+    string memory lendingID,
     address pool,
     address collateral,
-    string memory lendingID,
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
@@ -131,8 +131,8 @@ contract LendingStorageManager is ILendingStorageManager {
   }
 
   function migrateLendingModule(
-    address pool,
     string memory newLendingID,
+    address pool,
     address newInterestToken
   )
     external

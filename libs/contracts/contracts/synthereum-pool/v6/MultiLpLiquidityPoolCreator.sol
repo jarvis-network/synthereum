@@ -178,9 +178,9 @@ contract SynthereumMultiLpLiquidityPoolCreator {
         )
       );
     lendingStorageManager.setPoolStorage(
+      _lendingManagerParams.lendingId,
       _pool,
       _collateral,
-      _lendingManagerParams.lendingId,
       _lendingManagerParams.interestBearingToken,
       _lendingManagerParams.daoInterestShare,
       _lendingManagerParams.jrtBuybackShare

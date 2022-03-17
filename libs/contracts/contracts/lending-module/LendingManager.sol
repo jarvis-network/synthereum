@@ -21,6 +21,7 @@ import {
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import 'hardhat/console.sol';
 
 contract LendingManager is
   ILendingManager,
@@ -333,8 +334,8 @@ contract LendingManager is
     // set new lending module and obtain new pool data
     ILendingStorageManager.LendingInfo memory newLendingInfo;
     (poolData, newLendingInfo) = poolStorageManager.migrateLendingModule(
-      msg.sender,
       newLendingID,
+      msg.sender,
       newInterestBearingToken
     );
 
