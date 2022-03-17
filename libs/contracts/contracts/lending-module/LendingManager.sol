@@ -411,7 +411,8 @@ contract LendingManager is
     uint256 totalInterest =
       ILendingModule(lendingInfo.lendingModule).getAccumulatedInterest(
         pool,
-        poolData
+        poolData,
+        lendingInfo.args
       );
 
     InterestSplit memory interestSplit =
