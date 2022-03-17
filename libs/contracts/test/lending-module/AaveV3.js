@@ -1079,7 +1079,9 @@ contract('AaveV3 Lending module', accounts => {
         );
 
         // call migration from pool
-        await poolMock.migratePool(newPool.address);
+        await storageManager.migratePool(poolMock.address, newPool.address, {
+          from: maintainer,
+        });
 
         let poolStorageAft = await storageManager.getPoolStorage.call(
           poolMock.address,
@@ -1136,22 +1138,6 @@ contract('AaveV3 Lending module', accounts => {
         assert.equal(
           poolStorageAft.poolData.unclaimedDaoCommission,
           toWei('0'),
-        );
-      });
-
-      it('Reverts if msg.sender is not a registered pool', async () => {
-        let fakePool = await PoolMock.new(
-          USDC,
-          jEUR.address,
-          proxy.address,
-          storageManager.address,
-          {
-            from: maintainer,
-          },
-        );
-        await truffleAssert.reverts(
-          proxy.migrateLiquidity(fakePool.address, { from: user }),
-          'Not allowed',
         );
       });
     });
