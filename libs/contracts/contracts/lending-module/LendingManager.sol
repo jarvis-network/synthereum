@@ -261,12 +261,12 @@ contract LendingManager is
       interestSplit.commissionInterest;
   }
 
-  function setSwapModule(address swapModule, address collateral)
+  function setSwapModule(address collateral, address swapModule)
     external
     onlyMaintainer
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setSwapModule(swapModule, collateral);
+    poolStorageManager.setSwapModule(collateral, swapModule);
   }
 
   function setShares(
