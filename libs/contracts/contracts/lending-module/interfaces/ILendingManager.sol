@@ -10,7 +10,7 @@ interface ILendingManager {
   struct ReturnValues {
     uint256 poolInterest; //accumulated pool interest since last state-changing operation;
     uint256 daoInterest; //acccumulated dao interest since last state-changing operation;
-    uint256 tokensOut; //amount of tokens received from money market (before eventual fees)
+    uint256 tokensOut; //amount of tokens received from money market (including eventual fees)
     uint256 tokensTransferred; //amount of tokens finally transfered from money market (after eventual fees)
   }
 
@@ -39,6 +39,14 @@ interface ILendingManager {
    * @return returnValues check struct
    */
   function withdraw(uint256 interestTokenAmount, address recipient)
+    external
+    returns (ReturnValues memory returnValues);
+
+  /**
+   * @notice calculate, split and update the generated interest of the caller pool since last state-changing operation
+   * @return returnValues check struct
+   */
+  function updateAccumulatedInterest()
     external
     returns (ReturnValues memory returnValues);
 

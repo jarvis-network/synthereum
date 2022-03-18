@@ -166,6 +166,49 @@ contract LendingManager is
       interestSplit.jrtInterest;
   }
 
+  function updateAccumulatedInterest()
+    external
+    override
+    nonReentrant
+    returns (ReturnValues memory returnValues)
+  {
+    (
+      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.LendingInfo memory lendingInfo,
+      ILendingStorageManager poolStorageManager
+    ) = onlyPool();
+
+    // retrieve accumulated interest
+    uint256 totalInterest =
+      ILendingModule(lendingInfo.lendingModule).getAccumulatedInterest(
+        pool,
+        poolData,
+        lendingInfo.args
+      );
+
+    // split according to shares
+    InterestSplit memory interestSplit =
+      splitGeneratedInterest(
+        totalInterest,
+        poolData.daoInterestShare,
+        poolData.JRTBuybackShare
+      );
+
+    //update pool storage
+    poolStorageManager.updateValues(
+      msg.sender,
+      poolData.collateralDeposited + interestSplit.poolInterest,
+      poolData.unclaimedDaoJRT + interestSplit.jrtInterest,
+      poolData.unclaimedDaoCommission + interestSplit.commissionInterest
+    );
+
+    // return values
+    returnValues.poolInterest = interestSplit.poolInterest;
+    returnValues.daoInterest =
+      interestSplit.jrtInterest +
+      interestSplit.commissionInterest;
+  }
+
   function batchClaimCommission(
     address[] memory pools,
     uint256[] memory amounts
