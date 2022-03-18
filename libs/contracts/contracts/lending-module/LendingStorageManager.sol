@@ -101,12 +101,18 @@ contract LendingStorageManager is ILendingStorageManager {
     poolData.daoInterestShare = daoInterestShare;
     poolData.JRTBuybackShare = jrtBuybackShare;
     poolData.lendingModuleId = id;
-    poolData.interestBearingToken = interestBearingToken == address(0)
-      ? ILendingModule(lendingModule).getInterestBearingToken(
+
+    // set interest bearing token
+    try
+      ILendingModule(lendingModule).getInterestBearingToken(
         collateral,
         lendingInfo.args
       )
-      : interestBearingToken;
+    returns (address interestTokenAddr) {
+      poolData.interestBearingToken = interestTokenAddr;
+    } catch {
+      poolData.interestBearingToken = interestBearingToken;
+    }
   }
 
   function migratePool(address oldPool, address newPool)
@@ -147,12 +153,18 @@ contract LendingStorageManager is ILendingStorageManager {
     // set lending module
     PoolStorage storage poolData = poolStorage[pool];
     poolData.lendingModuleId = id;
-    poolData.interestBearingToken = newInterestToken == address(0)
-      ? ILendingModule(newLendingModule).getInterestBearingToken(
+
+    // set interest bearing token
+    try
+      ILendingModule(newLendingModule).getInterestBearingToken(
         poolData.collateral,
         newLendingInfo.args
       )
-      : newInterestToken;
+    returns (address interestTokenAddr) {
+      poolData.interestBearingToken = interestTokenAddr;
+    } catch {
+      poolData.interestBearingToken = newInterestToken;
+    }
 
     return (poolStorage[pool], newLendingInfo);
   }
