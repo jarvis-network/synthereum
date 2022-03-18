@@ -33,10 +33,14 @@ contract SynthereumMultiLpLiquidityPoolFactory is
 
   /**
    * @notice Set synthereum finder
-   * @param synthereumFinder Synthereum finder contract
+   * @param _synthereumFinder Synthereum finder contract
+   * @param _poolImplementation Address of the deployed pool implementation used for EIP1167
    */
-  constructor(address synthereumFinder)
-    SynthereumMultiLpLiquidityPoolCreator(synthereumFinder)
+  constructor(address _synthereumFinder, address _poolImplementation)
+    SynthereumMultiLpLiquidityPoolCreator(
+      _synthereumFinder,
+      _poolImplementation
+    )
   {
     deploymentSignature = this.createPool.selector;
   }

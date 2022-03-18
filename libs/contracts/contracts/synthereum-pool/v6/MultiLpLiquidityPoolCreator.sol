@@ -19,12 +19,12 @@ import {
   BaseControlledMintableBurnableERC20
 } from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  SynthereumMultiLpLiquidityPoolCreatorLib
-} from './MultiLpLiquidityPoolCreatorLib.sol';
+import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
 import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';
 
 contract SynthereumMultiLpLiquidityPoolCreator {
+  using Clones for address;
+
   struct Params {
     uint8 version;
     IStandardERC20 collateralToken;
@@ -49,6 +49,8 @@ contract SynthereumMultiLpLiquidityPoolCreator {
   // Address of Synthereum Finder
   ISynthereumFinder public immutable synthereumFinder;
 
+  address public immutable poolImplementation;
+
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -65,9 +67,11 @@ contract SynthereumMultiLpLiquidityPoolCreator {
   /**
    * @notice Constructs the Pool contract.
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
+   * @param _poolImplementation Address of the deployed pool implementation used for EIP1167
    */
-  constructor(address _synthereumFinder) {
+  constructor(address _synthereumFinder, address _poolImplementation) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
+    poolImplementation = _poolImplementation;
   }
 
   //----------------------------------------
@@ -76,21 +80,22 @@ contract SynthereumMultiLpLiquidityPoolCreator {
 
   /**
    * @notice Creates an instance of the pool
-   * @param params is a `ConstructorParams` object from LiquidityPool.
+   * @param _params is a `ConstructorParams` object from LiquidityPool.
    * @return pool address of the deployed pool contract.
    */
-  function createPool(Params calldata params)
+  function createPool(Params calldata _params)
     public
     virtual
     returns (ISynthereumMultiLpLiquidityPool pool)
   {
-    require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
+    pool = ISynthereumMultiLpLiquidityPool(poolImplementation.clone());
+    require(bytes(_params.syntheticName).length != 0, 'Missing synthetic name');
     require(
-      bytes(params.syntheticSymbol).length != 0,
+      bytes(_params.syntheticSymbol).length != 0,
       'Missing synthetic symbol'
     );
     BaseControlledMintableBurnableERC20 tokenCurrency;
-    if (params.syntheticToken == address(0)) {
+    if (_params.syntheticToken == address(0)) {
       IMintableBurnableTokenFactory tokenFactory =
         IMintableBurnableTokenFactory(
           ISynthereumFinder(synthereumFinder).getImplementationAddress(
@@ -98,12 +103,9 @@ contract SynthereumMultiLpLiquidityPoolCreator {
           )
         );
       tokenCurrency = tokenFactory.createToken(
-        params.syntheticName,
-        params.syntheticSymbol,
+        _params.syntheticName,
+        _params.syntheticSymbol,
         18
-      );
-      pool = SynthereumMultiLpLiquidityPoolCreatorLib.deployPool(
-        _convertParams(params, tokenCurrency)
       );
       // Give permissions to new pool contract and then hand over ownership.
       tokenCurrency.addMinter(address(pool));
@@ -114,54 +116,53 @@ contract SynthereumMultiLpLiquidityPoolCreator {
       tokenCurrency.renounceAdmin();
     } else {
       tokenCurrency = BaseControlledMintableBurnableERC20(
-        params.syntheticToken
+        _params.syntheticToken
       );
       require(
         keccak256(abi.encodePacked(tokenCurrency.name())) ==
-          keccak256(abi.encodePacked(params.syntheticName)),
+          keccak256(abi.encodePacked(_params.syntheticName)),
         'Wrong synthetic token name'
       );
       require(
         keccak256(abi.encodePacked(tokenCurrency.symbol())) ==
-          keccak256(abi.encodePacked(params.syntheticSymbol)),
+          keccak256(abi.encodePacked(_params.syntheticSymbol)),
         'Wrong synthetic token symbol'
       );
-      pool = SynthereumMultiLpLiquidityPoolCreatorLib.deployPool(
-        _convertParams(params, tokenCurrency)
-      );
     }
+    pool.initialize(_convertParams(_params, tokenCurrency));
     _setPoolParams(
       address(pool),
-      address(params.collateralToken),
-      params.lendingManagerParams
+      address(_params.collateralToken),
+      _params.lendingManagerParams
     );
-    emit CreatedPool(address(pool), params.version, msg.sender);
+    emit CreatedPool(address(pool), _params.version, msg.sender);
   }
 
   // Converts createPool params to constructor params.
   function _convertParams(
-    Params memory params,
-    BaseControlledMintableBurnableERC20 tokenCurrency
+    Params memory _params,
+    BaseControlledMintableBurnableERC20 _tokenCurrency
   )
     internal
     view
     returns (
-      SynthereumMultiLpLiquidityPool.ConstructorParams memory constructorParams
+      SynthereumMultiLpLiquidityPool.InitializationParams
+        memory initializationParams
     )
   {
-    require(params.roles.admin != address(0), 'Admin cannot be 0x00');
-    constructorParams.finder = synthereumFinder;
-    constructorParams.version = params.version;
-    constructorParams.collateralToken = params.collateralToken;
-    constructorParams.syntheticToken = IMintableBurnableERC20(
-      address(tokenCurrency)
+    require(_params.roles.admin != address(0), 'Admin cannot be 0x00');
+    initializationParams.finder = synthereumFinder;
+    initializationParams.version = _params.version;
+    initializationParams.collateralToken = _params.collateralToken;
+    initializationParams.syntheticToken = IMintableBurnableERC20(
+      address(_tokenCurrency)
     );
-    constructorParams.roles = params.roles;
-    constructorParams.fee = params.fee;
-    constructorParams.priceIdentifier = params.priceIdentifier;
-    constructorParams.overCollateralRequirement = params
+    initializationParams.roles = _params.roles;
+    initializationParams.fee = _params.fee;
+    initializationParams.priceIdentifier = _params.priceIdentifier;
+    initializationParams.overCollateralRequirement = _params
       .overCollateralRequirement;
-    constructorParams.liquidationReward = params.liquidationReward;
+    initializationParams.liquidationReward = _params.liquidationReward;
   }
 
   // Set lending module params of the pool in the LendingStorageManager

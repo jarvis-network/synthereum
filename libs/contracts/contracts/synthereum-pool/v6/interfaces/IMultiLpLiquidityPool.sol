@@ -2,9 +2,14 @@
 pragma solidity >=0.8.0;
 
 import {ITypology} from '../../../common/interfaces/ITypology.sol';
+import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
+import {
+  IMintableBurnableERC20
+} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {
   ISynthereumDeployment
 } from '../../../common/interfaces/IDeployment.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
@@ -17,6 +22,27 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   struct Roles {
     address admin;
     address maintainer;
+  }
+
+  struct InitializationParams {
+    // Synthereum finder
+    ISynthereumFinder finder;
+    // Synthereum pool version
+    uint8 version;
+    // ERC20 collateral token
+    IStandardERC20 collateralToken;
+    // ERC20 synthetic token
+    IMintableBurnableERC20 syntheticToken;
+    // The addresses of admin and maintainer
+    Roles roles;
+    // The fee percentage
+    uint256 fee;
+    // Identifier of price to be used in the price feed
+    bytes32 priceIdentifier;
+    // Percentage of overcollateralization to which a liquidation can triggered
+    uint256 overCollateralRequirement;
+    // Percentage of reward for correct liquidation by a liquidator
+    uint256 liquidationReward;
   }
 
   struct LPPosition {
@@ -70,6 +96,12 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     // True if it's overcollateralized, otherwise false
     bool isOvercollateralized;
   }
+
+  /**
+   * @notice Initialize pool
+   * @param _params Params used for initialization (see InitializationParams struct)
+   */
+  function initialize(InitializationParams memory _params) external;
 
   /**
    * @notice Register a liquidity provider to the LP's whitelist
