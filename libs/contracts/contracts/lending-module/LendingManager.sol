@@ -181,7 +181,7 @@ contract LendingManager is
     // retrieve accumulated interest
     uint256 totalInterest =
       ILendingModule(lendingInfo.lendingModule).getAccumulatedInterest(
-        pool,
+        msg.sender,
         poolData,
         lendingInfo.args
       );
