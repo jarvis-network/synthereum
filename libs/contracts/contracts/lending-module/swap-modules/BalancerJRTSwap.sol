@@ -8,8 +8,9 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
 import {IBalancerVault} from '../interfaces/IBalancerVault.sol';
+import {IJRTSwapModule} from '../interfaces/IJrtSwapModule.sol';
 
-contract BalancerJRTSwapModule {
+contract BalancerJRTSwapModule is IJRTSwapModule {
   using SafeERC20 for IERC20;
 
   struct SwapInfo {
@@ -24,7 +25,7 @@ contract BalancerJRTSwapModule {
     address recipient,
     uint256 amountIn,
     bytes memory params
-  ) external returns (uint256 amountOut) {
+  ) external override returns (uint256 amountOut) {
     IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
 
     // decode swapInfo
