@@ -8,8 +8,8 @@ interface ILendingManager {
   }
 
   struct ReturnValues {
-    uint256 poolInterest; //accumulated pool interest since last operation;
-    uint256 daoInterest; //acccumulated dao interest since last operation;
+    uint256 poolInterest; //accumulated pool interest since last state-changing operation;
+    uint256 daoInterest; //acccumulated dao interest since last state-changing operation;
     uint256 tokensOut; //amount of tokens received from money market (before eventual fees)
     uint256 tokensTransferred; //amount of tokens finally transfered from money market (after eventual fees)
   }
@@ -22,7 +22,7 @@ interface ILendingManager {
 
   /**
    * @notice deposits collateral into the pool's associated money market
-   * @dev calculates and return the generated interest since last operation
+   * @dev calculates and return the generated interest since last state-changing operation
    * @param collateralAmount amount of collateral to deposit
    * @param recipient the address receiving the interest tokens from money market
    * @return returnValues check struct
@@ -33,7 +33,7 @@ interface ILendingManager {
 
   /**
    * @notice withdraw collateral from the pool's associated money market
-   * @dev calculates and return the generated interest since last operation
+   * @dev calculates and return the generated interest since last state-changing operation
    * @param interestTokenAmount amount of interest tokens to redeem
    * @param recipient the address receiving the collateral from money market
    * @return returnValues check struct
@@ -44,7 +44,7 @@ interface ILendingManager {
 
   /**
    * @notice batches calls to redeem poolData.commissionInterest from multiple pools
-   * @dev calculates and return the generated interest since last operation
+   * @dev calculates and return the generated interest since last state-changing operation
    * @param pools array of pools to redeem commissions from
    * @param collateralAmounts array of amount of commission to redeem for each pool (matching pools order)
    */
@@ -80,7 +80,7 @@ interface ILendingManager {
 
   /**
    * @notice migrates liquidity from one lending module (and money market), to a new one
-   * @dev calculates and return the generated interest since last operation. The new lending module must be
+   * @dev calculates and return the generated interest since last state-changing operation.
    * @dev The new lending module info must be have been previously set in the storage manager
    * @param newLendingID id associated to the new lending module info
    * @param newInterestBearingToken address of the interest token of the new money market

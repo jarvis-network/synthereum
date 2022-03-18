@@ -2,6 +2,13 @@
 pragma solidity >=0.8.0;
 
 interface IJRTSwapModule {
+  /**
+   * @notice executes an AMM swap from collateral to JRT
+   * @param recipient address receiving JRT tokenss
+   * @param amountIn exact amount of collateral to swap
+   * @param params extra params needed on the specific implementation (with different AMM)
+   * @return amountOut amount of JRT in output
+   */
   function swapToJRT(
     address recipient,
     uint256 amountIn,
