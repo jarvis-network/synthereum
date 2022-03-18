@@ -3,7 +3,6 @@ pragma solidity 0.8.9;
 
 import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
 import {IPool} from '../interfaces/IAaveV3.sol';
-import {IScaledBalanceToken} from '../interfaces/IScaledBalanceToken.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
