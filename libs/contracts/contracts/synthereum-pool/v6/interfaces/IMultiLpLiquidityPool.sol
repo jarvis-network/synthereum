@@ -198,6 +198,12 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function setFee(uint256 _fee) external;
 
   /**
+   * @notice Update interests and positions ov every LP
+   * @notice Everyone can call this function
+   */
+  function updatePositions() external;
+
+  /**
    * @notice Transfer a bearing amount to the lending manager
    * @notice Only the lending manager can call the function
    * @param _bearingAmount Amount of bearing token to transfer

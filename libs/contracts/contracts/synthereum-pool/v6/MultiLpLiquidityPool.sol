@@ -666,6 +666,31 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Update interests and positions ov every LP
+   * @notice Everyone can call this function
+   */
+  function updatePositions() external override nonReentrant {
+    ISynthereumFinder synthFinder = finder;
+    ILendingManager.ReturnValues memory lendingValues =
+      _getLendingManager(synthFinder).updateAccumulatedInterest();
+
+    (ProfitOrLoss memory profitOrLoss, PositionCache[] memory positionsCache) =
+      _calculateNewPositions(
+        lendingValues.poolInterest,
+        _getPriceFeedRate(synthFinder, priceIdentifier),
+        totalSyntheticAsset,
+        totalUserDeposits,
+        collateralDecimals
+      );
+
+    totalUserDeposits = profitOrLoss.isLpGain
+      ? totalUserDeposits - profitOrLoss.totalProfitOrLoss
+      : totalUserDeposits + profitOrLoss.totalProfitOrLoss;
+
+    _updateActualLPPositions(positionsCache);
+  }
+
+  /**
    * @notice Transfer a bearing amount to the lending manager
    * @notice Only the lending manager can call the function
    * @param _bearingAmount Amount of bearing token to transfer
@@ -1169,7 +1194,6 @@ contract SynthereumMultiLpLiquidityPool is
     address lp;
     LPPosition memory lpPosition;
     uint256 actualCollateralAmount;
-    uint256 newCollateralAmount;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lpCache = _positionsCache[j];
       lp = lpCache.lp;
