@@ -604,7 +604,35 @@ contract SynthereumMultiLpLiquidityPool is
       'Overcollateralization must be bigger than Overcollateral requirement'
     );
 
-    lpPositions[msgSender].overCollateralization = _overCollateralization;
+    ISynthereumFinder synthFinder = finder;
+    ILendingManager.ReturnValues memory lendingValues =
+      _getLendingManager(synthFinder).updateAccumulatedInterest();
+
+    uint256 price = _getPriceFeedRate(synthFinder, priceIdentifier);
+
+    uint256 totalSynthTokens = totalSyntheticAsset;
+
+    uint8 decimals = collateralDecimals;
+    (ProfitOrLoss memory profitOrLoss, PositionCache[] memory positionsCache) =
+      _calculateNewPositions(
+        lendingValues.poolInterest,
+        price,
+        totalSynthTokens,
+        totalUserDeposits,
+        decimals
+      );
+
+    totalUserDeposits = profitOrLoss.isLpGain
+      ? totalUserDeposits - profitOrLoss.totalProfitOrLoss
+      : totalUserDeposits + profitOrLoss.totalProfitOrLoss;
+
+    _updateAndModifyActualLPOverCollateral(
+      positionsCache,
+      msgSender,
+      _overCollateralization,
+      price,
+      decimals
+    );
 
     emit SetOvercollateralization(msgSender, _overCollateralization);
   }
@@ -1123,9 +1151,55 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Update collateral amount of every LP and change overcollateralization for one LP
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   * @param _lp Address of the LP changing overcollateralization
+   * @param _newOverCollateralization New overcollateralization to be set for the LP
+   * @param _price Actual price of the pair
+   * @param _collateralDecimals Decimals of the collateral token
+   */
+  function _updateAndModifyActualLPOverCollateral(
+    PositionCache[] memory _positionsCache,
+    address _lp,
+    uint256 _newOverCollateralization,
+    uint256 _price,
+    uint8 _collateralDecimals
+  ) internal {
+    PositionCache memory lpCache;
+    address lp;
+    LPPosition memory lpPosition;
+    uint256 actualCollateralAmount;
+    uint256 newCollateralAmount;
+    for (uint256 j = 0; j < _positionsCache.length; j++) {
+      lpCache = _positionsCache[j];
+      lp = lpCache.lp;
+      lpPosition = _positionsCache[j].lpPosition;
+      actualCollateralAmount = lpPosition.actualCollateralAmount;
+      if (lp == _lp) {
+        require(
+          _isOvercollateralizedLP(
+            actualCollateralAmount,
+            _newOverCollateralization,
+            _calculateCollateralAmount(
+              lpPosition.tokensCollateralized,
+              _price,
+              _collateralDecimals
+            )
+          ),
+          'LP is undercollateralized'
+        );
+        lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
+        lpPositions[lp].overCollateralization = _newOverCollateralization;
+      } else {
+        lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
+      }
+    }
+  }
+
+  /**
    * @notice Update collateral amount of every LP and add the new deposit for one LP
    * @param _positionsCache Temporary memory cache containing LPs positions
-   * @param _lp Address of the LP in liquidation
+   * @param _liquidatedLp Address of the LP in liquidation
    * @param _tokensInLiquidation Amount of  synthetic asset to liquidate
    * @param _price Actual price of the pair
    * @param _collateralDecimals Decimals of the collateral token
@@ -1136,7 +1210,7 @@ contract SynthereumMultiLpLiquidityPool is
    */
   function _updateAndLiquidate(
     PositionCache[] memory _positionsCache,
-    address _lp,
+    address _liquidatedLp,
     uint256 _tokensInLiquidation,
     uint256 _price,
     uint8 _collateralDecimals,
@@ -1158,7 +1232,7 @@ contract SynthereumMultiLpLiquidityPool is
       lp = lpCache.lp;
       lpPosition = _positionsCache[j].lpPosition;
       actualCollateralAmount = lpPosition.actualCollateralAmount;
-      if (lp == _lp) {
+      if (lp == _liquidatedLp) {
         tokensToLiquidate = PreciseUnitMath.min(
           _tokensInLiquidation,
           lpPosition.tokensCollateralized
