@@ -104,6 +104,7 @@ contract AaveV3Module is ILendingModule {
 
   function getInterestBearingToken(address collateral, bytes memory args)
     external
+    view
     returns (address token)
   {
     address moneyMarket = abi.decode(args, (address));
@@ -116,7 +117,7 @@ contract AaveV3Module is ILendingModule {
     address interestToken,
     bytes memory extraArgs,
     bool isExactAmount
-  ) external view returns (uint256 interestTokenAmount) {
+  ) external pure returns (uint256 interestTokenAmount) {
     interestTokenAmount = collateralAmount;
   }
 

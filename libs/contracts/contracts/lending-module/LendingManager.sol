@@ -212,7 +212,7 @@ contract LendingManager is
   function batchClaimCommission(
     address[] memory pools,
     uint256[] memory amounts
-  ) external override onlyMaintainer nonReentrant {
+  ) external override nonReentrant onlyMaintainer {
     require(pools.length == amounts.length, 'Invalid call');
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
@@ -304,8 +304,18 @@ contract LendingManager is
       interestSplit.commissionInterest;
   }
 
+  function setLendingModule(
+    string memory id,
+    ILendingStorageManager.LendingInfo memory lendingInfo
+  ) external override onlyMaintainer {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    poolStorageManager.setLendingModule(id, lendingInfo);
+  }
+
   function setSwapModule(address collateral, address swapModule)
     external
+    override
+    nonReentrant
     onlyMaintainer
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
@@ -316,7 +326,7 @@ contract LendingManager is
     address pool,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
-  ) external onlyMaintainer {
+  ) external override nonReentrant onlyMaintainer {
     ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setShares(pool, daoInterestShare, jrtBuybackShare);
   }
@@ -326,12 +336,14 @@ contract LendingManager is
     string memory newLendingID,
     address newInterestBearingToken,
     uint256 interestTokenAmount
-  ) external nonReentrant returns (ReturnValues memory returnValues) {
+  ) external override nonReentrant returns (MigrateReturnValues memory) {
     (
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
     ) = onlyPool();
+
+    uint256 prevDepositedCollateral = poolData.collateralDeposited;
 
     // delegate call withdraw collateral from old module
     ILendingModule.ReturnValues memory res;
@@ -381,7 +393,7 @@ contract LendingManager is
           DEPOSIT_SIG,
           poolData,
           newLendingInfo.args,
-          res.tokensOut,
+          res.tokensTransferred,
           msg.sender
         )
       );
@@ -390,20 +402,22 @@ contract LendingManager is
       abi.decode(result, (ILendingModule.ReturnValues));
 
     // update storage with accumulated interest
+    uint256 actualCollateralDeposited =
+      depositRes.tokensOut - newDaoJRT - newDaoCommission;
     poolStorageManager.updateValues(
       msg.sender,
-      depositRes.tokensOut + interestSplit.poolInterest,
+      actualCollateralDeposited,
       newDaoJRT,
       newDaoCommission
     );
 
-    // set the return values tokensOut
-    returnValues.tokensOut = depositRes.tokensOut;
-    returnValues.tokensTransferred = depositRes.tokensTransferred;
-    returnValues.poolInterest = interestSplit.poolInterest;
-    returnValues.daoInterest =
-      interestSplit.commissionInterest +
-      interestSplit.jrtInterest;
+    return (
+      MigrateReturnValues(
+        prevDepositedCollateral,
+        interestSplit.poolInterest,
+        actualCollateralDeposited
+      )
+    );
   }
 
   function collateralToInterestToken(
@@ -413,6 +427,7 @@ contract LendingManager is
   )
     external
     view
+    override
     returns (uint256 interestTokenAmount, address interestTokenAddr)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
@@ -435,6 +450,7 @@ contract LendingManager is
   function getAccumulatedInterest(address pool)
     external
     view
+    override
     returns (uint256 poolInterest, uint256 collateralDeposited)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
@@ -540,7 +556,7 @@ contract LendingManager is
   {
     poolStorageManager = getStorageManager();
     (poolData, lendingInfo) = poolStorageManager.getPoolStorage(msg.sender);
-    require(lendingInfo.lendingModule != address(0), 'Not allowed');
+    require(poolData.lendingModuleId != 0x00, 'Not allowed');
   }
 
   function getStorageManager() internal view returns (ILendingStorageManager) {

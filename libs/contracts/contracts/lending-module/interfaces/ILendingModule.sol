@@ -76,6 +76,7 @@ interface ILendingModule {
 
   function getInterestBearingToken(address collateral, bytes memory args)
     external
+    view
     returns (address token);
 
   /**

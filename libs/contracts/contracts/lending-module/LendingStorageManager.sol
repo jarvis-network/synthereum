@@ -8,8 +8,12 @@ import {
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
+import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-contract LendingStorageManager is ILendingStorageManager {
+contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
   mapping(bytes32 => LendingInfo) public idToLendingInfo;
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
   mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
@@ -51,13 +55,17 @@ contract LendingStorageManager is ILendingStorageManager {
 
   function setLendingModule(string memory id, LendingInfo memory lendingInfo)
     external
-    onlyPoolFactory
+    nonReentrant
+    onlyLendingManager
   {
-    idToLendingInfo[keccak256(abi.encode(id))] = lendingInfo;
+    bytes32 lendingId = keccak256(abi.encode(id));
+    require(lendingId != 0x00, 'Wrong module identifier');
+    idToLendingInfo[lendingId] = lendingInfo;
   }
 
   function setSwapModule(address collateral, address swapModule)
     external
+    nonReentrant
     onlyLendingManager
   {
     collateralToSwapModule[collateral] = swapModule;
@@ -67,14 +75,12 @@ contract LendingStorageManager is ILendingStorageManager {
     address pool,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
-  ) external onlyLendingManager {
+  ) external nonReentrant onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
+    require(poolData.lendingModuleId != 0x00, 'Bad pool');
     require(
-      idToLendingInfo[poolData.lendingModuleId].lendingModule != address(0),
-      'Bad pool'
-    );
-    require(
-      jrtBuybackShare <= 10**18 && daoInterestShare <= 10**18,
+      jrtBuybackShare <= PreciseUnitMath.PRECISE_UNIT &&
+        daoInterestShare <= PreciseUnitMath.PRECISE_UNIT,
       'Invalid share'
     );
 
@@ -89,18 +95,24 @@ contract LendingStorageManager is ILendingStorageManager {
     address interestBearingToken,
     uint256 daoInterestShare,
     uint256 jrtBuybackShare
-  ) external onlyPoolFactory {
+  ) external nonReentrant onlyPoolFactory {
     bytes32 id = keccak256(abi.encode(lendingID));
     LendingInfo memory lendingInfo = idToLendingInfo[id];
     address lendingModule = lendingInfo.lendingModule;
     require(lendingModule != address(0), 'Id not existent');
+    require(
+      jrtBuybackShare <= PreciseUnitMath.PRECISE_UNIT &&
+        daoInterestShare <= PreciseUnitMath.PRECISE_UNIT,
+      'Invalid share'
+    );
 
     // set pool storage
     PoolStorage storage poolData = poolStorage[pool];
-    poolData.collateral = collateral;
-    poolData.daoInterestShare = daoInterestShare;
-    poolData.JRTBuybackShare = jrtBuybackShare;
+    require(poolData.lendingModuleId == 0x00, 'Pool already exists');
     poolData.lendingModuleId = id;
+    poolData.collateral = collateral;
+    poolData.JRTBuybackShare = jrtBuybackShare;
+    poolData.daoInterestShare = daoInterestShare;
 
     // set interest bearing token
     try
@@ -111,26 +123,32 @@ contract LendingStorageManager is ILendingStorageManager {
     returns (address interestTokenAddr) {
       poolData.interestBearingToken = interestTokenAddr;
     } catch {
+      require(interestBearingToken != address(0), 'No bearing token passed');
       poolData.interestBearingToken = interestBearingToken;
     }
   }
 
   function migratePool(address oldPool, address newPool)
     external
+    nonReentrant
     onlyPoolFactory
   {
     PoolStorage memory oldPoolData = poolStorage[oldPool];
+    bytes32 oldLendingId = oldPoolData.lendingModuleId;
+    require(oldLendingId != 0x00, 'Bad migration pool');
+
     PoolStorage storage newPoolData = poolStorage[newPool];
+    require(newPoolData.lendingModuleId == 0x00, 'Bad new pool');
 
     // copy storage to new pool
+    newPoolData.lendingModuleId = oldLendingId;
     newPoolData.collateral = oldPoolData.collateral;
-    newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
-    newPoolData.JRTBuybackShare = oldPoolData.JRTBuybackShare;
-    newPoolData.lendingModuleId = oldPoolData.lendingModuleId;
     newPoolData.interestBearingToken = oldPoolData.interestBearingToken;
+    newPoolData.JRTBuybackShare = oldPoolData.JRTBuybackShare;
+    newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
     newPoolData.collateralDeposited = oldPoolData.collateralDeposited;
-    newPoolData.unclaimedDaoCommission = oldPoolData.unclaimedDaoCommission;
     newPoolData.unclaimedDaoJRT = oldPoolData.unclaimedDaoJRT;
+    newPoolData.unclaimedDaoCommission = oldPoolData.unclaimedDaoCommission;
 
     // delete old pool slot
     delete poolStorage[oldPool];
@@ -139,9 +157,10 @@ contract LendingStorageManager is ILendingStorageManager {
   function migrateLendingModule(
     string memory newLendingID,
     address pool,
-    address newInterestToken
+    address newInterestBearingToken
   )
     external
+    nonReentrant
     onlyLendingManager
     returns (PoolStorage memory, LendingInfo memory)
   {
@@ -163,7 +182,8 @@ contract LendingStorageManager is ILendingStorageManager {
     returns (address interestTokenAddr) {
       poolData.interestBearingToken = interestTokenAddr;
     } catch {
-      poolData.interestBearingToken = newInterestToken;
+      require(newInterestBearingToken != address(0), 'No bearing token passed');
+      poolData.interestBearingToken = newInterestBearingToken;
     }
 
     return (poolStorage[pool], newLendingInfo);
@@ -174,7 +194,7 @@ contract LendingStorageManager is ILendingStorageManager {
     uint256 collateralDeposited,
     uint256 daoJRT,
     uint256 daoInterest
-  ) external onlyLendingManager {
+  ) external nonReentrant onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
 
     // update collateral deposit amount of the pool

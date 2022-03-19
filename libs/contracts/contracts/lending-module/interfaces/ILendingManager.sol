@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
+import {ILendingStorageManager} from './ILendingStorageManager.sol';
+
 interface ILendingManager {
   struct Roles {
     address admin;
@@ -18,6 +20,15 @@ interface ILendingManager {
     uint256 poolInterest; // share of the total interest generated to the LPs;
     uint256 jrtInterest; // share of the total interest generated for jrt buyback;
     uint256 commissionInterest; // share of the total interest generated as dao commission;
+  }
+
+  struct MigrateReturnValues {
+    uint256 prevDepositedCollateral;
+    uint256 poolInterest;
+    uint256 actualCollateralDeposited;
+    // prevDepositedCollateral collateral deposited (without last interests) before the migration
+    // poolInterests collateral interests accumalated before the migration
+    // actualCollateralDeposited collateral deposited after the migration
   }
 
   /**
@@ -67,6 +78,16 @@ interface ILendingManager {
     returns (ReturnValues memory returnValues);
 
   /**
+   * @notice sets the address of the implementation of a lending module and its extraBytes
+   * @param id associated to the lending module to be set
+   * @param lendingInfo see lendingInfo struct
+   */
+  function setLendingModule(
+    string memory id,
+    ILendingStorageManager.LendingInfo memory lendingInfo
+  ) external;
+
+  /**
    * @notice sets an address as the swap module associated to a specific collateral
    * @dev the swapModule must implement the IJRTSwapModule interface
    * @param collateral collateral address associated to the swap module
@@ -93,13 +114,13 @@ interface ILendingManager {
    * @param newLendingID id associated to the new lending module info
    * @param newInterestBearingToken address of the interest token of the new money market
    * @param interestTokenAmount total amount of interest token to migrate from old to new money market
-   * @return returnValues check struct
+   * @return migrateReturnValues check struct
    */
   function migrateLendingModule(
     string memory newLendingID,
     address newInterestBearingToken,
     uint256 interestTokenAmount
-  ) external returns (ReturnValues memory);
+  ) external returns (MigrateReturnValues memory);
 
   /**
    * @notice returns the conversion between collateral and interest token of a specific money market
