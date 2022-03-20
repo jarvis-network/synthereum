@@ -43,6 +43,8 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint256 overCollateralRequirement;
     // Percentage of reward for correct liquidation by a liquidator
     uint256 liquidationReward;
+    // Name of the lending protocol used
+    string lendingModuleId;
   }
 
   struct LPPosition {
@@ -101,7 +103,7 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @notice Initialize pool
    * @param _params Params used for initialization (see InitializationParams struct)
    */
-  function initialize(InitializationParams memory _params) external;
+  function initialize(InitializationParams calldata _params) external;
 
   /**
    * @notice Register a liquidity provider to the LP's whitelist
@@ -211,6 +213,18 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function setFee(uint256 _fee) external;
 
   /**
+   * @notice Set new lending protocol for this pool
+   * @notice This can be called only by the maintainer
+   * @param _lendingId Name of the new lending module
+   * @param _bearingToken Token of the lending mosule to be used for intersts accrual
+            (used only if the lending manager doesn't automatically find the one associated to the collateral fo this pool)
+   */
+  function switchLendingModule(
+    string calldata _lendingId,
+    address _bearingToken
+  ) external;
+
+  /**
    * @notice Get all the registered LPs of this pool
    * @return lps The list of addresses of all the registered LPs in the pool.
    */
@@ -274,6 +288,16 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @return info Info of the input lp (see LPInfo struct)
    */
   function lpInfo(address _lp) external view returns (LPInfo memory info);
+
+  /**
+   * @notice Returns the lending protocol info
+   * @return lendingId Name of the lending module
+   * @return bearingToken Address of the bearing token held by the pool for interest accrual
+   */
+  function lendingProtocolInfo()
+    external
+    view
+    returns (string memory lendingId, address bearingToken);
 
   /**
    * @notice Returns the percentage of overcollateralization to which a liquidation can triggered

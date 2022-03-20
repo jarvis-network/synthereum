@@ -163,6 +163,9 @@ contract SynthereumMultiLpLiquidityPoolCreator {
     initializationParams.overCollateralRequirement = _params
       .overCollateralRequirement;
     initializationParams.liquidationReward = _params.liquidationReward;
+    initializationParams.lendingModuleId = _params
+      .lendingManagerParams
+      .lendingId;
   }
 
   // Set lending module params of the pool in the LendingStorageManager

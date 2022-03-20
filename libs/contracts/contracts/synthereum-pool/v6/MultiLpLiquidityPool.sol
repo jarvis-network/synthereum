@@ -30,11 +30,13 @@ import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
+import {ERC2771Context} from '../../common/ERC2771Context.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {
-  AccessControlEnumerable
+  AccessControlEnumerable,
+  Context
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
@@ -43,6 +45,7 @@ import {
 contract SynthereumMultiLpLiquidityPool is
   ISynthereumMultiLpLiquidityPoolEvents,
   ISynthereumMultiLpLiquidityPool,
+  ERC2771Context,
   ReentrancyGuard,
   AccessControlEnumerable
 {
@@ -107,6 +110,8 @@ contract SynthereumMultiLpLiquidityPool is
 
   bytes32 internal priceIdentifier;
 
+  string internal lendingModuleId;
+
   ISynthereumFinder internal finder;
 
   IMintableBurnableERC20 internal syntheticAsset;
@@ -125,7 +130,7 @@ contract SynthereumMultiLpLiquidityPool is
 
   modifier onlyMaintainer() {
     require(
-      hasRole(MAINTAINER_ROLE, _msgSender()),
+      hasRole(MAINTAINER_ROLE, msg.sender),
       'Sender must be the maintainer'
     );
     _;
@@ -140,8 +145,9 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Initialize pool
    * @param _params Params used for initialization (see InitializationParams struct)
    */
-  function initialize(InitializationParams memory _params)
+  function initialize(InitializationParams calldata _params)
     external
+    override
     nonReentrant
   {
     require(!isInitialized, 'Pool already initialized');
@@ -177,6 +183,7 @@ contract SynthereumMultiLpLiquidityPool is
 
     _setLiquidationReward(_params.liquidationReward);
     _setFee(_params.fee);
+    _setLendingModule(_params.lendingModuleId);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -706,18 +713,26 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingManager.ReturnValues memory lendingValues =
       _getLendingManager(synthFinder).updateAccumulatedInterest();
 
-    (ProfitOrLoss memory profitOrLoss, PositionCache[] memory positionsCache) =
-      _calculateNewPositions(
-        lendingValues.poolInterest,
+    TempStorageArguments memory tempStorage =
+      TempStorageArguments(
         _getPriceFeedRate(synthFinder, priceIdentifier),
-        totalSyntheticAsset,
         totalUserDeposits,
+        totalSyntheticAsset,
         collateralDecimals
       );
 
+    (ProfitOrLoss memory profitOrLoss, PositionCache[] memory positionsCache) =
+      _calculateNewPositions(
+        lendingValues.poolInterest,
+        tempStorage.price,
+        tempStorage.totalSyntheticAsset,
+        tempStorage.totalUserDeposits,
+        tempStorage.decimals
+      );
+
     totalUserDeposits = profitOrLoss.isLpGain
-      ? totalUserDeposits - profitOrLoss.totalProfitOrLoss
-      : totalUserDeposits + profitOrLoss.totalProfitOrLoss;
+      ? tempStorage.totalUserDeposits - profitOrLoss.totalProfitOrLoss
+      : tempStorage.totalUserDeposits + profitOrLoss.totalProfitOrLoss;
 
     _updateActualLPPositions(positionsCache);
   }
@@ -728,11 +743,9 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _bearingAmount Amount of bearing token to transfer
    */
   function transferToLendingManager(uint256 _bearingAmount) external override {
-    address msgSender = _msgSender();
-
     ILendingManager lendingManager = _getLendingManager(finder);
     require(
-      msgSender == address(lendingManager),
+      msg.sender == address(lendingManager),
       'Sender must be lending manager'
     );
 
@@ -747,7 +760,7 @@ contract SynthereumMultiLpLiquidityPool is
       );
 
     IERC20 bearingCurrency = IERC20(bearingToken);
-    bearingCurrency.safeTransfer(msgSender, _bearingAmount);
+    bearingCurrency.safeTransfer(msg.sender, _bearingAmount);
 
     uint256 remainingBearingValue = bearingCurrency.balanceOf(address(this));
     require(remainingBearingValue >= poolBearingValue, 'Unfunded pool');
@@ -779,6 +792,60 @@ contract SynthereumMultiLpLiquidityPool is
     onlyMaintainer
   {
     _setFee(_newFee);
+  }
+
+  /**
+   * @notice Set new lending protocol for this pool
+   * @notice This can be called only by the maintainer
+   * @param _lendingId Name of the new lending module
+   * @param _bearingToken Token of the lending mosule to be used for intersts accrual
+            (used only if the lending manager doesn't automatically find the one associated to the collateral fo this pool)
+   */
+  function switchLendingModule(
+    string calldata _lendingId,
+    address _bearingToken
+  ) external nonReentrant onlyMaintainer {
+    ISynthereumFinder synthFinder = finder;
+    ILendingManager.MigrateReturnValues memory migrationValues =
+      _lendingMigration(
+        _getLendingManager(synthFinder),
+        _getLendingStorageManager(synthFinder),
+        _lendingId,
+        _bearingToken
+      );
+
+    TempStorageArguments memory tempStorage =
+      TempStorageArguments(
+        _getPriceFeedRate(synthFinder, priceIdentifier),
+        totalUserDeposits,
+        totalSyntheticAsset,
+        collateralDecimals
+      );
+
+    (ProfitOrLoss memory profitOrLoss, PositionCache[] memory positionsCache) =
+      _calculateNewPositions(
+        migrationValues.poolInterest,
+        tempStorage.price,
+        tempStorage.totalSyntheticAsset,
+        tempStorage.totalUserDeposits,
+        tempStorage.decimals
+      );
+
+    uint256 actualUserDeposits =
+      profitOrLoss.isLpGain
+        ? tempStorage.totalUserDeposits - profitOrLoss.totalProfitOrLoss
+        : tempStorage.totalUserDeposits + profitOrLoss.totalProfitOrLoss;
+    totalUserDeposits = actualUserDeposits;
+
+    _calculateLendingModuleCollateral(
+      actualUserDeposits,
+      migrationValues,
+      positionsCache
+    );
+
+    _updateActualLPPositions(positionsCache);
+
+    _setLendingModule(_lendingId);
   }
 
   /**
@@ -973,6 +1040,22 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Returns the lending protocol info
+   * @return lendingId Name of the lending module
+   * @return bearingToken Address of the bearing token held by the pool for interest accrual
+   */
+  function lendingProtocolInfo()
+    external
+    view
+    returns (string memory lendingId, address bearingToken)
+  {
+    lendingId = lendingModuleId;
+    bearingToken = _getLendingStorageManager(finder).getInterestBearingToken(
+      address(this)
+    );
+  }
+
+  /**
    * @notice Get Synthereum finder of the pool
    * @return Finder contract
    */
@@ -1086,6 +1169,15 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Set new lending module name
+   * @param _lendingModuleId Lending module name
+   */
+  function _setLendingModule(string calldata _lendingModuleId) internal {
+    lendingModuleId = _lendingModuleId;
+    emit NewLendingModule(_lendingModuleId);
+  }
+
+  /**
    * @notice Set new liquidation reward percentage
    * @param _newLiquidationReward New liquidation reward percentage
    */
@@ -1100,7 +1192,7 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Deposit collateral to the lendign manager
+   * @notice Deposit collateral to the lending manager
    * @param _lendingManager Addres of lendingManager
    * @param _msgSender User/LP depositing
    * @param _collateralAsset Collateral token of the pool
@@ -1122,7 +1214,7 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Withdraw collateral from the lendign manager
+   * @notice Withdraw collateral from the lending manager
    * @param _lendingManager Addres of lendingManager
    * @param _recipient Recipient to which collateral is sent
    * @param _collateralAmount Gross/net collateral to withdraw
@@ -1144,6 +1236,35 @@ contract SynthereumMultiLpLiquidityPool is
       );
     IERC20(bearingToken).safeTransfer(address(_lendingManager), bearingAmount);
     return _lendingManager.withdraw(bearingAmount, _recipient);
+  }
+
+  /**
+   * @notice Migrate lending module protocol
+   * @param _lendingManager Addres of lendingManager
+   * @param _lendingStorageManager Addres of lendingStoarageManager
+   * @param  _lendingId Name of the new lending protocol to migrate to
+   * @param  _bearingToken Bearing token of the new lending protocol to switch (only if requetsed by the protocol)
+   * @return Return migration values parameters from lending manager
+   */
+  function _lendingMigration(
+    ILendingManager _lendingManager,
+    ILendingStorageManager _lendingStorageManager,
+    string calldata _lendingId,
+    address _bearingToken
+  ) internal returns (ILendingManager.MigrateReturnValues memory) {
+    IERC20 actualBearingToken =
+      IERC20(_lendingStorageManager.getInterestBearingToken(address(this)));
+    uint256 actualBearingAmount = actualBearingToken.balanceOf(address(this));
+    actualBearingToken.safeTransfer(
+      address(_lendingManager),
+      actualBearingAmount
+    );
+    return
+      _lendingManager.migrateLendingModule(
+        _lendingId,
+        _bearingToken,
+        actualBearingAmount
+      );
   }
 
   /**
@@ -1431,6 +1552,7 @@ contract SynthereumMultiLpLiquidityPool is
         utilizationShares
       );
 
+    LPPosition memory lpPosition;
     uint256 remainingInterest = _totalInterests;
     uint256 interest;
     for (uint256 j = 0; j < lpNumbers - 1; j++) {
@@ -1438,14 +1560,13 @@ contract SynthereumMultiLpLiquidityPool is
         ((capacityShares[j].div(totalCapacity)) +
           (utilizationShares[j].div(totalUtilization))) / 2
       );
-      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+      lpPosition = _positionsCache[j].lpPosition;
       lpPosition.actualCollateralAmount += interest;
       remainingInterest -= interest;
     }
 
-    LPPosition memory lastLpPosition =
-      _positionsCache[lpNumbers - 1].lpPosition;
-    lastLpPosition.actualCollateralAmount += remainingInterest;
+    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
+    lpPosition.actualCollateralAmount += remainingInterest;
   }
 
   /**
@@ -1690,11 +1811,10 @@ contract SynthereumMultiLpLiquidityPool is
       remainingProfitOrLoss -= lpProfitOrLoss;
     }
 
-    LPPosition memory lastLpPosition =
-      _positionsCache[lpNumbers - 1].lpPosition;
-    lastLpPosition.actualCollateralAmount = isLpGain
-      ? lastLpPosition.actualCollateralAmount + remainingProfitOrLoss
-      : lastLpPosition.actualCollateralAmount - remainingProfitOrLoss;
+    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
+    lpPosition.actualCollateralAmount = isLpGain
+      ? lpPosition.actualCollateralAmount + remainingProfitOrLoss
+      : lpPosition.actualCollateralAmount - remainingProfitOrLoss;
 
     return ProfitOrLoss(isLpGain, totalProfitOrLoss);
   }
@@ -1730,6 +1850,7 @@ contract SynthereumMultiLpLiquidityPool is
 
     uint256 remainingTokens = _mintValues.numTokens;
     uint256 remainingFees = _mintValues.feeAmount;
+    LPPosition memory lpPosition;
     uint256 shareProportion;
     uint256 tokens;
     uint256 fees;
@@ -1737,17 +1858,16 @@ contract SynthereumMultiLpLiquidityPool is
       shareProportion = (capacityShares[j]).div(totalCapacity);
       tokens = _mintValues.numTokens.mul(shareProportion);
       fees = _mintValues.feeAmount.mul(shareProportion);
-      LPPosition memory lpPosition = _positionsCache[j].lpPosition;
+      lpPosition = _positionsCache[j].lpPosition;
       lpPosition.tokensCollateralized += tokens;
       lpPosition.actualCollateralAmount += fees;
       remainingTokens = remainingTokens - tokens;
       remainingFees = remainingFees - fees;
     }
 
-    LPPosition memory lastLpPosition =
-      _positionsCache[lpNumbers - 1].lpPosition;
-    lastLpPosition.tokensCollateralized += remainingTokens;
-    lastLpPosition.actualCollateralAmount += remainingFees;
+    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
+    lpPosition.tokensCollateralized += remainingTokens;
+    lpPosition.actualCollateralAmount += remainingFees;
   }
 
   /**
@@ -1811,10 +1931,53 @@ contract SynthereumMultiLpLiquidityPool is
       remainingFees -= fees;
     }
 
-    LPPosition memory lastLpPosition =
-      _positionsCache[lpNumbers - 1].lpPosition;
-    lastLpPosition.tokensCollateralized -= lastLpPosition.tokensCollateralized;
-    lastLpPosition.actualCollateralAmount += remainingFees;
+    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
+    lpPosition.tokensCollateralized -= lpPosition.tokensCollateralized;
+    lpPosition.actualCollateralAmount += remainingFees;
+  }
+
+  /**
+   * @notice Calculate the new collateral amount of the LPs after the switching of lending module
+   * @param _actualUserDeposits Total amount of collateral holded by the users
+   * @param _migrationValues Values returned by the lending manager after the migration
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   */
+  function _calculateLendingModuleCollateral(
+    uint256 _actualUserDeposits,
+    ILendingManager.MigrateReturnValues memory _migrationValues,
+    PositionCache[] memory _positionsCache
+  ) internal pure {
+    uint256 lpNumbers = _positionsCache.length;
+    uint256 prevTotalLpsAmount =
+      _migrationValues.prevDepositedCollateral +
+        _migrationValues.poolInterest -
+        _actualUserDeposits;
+    uint256 actualTotalLpsAmount =
+      _migrationValues.actualCollateralDeposited - _actualUserDeposits;
+    bool isLpGain = actualTotalLpsAmount > prevTotalLpsAmount;
+    uint256 globalLpsProfitOrLoss =
+      isLpGain
+        ? actualTotalLpsAmount - prevTotalLpsAmount
+        : prevTotalLpsAmount - actualTotalLpsAmount;
+
+    LPPosition memory lpPosition;
+    uint256 share;
+    uint256 shareAmount;
+    uint256 remainingAmount;
+    for (uint256 j = 0; j < lpNumbers - 1; j++) {
+      lpPosition = _positionsCache[j].lpPosition;
+      share = lpPosition.actualCollateralAmount.div(prevTotalLpsAmount);
+      shareAmount = globalLpsProfitOrLoss.mul(share);
+      lpPosition.actualCollateralAmount = isLpGain
+        ? lpPosition.actualCollateralAmount + globalLpsProfitOrLoss.mul(share)
+        : lpPosition.actualCollateralAmount - globalLpsProfitOrLoss.mul(share);
+      remainingAmount -= shareAmount;
+    }
+
+    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
+    lpPosition.actualCollateralAmount = isLpGain
+      ? lpPosition.actualCollateralAmount + remainingAmount
+      : lpPosition.actualCollateralAmount - remainingAmount;
   }
 
   /**
@@ -1924,5 +2087,47 @@ contract SynthereumMultiLpLiquidityPool is
   ) internal pure returns (bool) {
     return
       _actualCollateralAmount.div(_overCollateralization) >= _collateralCovered;
+  }
+
+  /**
+   * @notice Check if an address is the trusted forwarder
+   * @param  forwarder Address to check
+   * @return True is the input address is the trusted forwarder, otherwise false
+   */
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override
+    returns (bool)
+  {
+    try
+      finder.getImplementationAddress(SynthereumInterfaces.TrustedForwarder)
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  function _msgSender()
+    internal
+    view
+    override(ERC2771Context, Context)
+    returns (address sender)
+  {
+    return ERC2771Context._msgSender();
+  }
+
+  function _msgData()
+    internal
+    view
+    override(ERC2771Context, Context)
+    returns (bytes calldata)
+  {
+    return ERC2771Context._msgData();
   }
 }

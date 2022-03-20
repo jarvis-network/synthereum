@@ -23,12 +23,9 @@ interface ILendingManager {
   }
 
   struct MigrateReturnValues {
-    uint256 prevDepositedCollateral;
-    uint256 poolInterest;
-    uint256 actualCollateralDeposited;
-    // prevDepositedCollateral collateral deposited (without last interests) before the migration
-    // poolInterests collateral interests accumalated before the migration
-    // actualCollateralDeposited collateral deposited after the migration
+    uint256 prevDepositedCollateral; // prevDepositedCollateral collateral deposited (without last interests) before the migration
+    uint256 poolInterest; // poolInterests collateral interests accumalated before the migration
+    uint256 actualCollateralDeposited; // actualCollateralDeposited collateral deposited after the migration
   }
 
   /**

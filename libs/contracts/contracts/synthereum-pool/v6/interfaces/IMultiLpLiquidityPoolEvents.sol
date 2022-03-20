@@ -115,4 +115,10 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
    * @param newLiquidationReward New liquidation reward percentage
    */
   event SetLiquidationReward(uint256 newLiquidationReward);
+
+  /**
+   * @notice Emitted when lending module is initialized or set
+   * @param lendingModuleId Name of the lending module
+   */
+  event NewLendingModule(string lendingModuleId);
 }
