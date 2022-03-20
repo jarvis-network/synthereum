@@ -142,6 +142,13 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     returns (uint256 collateralWithdrawn);
 
   /**
+   * @notice Set the overCollateralization by an active LP
+   * @notice This can be called only by an active LP
+   * @param _overCollateralization New overCollateralizations
+   */
+  function setOvercollateralization(uint256 _overCollateralization) external;
+
+  /**
    * @notice Mint synthetic tokens using fixed amount of collateral
    * @notice This calculate the price using on chain price feed
    * @notice User must approve collateral transfer for the mint request to succeed
@@ -177,11 +184,17 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     returns (uint256);
 
   /**
-   * @notice Set the overCollateralization by an active LP
-   * @notice This can be called only by an active LP
-   * @param _overCollateralization New overCollateralizations
+   * @notice Update interests and positions ov every LP
+   * @notice Everyone can call this function
    */
-  function setOvercollateralization(uint256 _overCollateralization) external;
+  function updatePositions() external;
+
+  /**
+   * @notice Transfer a bearing amount to the lending manager
+   * @notice Only the lending manager can call the function
+   * @param _bearingAmount Amount of bearing token to transfer
+   */
+  function transferToLendingManager(uint256 _bearingAmount) external;
 
   /**
    * @notice Set new liquidation reward percentage
@@ -196,19 +209,6 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @param _fee New fee percentage
    */
   function setFee(uint256 _fee) external;
-
-  /**
-   * @notice Update interests and positions ov every LP
-   * @notice Everyone can call this function
-   */
-  function updatePositions() external;
-
-  /**
-   * @notice Transfer a bearing amount to the lending manager
-   * @notice Only the lending manager can call the function
-   * @param _bearingAmount Amount of bearing token to transfer
-   */
-  function transferToLendingManager(uint256 _bearingAmount) external;
 
   /**
    * @notice Get all the registered LPs of this pool
