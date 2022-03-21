@@ -1,0 +1,8 @@
+{
+  "80001": {
+    "AaveV3": {
+      "moneyManager": "0xEce3383269ccE0B2ae66277101996b58c482817B",
+      "isEnabled": true
+    }
+  }
+}
