@@ -31,27 +31,29 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
     // decode swapInfo
     SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
 
-    // build params 
-    IBalancerVault.SingleSwap memory singleSwap = IBalancerVault.SingleSwap(
+    // build params
+    IBalancerVault.SingleSwap memory singleSwap =
+      IBalancerVault.SingleSwap(
         swapInfo.poolId,
         IBalancerVault.SwapKind.GIVEN_IN,
-        collateral.address,
+        address(collateral),
         swapInfo.jrtAddress,
         amountIn,
         '0x00'
-    );
+      );
 
-    IBalancerVault.FundManagement memory funds = IBalancerVault.FundManagement(
-        address(this),
-        false,
-        recipient,
-        false
-    );
+    IBalancerVault.FundManagement memory funds =
+      IBalancerVault.FundManagement(address(this), false, recipient, false);
 
     // swap to JRT to final recipient
     IBalancerVault router = IBalancerVault(swapInfo.routerAddress);
 
     collateral.safeIncreaseAllowance(address(router), amountIn);
-    amountOut = router.swap(singleSwap, funds, swapInfo.minTokensOut, swapInfo.expiration);
+    amountOut = router.swap(
+      singleSwap,
+      funds,
+      swapInfo.minTokensOut,
+      swapInfo.expiration
+    );
   }
 }
