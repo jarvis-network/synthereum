@@ -49,29 +49,22 @@ async function migrate(deployer, network, accounts) {
   if (selfMintingVersions[networkId]?.CreditLineFactory?.isEnabled ?? true) {
     const keys = getKeysForNetwork(network, accounts);
     //hardhat
-    if (CreditLineLib.setAsDeployed) {
-      const { contract: creditLineLib } = await deploy(
-        web3,
-        deployer,
-        network,
-        CreditLineLib,
-        { from: keys.deployer },
-      );
+    const { contract: creditLineLib } = await deploy(
+      web3,
+      deployer,
+      network,
+      CreditLineLib,
+      { from: keys.deployer },
+    );
 
-      // Due to how truffle-plugin works, it statefully links it
-      // and throws an error if its already linked. So we'll just ignore it...
-      try {
-        await CreditLineFactory.link(creditLineLib);
-      } catch (e) {
-        // Allow this to fail in the Buidler case.
-      }
-    } else {
-      //
-      await deploy(web3, deployer, network, CreditLineLib, {
-        from: keys.deployer,
-      });
-      await deployer.link(CreditLineLib, [CreditLineFactory]);
+    // Due to how truffle-plugin works, it statefully links it
+    // and throws an error if its already linked. So we'll just ignore it...
+    try {
+      await CreditLineFactory.link(creditLineLib);
+    } catch (e) {
+      // Allow this to fail in the Buidler case.
     }
+
     // Deploy self-minting factory
     await deploy(
       web3,

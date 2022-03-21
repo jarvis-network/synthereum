@@ -88,7 +88,7 @@ async function migrate(deployer, network, accounts) {
     .send({ from: maintainer });
   console.log('LendingStoargeManager added to SynthereumFinder');
 
-  if (lendingData[networkId]?.AaveV3?.isEnabled ?? false) {
+  if (lendingData[networkId]?.AaveV3?.isEnabled ?? true) {
     await deploy(web3, deployer, network, AaveV3Module, {
       from: keys.deployer,
     });

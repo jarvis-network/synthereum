@@ -3,6 +3,8 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFactoryVersioning',
   'SynthereumLiquidityPoolLib',
   'SynthereumLiquidityPoolFactory',
+  'SynthereumMultiLpLiquidityPool',
+  'SynthereumMultiLpLiquidityPoolFactory',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -15,6 +17,8 @@ async function migrate(deployer, network, accounts) {
     SynthereumFactoryVersioning,
     SynthereumLiquidityPoolLib,
     SynthereumLiquidityPoolFactory,
+    SynthereumMultiLpLiquidityPool,
+    SynthereumMultiLpLiquidityPoolFactory,
   } = migrate.getContracts(artifacts);
 
   const poolVersions = require('../data/pool-versions.json');
@@ -40,33 +44,22 @@ async function migrate(deployer, network, accounts) {
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const keys = getKeysForNetwork(network, accounts);
   if (poolVersions[networkId]?.LiquidityPoolFactory?.isEnabled ?? true) {
-    if (SynthereumLiquidityPoolLib.setAsDeployed) {
-      const { contract: synthereumLiquidityPoolLib } = await deploy(
-        web3,
-        deployer,
-        network,
-        SynthereumLiquidityPoolLib,
-        {
-          from: keys.deployer,
-        },
-      );
-
-      // Due to how truffle-plugin works, it statefully links it
-      // and throws an error if its already linked. So we'll just ignore it...
-      try {
-        await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
-      } catch (e) {
-        // Allow this to fail in the Buidler case.
-      }
-    } else {
-      // Truffle
-      await deploy(web3, deployer, network, SynthereumLiquidityPoolLib, {
+    const { contract: synthereumLiquidityPoolLib } = await deploy(
+      web3,
+      deployer,
+      network,
+      SynthereumLiquidityPoolLib,
+      {
         from: keys.deployer,
-      });
-      await deployer.link(
-        SynthereumLiquidityPoolLib,
-        SynthereumLiquidityPoolFactory,
-      );
+      },
+    );
+
+    // Due to how truffle-plugin works, it statefully links it
+    // and throws an error if its already linked. So we'll just ignore it...
+    try {
+      await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    } catch (e) {
+      // Allow this to fail in the Buidler case.
     }
     await deploy(
       web3,
@@ -90,5 +83,40 @@ async function migrate(deployer, network, accounts) {
       )
       .send({ from: maintainer });
     console.log('LiquidityPoolFactory added to SynthereumFactoryVersioning');
+  }
+  if (poolVersions[networkId]?.MultiLpLiquidityPoolFactory?.isEnabled ?? true) {
+    await deploy(web3, deployer, network, SynthereumMultiLpLiquidityPool, {
+      from: keys.deployer,
+    });
+    const multiLpLiquidityPoolInstance = await getExistingInstance(
+      web3,
+      SynthereumMultiLpLiquidityPool,
+      '@jarvis-network/synthereum-contracts',
+    );
+    await deploy(
+      web3,
+      deployer,
+      network,
+      SynthereumMultiLpLiquidityPoolFactory,
+      synthereumFinder.options.address,
+      multiLpLiquidityPoolInstance.options.address,
+      { from: keys.deployer },
+    );
+    const synthereumMultiLpLiquidityPoolFactory = await getExistingInstance(
+      web3,
+      SynthereumMultiLpLiquidityPoolFactory,
+      '@jarvis-network/synthereum-contracts',
+    );
+    const factoryInterface = await web3.utils.stringToHex('PoolFactory');
+    await synthereumFactoryVersioning.methods
+      .setFactory(
+        factoryInterface,
+        poolVersions[networkId]?.MultiLpLiquidityPoolFactory?.version ?? 6,
+        synthereumMultiLpLiquidityPoolFactory.options.address,
+      )
+      .send({ from: maintainer });
+    console.log(
+      'MultiLpLiquidityPoolFactory added to SynthereumFactoryVersioning',
+    );
   }
 }
