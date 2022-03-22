@@ -23,6 +23,7 @@ const {
 const { log } = require('@jarvis-network/core-utils/dist/logging');
 const {
   encodeLiquidityPool,
+  encodeMultiLpLiquidityPool,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
@@ -73,6 +74,29 @@ module.exports = async function (deployer, network, accounts) {
           asset.collateralRequirement,
           asset.liquidationReward,
           poolVersion,
+        );
+      } else if (deployment[networkId].Pool === 6) {
+        poolVersion =
+          poolVersions[networkId]['MultiLpLiquidityPoolFactory'].version;
+        const synthSymbol = asset.syntheticSymbol;
+        poolPayload = encodeMultiLpLiquidityPool(
+          poolVersion,
+          synthereumConfig[networkId].collateralAddress,
+          asset.syntheticName,
+          synthSymbol,
+          deployment[networkId]?.SynthToken?.[synthSymbol] ?? ZERO_ADDRESS,
+          {
+            admin: admin,
+            maintainer: maintainer,
+          },
+          fees[networkId].feePercentage,
+          asset.priceFeedIdentifier,
+          asset.overCollateralRequirement,
+          asset.liquidationReward,
+          asset.lendingId,
+          asset.interestBearingToken,
+          asset.daoInterestShare,
+          asset.jrtBuybackShare,
         );
       }
       txData.push({
