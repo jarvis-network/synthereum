@@ -76,14 +76,36 @@ contract('JarvisBrrrrr', async accounts => {
       balanceAfterMint.toString(),
     );
     assert.equal(circulatingSupply.toString(), amount.toString());
-
+    await jEurInstance.addMinter(roles.admin, {
+      from: roles.admin,
+    });
+    await jEurInstance.addBurner(roles.admin, {
+      from: roles.admin,
+    });
+    const exceedAmount = toWei('100000') 
+    await jEurInstance.mint(DAOAddress, exceedAmount, {
+      from: roles.admin,
+    })
+    await jEurInstance.approve(jarvisBrrrrr.address, exceedAmount, {
+      from: DAOAddress
+    })
     // redeem
     await truffleAssert.reverts(
-      jarvisBrrrrr.redeem(jEURAddress, toWei('100000'), {
+      jarvisBrrrrr.redeem(jEURAddress, exceedAmount, {
         from: DAOAddress,
-      }),
-      'Redeeming more than circulating supply',
-    );
+      }));
+    await jEurInstance.transfer(roles.admin, exceedAmount, {
+      from: DAOAddress,
+    })
+    await jEurInstance.burn(exceedAmount, {
+      from: roles.admin,
+    })
+    await jEurInstance.renounceMinter({
+      from: roles.admin,
+    });
+    await jEurInstance.renounceBurner({
+      from: roles.admin,
+    });
     let redeemAmount = toWei('6');
     await jEurInstance.approve(jarvisBrrrrr.address, redeemAmount, {
       from: DAOAddress,

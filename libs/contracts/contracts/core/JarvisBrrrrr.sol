@@ -98,7 +98,6 @@ contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr {
     returns (uint256 newCirculatingSupply)
   {
     uint256 actualSupply = circulatingSupply[token];
-    require(amount < actualSupply, 'Redeeming more than circulating supply');
     IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
     newCirculatingSupply = actualSupply - amount;
     circulatingSupply[token] = newCirculatingSupply;
