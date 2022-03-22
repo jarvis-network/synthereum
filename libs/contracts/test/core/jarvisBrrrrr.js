@@ -82,24 +82,25 @@ contract('JarvisBrrrrr', async accounts => {
     await jEurInstance.addBurner(roles.admin, {
       from: roles.admin,
     });
-    const exceedAmount = toWei('100000') 
+    const exceedAmount = toWei('100000');
     await jEurInstance.mint(DAOAddress, exceedAmount, {
       from: roles.admin,
-    })
+    });
     await jEurInstance.approve(jarvisBrrrrr.address, exceedAmount, {
-      from: DAOAddress
-    })
+      from: DAOAddress,
+    });
     // redeem
     await truffleAssert.reverts(
       jarvisBrrrrr.redeem(jEURAddress, exceedAmount, {
         from: DAOAddress,
-      }));
+      }),
+    );
     await jEurInstance.transfer(roles.admin, exceedAmount, {
       from: DAOAddress,
-    })
+    });
     await jEurInstance.burn(exceedAmount, {
       from: roles.admin,
-    })
+    });
     await jEurInstance.renounceMinter({
       from: roles.admin,
     });

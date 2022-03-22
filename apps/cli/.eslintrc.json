@@ -1,6 +1,6 @@
 {
   "extends": "../../.eslintrc.json",
   "rules": {
-    "no-await-in-loop":"off"
+    "no-await-in-loop": "off"
   }
 }

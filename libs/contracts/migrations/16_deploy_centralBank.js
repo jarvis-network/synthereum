@@ -25,7 +25,8 @@ async function migrate(deployer, network, accounts) {
   );
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const moneyMarketManager = rolesConfig[networkId]?.moneyMarketManager ?? accounts[2]
+  const moneyMarketManager =
+    rolesConfig[networkId]?.moneyMarketManager ?? accounts[2];
   const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
   await deploy(
@@ -44,7 +45,9 @@ async function migrate(deployer, network, accounts) {
     JarvisBrrrrr,
     '@jarvis-network/synthereum-contracts',
   );
-  const moneyMarketMangagerInterface = await web3.utils.stringToHex('MoneyMarketManager')
+  const moneyMarketMangagerInterface = await web3.utils.stringToHex(
+    'MoneyMarketManager',
+  );
   await synthereumFinder.methods
     .changeImplementationAddress(
       jarvisBrrrrrInterface,
@@ -53,9 +56,11 @@ async function migrate(deployer, network, accounts) {
     .send({ from: maintainer });
   console.log('JarvisBrrrrr added to SynthereumFinder');
 
-  await synthereumFinder.methods.changeImplementationAddress(
-    moneyMarketMangagerInterface,
-    moneyMarketManager,
-  ).send({from: maintainer });
-  console.log('MoneyMarketManager added to SynthereumFinder')
+  await synthereumFinder.methods
+    .changeImplementationAddress(
+      moneyMarketMangagerInterface,
+      moneyMarketManager,
+    )
+    .send({ from: maintainer });
+  console.log('MoneyMarketManager added to SynthereumFinder');
 }
