@@ -14,8 +14,11 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr {
+contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr, ReentrancyGuard {
   using SafeERC20 for IERC20;
 
   mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
@@ -73,6 +76,7 @@ contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr {
     external
     override
     onlyMoneyMarketManager()
+    nonReentrant()
     returns (uint256 newCirculatingSupply)
   {
     newCirculatingSupply = amount + circulatingSupply[token];
@@ -95,6 +99,7 @@ contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr {
     external
     override
     onlyMoneyMarketManager()
+    nonReentrant()
     returns (uint256 newCirculatingSupply)
   {
     uint256 actualSupply = circulatingSupply[token];
@@ -114,6 +119,7 @@ contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr {
     external
     override
     onlyMaintainer()
+    nonReentrant()
   {
     maxCirculatingSupply[token] = newMaxSupply;
     emit NewMaxSupply(address(token), newMaxSupply);
