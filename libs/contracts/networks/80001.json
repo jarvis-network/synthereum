@@ -6,8 +6,8 @@
   },
   {
     "contractName": "SynthereumDeployer",
-    "address": "0x804A40d12FdeD71D41cD69a0054d371a80Cc84da",
-    "transactionHash": "0xf3822d40e62e1f9ad821048cdd2c23a61760e1661daeb01b4fed7f2ed6781d59"
+    "address": "0x2a6bDdd481Ae14915Dc1e164a8bc5022D76baB7b",
+    "transactionHash": "0xc5ef49e19afd7d5a2c11ceb1f77858e43fcd9cdeb592777ccdc317dc8c3a7acb"
   },
   {
     "contractName": "SynthereumPoolRegistry",
@@ -21,8 +21,8 @@
   },
   {
     "contractName": "SynthereumFactoryVersioning",
-    "address": "0x9fB8e357277e8E99d040F6a9ea481C2C76D26F9E",
-    "transactionHash": "0x8c37d0abd38f05dbf2f10f4f8070c6536cc823ad92bd299dbce6a5a2c36e33e2"
+    "address": "0x02e3139041b43a599A41eC8A27b83E5d0B35aE5f",
+    "transactionHash": "0xaf2051388fddd00f2091be0c7da3dd9f0251621359efe62b65469e5a388d42e8"
   },
   {
     "contractName": "SynthereumManager",
@@ -41,68 +41,28 @@
   },
   {
     "contractName": "SynthereumSyntheticTokenPermitFactory",
-    "address": "0x981d4bc7418Fd82429d4c3214F40d092D16180a0",
-    "transactionHash": "0x3d3394edac69bccad3fbdc8fbc4bfecc14be363f14ae40ee6353a7c8b565bf0a"
+    "address": "0xAdbD1c3e9ca3ed515518e645d62DA39643Ec4CC7",
+    "transactionHash": "0x26d910a972860b396d21f8366d3819b1d3590a29477c9a6b967e021a1be44aa8"
   },
   {
-    "contractName": "FeePayerPartyLib",
-    "address": "0xe9705DdDe242CB969f637082a06861751f940478",
-    "transactionHash": "0x362d0a1377d8c6bc2b1f5d13f41ab86b6b51b46413562047289189d84ea5a36c"
+    "contractName": "SynthereumLiquidityPoolLib",
+    "address": "0x63b6394EfADfE61d681f8bBB76e0aC2796913cCF",
+    "transactionHash": "0xa55719fb829987791985794bacc5cc723dc2104de110efa0c5e34b12ffa74ad4"
   },
   {
-    "contractName": "PerpetualPositionManagerPoolPartyLib",
-    "address": "0x1D04C7dBA163ef9F83390Fd06D8D355b79F02b8e",
-    "transactionHash": "0xc394987b1f32e9a8f4fbb7245fd543554efec35360f10dbaf001468276549a8d"
+    "contractName": "SynthereumLiquidityPoolFactory",
+    "address": "0x8Df9b7abCae3eb8cAC83e93Eb44FBe544C43b924",
+    "transactionHash": "0xdd33ceb1f965b1bbe0fb5997c8d5162863c156fca83285dc7042b021c9b36ba0"
   },
   {
-    "contractName": "PerpetualLiquidatablePoolPartyLib",
-    "address": "0xf00A1D42B2c5a1aa27ACA3c4C9F6eC16A13e53C9",
-    "transactionHash": "0x7df0dc18e4528cdace53e2140c8f797fe0e128fb6d5e3adff836bdd79b18d9ac"
+    "contractName": "SynthereumMultiLpLiquidityPool",
+    "address": "0x81E9336E8290E51aF87A521D580a9D2Ba2581c08",
+    "transactionHash": "0xb596b5367e129648450c0db6f3ced6cfa045c25b31410cb31b0e4c33cd62ef4f"
   },
   {
-    "contractName": "PerpetualPoolPartyLib",
-    "address": "0xa75Cfa17bd40682d4F5638564c55C051756AaBa3",
-    "transactionHash": "0x497ac593bdb05409c0d6925d21ac1c57fabf3f8b9fc2b5b90ff9f70828512170"
-  },
-  {
-    "contractName": "SynthereumDerivativeFactory",
-    "address": "0xb6095B28257287EE730c5B18Aa6Ede2AF5b47FA8",
-    "transactionHash": "0xb06981fb5be012936505f61c0119199d56a3c9f2bb32e869ce707956e2a67f76"
-  },
-  {
-    "contractName": "SynthereumPoolOnChainPriceFeedLib",
-    "address": "0x6570CAB872bbE439e1c6aE1bD29F95780B6c0F68",
-    "transactionHash": "0xa7500a6b6a8912e85a19f63d92f3add9cf47a6af43a4c66d7bfbaeed63f73a07"
-  },
-  {
-    "contractName": "SynthereumPoolOnChainPriceFeedFactory",
-    "address": "0xbe3F359341d31e29939095d736E04CF1b358984f",
-    "transactionHash": "0x04a7df9280322dd7f993e71ed70f244e4c09ba63a5ffff36cb49f6ba84aa9973"
-  },
-  {
-    "contractName": "SelfMintingPerpetualPositionManagerMultiPartyLib",
-    "address": "0x625B861DFa2aE976a3d2EcB99760a47f35fBfA2F",
-    "transactionHash": "0xebff54a3a77514a591e1da32b97e21121e52eccec186293965eea91575ce5a36"
-  },
-  {
-    "contractName": "SelfMintingPerpetualLiquidatableMultiPartyLib",
-    "address": "0x1ffB5ab57C763406D35B76e19AF4672dB7e2A98E",
-    "transactionHash": "0x8ad481c969316e4799cef2b613c1019fc7a0f967f7b4d0f880e742fd29e22c7e"
-  },
-  {
-    "contractName": "SelfMintingPerpetualMultiPartyLib",
-    "address": "0x61E2E65439bADbA9b116E0934681446B4a80552b",
-    "transactionHash": "0x46fed7f87b4a9dbec9fbeef77cc43b00b2734f901d1dde583386881655d69f8d"
-  },
-  {
-    "contractName": "SelfMintingDerivativeFactory",
-    "address": "0xc65C33495E30882c620dc699DD045c4A07366305",
-    "transactionHash": "0xf25788ac953fd3ddfe04ed9da7821ec8512b0560db31acee29b7b87b61c22162"
-  },
-  {
-    "contractName": "SelfMintingController",
-    "address": "0x68b5D1f84A333Dc36910387ee7eEFB0BeF64cF22",
-    "transactionHash": "0x2f94bee2b11b78d9350fd9d27e792e8e8536e2059762809b05cccac582b1cae6"
+    "contractName": "SynthereumMultiLpLiquidityPoolFactory",
+    "address": "0x52752838aEAa6b973d7E827AD7b1aED9D7920Aee",
+    "transactionHash": "0xdb40015675defff1a04cf74560a60f138f06040ca8cd7d13af0f9068e361903b"
   },
   {
     "contractName": "CreditLineLib",
@@ -120,18 +80,28 @@
     "transactionHash": "0x2bc642658f10ba18da26bec0d855234b96d0147ec15eaec66240c96f6107c54f"
   },
   {
-    "contractName": "SynthereumDeployer",
-    "address": "0x2a6bDdd481Ae14915Dc1e164a8bc5022D76baB7b",
-    "transactionHash": "0xc5ef49e19afd7d5a2c11ceb1f77858e43fcd9cdeb592777ccdc317dc8c3a7acb"
-  },
-  {
-    "contractName": "SynthereumFactoryVersioning",
-    "address": "0x02e3139041b43a599A41eC8A27b83E5d0B35aE5f",
-    "transactionHash": "0xaf2051388fddd00f2091be0c7da3dd9f0251621359efe62b65469e5a388d42e8"
-  },
-  {
     "contractName": "SynthereumChainlinkPriceFeed",
     "address": "0x4D7e9552C139948A9C97Ed548809547dc2C39e84",
     "transactionHash": "0x8b8a7ebb3077a1eae7adc652313f6dabd37a6241b74067a3048af95a09ee0dda"
+  },
+  {
+    "contractName": "LendingManager",
+    "address": "0x3a7e279C72bccfa09243123710195656724c9346",
+    "transactionHash": "0x0f06cf74fc9585a580e6cc2a9c4619999ffd46b89fceeea34b5859460fa0ba49"
+  },
+  {
+    "contractName": "LendingStorageManager",
+    "address": "0xD3BdE303537a1a1d3b472972b6e1C1682B4642C2",
+    "transactionHash": "0xefdd522dd111440b9078553657b4eb2e55978e794660cbcc955eb55e139e52d8"
+  },
+  {
+    "contractName": "AaveV3Module",
+    "address": "0xc9addb8744aee92E4EA777639d57df3165333561",
+    "transactionHash": "0xf78feab1e52920456a5787fd93f15c7a3767a00128afc8f5d6b8fd0df9440a0f"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0x2e45a0a633472E5879b15bF3aF78F156909103cC",
+    "transactionHash": "0xfbfd458a9531e3dc3901932cadaf58e5553b0c852c09954656395a28a10e7b6f"
   }
 ]
