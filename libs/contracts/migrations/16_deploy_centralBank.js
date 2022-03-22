@@ -50,12 +50,12 @@ async function migrate(deployer, network, accounts) {
       jarvisBrrrrrInterface,
       jarvisBrrrrr.options.address,
     )
-    .send({ from: accounts[0] });
+    .send({ from: maintainer });
   console.log('JarvisBrrrrr added to SynthereumFinder');
 
   await synthereumFinder.methods.changeImplementationAddress(
     moneyMarketMangagerInterface,
     moneyMarketManager,
-  ).send({from: accounts[0]});
+  ).send({from: maintainer });
   console.log('MoneyMarketManager added to SynthereumFinder')
 }
