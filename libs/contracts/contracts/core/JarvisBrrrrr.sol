@@ -18,7 +18,11 @@ import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr, ReentrancyGuard {
+contract JarvisBrrrrr is
+  AccessControlEnumerable,
+  IJarvisBrrrrr,
+  ReentrancyGuard
+{
   using SafeERC20 for IERC20;
 
   mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
