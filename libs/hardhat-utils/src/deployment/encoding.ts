@@ -8,6 +8,11 @@ interface Roles {
   liquidityProvider: string;
 }
 
+interface StandardRoles {
+  admin: string;
+  maintainer: string;
+}
+
 interface Fee {
   feePercentage: number;
   feeRecipients: string[];
@@ -81,6 +86,78 @@ function encodeLiquidityPool(
         collateralRequirement,
         liquidationReward,
         version,
+      },
+    ],
+  );
+  return poolPayload;
+}
+
+function encodeMultiLpLiquidityPool(
+  version: number,
+  collateralToken: string,
+  syntheticName: string,
+  syntheticSymbol: string,
+  syntheticToken: string,
+  roles: StandardRoles,
+  fee: number,
+  priceIdentifier: string,
+  overCollateralRequirement: string,
+  liquidationReward: string,
+  lendingId: string,
+  interestBearingToken: string,
+  daoInterestShare: string,
+  jrtBuybackShare: string,
+) {
+  const poolPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+    [
+      {
+        params: {
+          version: 'uint8',
+          collateralToken: 'address',
+          syntheticName: 'string',
+          syntheticSymbol: 'string',
+          syntheticToken: 'address',
+          roles: {
+            admin: 'address',
+            maintainer: 'address',
+          },
+          fee: 'uint256',
+          priceIdentifier: 'bytes32',
+          overCollateralRequirement: 'uint256',
+          liquidationReward: 'uint256',
+          lendingManagerParams: {
+            lendingId: 'string',
+            interestBearingToken: 'address',
+            daoInterestShare: 'uint256',
+            jrtBuybackShare: 'uint256',
+          },
+        },
+      },
+    ],
+    [
+      {
+        version,
+        collateralToken,
+        syntheticName,
+        syntheticSymbol,
+        syntheticToken,
+        roles: {
+          admin: roles.admin,
+          maintainer: roles.maintainer,
+        },
+        fee: web3Utils.toWei(fee.toString()),
+        priceIdentifier: web3Utils.padRight(
+          web3Utils.toHex(priceIdentifier),
+          64,
+        ),
+        overCollateralRequirement,
+        liquidationReward,
+        lendingManagerParams: {
+          lendingId,
+          interestBearingToken,
+          daoInterestShare,
+          jrtBuybackShare,
+        },
       },
     ],
   );
@@ -201,6 +278,7 @@ function encodeFixedRate(
 
 module.exports = {
   encodeLiquidityPool,
+  encodeMultiLpLiquidityPool,
   encodeCreditLineDerivative,
   encodeFixedRate,
 };
