@@ -68,5 +68,10 @@
     "contractName": "SynthereumDerivativeFactory",
     "address": "0xD5ed74178Fa50EfD7d3E3f30EF5f0ACab56933Bc",
     "transactionHash": "0x1bd0dce423b879f7dc1e2a8cca80c6991a946d8a3b91db15de7ac5344fed78e8"
+  },
+  {
+    "contractName": "JarvisBrrrrr",
+    "address": "0xb51c6fDbf82eA5C1c2f39e7e6a3f82586C29c81e",
+    "transactionHash": "0x6f150cc9f8464d43c28e0391a42aa3eb6c179d140b02fffd158526a2fea707d8"
   }
 ]
