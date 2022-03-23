@@ -47,5 +47,14 @@
     "isEnabled": true,
     "Pool": 5,
     "SynthToken": {}
+  },
+  "80001": {
+    "isEnabled": true,
+    "Pool": 6,
+    "SynthToken": {
+      "jEUR": "0x02CBE6055F8aad745321f70d6aDD4711455c7F45",
+      "jGBP": "0x915E1f55eC2dc1524101ef44d4a0EebFe10Bc6bc",
+      "jCHF": "0x2b7D8FB31676Ab02DA37a124Acfa726125b1B95b"
+    }
   }
 }
