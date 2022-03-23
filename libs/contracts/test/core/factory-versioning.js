@@ -40,7 +40,7 @@ contract('Factory versioning', function (accounts) {
       const numberOfVersions = await factoryVersioningInstance.numberOfFactoryVersions.call(
         poolFactoryInterface,
       );
-      assert.equal(numberOfVersions, 1, 'wrong number of pool versions');
+      assert.equal(numberOfVersions, 2, 'wrong number of pool versions');
     });
     it('Can update existing pool factory', async () => {
       let poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
@@ -87,19 +87,19 @@ contract('Factory versioning', function (accounts) {
       await truffleAssert.reverts(
         factoryVersioningInstance.getFactoryVersion.call(
           poolFactoryInterface,
-          6,
+          7,
         ),
         'EnumerableMap: nonexistent key',
       );
       const insertTx = await factoryVersioningInstance.setFactory(
         poolFactoryInterface,
-        6,
+        7,
         testPoolFactory,
         { from: maintainer },
       );
       poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
         poolFactoryInterface,
-        6,
+        7,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -109,7 +109,7 @@ contract('Factory versioning', function (accounts) {
       truffleAssert.eventEmitted(insertTx, 'AddFactory', ev => {
         return (
           ev.factoryType == poolFactoryInterface &&
-          ev.version == 6 &&
+          ev.version == 7 &&
           ev.factory == testPoolFactory
         );
       });
@@ -117,7 +117,7 @@ contract('Factory versioning', function (accounts) {
     it('Can remove pool factory', async () => {
       let poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
         poolFactoryInterface,
-        6,
+        7,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -126,7 +126,7 @@ contract('Factory versioning', function (accounts) {
       );
       const removeTx = await factoryVersioningInstance.removeFactory(
         poolFactoryInterface,
-        6,
+        7,
         {
           from: maintainer,
         },
@@ -134,14 +134,14 @@ contract('Factory versioning', function (accounts) {
       await truffleAssert.reverts(
         factoryVersioningInstance.getFactoryVersion.call(
           poolFactoryInterface,
-          6,
+          7,
         ),
         'EnumerableMap: nonexistent key',
       );
       truffleAssert.eventEmitted(removeTx, 'RemoveFactory', ev => {
         return (
           ev.factoryType == poolFactoryInterface &&
-          ev.version == 6 &&
+          ev.version == 7 &&
           ev.factory == testPoolFactory
         );
       });
@@ -161,7 +161,7 @@ contract('Factory versioning', function (accounts) {
     });
     it('Can revert if try to remove a not existing version', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.removeFactory(poolFactoryInterface, 6, {
+        factoryVersioningInstance.removeFactory(poolFactoryInterface, 7, {
           from: maintainer,
         }),
         'EnumerableMap: nonexistent key',
