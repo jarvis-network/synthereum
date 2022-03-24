@@ -138,7 +138,7 @@ contract('AaveV3 Lending module', accounts => {
         lendingModule: module.address,
         args,
       };
-      await storageManager.setLendingModule('aave', lendingInfo, {
+      await proxy.setLendingModule('aave', lendingInfo, {
         from: maintainer,
       });
 
@@ -179,9 +179,13 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(moduleBearingToken, aUSDC.address);
 
       // by not specifying the aToken
+      await proxy.setLendingModule('aave-2', lendingInfo, {
+        from: maintainer,
+      });
+      // this information is not used in any other tests
       await storageManager.setPoolStorage(
-        'aave',
-        poolMock.address,
+        'aave-2',
+        accounts[8],
         USDC,
         ZERO_ADDRESS,
         daoInterestShare,
@@ -299,14 +303,14 @@ contract('AaveV3 Lending module', accounts => {
         'Not allowed',
       );
       await truffleAssert.reverts(
-        storageManager.setLendingModule(
+        proxy.setLendingModule(
           'fake',
           { lendingModule: accounts[5], args: '0x00' },
           {
             from: accounts[4],
           },
         ),
-        'Not allowed',
+        'Sender must be the maintainer',
       );
       await truffleAssert.reverts(
         storageManager.updateValues(poolMock.address, 100, 100, 100, {
@@ -951,7 +955,7 @@ contract('AaveV3 Lending module', accounts => {
           lendingModule: newModule.address,
           args,
         };
-        await storageManager.setLendingModule('new', newLendingInfo, {
+        await proxy.setLendingModule('new', newLendingInfo, {
           from: maintainer,
         });
 
@@ -988,18 +992,17 @@ contract('AaveV3 Lending module', accounts => {
         let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
         // check return values to pool
-        assert.equal(returnValues.tokensOut.toString(), amount.toString());
         assert.equal(
-          returnValues.tokensTransferred.toString(),
+          returnValues.prevDepositedCollateral.toString(),
+          amount.toString(),
+        );
+        assert.equal(
+          returnValues.actualCollateralDeposited.toString(),
           amount.toString(),
         );
         assert.equal(
           returnValues.poolInterest.toString().substr(0, 12),
           expectedPoolInterest.toString().substr(0, 12),
-        );
-        assert.equal(
-          returnValues.daoInterest.toString().substr(0, 13),
-          expectedDaoInterest.toString().substr(0, 13),
         );
 
         // check tokens have moved correctly
