@@ -20,13 +20,17 @@ async function migrate(deployer, network, accounts) {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
 
-  const networkId = toNetworkId(network);
+  const networkId = process.env.FORKCHAINID
+    ? process.env.FORKCHAINID
+    : toNetworkId(network);
   const synthereumFinder = await getExistingInstance(
     web3,
     SynthereumFinder,
     '@jarvis-network/synthereum-contracts',
   );
-  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
+  const maintainer = process.env.FORKCHAINID
+    ? accounts[1]
+    : rolesConfig[networkId]?.maintainer ?? accounts[1];
   const keys = getKeysForNetwork(network, accounts);
   await deploy(
     web3,

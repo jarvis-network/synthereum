@@ -26,7 +26,9 @@ const {
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = toNetworkId(network);
+  const networkId = process.env.FORKCHAINID
+    ? process.env.FORKCHAINID
+    : toNetworkId(network);
   global.web3 = web3;
 
   const synthereumDeployer = await getExistingInstance(
@@ -40,8 +42,12 @@ module.exports = async function (deployer, network, accounts) {
     '@jarvis-network/synthereum-contracts',
   );
 
-  const admin = rolesConfig[networkId]?.admin ?? accounts[0];
-  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
+  const admin = process.env.FORKCHAINID
+    ? accounts[0]
+    : rolesConfig[networkId]?.admin ?? accounts[0];
+  const maintainer = process.env.FORKCHAINID
+    ? accounts[1]
+    : rolesConfig[networkId]?.maintainer ?? accounts[1];
   let txData = [];
   if (deployment[networkId].isEnabled === true) {
     assets[networkId].map(async asset => {

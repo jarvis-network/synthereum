@@ -16,7 +16,7 @@
     "add-pool": "MIGRATION_TYPE=add_pool hardhat test ./test/correct-migration.js",
     "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
     "add-fixedRateWrapper": "MIGRATION_TYPE=add_fixedRateWrapper hardhat test ./test/correct-migration.js",
-    "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test",
+    "test": "MIGRATION_TYPE=all FORKCHAINID=137 BLOCK=26274754 NODE_OPTIONS=--max-old-space-size=8192 hardhat test",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
     "verify": "hardhat verify"

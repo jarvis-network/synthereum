@@ -1,5 +1,4 @@
 const web3Utils = require('web3-utils');
-const rolesConfig = require('../data/roles.json');
 const synthereumConfig = require('../data/synthereum-config.json');
 const {
   getExistingInstance,
@@ -25,7 +24,9 @@ const {
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = toNetworkId(network);
+  const networkId = process.env.FORKCHAINID
+    ? process.env.FORKCHAINID
+    : toNetworkId(network);
   global.web3 = web3;
 
   const synthereumDeployer = await getExistingInstance(
@@ -33,12 +34,6 @@ module.exports = async function (deployer, network, accounts) {
     SynthereumDeployer,
     '@jarvis-network/synthereum-contracts',
   );
-
-  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const roles = {
-    admin: rolesConfig[networkId]?.admin ?? accounts[0],
-    maintainers: [maintainer],
-  };
 
   let txData = [];
 

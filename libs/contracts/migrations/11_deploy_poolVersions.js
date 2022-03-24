@@ -30,7 +30,9 @@ async function migrate(deployer, network, accounts) {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
 
-  const networkId = await toNetworkId(network);
+  const networkId = process.env.FORKCHAINID
+    ? process.env.FORKCHAINID
+    : toNetworkId(network);
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
     SynthereumFactoryVersioning,
@@ -41,7 +43,9 @@ async function migrate(deployer, network, accounts) {
     SynthereumFinder,
     '@jarvis-network/synthereum-contracts',
   );
-  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
+  const maintainer = process.env.FORKCHAINID
+    ? accounts[1]
+    : rolesConfig[networkId]?.maintainer ?? accounts[1];
   const keys = getKeysForNetwork(network, accounts);
   if (poolVersions[networkId]?.LiquidityPoolFactory?.isEnabled ?? true) {
     const { contract: synthereumLiquidityPoolLib } = await deploy(
