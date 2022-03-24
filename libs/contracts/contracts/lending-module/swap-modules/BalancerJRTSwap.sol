@@ -23,11 +23,10 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
 
   function swapToJRT(
     address recipient,
+    address collateral,
     uint256 amountIn,
     bytes memory params
   ) external override returns (uint256 amountOut) {
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
-
     // decode swapInfo
     SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
 
@@ -36,7 +35,7 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
       IBalancerVault.SingleSwap(
         swapInfo.poolId,
         IBalancerVault.SwapKind.GIVEN_IN,
-        address(collateral),
+        collateral,
         swapInfo.jrtAddress,
         amountIn,
         '0x00'
@@ -53,7 +52,7 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
     // swap to JRT to final recipient
     IBalancerVault router = IBalancerVault(swapInfo.routerAddress);
 
-    collateral.safeIncreaseAllowance(address(router), amountIn);
+    IERC20(collateral).safeIncreaseAllowance(address(router), amountIn);
     amountOut = router.swap(
       singleSwap,
       funds,

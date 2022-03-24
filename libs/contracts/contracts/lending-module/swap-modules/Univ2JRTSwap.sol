@@ -6,7 +6,6 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
 import {IJRTSwapModule} from '../interfaces/IJrtSwapModule.sol';
 import {
   IUniswapV2Router02
@@ -23,18 +22,17 @@ contract UniV2JRTSwapModule is IJRTSwapModule {
 
   function swapToJRT(
     address recipient,
+    address collateral,
     uint256 amountIn,
     bytes memory params
   ) external override returns (uint256 amountOut) {
-    IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
-
     // decode swapInfo
     SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
 
     // swap to JRT to final recipient
     IUniswapV2Router02 router = IUniswapV2Router02(swapInfo.routerAddress);
 
-    collateral.safeIncreaseAllowance(address(router), amountIn);
+    IERC20(collateral).safeIncreaseAllowance(address(router), amountIn);
     amountOut = router.swapExactTokensForTokens(
       amountIn,
       0,

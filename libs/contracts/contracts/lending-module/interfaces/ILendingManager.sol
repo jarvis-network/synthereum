@@ -60,7 +60,7 @@ interface ILendingManager {
 
   /**
    * @notice batches calls to redeem poolData.commissionInterest from multiple pools
-   * @dev calculates and return the generated interest since last state-changing operation
+   * @dev calculates and update the generated interest since last state-changing operation
    * @param pools array of pools to redeem commissions from
    * @param collateralAmounts array of amount of commission to redeem for each pool (matching pools order)
    */
@@ -69,10 +69,21 @@ interface ILendingManager {
     uint256[] memory collateralAmounts
   ) external;
 
-  // TODO batching
-  function executeBuyback(uint256 collateralAmount, bytes memory swapParams)
-    external
-    returns (ReturnValues memory returnValues);
+  /**
+   * @notice batches calls to redeem poolData.jrtInterest from multiple pools
+   * @notice and executes a swap to buy Jarvis Reward Token
+   * @dev calculates and update the generated interest since last state-changing operation
+   * @param pools array of pools to redeem collateral from
+   * @param collateralAmounts array of amount of commission to redeem for each pool (matching pools order)
+   * @param collateralAddress address of the pools collateral token (all pools must have the same collateral)
+   * @param swapParams encoded bytes necessary for the swap module
+   */
+  function batchBuyback(
+    address[] memory pools,
+    uint256[] memory collateralAmounts,
+    address collateralAddress,
+    bytes memory swapParams
+  ) external;
 
   /**
    * @notice sets the address of the implementation of a lending module and its extraBytes
