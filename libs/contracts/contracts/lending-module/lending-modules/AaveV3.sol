@@ -109,6 +109,7 @@ contract AaveV3Module is ILendingModule {
   {
     address moneyMarket = abi.decode(args, (address));
     token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
+    require(token != address(0), 'Interest token not found');
   }
 
   function collateralToInterestToken(
