@@ -87,7 +87,7 @@ import '../lending-module/LendingManager.sol';
 import '../lending-module/LendingStorageManager.sol';
 import '../lending-module/lending-modules/AaveV3.sol';
 import '../lending-module/swap-modules/Univ2JRTSwap.sol';
-//import '../lending-module/swap-modules/BalancerJRTSwap.sol';
+import '../lending-module/swap-modules/BalancerJRTSwap.sol';
 import '../lending-module/interfaces/IAaveV3.sol';
 import '../lending-module/interfaces/IAaveV3.sol';
 import '../lending-module/interfaces/IBalancerVault.sol';

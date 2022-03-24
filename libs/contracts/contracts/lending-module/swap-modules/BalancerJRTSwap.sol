@@ -43,7 +43,12 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
       );
 
     IBalancerVault.FundManagement memory funds =
-      IBalancerVault.FundManagement(address(this), false, recipient, false);
+      IBalancerVault.FundManagement(
+        address(this),
+        false,
+        payable(recipient),
+        false
+      );
 
     // swap to JRT to final recipient
     IBalancerVault router = IBalancerVault(swapInfo.routerAddress);
