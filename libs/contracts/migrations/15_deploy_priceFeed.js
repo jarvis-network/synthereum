@@ -68,7 +68,7 @@ async function migrate(deployer, network, accounts) {
     .send({ from: maintainer });
   console.log('SynthereumChainlinkPriceFeed added to SynthereumFinder');
   var aggregatorsData = [];
-  if (!isPublicNetwork(network)) {
+  if (!isPublicNetwork(network) && !process.env.FORKCHAINID) {
     return;
   } else if (networkId in randomOracleConfig) {
     const assets = Object.keys(randomOracleConfig[networkId]);
