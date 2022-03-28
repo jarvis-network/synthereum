@@ -810,11 +810,23 @@ contract('AaveV3 Lending module', accounts => {
           },
         ],
       );
-      let returnValues = await poolMock.claimJRT.call(amount, encodedParams, {
-        from: accounts[0],
-      });
-      await poolMock.claimJRT(amount, encodedParams, {
-        from: accounts[0],
+      let tx = await proxy.batchBuyback(
+        [poolMock.address],
+        [amount],
+        USDC,
+        encodedParams,
+        {
+          from: maintainer,
+        },
+      );
+
+      let JRTOut;
+      truffleAssert.eventEmitted(tx, 'BatchBuyback', ev => {
+        JRTOut = ev.JRTOut;
+        return (
+          ev.collateralIn.toString() == amount.toString() &&
+          ev.receiver == buybackReceiver
+        );
       });
 
       let poolStorage = await storageManager.getPoolData.call(poolMock.address);
@@ -831,34 +843,16 @@ contract('AaveV3 Lending module', accounts => {
         .div(toBN(Math.pow(10, 18)));
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-      // check return values to pool
-      assert.equal(
-        returnValues.tokensOut.toString(),
-        receiverJRTAfter.sub(receiverJRTBefore).toString(),
-      );
-      assert.equal(
-        returnValues.tokensTransferred.toString(),
-        amount.toString(),
-      );
-      assert.equal(
-        returnValues.poolInterest.toString().substr(0, 12),
-        expectedPoolInterest.toString().substr(0, 12),
-      );
-      assert.equal(
-        returnValues.daoInterest.toString().substr(0, 12),
-        expectedDaoInterest.toString().substr(0, 12),
-      );
-
       // check tokens have moved correctly
       assert.equal(
         receiverJRTAfter.toString(),
-        receiverJRTBefore.add(toBN(returnValues.tokensOut)).toString(),
+        receiverJRTBefore.add(toBN(JRTOut)).toString(),
       );
+      // interest has been added to pool
       assert.equal(
         poolAUSDCAfter.toString().substr(0, 14),
         poolAUSDCBefore
-          .add(toBN(returnValues.poolInterest))
-          .add(toBN(returnValues.daoInterest))
+          .add(toBN(expectedInterest))
           .sub(toBN(amount))
           .toString()
           .substr(0, 14),
@@ -867,40 +861,42 @@ contract('AaveV3 Lending module', accounts => {
 
       // check pool storage update on proxy
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-        .add(toBN(returnValues.poolInterest))
+        .add(toBN(expectedPoolInterest))
         .toString();
       assert.equal(
         poolStorage.collateralDeposited.toString().substr(0, 20),
         expectedCollateral.substr(0, 20),
       );
 
-      let expectedUnclaimedJRT = toBN(returnValues.daoInterest)
+      let expectedUnclaimedJRT = toBN(expectedDaoInterest)
         .mul(toBN(jrtShare))
         .div(toBN(Math.pow(10, 18)))
         .toString();
       assert.equal(
-        poolStorage.unclaimedDaoJRT.substr(0, 11),
-        expectedUnclaimedJRT.substr(0, 11),
+        poolStorage.unclaimedDaoJRT.substr(0, 13),
+        expectedUnclaimedJRT.substr(0, 13),
       );
 
       let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
         .add(
-          toBN(returnValues.daoInterest)
+          toBN(expectedDaoInterest)
             .mul(toBN(commissionShare))
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
 
       assert.equal(
-        poolStorage.unclaimedDaoCommission.toString().substr(0, 12),
-        expectedDaoCommisson.toString().substr(0, 12),
+        poolStorage.unclaimedDaoCommission.substr(0, 13),
+        expectedDaoCommisson.substr(0, 13),
       );
     });
 
     it('Reverts if msg.sender is not a registered pool', async () => {
       await truffleAssert.reverts(
-        proxy.executeBuyback(10, toHex(0), { from: user }),
-        'Not allowed',
+        proxy.batchBuyback([poolMock.address], [10], USDC, toHex(0), {
+          from: user,
+        }),
+        'Sender must be the maintainer',
       );
     });
     it('Provides collateral to interest token conversion', async () => {
@@ -994,11 +990,15 @@ contract('AaveV3 Lending module', accounts => {
         // check return values to pool
         assert.equal(
           returnValues.prevDepositedCollateral.toString(),
-          amount.toString(),
+          poolStorageBefore.collateralDeposited.toString(),
         );
         assert.equal(
           returnValues.actualCollateralDeposited.toString(),
-          amount.toString(),
+          toBN(poolAUSDCAfter)
+            .sub(toBN(expectedDaoInterest))
+            .sub(toBN(poolStorageBefore.unclaimedDaoCommission))
+            .sub(toBN(poolStorageBefore.unclaimedDaoJRT))
+            .toString(),
         );
         assert.equal(
           returnValues.poolInterest.toString().substr(0, 12),

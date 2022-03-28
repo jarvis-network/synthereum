@@ -131,13 +131,6 @@ contract PoolLendingMock is ISynthereumDeployment {
     return proxy.withdraw(amount, recipient);
   }
 
-  function claimJRT(uint256 amount, bytes memory swapParams)
-    external
-    returns (ILendingManager.ReturnValues memory)
-  {
-    return proxy.executeBuyback(amount, swapParams);
-  }
-
   function transferToLendingManager(uint256 bearingAmount) external {
     address interestAddr =
       storageManager.getInterestBearingToken(address(this));
