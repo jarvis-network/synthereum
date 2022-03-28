@@ -287,7 +287,10 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @notice Returns the LP parametrs info
    * @return info Info of the input lp (see LPInfo struct)
    */
-  function lpInfo(address _lp) external view returns (LPInfo memory info);
+  function positionLPInfo(address _lp)
+    external
+    view
+    returns (LPInfo memory info);
 
   /**
    * @notice Returns the lending protocol info
@@ -298,6 +301,12 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     external
     view
     returns (string memory lendingId, address bearingToken);
+
+  /**
+   * @notice Get the decimals of the collateral
+   * @return Number of decimals of the collateral
+   */
+  function collateralTokenDecimals() external view returns (uint8);
 
   /**
    * @notice Returns the percentage of overcollateralization to which a liquidation can triggered

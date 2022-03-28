@@ -963,7 +963,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Returns the LP parametrs info
    * @return info Info of the input lp (see LPInfo struct)
    */
-  function lpInfo(address _lp)
+  function positionLPInfo(address _lp)
     external
     view
     override
@@ -1014,21 +1014,29 @@ contract SynthereumMultiLpLiquidityPool is
           price,
           decimals
         );
-        info.utilization = (tokensValue.mul(lpPosition.overCollateralization))
-          .div(lpPosition.actualCollateralAmount);
-        info.coverage =
-          PreciseUnitMath.PRECISE_UNIT +
-          (
-            overCollateralLimit.mul(
-              lpPosition.actualCollateralAmount.div(
-                tokensValue.mul(overCollateralLimit)
+        info.utilization = lpPosition.actualCollateralAmount != 0
+          ? (tokensValue.mul(lpPosition.overCollateralization)).div(
+            lpPosition.actualCollateralAmount
+          )
+          : lpPosition.tokensCollateralized > 0
+          ? PreciseUnitMath.PRECISE_UNIT
+          : 0;
+        info.coverage = tokensValue != 0
+          ? PreciseUnitMath.PRECISE_UNIT +
+            (
+              overCollateralLimit.mul(
+                lpPosition.actualCollateralAmount.div(
+                  tokensValue.mul(overCollateralLimit)
+                )
               )
             )
-          );
-        info.mintShares = capacityShares[j].div(totalCapacity);
-        info.redeemShares = lpPosition.tokensCollateralized.div(
-          totalSynthTokens
-        );
+          : PreciseUnitMath.maxUint256();
+        info.mintShares = totalCapacity != 0
+          ? capacityShares[j].div(totalCapacity)
+          : 0;
+        info.redeemShares = totalSynthTokens != 0
+          ? lpPosition.tokensCollateralized.div(totalSynthTokens)
+          : 0;
         info.isOvercollateralized = _isOvercollateralizedLP(
           lpPosition.actualCollateralAmount,
           overCollateralLimit,
@@ -1082,6 +1090,14 @@ contract SynthereumMultiLpLiquidityPool is
    */
   function collateralToken() external view override returns (IERC20) {
     return collateralAsset;
+  }
+
+  /**
+   * @notice Get the decimals of the collateral
+   * @return Number of decimals of the collateral
+   */
+  function collateralTokenDecimals() external view override returns (uint8) {
+    return collateralDecimals;
   }
 
   /**
