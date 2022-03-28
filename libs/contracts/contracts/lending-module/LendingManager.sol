@@ -215,11 +215,14 @@ contract LendingManager is
     require(pools.length == amounts.length, 'Invalid call');
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
+    uint256 totalAmount;
     for (uint8 i = 0; i < pools.length; i++) {
       claimCommission(pools[i], amounts[i], recipient);
+      totalAmount += amounts[i];
     }
 
     // todo emit event
+    emit BatchCommissionClaim(totalAmount, recipient);
   }
 
   function batchBuyback(
@@ -233,6 +236,10 @@ contract LendingManager is
 
     // withdraw collateral and update all pools
     uint256 aggregatedCollateral;
+    address recipient =
+      ISynthereumFinder(finder).getImplementationAddress(
+        'BuybackProgramReceiver'
+      );
     for (uint8 i = 0; i < pools.length; i++) {
       address pool = pools[i];
       uint256 collateralAmount = amounts[i];
@@ -298,14 +305,18 @@ contract LendingManager is
         .functionDelegateCall(
         abi.encodeWithSignature(
           JRTSWAP_SIG,
-          ISynthereumFinder(finder).getImplementationAddress(
-            'BuybackProgramReceiver'
-          ),
+          recipient,
           collateralAddress,
           aggregatedCollateral,
           swapParams
         )
       );
+
+    emit BatchBuyback(
+      aggregatedCollateral,
+      abi.decode(result, (uint256)),
+      recipient
+    );
   }
 
   function setLendingModule(
