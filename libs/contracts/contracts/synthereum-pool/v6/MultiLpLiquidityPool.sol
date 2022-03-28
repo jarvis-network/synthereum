@@ -80,6 +80,17 @@ contract SynthereumMultiLpLiquidityPool is
     uint8 decimals;
   }
 
+  struct TempInterstArguments {
+    uint256 totalCapacity;
+    uint256 totalUtilization;
+    uint256 capacityShare;
+    uint256 utilizationShare;
+    uint256 interest;
+    uint256 remainingInterest;
+    bool isTotCapacityNotZero;
+    bool isTotUtilizationNotZero;
+  }
+
   //----------------------------------------
   // Constants
   //----------------------------------------
@@ -1030,6 +1041,8 @@ contract SynthereumMultiLpLiquidityPool is
                 )
               )
             )
+          : lpPosition.actualCollateralAmount == 0
+          ? 0
           : PreciseUnitMath.maxUint256();
         info.mintShares = totalCapacity != 0
           ? capacityShares[j].div(totalCapacity)
@@ -1474,7 +1487,7 @@ contract SynthereumMultiLpLiquidityPool is
         liquidationBonusAmount = actualCollateralAmount
           .mul(liquidationBonus)
           .mul(tokensToLiquidate)
-          .div(_tokensInLiquidation);
+          .div(lpPosition.tokensCollateralized);
         lpPositions[lp].actualCollateralAmount =
           actualCollateralAmount -
           liquidationBonusAmount;
@@ -1561,32 +1574,52 @@ contract SynthereumMultiLpLiquidityPool is
     PositionCache[] memory _positionsCache
   ) internal view {
     uint256 lpNumbers = _positionsCache.length;
+    TempInterstArguments memory tempInterstArguments;
     uint256[] memory capacityShares = new uint256[](_positionsCache.length);
     uint256[] memory utilizationShares = new uint256[](_positionsCache.length);
-    (uint256 totalCapacity, uint256 totalUtilization) =
-      _calculateInterestShares(
-        _price,
-        _collateralDecimals,
-        _positionsCache,
-        capacityShares,
-        utilizationShares
-      );
 
+    (
+      tempInterstArguments.totalCapacity,
+      tempInterstArguments.totalUtilization
+    ) = _calculateInterestShares(
+      _price,
+      _collateralDecimals,
+      _positionsCache,
+      capacityShares,
+      utilizationShares
+    );
+
+    tempInterstArguments.isTotCapacityNotZero =
+      tempInterstArguments.totalCapacity > 0;
+    tempInterstArguments.isTotUtilizationNotZero =
+      tempInterstArguments.totalUtilization > 0;
+    require(
+      tempInterstArguments.isTotCapacityNotZero ||
+        tempInterstArguments.isTotUtilizationNotZero,
+      'No capacity and utilization'
+    );
     LPPosition memory lpPosition;
-    uint256 remainingInterest = _totalInterests;
-    uint256 interest;
+    tempInterstArguments.remainingInterest = _totalInterests;
     for (uint256 j = 0; j < lpNumbers - 1; j++) {
-      interest = _totalInterests.mul(
-        ((capacityShares[j].div(totalCapacity)) +
-          (utilizationShares[j].div(totalUtilization))) / 2
+      tempInterstArguments.capacityShare = tempInterstArguments
+        .isTotCapacityNotZero
+        ? capacityShares[j].div(tempInterstArguments.totalCapacity)
+        : 0;
+      tempInterstArguments.utilizationShare = tempInterstArguments
+        .isTotUtilizationNotZero
+        ? utilizationShares[j].div(tempInterstArguments.totalUtilization)
+        : 0;
+      tempInterstArguments.interest = _totalInterests.mul(
+        (tempInterstArguments.capacityShare +
+          tempInterstArguments.utilizationShare) / 2
       );
       lpPosition = _positionsCache[j].lpPosition;
-      lpPosition.actualCollateralAmount += interest;
-      remainingInterest -= interest;
+      lpPosition.actualCollateralAmount += tempInterstArguments.interest;
+      tempInterstArguments.remainingInterest -= tempInterstArguments.interest;
     }
 
     lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
-    lpPosition.actualCollateralAmount += remainingInterest;
+    lpPosition.actualCollateralAmount += tempInterstArguments.remainingInterest;
   }
 
   /**
@@ -1800,6 +1833,10 @@ contract SynthereumMultiLpLiquidityPool is
     uint8 _collateralDecimals,
     PositionCache[] memory _positionsCache
   ) internal pure returns (ProfitOrLoss memory) {
+    if (_totalSynthTokens == 0) {
+      return ProfitOrLoss(true, 0);
+    }
+
     uint256 lpNumbers = _positionsCache.length;
 
     uint256 totalAssetValue =
@@ -1967,7 +2004,6 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingManager.MigrateReturnValues memory _migrationValues,
     PositionCache[] memory _positionsCache
   ) internal pure {
-    uint256 lpNumbers = _positionsCache.length;
     uint256 prevTotalAmount =
       _migrationValues.prevDepositedCollateral + _migrationValues.poolInterest;
     bool isLpGain =
@@ -1976,16 +2012,17 @@ contract SynthereumMultiLpLiquidityPool is
       isLpGain
         ? _migrationValues.actualCollateralDeposited - prevTotalAmount
         : prevTotalAmount - _migrationValues.actualCollateralDeposited;
+    if (globalLpsProfitOrLoss == 0) return;
 
     LPPosition memory lpPosition;
     uint256 share;
     uint256 shareAmount;
     uint256 remainingAmount;
+    uint256 prevLpAmount = prevTotalAmount - _actualUserDeposits;
+    uint256 lpNumbers = _positionsCache.length;
     for (uint256 j = 0; j < lpNumbers - 1; j++) {
       lpPosition = _positionsCache[j].lpPosition;
-      share = lpPosition.actualCollateralAmount.div(
-        prevTotalAmount - _actualUserDeposits
-      );
+      share = lpPosition.actualCollateralAmount.div(prevLpAmount);
       shareAmount = globalLpsProfitOrLoss.mul(share);
       lpPosition.actualCollateralAmount = isLpGain
         ? lpPosition.actualCollateralAmount + shareAmount
