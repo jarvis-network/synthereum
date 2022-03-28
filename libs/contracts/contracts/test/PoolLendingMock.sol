@@ -115,6 +115,13 @@ contract PoolLendingMock is ISynthereumDeployment {
     return proxy.deposit(amount, address(this));
   }
 
+  function updateAccumulatedInterest()
+    external
+    returns (ILendingManager.ReturnValues memory)
+  {
+    return proxy.updateAccumulatedInterest();
+  }
+
   function withdraw(
     uint256 amount,
     address recipient,

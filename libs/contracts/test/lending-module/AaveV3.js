@@ -759,10 +759,19 @@ contract('AaveV3 Lending module', accounts => {
       );
     });
 
-    it('Reverts if msg.sender is not a registered pool', async () => {
+    it('Reverts if msg.sender is not maintainer', async () => {
       await truffleAssert.reverts(
         proxy.batchClaimCommission([poolMock.address], [10], { from: user }),
         'Sender must be the maintainer',
+      );
+    });
+
+    it('Reverts if number of pools and amount mismatch', async () => {
+      await truffleAssert.reverts(
+        proxy.batchClaimCommission([poolMock.address], [10, 20], {
+          from: maintainer,
+        }),
+        'Invalid call',
       );
     });
 
@@ -891,7 +900,7 @@ contract('AaveV3 Lending module', accounts => {
       );
     });
 
-    it('Reverts if msg.sender is not a registered pool', async () => {
+    it('Reverts if msg.sender is not maintainer', async () => {
       await truffleAssert.reverts(
         proxy.batchBuyback([poolMock.address], [10], USDC, toHex(0), {
           from: user,
@@ -899,6 +908,25 @@ contract('AaveV3 Lending module', accounts => {
         'Sender must be the maintainer',
       );
     });
+
+    it('Reverts if number of pools and amount mismatch', async () => {
+      await truffleAssert.reverts(
+        proxy.batchBuyback([poolMock.address], [10, 20], USDC, toHex(0), {
+          from: maintainer,
+        }),
+        'Invalid call',
+      );
+    });
+
+    it('Reverts if pool has different collateral', async () => {
+      await truffleAssert.reverts(
+        proxy.batchBuyback([poolMock.address], [10], aUSDC.address, toHex(0), {
+          from: maintainer,
+        }),
+        'Collateral mismatch',
+      );
+    });
+
     it('Provides collateral to interest token conversion', async () => {
       let collateralAmount = toWei('10');
 
@@ -927,6 +955,97 @@ contract('AaveV3 Lending module', accounts => {
         collateralAmount.toString(),
       );
       assert.equal(res.interestTokenAddr.toString(), aUSDC.address);
+    });
+
+    it('Let a pool update his own state without moving collateral', async () => {
+      let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
+
+      // borrow on aave to generate interest
+      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+
+      let poolStorageBefore = await storageManager.getPoolData.call(
+        poolMock.address,
+      );
+
+      // call updateAccumulatedInterest to trigger interest split update
+      let returnValues = await poolMock.updateAccumulatedInterest.call({
+        from: user,
+      });
+      await poolMock.updateAccumulatedInterest({ from: user });
+      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+
+      let poolAUSDCAfter = await aUSDC.balanceOf.call(poolMock.address);
+      let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+
+      let expectedInterest = poolAUSDCAfter.sub(poolAUSDCBefore);
+      let expectedDaoInterest = expectedInterest
+        .mul(toBN(daoInterestShare))
+        .div(toBN(Math.pow(10, 18)));
+      let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+
+      // check return values to pool
+      assert.equal(returnValues.tokensOut.toString(), '0');
+      assert.equal(
+        returnValues.poolInterest.toString().substr(0, 13),
+        expectedPoolInterest.toString().substr(0, 13),
+      );
+      assert.equal(
+        returnValues.daoInterest.toString().substr(0, 13),
+        expectedDaoInterest.toString().substr(0, 13),
+      );
+
+      // check tokens have moved correctly
+      assert.equal(userAUSDCBefore.toString(), userAUSDCAfter.toString());
+      assert.equal(
+        poolAUSDCAfter.toString().substr(0, 14),
+        poolAUSDCBefore
+          .add(toBN(returnValues.poolInterest))
+          .add(toBN(returnValues.daoInterest))
+          .toString()
+          .substr(0, 14),
+      );
+
+      // check pool storage update on proxy
+      let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
+        .add(expectedPoolInterest)
+        .toString();
+      assert.equal(
+        poolStorage.collateralDeposited.toString().substr(0, 20),
+        expectedCollateral.substr(0, 20),
+      );
+
+      let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(jrtShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(
+        poolStorage.unclaimedDaoJRT.substr(0, 13),
+        expectedUnclaimedJRT.substr(0, 13),
+      );
+
+      let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(commissionShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(
+        poolStorage.unclaimedDaoCommission.toString().substr(0, 14),
+        expectedDaoCommisson.substr(0, 14),
+      );
+    });
+
+    it('Revert if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.updateAccumulatedInterest({
+          from: user,
+        }),
+        'Not allowed',
+      );
     });
 
     context('Migrations', () => {
