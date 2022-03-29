@@ -217,6 +217,63 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(moduleBearingToken, aUSDC.address);
     });
 
+    it('Reverts if bearing token is not set and lending module reverts', async () => {
+      let args = web3.eth.abi.encodeParameters(
+        ['address'],
+        [data[networkId].AaveV3],
+      );
+      let lendingInfo = {
+        lendingModule: poolMock.address,
+        args,
+      };
+      await proxy.setLendingModule('badlendingInfo', lendingInfo, {
+        from: maintainer,
+      });
+
+      await truffleAssert.reverts(
+        storageManager.setPoolStorage(
+          'badlendingInfo',
+          accounts[10],
+          USDC,
+          ZERO_ADDRESS,
+          daoInterestShare,
+          jrtShare,
+          { from: maintainer },
+        ),
+        'No bearing token passed',
+      );
+    });
+
+    it('Store passed bearing token if lending module reverts', async () => {
+      await storageManager.setPoolStorage(
+        'badlendingInfo',
+        accounts[10],
+        USDC,
+        aUSDC.address,
+        daoInterestShare,
+        jrtShare,
+        { from: maintainer },
+      );
+
+      let poolStorage = await storageManager.getPoolStorage.call(accounts[10]);
+      assert.equal(poolStorage.lendingInfo.lendingModule, poolMock.address);
+      assert.equal(poolStorage.poolData.collateral, USDC);
+      assert.equal(poolStorage.poolData.interestBearingToken, aUSDC.address);
+      assert.equal(
+        poolStorage.poolData.daoInterestShare.toString(),
+        daoInterestShare.toString(),
+      );
+      assert.equal(
+        poolStorage.poolData.JRTBuybackShare.toString(),
+        jrtShare.toString(),
+      );
+
+      expectedBearingToken = await storageManager.getInterestBearingToken.call(
+        accounts[10],
+      );
+      assert.equal(expectedBearingToken, aUSDC.address);
+    });
+
     it('Reverts if msg.sender is not the synthereum pool factory', async () => {
       await truffleAssert.reverts(
         storageManager.setPoolStorage(
@@ -674,9 +731,17 @@ contract('AaveV3 Lending module', accounts => {
       // claim commission
       let amount = poolStorageBefore.unclaimedDaoCommission;
 
-      await proxy.batchClaimCommission([poolMock.address], [amount], {
+      let tx = await proxy.batchClaimCommission([poolMock.address], [amount], {
         from: maintainer,
       });
+
+      truffleAssert.eventEmitted(tx, 'BatchCommissionClaim', ev => {
+        return (
+          ev.collateralOut.toString() == amount.toString() &&
+          ev.receiver == commissionReceiver
+        );
+      });
+
       let poolStorage = await storageManager.getPoolData.call(poolMock.address);
       let commissionUSDCAfter = await USDCInstance.balanceOf.call(
         commissionReceiver,
@@ -1181,6 +1246,18 @@ contract('AaveV3 Lending module', accounts => {
             from: user,
           }),
           'Not allowed',
+        );
+      });
+
+      it('Reverts if new bearing token is not set and new lending module reverts', async () => {
+        await truffleAssert.reverts(
+          poolMock.migrateLendingModule(
+            aUSDC.address,
+            'badlendingInfo',
+            ZERO_ADDRESS,
+            1,
+          ),
+          'No bearing token passed',
         );
       });
 
