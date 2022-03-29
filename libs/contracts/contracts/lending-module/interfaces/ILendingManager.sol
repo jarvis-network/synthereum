@@ -158,10 +158,15 @@ interface ILendingManager {
    * @dev does not update state
    * @param pool reference pool to check accumulated interest
    * @return poolInterest amount of interest generated for the pool after splitting the dao share
+   * @return daoInterest amount of interest generated for the dao after splitting the dao share
    * @return collateralDeposited total amount of collateral currently deposited by the pool
    */
   function getAccumulatedInterest(address pool)
     external
     view
-    returns (uint256 poolInterest, uint256 collateralDeposited);
+    returns (
+      uint256 poolInterest,
+      uint256 daoInterest,
+      uint256 collateralDeposited
+    );
 }

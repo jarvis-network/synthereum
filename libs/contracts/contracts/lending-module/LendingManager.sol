@@ -466,7 +466,11 @@ contract LendingManager is
     external
     view
     override
-    returns (uint256 poolInterest, uint256 collateralDeposited)
+    returns (
+      uint256 poolInterest,
+      uint256 daoInterest,
+      uint256 collateralDeposited
+    )
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
     (
@@ -488,6 +492,7 @@ contract LendingManager is
         poolData.JRTBuybackShare
       );
     poolInterest = interestSplit.poolInterest;
+    daoInterest = interestSplit.commissionInterest + interestSplit.jrtInterest;
     collateralDeposited = poolData.collateralDeposited;
   }
 
