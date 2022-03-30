@@ -56,13 +56,13 @@
   },
   {
     "contractName": "SynthereumMultiLpLiquidityPool",
-    "address": "0x81E9336E8290E51aF87A521D580a9D2Ba2581c08",
-    "transactionHash": "0xb596b5367e129648450c0db6f3ced6cfa045c25b31410cb31b0e4c33cd62ef4f"
+    "address": "0xc45C0c65916a6b4D798caE5adffB90DD15E60225",
+    "transactionHash": "0x4b1dff9c8a630e3490b816d1a51a286efabab157c314fcc97e061f7fd5288cf9"
   },
   {
     "contractName": "SynthereumMultiLpLiquidityPoolFactory",
-    "address": "0x52752838aEAa6b973d7E827AD7b1aED9D7920Aee",
-    "transactionHash": "0xdb40015675defff1a04cf74560a60f138f06040ca8cd7d13af0f9068e361903b"
+    "address": "0x61D20341Bc819b34a5a29c0A824403389f70D3f4",
+    "transactionHash": "0xed9d020dce2c86226313622e5a64fa4169cfcdb7a2ee672f00e12f6e1411c031"
   },
   {
     "contractName": "CreditLineLib",
@@ -86,8 +86,8 @@
   },
   {
     "contractName": "LendingManager",
-    "address": "0x3a7e279C72bccfa09243123710195656724c9346",
-    "transactionHash": "0x0f06cf74fc9585a580e6cc2a9c4619999ffd46b89fceeea34b5859460fa0ba49"
+    "address": "0x7110de6A0a8a5b89834B5312E4A2d978B3DD3B2e",
+    "transactionHash": "0x0ceea875836a6afa53debd2f3462f24709f36abf1829257ee07bda53637eb2fb"
   },
   {
     "contractName": "LendingStorageManager",
@@ -96,8 +96,8 @@
   },
   {
     "contractName": "AaveV3Module",
-    "address": "0xc9addb8744aee92E4EA777639d57df3165333561",
-    "transactionHash": "0xf78feab1e52920456a5787fd93f15c7a3767a00128afc8f5d6b8fd0df9440a0f"
+    "address": "0x834fCb44bD435F79170C22f7D452977B46AFCe70",
+    "transactionHash": "0x751ef023fa25654cb393509ea48d9935c4216a2c853c215da794f6f9ed1196a4"
   },
   {
     "contractName": "SynthereumTrustedForwarder",
