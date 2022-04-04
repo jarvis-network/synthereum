@@ -110,6 +110,7 @@ contract LendingManager is
     returnValues.daoInterest =
       interestSplit.commissionInterest +
       interestSplit.jrtInterest;
+    returnValues.prevTotalCollateral = poolData.collateralDeposited;
   }
 
   function withdraw(uint256 interestTokenAmount, address recipient)
@@ -163,6 +164,7 @@ contract LendingManager is
     returnValues.daoInterest =
       interestSplit.commissionInterest +
       interestSplit.jrtInterest;
+    returnValues.prevTotalCollateral = poolData.collateralDeposited;
   }
 
   function updateAccumulatedInterest()
@@ -206,6 +208,7 @@ contract LendingManager is
     returnValues.daoInterest =
       interestSplit.jrtInterest +
       interestSplit.commissionInterest;
+    returnValues.prevTotalCollateral = poolData.collateralDeposited;
   }
 
   function batchClaimCommission(

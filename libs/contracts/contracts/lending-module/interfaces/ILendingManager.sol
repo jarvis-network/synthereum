@@ -14,6 +14,7 @@ interface ILendingManager {
     uint256 daoInterest; //acccumulated dao interest since last state-changing operation;
     uint256 tokensOut; //amount of tokens received from money market (including eventual fees)
     uint256 tokensTransferred; //amount of tokens finally transfered from money market (after eventual fees)
+    uint256 prevTotalCollateral; //total collateral in the pool (users + LPs) before new operation
   }
 
   struct InterestSplit {
@@ -23,9 +24,9 @@ interface ILendingManager {
   }
 
   struct MigrateReturnValues {
-    uint256 prevDepositedCollateral; // prevDepositedCollateral collateral deposited (without last interests) before the migration
+    uint256 prevTotalCollateral; // prevDepositedCollateral collateral deposited (without last interests) before the migration
     uint256 poolInterest; // poolInterests collateral interests accumalated before the migration
-    uint256 actualCollateralDeposited; // actualCollateralDeposited collateral deposited after the migration
+    uint256 actualTotalCollateral; // actualCollateralDeposited collateral deposited after the migration
   }
 
   event BatchBuyback(uint256 collateralIn, uint256 JRTOut, address receiver);

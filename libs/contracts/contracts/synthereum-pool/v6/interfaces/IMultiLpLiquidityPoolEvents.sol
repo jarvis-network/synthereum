@@ -76,7 +76,7 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
    * @param mintvalues Include netCollateralAmount, feeAmount and numTokens
    * @param recipient Address receiving minted tokens
    */
-  event Mint(address indexed user, MintValues mintvalues, address recipient);
+  event Minted(address indexed user, MintValues mintvalues, address recipient);
 
   /**
    * @notice Emitted when a user redeem the synthetic asset
@@ -84,7 +84,7 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
    * @param redeemvalues Include exchangeAmount, feeAmount and collateralAmount
    * @param recipient Address receiving collateral unlocked
    */
-  event Redeem(
+  event Redeemed(
     address indexed user,
     RedeemValues redeemvalues,
     address recipient
