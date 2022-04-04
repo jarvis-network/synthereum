@@ -46,7 +46,7 @@ contract AaveV3Module is ILendingModule {
     address moneyMarket = abi.decode(lendingArgs, (address));
 
     collateral.safeIncreaseAllowance(moneyMarket, amount);
-    IPool(moneyMarket).deposit(
+    IPool(moneyMarket).supply(
       address(collateral),
       amount,
       recipient,
