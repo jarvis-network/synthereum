@@ -87,7 +87,7 @@
   "43114": {
     "feePercentage": 0.0015,
     "feeRecipients": [
-      "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc",
+      "0x2507A0d8E2aBe9464Ba2d9ddcA38A5ee5e60A434",
       "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
     ],
     "feeProportions": [50, 50]
