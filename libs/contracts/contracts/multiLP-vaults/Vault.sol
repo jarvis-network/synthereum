@@ -83,11 +83,37 @@ contract Vault is IVault {
     }
   }
 
-  function withdraw(uint256 LPTokensAmount)
+  function withdraw(uint256 lpTokensAmount)
     external
     override
     returns (uint256 collateralOut)
-  {}
+  {
+    require(lpTokensAmount > 0, 'Zero amount');
+
+    // Transfer LP tokens from user
+    lpToken.safeTransferFrom(msg.sender, address(this), lpTokensAmount);
+
+    // Burn LP tokens
+    lpToken.burn(lpTokensAmount);
+
+    // retrieve updated vault position on pool
+    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
+      pool.positionLPInfo(address(this));
+
+    // calculate rate and amount of collateral to withdraw
+    uint256 collateralEquivalent =
+      calculateRate(0, vaultPosition.actualCollateralAmount).mul(
+        lpTokensAmount
+      );
+
+    // withdraw collateral from pool
+    collateralOut = pool.removeLiquidity(collateralEquivalent);
+
+    // transfer to user
+    collateralAsset.safeTransfer(msg.sender, collateralOut);
+
+    emit Withdraw(lpTokensAmount, collateralOut);
+  }
 
   function calculateRate(
     uint256 netCollateralDeposited,
