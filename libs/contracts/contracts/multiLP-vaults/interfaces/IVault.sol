@@ -2,9 +2,18 @@
 pragma solidity 0.8.9;
 
 interface IVault {
-  event Deposit(uint256 netCollateralDeposited, uint256 lpTokensOut);
+  event Deposit(
+    uint256 netCollateralDeposited,
+    uint256 lpTokensOut,
+    uint256 rate,
+    uint256 discountedRate
+  );
 
-  event Withdraw(uint256 lpTokensBurned, uint256 netCollateralOut);
+  event Withdraw(
+    uint256 lpTokensBurned,
+    uint256 netCollateralOut,
+    uint256 rate
+  );
 
   function deposit(uint256 collateralAmount)
     external

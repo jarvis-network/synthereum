@@ -24,7 +24,7 @@ contract Vault is IVault {
   IERC20 internal collateralAsset; // reference pool collateral token
 
   uint256 immutable overCollateralization; // overcollateralization of the vault position
-  bool internal isLpActive;
+  bool internal isLpActive; // dictates if first deposit on pool or not
 
   constructor(
     address _token,
@@ -37,7 +37,6 @@ contract Vault is IVault {
     overCollateralization = _overCollateralization;
   }
 
-  // TODO isOvercollateralised should be retrieved before the adding of collateral
   function deposit(uint256 collateralAmount)
     external
     override
@@ -47,6 +46,10 @@ contract Vault is IVault {
 
     // transfer collateral - checks balance
     collateralAsset.transferFrom(msg.sender, address(this), collateralAmount);
+
+    // retrieve updated vault position on pool
+    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
+      pool.positionLPInfo(address(this));
 
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
@@ -60,26 +63,31 @@ contract Vault is IVault {
       isLpActive = true;
     }
 
-    // retrieve updated vault position on pool
-    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
-      pool.positionLPInfo(address(this));
-
     if (vaultPosition.isOvercollateralized) {
-      // calculate regular rate
-      uint256 rate =
-        calculateRate(
-          netCollateralDeposited,
-          vaultPosition.actualCollateralAmount
-        );
+      // calculate rate
+      uint256 rate = calculateRate(vaultPosition.actualCollateralAmount);
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
       lpToken.mint(msg.sender, lpTokensOut);
 
       // log event
-      emit Deposit(netCollateralDeposited, lpTokensOut);
+      emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
     } else {
-      // TODO discounted rate
+      // calculate rate and discounted rate
+      (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
+        calculateDiscountedRate(vaultPosition);
+
+      // mint LP tokens to user
+      lpTokensOut = netCollateralDeposited > maxCollateralAtDiscount
+        ? maxCollateralAtDiscount.div(discountedRate) +
+          (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
+        : netCollateralDeposited.div(discountedRate);
+
+      lpToken.mint(msg.sender, lpTokensOut);
+
+      // log event
+      emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
     }
   }
 
@@ -97,48 +105,61 @@ contract Vault is IVault {
     lpToken.burn(lpTokensAmount);
 
     // retrieve updated vault position on pool
-    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
-      pool.positionLPInfo(address(this));
+    uint256 vaultCollateralAmount =
+      (pool.positionLPInfo(address(this))).actualCollateralAmount;
 
     // calculate rate and amount of collateral to withdraw
-    uint256 collateralEquivalent =
-      calculateRate(0, vaultPosition.actualCollateralAmount).mul(
-        lpTokensAmount
-      );
+    uint256 rate = calculateRate(vaultCollateralAmount);
+    uint256 collateralEquivalent = rate.mul(lpTokensAmount);
 
     // withdraw collateral from pool
     collateralOut = pool.removeLiquidity(collateralEquivalent);
 
-    // transfer to user
+    // transfer to user the net collateral out
     collateralAsset.safeTransfer(msg.sender, collateralOut);
 
-    emit Withdraw(lpTokensAmount, collateralOut);
+    emit Withdraw(lpTokensAmount, collateralOut, rate);
   }
 
-  function calculateRate(
-    uint256 netCollateralDeposited,
-    uint256 positionCollateralAmount
-  ) internal returns (uint256 rate) {
+  function calculateRate(uint256 positionCollateralAmount)
+    internal
+    returns (uint256 rate)
+  {
     // get LP tokens total supply
     uint256 totalSupplyLPTokens = lpToken.totalSupply();
 
     // calculate rate
-    rate = totalSupplyLPTokens == 0 ? 1 : netCollateralDeposited > 0
-      ? (positionCollateralAmount - netCollateralDeposited).div(
-        totalSupplyLPTokens
-      ) // deposit case
-      : positionCollateralAmount.div(totalSupplyLPTokens); // withdraw case
+    rate = totalSupplyLPTokens == 0
+      ? 1
+      : positionCollateralAmount.div(totalSupplyLPTokens);
   }
 
   function calculateDiscountedRate(
-    uint256 netCollateralDeposited,
-    uint256 positionCollateralAmount
+    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition
   )
     internal
     returns (
       uint256 rate,
       uint256 discountedRate,
-      uint256 maxCollateralDiscounted
+      uint256 collateralDeficit
     )
-  {}
+  {
+    // get regular rate
+    rate = calculateRate(vaultPosition.actualCollateralAmount);
+
+    // collateralExpected = numTokens * price * overcollateralization
+    // from LPInfo -> utilization * actualCollateralAmount
+    // (numTokens * price * overCollateralization / actualCollateralAmount) * actualCollateralAmount
+    uint256 collateralExpected =
+      vaultPosition.utilization.mul(vaultPosition.actualCollateralAmount);
+
+    // collateral deficit = collateralExpected - actualCollateral
+    collateralDeficit =
+      collateralExpected -
+      vaultPosition.actualCollateralAmount;
+
+    // discount = collateralDeficit / collateralExpected
+    // discounted rate = rate - (rate * discount)
+    discountedRate = rate - rate.mul(collateralDeficit.div(collateralExpected));
+  }
 }
