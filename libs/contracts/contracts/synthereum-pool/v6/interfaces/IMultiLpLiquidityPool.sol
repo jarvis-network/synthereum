@@ -85,11 +85,11 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint256 tokensCollateralized;
     // Overcollateralization percentage
     uint256 overCollateralization;
-    // Available liquidity for minting
-    uint256 availableLiquidity;
-    // Utilization ratio: (numTokens * price * overCollateralization) / actualCollateralAmount
+    // Actual Lp capacity of the Lp in synth asset  (actualCollateralAmount/overCollateralization) * price - numTokens
+    uint256 capacity;
+    // Utilization ratio: (numTokens * price_inv * overCollateralization) / actualCollateralAmount
     uint256 utilization;
-    // Collateral coverage: (actualCollateralAmount + numTokens * price) / (numTokens * price)
+    // Collateral coverage: (actualCollateralAmount + numTokens * price_inv) / (numTokens * price_inv)
     uint256 coverage;
     // Mint shares percentage
     uint256 mintShares;
@@ -275,13 +275,10 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     );
 
   /**
-   * @notice Returns the total available liquidity of the LPs
-   * @return totalLiquidity Total available liquidity for minting operation
+   * @notice Returns the max capacity in synth assets of all the LPs
+   * @return maxCapacity Total max capacity of the pool
    */
-  function totalAvailableLiquidity()
-    external
-    view
-    returns (uint256 totalLiquidity);
+  function maxTokensCapacity() external view returns (uint256 maxCapacity);
 
   /**
    * @notice Returns the LP parametrs info

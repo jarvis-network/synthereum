@@ -62,7 +62,7 @@ contract SynthereumMultiLpLiquidityPool is
     LPPosition lpPosition;
   }
 
-  struct TempStorageArguments {
+  struct TempStorageArgs {
     // Actual price
     uint256 price;
     // Total synthetic tokens of the pool
@@ -71,7 +71,7 @@ contract SynthereumMultiLpLiquidityPool is
     uint8 decimals;
   }
 
-  struct TempInterstArguments {
+  struct TempInterstArgs {
     uint256 totalCapacity;
     uint256 totalUtilization;
     uint256 capacityShare;
@@ -80,6 +80,33 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 remainingInterest;
     bool isTotCapacityNotZero;
     bool isTotUtilizationNotZero;
+  }
+
+  struct SplitOperationArgs {
+    LPPosition lpPosition;
+    uint256 remainingTokens;
+    uint256 remainingFees;
+    uint256 tokens;
+    uint256 fees;
+    BestCapacity bestCapacity;
+  }
+
+  struct BestCapacity {
+    uint256 share;
+    uint256 index;
+  }
+
+  struct PositionLPInfoArgs {
+    uint256 price;
+    uint256 poolInterest;
+    uint256 collateralDeposited;
+    uint256 totalSynthTokens;
+    uint256 overCollateralLimit;
+    uint256[] capacityShares;
+    uint256 totalCapacity;
+    uint256 tokensValue;
+    uint256 maxCapacity;
+    uint8 decimals;
   }
 
   //----------------------------------------
@@ -290,8 +317,8 @@ contract SynthereumMultiLpLiquidityPool is
         _collateralAmount
       );
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -345,8 +372,8 @@ contract SynthereumMultiLpLiquidityPool is
         true
       );
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -397,8 +424,8 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingManager.ReturnValues memory lendingValues =
       _getLendingManager(synthFinder).updateAccumulatedInterest();
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -452,8 +479,8 @@ contract SynthereumMultiLpLiquidityPool is
         _mintParams.collateralAmount
       );
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -523,8 +550,8 @@ contract SynthereumMultiLpLiquidityPool is
 
     ISynthereumFinder synthFinder = finder;
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -601,8 +628,8 @@ contract SynthereumMultiLpLiquidityPool is
 
     ISynthereumFinder synthFinder = finder;
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -667,8 +694,8 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingManager.ReturnValues memory lendingValues =
       _getLendingManager(synthFinder).updateAccumulatedInterest();
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -763,8 +790,8 @@ contract SynthereumMultiLpLiquidityPool is
         _bearingToken
       );
 
-    TempStorageArguments memory tempStorage =
-      TempStorageArguments(
+    TempStorageArgs memory tempStorage =
+      TempStorageArgs(
         _getPriceFeedRate(synthFinder, priceIdentifier),
         totalSyntheticAsset,
         collateralDecimals
@@ -861,14 +888,14 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Returns the total available liquidity of the LPs
-   * @return totalLiquidity Total available liquidity for minting operation
+   * @notice Returns the max capacity in synth assets of all the LPs
+   * @return maxCapacity Total max capacity of the pool
    */
-  function totalAvailableLiquidity()
+  function maxTokensCapacity()
     external
     view
     override
-    returns (uint256 totalLiquidity)
+    returns (uint256 maxCapacity)
   {
     ISynthereumFinder synthFinder = finder;
     uint256 price = _getPriceFeedRate(synthFinder, priceIdentifier);
@@ -889,8 +916,8 @@ contract SynthereumMultiLpLiquidityPool is
     LPPosition memory lpPosition;
     for (uint256 j = 0; j < positionsCache.length; j++) {
       lpPosition = positionsCache[j].lpPosition;
-      uint256 lpLiquidity = _calculateCapacity(lpPosition, price, decimals);
-      totalLiquidity += lpLiquidity;
+      uint256 lpCapacity = _calculateCapacity(lpPosition, price, decimals);
+      maxCapacity += lpCapacity;
     }
   }
 
@@ -907,78 +934,90 @@ contract SynthereumMultiLpLiquidityPool is
     require(isActiveLP(_lp), 'LP not active');
 
     ISynthereumFinder synthFinder = finder;
-    uint256 price = _getPriceFeedRate(synthFinder, priceIdentifier);
+    PositionLPInfoArgs memory positionLPInfoArgs;
+    positionLPInfoArgs.price = _getPriceFeedRate(synthFinder, priceIdentifier);
 
-    (uint256 poolInterest, uint256 collateralDeposited) =
-      _getLendingInterest(_getLendingManager(synthFinder));
+    (
+      positionLPInfoArgs.poolInterest,
+      positionLPInfoArgs.collateralDeposited
+    ) = _getLendingInterest(_getLendingManager(synthFinder));
 
-    uint256 totalSynthTokens = totalSyntheticAsset;
+    positionLPInfoArgs.totalSynthTokens = totalSyntheticAsset;
 
-    uint8 decimals = collateralDecimals;
+    positionLPInfoArgs.decimals = collateralDecimals;
     (PositionCache[] memory positionsCache, ) =
       _calculateNewPositions(
-        poolInterest,
-        price,
-        totalSynthTokens,
-        collateralDeposited,
-        decimals
+        positionLPInfoArgs.poolInterest,
+        positionLPInfoArgs.price,
+        positionLPInfoArgs.totalSynthTokens,
+        positionLPInfoArgs.collateralDeposited,
+        positionLPInfoArgs.decimals
       );
 
-    uint256 overCollateralLimit = overCollateralRequirement;
+    positionLPInfoArgs.overCollateralLimit = overCollateralRequirement;
 
-    uint256[] memory capacityShares = new uint256[](positionsCache.length);
-    uint256 totalCapacity =
-      _calculateMintShares(
-        price,
-        collateralDecimals,
-        positionsCache,
-        capacityShares
-      );
+    positionLPInfoArgs.capacityShares = new uint256[](positionsCache.length);
+    positionLPInfoArgs.totalCapacity = _calculateMintShares(
+      positionLPInfoArgs.price,
+      positionLPInfoArgs.decimals,
+      positionsCache,
+      positionLPInfoArgs.capacityShares
+    );
 
     LPPosition memory lpPosition;
-    uint256 tokensValue;
     for (uint256 j = 0; j < positionsCache.length; j++) {
       if (positionsCache[j].lp == _lp) {
         lpPosition = positionsCache[j].lpPosition;
         info.actualCollateralAmount = lpPosition.actualCollateralAmount;
         info.tokensCollateralized = lpPosition.tokensCollateralized;
         info.overCollateralization = lpPosition.overCollateralization;
-        info.availableLiquidity = capacityShares[j];
-        tokensValue = _calculateCollateralAmount(
+        info.capacity = positionLPInfoArgs.capacityShares[j];
+        positionLPInfoArgs.tokensValue = _calculateCollateralAmount(
           lpPosition.tokensCollateralized,
-          price,
-          decimals
+          positionLPInfoArgs.price,
+          positionLPInfoArgs.decimals
         );
         info.utilization = lpPosition.actualCollateralAmount != 0
-          ? (tokensValue.mul(lpPosition.overCollateralization)).div(
-            lpPosition.actualCollateralAmount
+          ? (
+            positionLPInfoArgs.tokensValue.mul(lpPosition.overCollateralization)
           )
+            .div(lpPosition.actualCollateralAmount)
           : lpPosition.tokensCollateralized > 0
           ? PreciseUnitMath.PRECISE_UNIT
           : 0;
-        info.coverage = tokensValue != 0
+        (
+          info.isOvercollateralized,
+          positionLPInfoArgs.maxCapacity
+        ) = _isOvercollateralizedLP(
+          lpPosition.actualCollateralAmount,
+          positionLPInfoArgs.overCollateralLimit,
+          lpPosition.tokensCollateralized,
+          positionLPInfoArgs.price,
+          positionLPInfoArgs.decimals
+        );
+        info.coverage = lpPosition.tokensCollateralized != 0
           ? PreciseUnitMath.PRECISE_UNIT +
             (
-              overCollateralLimit.mul(
-                lpPosition.actualCollateralAmount.div(
-                  tokensValue.mul(overCollateralLimit)
+              positionLPInfoArgs.overCollateralLimit.mul(
+                positionLPInfoArgs.maxCapacity.div(
+                  lpPosition.tokensCollateralized
                 )
               )
             )
           : lpPosition.actualCollateralAmount == 0
           ? 0
           : PreciseUnitMath.maxUint256();
-        info.mintShares = totalCapacity != 0
-          ? capacityShares[j].div(totalCapacity)
+        info.mintShares = positionLPInfoArgs.totalCapacity != 0
+          ? positionLPInfoArgs.capacityShares[j].div(
+            positionLPInfoArgs.totalCapacity
+          )
           : 0;
-        info.redeemShares = totalSynthTokens != 0
-          ? lpPosition.tokensCollateralized.div(totalSynthTokens)
+        info.redeemShares = positionLPInfoArgs.totalSynthTokens != 0
+          ? lpPosition.tokensCollateralized.div(
+            positionLPInfoArgs.totalSynthTokens
+          )
           : 0;
-        info.isOvercollateralized = _isOvercollateralizedLP(
-          lpPosition.actualCollateralAmount,
-          overCollateralLimit,
-          tokensValue
-        );
+
         return info;
       }
     }
@@ -1290,18 +1329,15 @@ contract SynthereumMultiLpLiquidityPool is
             _changingCollateral;
         } else {
           newCollateralAmount = actualCollateralAmount - _changingCollateral;
-          require(
+          (bool isOvercollateralized, ) =
             _isOvercollateralizedLP(
               newCollateralAmount,
               lpPosition.overCollateralization,
-              _calculateCollateralAmount(
-                lpPosition.tokensCollateralized,
-                _price,
-                _collateralDecimals
-              )
-            ),
-            'LP is undercollateralized'
-          );
+              lpPosition.tokensCollateralized,
+              _price,
+              _collateralDecimals
+            );
+          require(isOvercollateralized, 'LP is undercollateralized');
           lpPositions[lp].actualCollateralAmount = newCollateralAmount;
         }
       } else {
@@ -1335,18 +1371,15 @@ contract SynthereumMultiLpLiquidityPool is
       lpPosition = _positionsCache[j].lpPosition;
       actualCollateralAmount = lpPosition.actualCollateralAmount;
       if (lp == _lp) {
-        require(
+        (bool isOvercollateralized, ) =
           _isOvercollateralizedLP(
             actualCollateralAmount,
             _newOverCollateralization,
-            _calculateCollateralAmount(
-              lpPosition.tokensCollateralized,
-              _price,
-              _collateralDecimals
-            )
-          ),
-          'LP is undercollateralized'
-        );
+            lpPosition.tokensCollateralized,
+            _price,
+            _collateralDecimals
+          );
+        require(isOvercollateralized, 'LP is undercollateralized');
         lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
         lpPositions[lp].overCollateralization = _newOverCollateralization;
       } else {
@@ -1401,14 +1434,15 @@ contract SynthereumMultiLpLiquidityPool is
           _price,
           _collateralDecimals
         );
-        require(
-          !_isOvercollateralizedLP(
+        (bool isOvercollateralized, ) =
+          _isOvercollateralizedLP(
             actualCollateralAmount,
             _overCollateralRequirement,
-            tokensValue
-          ),
-          'LP is overcollateralized'
-        );
+            lpPosition.tokensCollateralized,
+            _price,
+            _collateralDecimals
+          );
+        require(!isOvercollateralized, 'LP is overcollateralized');
         liquidationBonusAmount = actualCollateralAmount
           .mul(liquidationBonus)
           .mul(tokensToLiquidate)
@@ -1501,7 +1535,7 @@ contract SynthereumMultiLpLiquidityPool is
     PositionCache[] memory _positionsCache
   ) internal view returns (uint256 prevTotalLPsCollateral) {
     uint256 lpNumbers = _positionsCache.length;
-    TempInterstArguments memory tempInterstArguments;
+    TempInterstArgs memory tempInterstArguments;
     uint256[] memory capacityShares = new uint256[](_positionsCache.length);
     uint256[] memory utilizationShares = new uint256[](_positionsCache.length);
 
@@ -1777,7 +1811,6 @@ contract SynthereumMultiLpLiquidityPool is
         : totalAssetValue - _totalUserAmount;
 
     uint256 remainingProfitOrLoss = totalProfitOrLoss;
-
     LPPosition memory lpPosition;
     uint256 assetRatio;
     uint256 lpProfitOrLoss;
@@ -1809,7 +1842,7 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 _price,
     uint8 _collateralDecimals,
     PositionCache[] memory _positionsCache
-  ) internal pure {
+  ) internal view {
     uint256 lpNumbers = _positionsCache.length;
 
     uint256[] memory capacityShares = new uint256[](lpNumbers);
@@ -1822,30 +1855,47 @@ contract SynthereumMultiLpLiquidityPool is
       );
 
     require(
-      totalCapacity >= _mintValues.exchangeAmount,
+      totalCapacity >= _mintValues.numTokens,
       'No enough liquidity for covering mint operation'
     );
 
-    uint256 remainingTokens = _mintValues.numTokens;
-    uint256 remainingFees = _mintValues.feeAmount;
-    LPPosition memory lpPosition;
-    uint256 shareProportion;
-    uint256 tokens;
-    uint256 fees;
-    for (uint256 j = 0; j < lpNumbers - 1; j++) {
-      shareProportion = (capacityShares[j]).div(totalCapacity);
-      tokens = _mintValues.numTokens.mul(shareProportion);
-      fees = _mintValues.feeAmount.mul(shareProportion);
-      lpPosition = _positionsCache[j].lpPosition;
-      lpPosition.tokensCollateralized += tokens;
-      lpPosition.actualCollateralAmount += fees;
-      remainingTokens = remainingTokens - tokens;
-      remainingFees = remainingFees - fees;
+    SplitOperationArgs memory mintSplit;
+    mintSplit.remainingTokens = _mintValues.numTokens;
+    mintSplit.remainingFees = _mintValues.feeAmount;
+
+    for (uint256 j = 0; j < lpNumbers; j++) {
+      mintSplit.tokens = capacityShares[j].mul(
+        _mintValues.numTokens.div(totalCapacity)
+      );
+      mintSplit.fees = _mintValues.feeAmount.mul(
+        capacityShares[j].div(totalCapacity)
+      );
+      mintSplit.lpPosition = _positionsCache[j].lpPosition;
+      mintSplit.bestCapacity = capacityShares[j] > mintSplit.bestCapacity.share
+        ? BestCapacity(capacityShares[j], j)
+        : mintSplit.bestCapacity;
+      mintSplit.lpPosition.tokensCollateralized += mintSplit.tokens;
+      mintSplit.lpPosition.actualCollateralAmount += mintSplit.fees;
+      mintSplit.remainingTokens -= mintSplit.tokens;
+      mintSplit.remainingFees = mintSplit.remainingFees - mintSplit.fees;
     }
 
-    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
-    lpPosition.tokensCollateralized += remainingTokens;
-    lpPosition.actualCollateralAmount += remainingFees;
+    mintSplit.lpPosition = _positionsCache[mintSplit.bestCapacity.index]
+      .lpPosition;
+    mintSplit.lpPosition.tokensCollateralized += mintSplit.remainingTokens;
+    mintSplit.lpPosition.actualCollateralAmount += mintSplit.remainingFees;
+    (bool isOvercollateralized, ) =
+      _isOvercollateralizedLP(
+        mintSplit.lpPosition.actualCollateralAmount,
+        mintSplit.lpPosition.overCollateralization,
+        mintSplit.lpPosition.tokensCollateralized,
+        _price,
+        _collateralDecimals
+      );
+    require(
+      isOvercollateralized,
+      'No enough liquidity for covering split in mint operation'
+    );
   }
 
   /**
@@ -1890,26 +1940,34 @@ contract SynthereumMultiLpLiquidityPool is
     PositionCache[] memory _positionsCache
   ) internal pure {
     uint256 lpNumbers = _positionsCache.length;
-    uint256 remainingTokens = _redeemNumTokens;
-    uint256 remainingFees = _feeAmount;
-    LPPosition memory lpPosition;
-    uint256 shareProportion;
-    uint256 tokens;
-    uint256 fees;
+    SplitOperationArgs memory redeemSplit;
+    redeemSplit.remainingTokens = _redeemNumTokens;
+    redeemSplit.remainingFees = _feeAmount;
+
     for (uint256 j = 0; j < lpNumbers - 1; j++) {
-      lpPosition = _positionsCache[j].lpPosition;
-      shareProportion = (lpPosition.tokensCollateralized).div(_totalNumTokens);
-      tokens = _redeemNumTokens.mul(shareProportion);
-      fees = _feeAmount.mul(shareProportion);
-      lpPosition.tokensCollateralized -= tokens;
-      lpPosition.actualCollateralAmount += fees;
-      remainingTokens -= tokens;
-      remainingFees -= fees;
+      redeemSplit.lpPosition = _positionsCache[j].lpPosition;
+      redeemSplit.tokens = redeemSplit.lpPosition.tokensCollateralized.mul(
+        _redeemNumTokens.div(_totalNumTokens)
+      );
+      redeemSplit.fees = _feeAmount.mul(
+        redeemSplit.lpPosition.tokensCollateralized.div(_totalNumTokens)
+      );
+      redeemSplit.bestCapacity = redeemSplit.lpPosition.tokensCollateralized >
+        redeemSplit.bestCapacity.share
+        ? BestCapacity(redeemSplit.lpPosition.tokensCollateralized, j)
+        : redeemSplit.bestCapacity;
+      redeemSplit.lpPosition.tokensCollateralized -= redeemSplit.tokens;
+      redeemSplit.lpPosition.actualCollateralAmount += redeemSplit.fees;
+      redeemSplit.remainingTokens -= redeemSplit.tokens;
+      redeemSplit.remainingFees -= redeemSplit.fees;
     }
 
-    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
-    lpPosition.tokensCollateralized -= lpPosition.tokensCollateralized;
-    lpPosition.actualCollateralAmount += remainingFees;
+    redeemSplit.lpPosition = _positionsCache[redeemSplit.bestCapacity.index]
+      .lpPosition;
+    redeemSplit.lpPosition.tokensCollateralized -= redeemSplit
+      .lpPosition
+      .tokensCollateralized;
+    redeemSplit.lpPosition.actualCollateralAmount += redeemSplit.remainingFees;
   }
 
   /**
@@ -1984,8 +2042,8 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Calculate capacity of each LP
-   * @dev Utilization = (actualCollateralAmount / overCollateralization) - (tokensCollateralized * price)
+   * @notice Calculate capacity in tokens of each LP
+   * @dev Utilization = (actualCollateralAmount / overCollateralization) * price - tokensCollateralized
    * @dev Return 0 if underCollateralized
    * @param _lpPosition Actual LP position
    * @param _price Actual price of the pair
@@ -1998,14 +2056,17 @@ contract SynthereumMultiLpLiquidityPool is
     uint8 _collateralDecimals
   ) internal pure returns (uint256) {
     uint256 maxCapacity =
-      _lpPosition.actualCollateralAmount.div(_lpPosition.overCollateralization);
-    uint256 usedCapacity =
-      _calculateCollateralAmount(
-        _lpPosition.tokensCollateralized,
+      _calculateNumberOfTokens(
+        _lpPosition.actualCollateralAmount.div(
+          _lpPosition.overCollateralization
+        ),
         _price,
         _collateralDecimals
       );
-    return maxCapacity > usedCapacity ? maxCapacity - usedCapacity : 0;
+    return
+      maxCapacity > _lpPosition.tokensCollateralized
+        ? maxCapacity - _lpPosition.tokensCollateralized
+        : 0;
   }
 
   /**
@@ -2041,19 +2102,28 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
-   * @notice Return if an LP is overcollateralized
+   * @notice Return if an LP is overcollateralized and the max capacity of the LP
    * @param _actualCollateralAmount Actual collateral amount holded by the LP
    * @param _overCollateralization Overcollateralization requested
-   * @param _collateralCovered Collateral value of the tokens collateralized
-   * @return True if LP is overcollateralized otherwise false
+   * @param _tokens Tokens collateralized
+   * @param _price Actual price of the pair
+   * @param _collateralDecimals Decimals of the collateral token
+   * @return isOvercollateralized True if LP is overcollateralized otherwise false
+   * @return maxCapacity Max capcity in synth tokens of the LP
    */
   function _isOvercollateralizedLP(
     uint256 _actualCollateralAmount,
     uint256 _overCollateralization,
-    uint256 _collateralCovered
-  ) internal pure returns (bool) {
-    return
-      _actualCollateralAmount.div(_overCollateralization) >= _collateralCovered;
+    uint256 _tokens,
+    uint256 _price,
+    uint8 _collateralDecimals
+  ) internal pure returns (bool isOvercollateralized, uint256 maxCapacity) {
+    maxCapacity = _calculateNumberOfTokens(
+      _actualCollateralAmount.div(_overCollateralization),
+      _price,
+      _collateralDecimals
+    );
+    isOvercollateralized = maxCapacity >= _tokens;
   }
 
   /**
