@@ -22,4 +22,13 @@ interface IVault {
   function withdraw(uint256 lpTokensAmount)
     external
     returns (uint256 collateralOut);
+
+  function getRate()
+    external
+    view
+    returns (
+      uint256 rate,
+      uint256 discountedRate,
+      uint256 maxCollateralAtDiscount
+    );
 }

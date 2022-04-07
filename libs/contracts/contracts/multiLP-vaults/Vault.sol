@@ -121,8 +121,23 @@ contract Vault is IVault {
     emit Withdraw(lpTokensAmount, collateralOut, rate);
   }
 
+  function getRate()
+    external
+    view
+    returns (
+      uint256 rate,
+      uint256 discountedRate,
+      uint256 maxCollateralAtDiscount
+    )
+  {
+    (rate, discountedRate, maxCollateralAtDiscount) = calculateDiscountedRate(
+      pool.positionLPInfo(address(this))
+    );
+  }
+
   function calculateRate(uint256 positionCollateralAmount)
     internal
+    view
     returns (uint256 rate)
   {
     // get LP tokens total supply
@@ -138,6 +153,7 @@ contract Vault is IVault {
     ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition
   )
     internal
+    view
     returns (
       uint256 rate,
       uint256 discountedRate,
