@@ -5,21 +5,23 @@ import {
   ISynthereumMultiLpLiquidityPool
 } from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import {
-  IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+  ERC20Permit
+} from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
+import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-contract Vault is IVault {
+// vault factory
+// clone
+contract Vault is IVault, ERC20, ERC20Permit {
   using SafeERC20 for IERC20;
-  using SafeERC20 for IMintableBurnableERC20;
   using PreciseUnitMath for uint256;
 
-  IMintableBurnableERC20 immutable lpToken; // vault LP token
+  // IMintableBurnableERC20 immutable lpToken; // vault LP token
   ISynthereumMultiLpLiquidityPool immutable pool; // reference pool
   IERC20 internal collateralAsset; // reference pool collateral token
 
@@ -27,11 +29,11 @@ contract Vault is IVault {
   bool internal isLpActive; // dictates if first deposit on pool or not
 
   constructor(
-    address _token,
+    string memory _lpTokenName,
+    string memory _lpTokenSymbol,
     address _pool,
     uint256 _overCollateralization
-  ) {
-    lpToken = IMintableBurnableERC20(_token);
+  ) ERC20(_lpTokenName, _lpTokenSymbol) ERC20Permit(_lpTokenName) {
     pool = ISynthereumMultiLpLiquidityPool(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
@@ -69,7 +71,7 @@ contract Vault is IVault {
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
-      lpToken.mint(msg.sender, lpTokensOut);
+      _mint(msg.sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
@@ -84,7 +86,7 @@ contract Vault is IVault {
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
 
-      lpToken.mint(msg.sender, lpTokensOut);
+      _mint(msg.sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
@@ -98,11 +100,8 @@ contract Vault is IVault {
   {
     require(lpTokensAmount > 0, 'Zero amount');
 
-    // Transfer LP tokens from user
-    lpToken.safeTransferFrom(msg.sender, address(this), lpTokensAmount);
-
-    // Burn LP tokens
-    lpToken.burn(lpTokensAmount);
+    // Burn LP tokens of user
+    _burn(msg.sender, lpTokensAmount);
 
     // retrieve updated vault position on pool
     uint256 vaultCollateralAmount =
@@ -141,7 +140,7 @@ contract Vault is IVault {
     returns (uint256 rate)
   {
     // get LP tokens total supply
-    uint256 totalSupplyLPTokens = lpToken.totalSupply();
+    uint256 totalSupplyLPTokens = totalSupply();
 
     // calculate rate
     rate = totalSupplyLPTokens == 0
