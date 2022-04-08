@@ -27,16 +27,8 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    totalInterest = calculateGeneratedInterest(
-      msg.sender,
-      poolData,
-      amount,
-      true
-    );
-
-    // aave tokens are always 1:1
-    tokensOut = amount;
-    tokensTransferred = amount;
+    (uint256 interests, uint256 poolBalance) =
+      calculateGeneratedInterest(msg.sender, poolData, amount, true);
 
     // proxy should have received collateral from the pool
     IERC20 collateral = IERC20(poolData.collateral);
@@ -52,6 +44,14 @@ contract AaveV3Module is ILendingModule {
       recipient,
       uint16(0)
     );
+
+    // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
+    uint256 netDeposit =
+      IERC20(poolData.interestBearingToken).balanceOf(msg.sender) - poolBalance;
+
+    totalInterest = interests;
+    tokensOut = netDeposit;
+    tokensTransferred = netDeposit;
   }
 
   function withdraw(
@@ -69,7 +69,7 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    totalInterest = calculateGeneratedInterest(
+    (totalInterest, ) = calculateGeneratedInterest(
       pool,
       poolData,
       aTokensAmount,
@@ -99,7 +99,12 @@ contract AaveV3Module is ILendingModule {
     ILendingStorageManager.PoolStorage calldata poolData,
     bytes memory extraArgs
   ) external view returns (uint256 totalInterest) {
-    totalInterest = calculateGeneratedInterest(poolAddress, poolData, 0, true);
+    (totalInterest, ) = calculateGeneratedInterest(
+      poolAddress,
+      poolData,
+      0,
+      true
+    );
   }
 
   function getInterestBearingToken(address collateral, bytes memory args)
@@ -127,12 +132,15 @@ contract AaveV3Module is ILendingModule {
     ILendingStorageManager.PoolStorage calldata pool,
     uint256 amount,
     bool isDeposit
-  ) internal view returns (uint256 totalInterestGenerated) {
-    if (pool.collateralDeposited == 0) return 0;
+  )
+    internal
+    view
+    returns (uint256 totalInterestGenerated, uint256 poolBalance)
+  {
+    if (pool.collateralDeposited == 0) return (0, 0);
 
     // get current pool total amount of collateral
-    uint256 poolBalance =
-      IERC20(pool.interestBearingToken).balanceOf(poolAddress);
+    poolBalance = IERC20(pool.interestBearingToken).balanceOf(poolAddress);
 
     // the total interest is delta between current balance and lastBalance
     if (isDeposit) {

@@ -12,8 +12,8 @@ interface ILendingManager {
   struct ReturnValues {
     uint256 poolInterest; //accumulated pool interest since last state-changing operation;
     uint256 daoInterest; //acccumulated dao interest since last state-changing operation;
-    uint256 tokensOut; //amount of tokens received from money market (including eventual fees)
-    uint256 tokensTransferred; //amount of tokens finally transfered from money market (after eventual fees)
+    uint256 tokensOut; //amount of collateral used for a money market operation (including eventual fees)
+    uint256 tokensTransferred; //amount of tokens finally transfered/received from money market (after eventual fees)
     uint256 prevTotalCollateral; //total collateral in the pool (users + LPs) before new operation
   }
 
