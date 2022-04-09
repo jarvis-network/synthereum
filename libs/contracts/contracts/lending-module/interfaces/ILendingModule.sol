@@ -81,20 +81,16 @@ interface ILendingModule {
 
   /**
    * @notice returns the conversion between collateral and interest token of a specific money market
-   * @dev isExactTransfer indicates if the collateral has to be treated like exactInput or exactOutput
-   * @dev considering potential money market fees that must be charged to the tx caller
    * @param collateralAmount amount of collateral to calculate conversion on
    * @param collateral address of collateral token
    * @param interestToken address of interest token
    * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
-   * @param isExactTransfer indicates if the collateral has to be treated like exactInput or exactOutput
    * @return interestTokenAmount amount of interest token after conversion
    */
   function collateralToInterestToken(
     uint256 collateralAmount,
     address collateral,
     address interestToken,
-    bytes memory extraArgs,
-    bool isExactTransfer
+    bytes memory extraArgs
   ) external view returns (uint256 interestTokenAmount);
 }

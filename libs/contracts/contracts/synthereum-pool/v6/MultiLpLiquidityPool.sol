@@ -350,13 +350,13 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Withdraw collateral from an active LP position
    * @notice Only an active LP can call this function to withdraw collateral from his position
    * @param _collateralAmount Collateral amount to withdraw by the LP
-   * @param collateralWithdrawn Net collateral withdrawn from the LP position
+   * @return collateralReceived Collateral received from the withdrawal
    */
   function removeLiquidity(uint256 _collateralAmount)
     external
     override
     nonReentrant
-    returns (uint256 collateralWithdrawn)
+    returns (uint256 collateralReceived)
   {
     address msgSender = _msgSender();
 
@@ -368,8 +368,7 @@ contract SynthereumMultiLpLiquidityPool is
       _lendingWithdraw(
         _getLendingManager(synthFinder),
         msgSender,
-        _collateralAmount,
-        true
+        _collateralAmount
       );
 
     TempStorageArgs memory tempStorage =
@@ -388,17 +387,17 @@ contract SynthereumMultiLpLiquidityPool is
         tempStorage.decimals
       );
 
-    collateralWithdrawn = lendingValues.tokensOut;
     _updateAndModifyActualLPCollateral(
       positionsCache,
       msgSender,
       false,
-      collateralWithdrawn,
+      _collateralAmount,
       tempStorage.price,
       tempStorage.decimals
     );
+    collateralReceived = lendingValues.tokensTransferred;
 
-    emit WithdrawnLiquidity(msgSender, _collateralAmount, collateralWithdrawn);
+    emit WithdrawnLiquidity(msgSender, _collateralAmount, collateralReceived);
   }
 
   /**
@@ -568,8 +567,7 @@ contract SynthereumMultiLpLiquidityPool is
       _lendingWithdraw(
         _getLendingManager(synthFinder),
         _redeemParams.recipient,
-        redeemValues.collateralAmount,
-        false
+        redeemValues.collateralAmount
       );
 
     (PositionCache[] memory positionsCache, ) =
@@ -667,8 +665,7 @@ contract SynthereumMultiLpLiquidityPool is
       _lendingWithdraw(
         lendingManager,
         msgSender,
-        collateralAmount + bonusAmount,
-        false
+        collateralAmount + bonusAmount
       );
 
     _burnSyntheticTokens(syntheticAsset, tokensInLiquidation, msgSender);
@@ -679,6 +676,7 @@ contract SynthereumMultiLpLiquidityPool is
       msgSender,
       tokensInLiquidation,
       collateralAmount,
+      bonusAmount,
       collateralReceived
     );
 
@@ -731,8 +729,7 @@ contract SynthereumMultiLpLiquidityPool is
     (uint256 poolBearingValue, address bearingToken) =
       lendingManager.collateralToInterestToken(
         address(this),
-        totalActualCollateral + poolInterest,
-        true
+        totalActualCollateral + poolInterest
       );
 
     IERC20 bearingCurrency = IERC20(bearingToken);
@@ -1186,19 +1183,19 @@ contract SynthereumMultiLpLiquidityPool is
   /**
    * @notice Deposit collateral to the lending manager
    * @param _lendingManager Addres of lendingManager
-   * @param _msgSender User/LP depositing
+   * @param _sender User/LP depositing
    * @param _collateralAsset Collateral token of the pool
    * @param _collateralAmount Amount of collateral to deposit
    * @return Return values parameters from lending manager
    */
   function _lendingDeposit(
     ILendingManager _lendingManager,
-    address _msgSender,
+    address _sender,
     IStandardERC20 _collateralAsset,
     uint256 _collateralAmount
   ) internal returns (ILendingManager.ReturnValues memory) {
     _collateralAsset.safeTransferFrom(
-      _msgSender,
+      _sender,
       address(_lendingManager),
       _collateralAmount
     );
@@ -1210,22 +1207,18 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Withdraw collateral from the lending manager
    * @param _lendingManager Addres of lendingManager
    * @param _recipient Recipient to which collateral is sent
-   * @param _collateralAmount Gross/net collateral to withdraw
-   * @param _isExactTransfer True if _collateralAmount is the exact collateral withdrawn,
-   * otherwise false if _collateralAmount is the value in collateral sent to the lending manager
+   * @param _collateralAmount Collateral to withdraw
    * @return Return values parameters from lending manager
    */
   function _lendingWithdraw(
     ILendingManager _lendingManager,
     address _recipient,
-    uint256 _collateralAmount,
-    bool _isExactTransfer
+    uint256 _collateralAmount
   ) internal returns (ILendingManager.ReturnValues memory) {
     (uint256 bearingAmount, address bearingToken) =
       _lendingManager.collateralToInterestToken(
         address(this),
-        _collateralAmount,
-        _isExactTransfer
+        _collateralAmount
       );
     IERC20(bearingToken).safeTransfer(address(_lendingManager), bearingAmount);
     return _lendingManager.withdraw(bearingAmount, _recipient);
@@ -1842,7 +1835,7 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 _price,
     uint8 _collateralDecimals,
     PositionCache[] memory _positionsCache
-  ) internal view {
+  ) internal pure {
     uint256 lpNumbers = _positionsCache.length;
 
     uint256[] memory capacityShares = new uint256[](lpNumbers);

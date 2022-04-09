@@ -61,13 +61,13 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
   /**
    * @notice Emitted when a LP withdraws collateral
    * @param lp Address of the LP withdrawing
+   * @param collateralWithdrawn Collateral amount removed from the LP position
    * @param collateralReceived Collateral received from the pool by the LP
-   * @param collateralWithdrawn Net collateral amount removed from the LP position
    */
   event WithdrawnLiquidity(
     address indexed lp,
-    uint256 collateralReceived,
-    uint256 collateralWithdrawn
+    uint256 collateralWithdrawn,
+    uint256 collateralReceived
   );
 
   /**
@@ -95,12 +95,14 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
    * @param user Address of the user liquidating
    * @param synthTokensInLiquidation Amount of synthetic asset in liquidation
    * @param collateralAmount Value of synthetic tokens in liquidation expressed in collateral (synthTokensInLiquidation * price)
+   * @param bonusAmount Collateral amount as reward for the liquidator
    * @param collateralReceived Amount of collateral received by liquidator (collateralAmount + liquidation bonus - lending fee/bonus)
    */
   event Liquidate(
     address indexed user,
     uint256 synthTokensInLiquidation,
     uint256 collateralAmount,
+    uint256 bonusAmount,
     uint256 collateralReceived
   );
 

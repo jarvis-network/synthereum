@@ -12,7 +12,7 @@ interface ILendingManager {
   struct ReturnValues {
     uint256 poolInterest; //accumulated pool interest since last state-changing operation;
     uint256 daoInterest; //acccumulated dao interest since last state-changing operation;
-    uint256 tokensOut; //amount of collateral used for a money market operation (including eventual fees)
+    uint256 tokensOut; //amount of collateral used for a money market operation
     uint256 tokensTransferred; //amount of tokens finally transfered/received from money market (after eventual fees)
     uint256 prevTotalCollateral; //total collateral in the pool (users + LPs) before new operation
   }
@@ -137,19 +137,12 @@ interface ILendingManager {
 
   /**
    * @notice returns the conversion between collateral and interest token of a specific money market
-   * @dev isExactTransfer indicates if the collateral has to be treated like exactInput or exactOutput
-   * @dev considering potential money market fees that must be charged to the tx caller
    * @param pool reference pool to check conversion
    * @param collateralAmount amount of collateral to calculate conversion on
-   * @param isExactTransfer indicates if the collateral has to be treated like exactInput or exactOutput
    * @return interestTokenAmount amount of interest token after conversion
    * @return interestTokenAddr address of the pool associated interest token
    */
-  function collateralToInterestToken(
-    address pool,
-    uint256 collateralAmount,
-    bool isExactTransfer
-  )
+  function collateralToInterestToken(address pool, uint256 collateralAmount)
     external
     view
     returns (uint256 interestTokenAmount, address interestTokenAddr);

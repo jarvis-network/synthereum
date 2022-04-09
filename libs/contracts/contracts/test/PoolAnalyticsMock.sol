@@ -98,8 +98,7 @@ contract PoolAnalyticsMock {
         poolData.unclaimedDaoJRT +
         poolData.unclaimedDaoCommission +
         interest.poolInterest +
-        interest.daoInterest,
-      true
+        interest.daoInterest
     );
     lpsInfo = new ISynthereumMultiLpLiquidityPool.LPInfo[](_lps.length);
     for (uint256 j = 0; j < _lps.length; j++) {

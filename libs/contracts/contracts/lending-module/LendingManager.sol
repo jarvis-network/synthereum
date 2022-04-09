@@ -258,8 +258,7 @@ contract LendingManager is
       (uint256 interestTokenAmount, ) =
         ILendingManager(address(this)).collateralToInterestToken(
           pool,
-          collateralAmount,
-          true
+          collateralAmount
         );
 
       // trigger transfer of interest token from the pool
@@ -283,7 +282,7 @@ contract LendingManager is
         abi.decode(withdrawRes, (ILendingModule.ReturnValues));
 
       // update aggregated collateral to use for buyback
-      aggregatedCollateral += res.tokensOut;
+      aggregatedCollateral += res.tokensTransferred;
 
       // split interest
       InterestSplit memory interestSplit =
@@ -438,11 +437,7 @@ contract LendingManager is
     );
   }
 
-  function collateralToInterestToken(
-    address pool,
-    uint256 collateralAmount,
-    bool isExactTransfer
-  )
+  function collateralToInterestToken(address pool, uint256 collateralAmount)
     external
     view
     override
@@ -459,8 +454,7 @@ contract LendingManager is
       collateralAmount,
       poolData.collateral,
       poolData.interestBearingToken,
-      lendingInfo.args,
-      isExactTransfer
+      lendingInfo.args
     );
     interestTokenAddr = poolData.interestBearingToken;
   }
@@ -514,8 +508,7 @@ contract LendingManager is
     (uint256 interestTokenAmount, ) =
       ILendingManager(address(this)).collateralToInterestToken(
         pool,
-        collateralAmount,
-        true
+        collateralAmount
       );
     ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(
       interestTokenAmount

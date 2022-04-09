@@ -27,7 +27,7 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    (uint256 interests, uint256 poolBalance) =
+    (uint256 interest, uint256 poolBalance) =
       calculateGeneratedInterest(msg.sender, poolData, amount, true);
 
     // proxy should have received collateral from the pool
@@ -49,7 +49,7 @@ contract AaveV3Module is ILendingModule {
     uint256 netDeposit =
       IERC20(poolData.interestBearingToken).balanceOf(msg.sender) - poolBalance;
 
-    totalInterest = interests;
+    totalInterest = interest;
     tokensOut = netDeposit;
     tokensTransferred = netDeposit;
   }
@@ -69,16 +69,8 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    (totalInterest, ) = calculateGeneratedInterest(
-      pool,
-      poolData,
-      aTokensAmount,
-      false
-    );
-
-    // aave tokens are always 1:1
-    tokensOut = aTokensAmount;
-    tokensTransferred = aTokensAmount;
+    (uint256 totalInterest, ) =
+      calculateGeneratedInterest(pool, poolData, aTokensAmount, false);
 
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(poolData.interestBearingToken);
@@ -87,11 +79,20 @@ contract AaveV3Module is ILendingModule {
       'Wrong balance'
     );
 
+    uint256 initialBalance = IERC20(poolData.collateral).balanceOf(recipient);
+
     // aave withdraw - approve
     address moneyMarket = abi.decode(lendingArgs, (address));
 
     interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
     IPool(moneyMarket).withdraw(poolData.collateral, aTokensAmount, recipient);
+
+    // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
+    uint256 netWithdrawal =
+      IERC20(poolData.collateral).balanceOf(recipient) - initialBalance;
+
+    tokensOut = aTokensAmount;
+    tokensTransferred = netWithdrawal;
   }
 
   function getAccumulatedInterest(
@@ -121,8 +122,7 @@ contract AaveV3Module is ILendingModule {
     uint256 collateralAmount,
     address collateral,
     address interestToken,
-    bytes memory extraArgs,
-    bool isExactAmount
+    bytes memory extraArgs
   ) external pure returns (uint256 interestTokenAmount) {
     interestTokenAmount = collateralAmount;
   }
