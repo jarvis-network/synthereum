@@ -19,6 +19,8 @@ contract('Lending Vault', accounts => {
   let overCollateralization = toWei('0.05');
   let LPName = 'vault LP';
   let LPSymbol = 'vLP';
+  let user1 = accounts[2];
+  let collateralAllocation = toWei('100');
 
   before(async () => {
     networkId = await web3.eth.net.getId();
@@ -39,23 +41,70 @@ contract('Lending Vault', accounts => {
       pool.address,
       overCollateralization,
     );
+
+    // mint collateral to user
+    await USDC.mint(user1, collateralAllocation);
   });
 
-  it('Correctly initialise the vault', async () => {
-    assert.equal(await vault.getPool.call(), pool.address);
-    assert.equal(await vault.getPoolCollateral.call(), USDC.address);
-    assert.equal(
-      (await vault.getOvercollateralisation.call()).toString(),
-      overCollateralization.toString(),
-    );
-    assert.equal(await vault.name.call(), LPName);
-    assert.equal(await vault.symbol.call(), LPSymbol);
+  describe('Deployment and initialisation', () => {
+    it('Correctly initialise the vault', async () => {
+      assert.equal(await vault.getPool.call(), pool.address);
+      assert.equal(await vault.getPoolCollateral.call(), USDC.address);
+      assert.equal(
+        (await vault.getOvercollateralisation.call()).toString(),
+        overCollateralization.toString(),
+      );
+      assert.equal(await vault.name.call(), LPName);
+      assert.equal(await vault.symbol.call(), LPSymbol);
+      assert.equal((await vault.getRate.call()).toString(), toWei('1'));
+    });
+
+    it('Revert if another initialization is tried', async () => {
+      await truffleAssert.reverts(
+        vault.initialize(LPName, LPSymbol, pool.address, overCollateralization),
+        'Initializable: contract is already initialized',
+      );
+    });
   });
 
-  it('Revert if another initialization is tried', async () => {
-    await truffleAssert.reverts(
-      vault.initialize(LPName, LPSymbol, pool.address, overCollateralization),
-      'Initializable: contract is already initialized',
-    );
+  describe('Deposit', () => {
+    it('First deposit - activates LP and correctly deposit', async () => {
+      // mock set position being overcollateralised
+      await pool.setPositionOvercollateralised(true);
+
+      let userBalanceBefore = await USDC.balanceOf.call(user1);
+      let userLPBalanceBefore = await vault.balanceOf.call(user1);
+      assert.equal(userLPBalanceBefore.toString(), '0');
+
+      // deposit
+      let collateralDeposit = toWei('50');
+      await USDC.approve(vault.address, collateralDeposit, { from: user1 });
+      let tx = await vault.deposit(collateralDeposit, { from: user1 });
+
+      // check event
+      truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+        return (
+          ev.netCollateralDeposited.toString() ==
+            collateralDeposit.toString() &&
+          ev.lpTokensOut.toString() == collateralDeposit.toString() &&
+          ev.rate.toString() == toWei('1') &&
+          ev.discountedRate.toString() == '0'
+        );
+      });
+
+      // check
+      let userBalanceAfter = await USDC.balanceOf.call(user1);
+      let userLPBalanceAfter = await vault.balanceOf.call(user1);
+
+      let expectedUserBalance = toBN(userBalanceBefore).sub(
+        toBN(collateralDeposit),
+      );
+      assert.equal(expectedUserBalance.toString(), userBalanceAfter.toString());
+
+      let expectedUserLP = collateralDeposit;
+      assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
+    });
   });
+
+  describe('Withdraw', () => {});
 });

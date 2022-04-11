@@ -75,6 +75,10 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     collateralWithdrawn = _collateralAmount;
   }
 
+  function setPositionOvercollateralised(bool isCollateralised) external {
+    position.isOvercollateralized = isCollateralised;
+  }
+
   function setOvercollateralization(uint256 _overCollateralization) external {
     position.overCollateralization = _overCollateralization;
   }
@@ -175,7 +179,9 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     view
     override
     returns (LPInfo memory info)
-  {}
+  {
+    info = position;
+  }
 
   function lendingProtocolInfo()
     external
