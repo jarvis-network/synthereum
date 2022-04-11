@@ -51,4 +51,11 @@ contract('Lending Vault', accounts => {
     assert.equal(await vault.name.call(), LPName);
     assert.equal(await vault.symbol.call(), LPSymbol);
   });
+
+  it('Revert if another initialization is tried', async () => {
+    await truffleAssert.reverts(
+      vault.initialize(LPName, LPSymbol, pool.address, overCollateralization),
+      'Initializable: contract is already initialized',
+    );
+  });
 });
