@@ -62,6 +62,9 @@ contract Vault is
     // transfer collateral - checks balance
     collateralAsset.transferFrom(msg.sender, address(this), collateralAmount);
 
+    // approve pool to pull collateral
+    collateralAsset.safeApprove(address(pool), collateralAmount);
+
     // retrieve updated vault position on pool
     ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
       pool.positionLPInfo(address(this));
@@ -133,18 +136,9 @@ contract Vault is
     emit Withdraw(lpTokensAmount, collateralOut, rate);
   }
 
-  function getRate()
-    external
-    view
-    override
-    returns (
-      uint256 rate,
-      uint256 discountedRate,
-      uint256 maxCollateralAtDiscount
-    )
-  {
-    (rate, discountedRate, maxCollateralAtDiscount) = calculateDiscountedRate(
-      pool.positionLPInfo(address(this))
+  function getRate() external view override returns (uint256 rate) {
+    rate = calculateRate(
+      (pool.positionLPInfo(address(this))).actualCollateralAmount
     );
   }
 

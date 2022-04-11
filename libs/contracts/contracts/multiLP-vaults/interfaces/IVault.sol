@@ -36,14 +36,7 @@ interface IVault {
     external
     returns (uint256 collateralOut);
 
-  function getRate()
-    external
-    view
-    returns (
-      uint256 rate,
-      uint256 discountedRate,
-      uint256 maxCollateralAtDiscount
-    );
+  function getRate() external view returns (uint256 rate);
 
   function getPool() external view returns (address poolAddress);
 
