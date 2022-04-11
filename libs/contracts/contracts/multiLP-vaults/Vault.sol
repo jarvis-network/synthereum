@@ -4,39 +4,56 @@ pragma solidity 0.8.9;
 import {
   ISynthereumMultiLpLiquidityPool
 } from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
-import {
-  ERC20Permit
-} from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
-import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {IVault} from './interfaces/IVault.sol';
+import {
+  ERC20PermitUpgradeable
+} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
+import {
+  ERC20Upgradeable
+} from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-// vault factory
-// clone
-contract Vault is IVault, ERC20, ERC20Permit {
+contract Vault is
+  IVault,
+  ERC20Upgradeable,
+  ERC20PermitUpgradeable,
+  ReentrancyGuard
+{
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
   // IMintableBurnableERC20 immutable lpToken; // vault LP token
-  ISynthereumMultiLpLiquidityPool immutable pool; // reference pool
+  ISynthereumMultiLpLiquidityPool internal pool; // reference pool
   IERC20 internal collateralAsset; // reference pool collateral token
 
-  uint256 immutable overCollateralization; // overcollateralization of the vault position
+  uint256 internal overCollateralization; // overcollateralization of the vault position
   bool internal isLpActive; // dictates if first deposit on pool or not
+  bool internal isInitialized; // to use initialise instead of constructor
 
-  constructor(
+  function initialize(
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
     uint256 _overCollateralization
-  ) ERC20(_lpTokenName, _lpTokenSymbol) ERC20Permit(_lpTokenName) {
+  ) external override nonReentrant {
+    require(!isInitialized, 'Vault already initialised');
+    isInitialized = true;
+
+    // vault initialisation
     pool = ISynthereumMultiLpLiquidityPool(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
+
+    // erc20 initialisation
+    __ERC20_init(_lpTokenName, _lpTokenSymbol);
+    __ERC20Permit_init(_lpTokenName);
   }
 
   function deposit(uint256 collateralAmount)
