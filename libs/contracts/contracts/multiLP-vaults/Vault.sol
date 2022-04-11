@@ -35,7 +35,6 @@ contract Vault is
 
   uint256 internal overCollateralization; // overcollateralization of the vault position
   bool internal isLpActive; // dictates if first deposit on pool or not
-  bool internal isInitialized; // to use initialise instead of constructor
 
   function initialize(
     string memory _lpTokenName,
@@ -43,9 +42,6 @@ contract Vault is
     address _pool,
     uint256 _overCollateralization
   ) external override nonReentrant initializer() {
-    require(!isInitialized, 'Vault already initialised');
-    isInitialized = true;
-
     // vault initialisation
     pool = ISynthereumMultiLpLiquidityPool(_pool);
     collateralAsset = pool.collateralToken();
