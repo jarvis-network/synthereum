@@ -19,6 +19,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import 'hardhat/console.sol';
 
 contract Vault is
   IVault,
@@ -86,6 +87,7 @@ contract Vault is
       uint256 rate = calculateRate(vaultPosition.actualCollateralAmount);
 
       // mint LP tokens to user
+      console.log(netCollateralDeposited);
       lpTokensOut = netCollateralDeposited.div(rate);
       _mint(msg.sender, lpTokensOut);
 
@@ -174,7 +176,7 @@ contract Vault is
 
     // calculate rate
     rate = totalSupplyLPTokens == 0
-      ? 1
+      ? PreciseUnitMath.PRECISE_UNIT
       : positionCollateralAmount.div(totalSupplyLPTokens);
   }
 
