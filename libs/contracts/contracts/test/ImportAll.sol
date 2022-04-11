@@ -135,3 +135,5 @@ import '../jarvis-token/interfaces/IDebtToken.sol';
 import '../jarvis-token/factories/DebtTokenFactory.sol';
 import '../multiLP-vaults/Vault.sol';
 import '../multiLP-vaults/interfaces/IVault.sol';
+import '../multiLP-vaults/VaultCreator.sol';
+import '../multiLP-vaults/VaultFactory.sol';
