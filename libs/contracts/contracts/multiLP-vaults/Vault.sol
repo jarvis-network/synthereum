@@ -42,7 +42,7 @@ contract Vault is
     string memory _lpTokenSymbol,
     address _pool,
     uint256 _overCollateralization
-  ) external override nonReentrant {
+  ) external override nonReentrant initializer() {
     require(!isInitialized, 'Vault already initialised');
     isInitialized = true;
 
@@ -140,6 +140,7 @@ contract Vault is
   function getRate()
     external
     view
+    override
     returns (
       uint256 rate,
       uint256 discountedRate,
@@ -149,6 +150,28 @@ contract Vault is
     (rate, discountedRate, maxCollateralAtDiscount) = calculateDiscountedRate(
       pool.positionLPInfo(address(this))
     );
+  }
+
+  function getPool() external view override returns (address poolAddress) {
+    poolAddress = address(pool);
+  }
+
+  function getPoolCollateral()
+    external
+    view
+    override
+    returns (address collateral)
+  {
+    collateral = address(collateralAsset);
+  }
+
+  function getOvercollateralisation()
+    external
+    view
+    override
+    returns (uint256 overcollateral)
+  {
+    overcollateral = overCollateralization;
   }
 
   function calculateRate(uint256 positionCollateralAmount)
