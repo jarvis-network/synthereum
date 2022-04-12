@@ -22,6 +22,7 @@ contract('Lending Vault', accounts => {
   let user1 = accounts[2];
   let user2 = accounts[3];
   let user3 = accounts[4];
+  let user4 = accounts[5];
   let mockInterest = accounts[5];
   let collateralAllocation = toWei('100');
 
@@ -322,6 +323,75 @@ contract('Lending Vault', accounts => {
           actual.maxCollateralDiscounted.toString(),
           expectedCollateralDeficit.toString(),
         );
+      });
+
+      it('Allows user to buy a portion of max collateral at discount', async () => {
+        let currentRegularRate = await vault.getRate.call();
+        let actual = await vault.getDiscountedRate.call();
+        let discountedRate = actual.discountedRate;
+        let maxCollateralAtDiscount = actual.maxCollateralDiscounted;
+
+        let purchaseAmount = toBN(maxCollateralAtDiscount).divn(2);
+
+        let LPTotalSupply = await vault.totalSupply.call();
+
+        // deposit
+        let userBalanceBefore = await USDC.balanceOf.call(user4);
+        let userLPBalanceBefore = await vault.balanceOf.call(user4);
+        assert.equal(userLPBalanceBefore.toString(), '0');
+
+        let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
+
+        await USDC.approve(vault.address, purchaseAmount, { from: user4 });
+        let tx = await vault.deposit(purchaseAmount, { from: user4 });
+
+        let expectedLPOut = toBN(purchaseAmount)
+          .mul(toBN(Math.pow(10, 18)))
+          .div(discountedRate);
+
+        // check event
+        truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+          return (
+            ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
+            ev.lpTokensOut.toString() == expectedLPOut.toString() &&
+            ev.rate.toString() == currentRegularRate.toString() &&
+            ev.discountedRate.toString() == discountedRate.toString()
+          );
+        });
+
+        // should be in add liquidity branch as lp is already active
+        truffleAssert.eventNotEmitted(tx, 'LPActivated');
+
+        // check
+        let userBalanceAfter = await USDC.balanceOf.call(user4);
+        let userLPBalanceAfter = await vault.balanceOf.call(user4);
+        let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
+        let LPTotalSupplyAfter = await vault.totalSupply.call();
+
+        assert.equal(
+          LPTotalSupplyAfter.toString(),
+          toBN(LPTotalSupply).add(expectedLPOut).toString(),
+        );
+        assert.equal(
+          vaultBalanceAfter.toString(),
+          vaultBalanceBefore.toString(),
+        );
+        let expectedUserBalance = toBN(userBalanceBefore).sub(
+          toBN(purchaseAmount),
+        );
+        assert.equal(
+          expectedUserBalance.toString(),
+          userBalanceAfter.toString(),
+        );
+
+        let expectedUserLP = expectedLPOut;
+        assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
+
+        // rate should not have changed
+        // assert.equal(
+        //   (await vault.getRate.call()).toString(),
+        //   expectedRate.toString(),
+        // );
       });
     });
   });
