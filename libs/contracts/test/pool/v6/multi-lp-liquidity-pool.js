@@ -3,6 +3,7 @@ const {
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const ERC20 = artifacts.require('ERC20');
+const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumCollateralWhitelist = artifacts.require(
@@ -18,6 +19,7 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumMultiLpLiquidityPool = artifacts.require(
   'SynthereumMultiLpLiquidityPool',
 );
+const SynthereumManager = artifacts.require('SynthereumManager');
 const PoolAnalyticsMock = artifacts.require('PoolAnalyticsMock');
 const LendingManager = artifacts.require('LendingManager');
 const LendingStorageManager = artifacts.require('LendingStorageManager');
@@ -44,6 +46,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   let identifierWhiteListInstance;
   let priceFeedContract;
   let chainlinkAggregator;
+  let managerContract;
   let syntTokenContract;
   let syntTokenAddress;
   let lpNumber;
@@ -132,7 +135,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     );
   };
 
-  const calculateFeeAndSynthAsset = async (feePrc, collateralAmount) => {
+  const calculateFeeAndSynthAssetForMint = async (feePrc, collateralAmount) => {
     const price = await priceFeedContract.getLatestPrice.call(
       priceIdenitiferBytes,
     );
@@ -145,6 +148,21 @@ contract('MultiLPLiquidityPool', function (accounts) {
       .mul(web3.utils.toBN(preciseUnit))
       .div(web3.utils.toBN(price));
     return { feeAmount, netAmount, tokensAmount };
+  };
+
+  const calculateFeeAndSynthAssetForRedeem = async (feePrc, tokensAmount) => {
+    const price = await priceFeedContract.getLatestPrice.call(
+      priceIdenitiferBytes,
+    );
+    const collAmount = tokensAmount
+      .mul(web3.utils.toBN(price))
+      .div(web3.utils.toBN(preciseUnit))
+      .div(web3.utils.toBN(Math.pow(10, 18 - collateralDecimals).toString()));
+    const feeAmount = collAmount
+      .mul(web3.utils.toBN(feePrc))
+      .div(web3.utils.toBN(preciseUnit));
+    const netAmount = collAmount.sub(feeAmount);
+    return { feeAmount, netAmount, collAmount };
   };
 
   const checkUserBalance = async (token, user, expectedBalance) => {
@@ -166,7 +184,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
     price,
     timeTravel,
   ) => {
-    //const timeTravel = [getRandomInt(3600, 24 * 7 * 3600)];
     if (timeTravel != 0) {
       await network.provider.send('evm_increaseTime', [timeTravel]);
       await network.provider.send('evm_mine');
@@ -191,6 +208,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       true,
       'Wrong result of total LPs collateral in the pool',
     );
+
     const sumLpsTokens = result[3]
       .map(elem => {
         return web3.utils.toBN(elem[1]);
@@ -274,9 +292,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
 
   const allLpsAboveOwnOverCollateral = async (pool, lps) => {
     const result = await analyticsMock.getAllPoolData.call(pool.address, lps);
-    console.log('capacity:');
     for (let j = 0; j < result[3].length; j++) {
-      console.log(result[3][j][3]);
       assert.equal(result[3][j][3] > 0, true, 'Lp below own overCollateral');
     }
   };
@@ -298,6 +314,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     synthFinder = await SynthereumFinder.deployed();
     syntheFinderAddress = synthFinder.address;
     deployer = await SynthereumDeployer.deployed();
+    managerContract = await SynthereumManager.deployed();
     priceFeedContract = await SynthereumChainlinkPriceFeed.deployed();
     chainlinkAggregator = await priceFeedContract.getAggregator.call(
       priceIdenitiferBytes,
@@ -331,9 +348,9 @@ contract('MultiLPLiquidityPool', function (accounts) {
         web3.utils.toWei(PoolV6Data[networkId].lpData.overCollateral[j]),
       );
     }
-    genericSender = accounts[lpNumber];
-    sender = accounts[1 + lpNumber];
-    receiver = accounts[2 + lpNumber];
+    genericSender = accounts[2 + lpNumber];
+    sender = accounts[3 + lpNumber];
+    receiver = accounts[4 + lpNumber];
     lendingStorageManagerContract = await LendingStorageManager.deployed();
     lendingManagerContract = await LendingManager.deployed();
     analyticsMock = await PoolAnalyticsMock.new(syntheFinderAddress);
@@ -824,10 +841,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
         expiration: maxTime.toString(),
         recipient: receiver,
       };
-      let mintReturnValues = await calculateFeeAndSynthAsset(
-        feePercentageWei,
-        collateralAmount,
-      );
       let mintTx = await poolContract.mint(mintParams, {
         from: sender,
       });
@@ -957,7 +970,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await collateralContract.approve(poolAddress, collateralAmount, {
         from: sender,
       });
-      const mintReturnValues = await calculateFeeAndSynthAsset(
+      const mintReturnValues = await calculateFeeAndSynthAssetForMint(
         feePercentageWei,
         collateralAmount,
       );
@@ -1020,22 +1033,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
         poolContract.address,
         web3.utils.toWei(price),
         false,
-        '1',
+        '2',
         { from: sender },
       );
       const preCapacity = await analyticsMock.preCapacity.call();
       const postCapacity = await analyticsMock.postCapacity.call();
       const collAmount = await analyticsMock.collAmount.call();
       const tokensMinted = await analyticsMock.tokensMinted.call();
-      console.log('pre-capacity ', preCapacity.toString());
-      console.log('post-capacity ', postCapacity.toString());
-      console.log('coll-amount ', collAmount.toString());
-      console.log('tokensMinted ', tokensMinted.toString());
-      console.log(totalCollateral.toString());
-      console.log(
-        'tot pool coll',
-        web3.utils.toBN(collAmount).add(totalCollateral).toString(),
-      );
       assert.equal(
         web3.utils
           .toBN(preCapacity)
@@ -1066,6 +1070,284 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
       await poolContract.setFee(feePercentageWei, { from: maintainer });
       await resetOracle();
+    });
+  });
+
+  describe('Should redeem', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+
+    it('Can redeem', async () => {
+      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const redeemReturnValues = await calculateFeeAndSynthAssetForRedeem(
+        feePercentageWei,
+        tokensAmount,
+      );
+      const prevSenderBalance = await syntTokenContract.balanceOf.call(sender);
+      const prevReceiverBalance = await collateralContract.balanceOf.call(
+        receiver,
+      );
+      const redeemParams = {
+        numTokens: tokensAmount.toString(),
+        minCollateral: '0',
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await syntTokenContract.approve(poolAddress, tokensAmount, {
+        from: sender,
+      });
+      const redeemTx = await poolContract.redeem(redeemParams, {
+        from: sender,
+      });
+      let collateralRedeemed;
+      truffleAssert.eventEmitted(redeemTx, 'Redeemed', ev => {
+        collateralRedeemed = web3.utils.toBN(ev.redeemvalues[3].toString());
+        return (
+          ev.user == sender &&
+          ev.redeemvalues[0].toString() == tokensAmount.toString() &&
+          ev.redeemvalues[1].toString() ==
+            redeemReturnValues.collAmount.toString() &&
+          ev.redeemvalues[2].toString() ==
+            redeemReturnValues.feeAmount.toString() &&
+          ev.recipient == receiver
+        );
+      });
+      await checkUserBalance(
+        collateralContract,
+        receiver,
+        web3.utils.toBN(prevReceiverBalance).add(collateralRedeemed),
+      );
+      await checkUserBalance(
+        syntTokenContract,
+        sender,
+        web3.utils.toBN(prevSenderBalance).sub(tokensAmount),
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(tokensAmount),
+        collateralAmount.add(totalCollateral).sub(redeemReturnValues.netAmount),
+        totalCollateral,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(tokensAmount),
+        collateralAmount.add(totalCollateral).sub(redeemReturnValues.netAmount),
+        totalCollateral,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      console.log('Gas used for redeem tx: ', redeemTx.receipt.gasUsed);
+    });
+    it('Can redeem all synthetic tokens', async () => {
+      const redeemReturnValues = await calculateFeeAndSynthAssetForRedeem(
+        feePercentageWei,
+        mintTokens,
+      );
+      const prevSenderBalance = await syntTokenContract.balanceOf.call(sender);
+      const prevReceiverBalance = await collateralContract.balanceOf.call(
+        receiver,
+      );
+      const redeemParams = {
+        numTokens: mintTokens.toString(),
+        minCollateral: '0',
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await syntTokenContract.approve(poolAddress, mintTokens, {
+        from: sender,
+      });
+      const redeemTx = await poolContract.redeem(redeemParams, {
+        from: sender,
+      });
+      let collateralRedeemed;
+      truffleAssert.eventEmitted(redeemTx, 'Redeemed', ev => {
+        collateralRedeemed = web3.utils.toBN(ev.redeemvalues[3].toString());
+        return (
+          ev.user == sender &&
+          ev.redeemvalues[0].toString() == mintTokens.toString() &&
+          ev.redeemvalues[1].toString() ==
+            redeemReturnValues.collAmount.toString() &&
+          ev.redeemvalues[2].toString() ==
+            redeemReturnValues.feeAmount.toString() &&
+          ev.recipient == receiver
+        );
+      });
+      await checkUserBalance(
+        collateralContract,
+        receiver,
+        web3.utils.toBN(prevReceiverBalance).add(collateralRedeemed),
+      );
+      await checkUserBalance(
+        syntTokenContract,
+        sender,
+        web3.utils.toBN(prevSenderBalance).sub(mintTokens),
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        '0',
+        collateralAmount.add(totalCollateral).sub(redeemReturnValues.netAmount),
+        totalCollateral,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        '0',
+        collateralAmount.add(totalCollateral).sub(redeemReturnValues.netAmount),
+        totalCollateral,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can revert if the transaction is expired', async () => {
+      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp - 60);
+      const redeemParams = {
+        numTokens: tokensAmount.toString(),
+        minCollateral: '0',
+        expiration: expirationTime.toString(),
+        recipient: receiver,
+      };
+      await truffleAssert.reverts(
+        poolContract.redeem(redeemParams, {
+          from: sender,
+        }),
+        'Transaction expired',
+      );
+    });
+    it('Can revert if no tokens are sent', async () => {
+      const redeemParams = {
+        numTokens: '0',
+        minCollateral: '0',
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await truffleAssert.reverts(
+        poolContract.redeem(redeemParams, {
+          from: sender,
+        }),
+        'No tokens sent',
+      );
+    });
+    it('Can revert if collateral received less than minimum set', async () => {
+      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const redeemReturnValues = await calculateFeeAndSynthAssetForRedeem(
+        feePercentageWei,
+        tokensAmount,
+      );
+      const minAmount = redeemReturnValues.netAmount.add(
+        web3.utils
+          .toBN('2')
+          .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString())),
+      );
+      const redeemParams = {
+        numTokens: tokensAmount.toString(),
+        minCollateral: minAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await syntTokenContract.approve(poolAddress, tokensAmount, {
+        from: sender,
+      });
+      await truffleAssert.reverts(
+        poolContract.redeem(redeemParams, {
+          from: sender,
+        }),
+        'Collateral amount less than minimum limit',
+      );
+    });
+    it('Can revert if trying to redeem more amount of synth asset than one in the pool', async () => {
+      await managerContract.grantSynthereumRole(
+        [syntTokenAddress],
+        [web3.utils.soliditySha3('Minter')],
+        [sender],
+        { from: maintainer },
+      );
+      const synthAmountMinted = web3.utils.toWei('1');
+      await syntTokenContract.mint(sender, synthAmountMinted, { from: sender });
+      await managerContract.revokeSynthereumRole(
+        [syntTokenAddress],
+        [web3.utils.soliditySha3('Minter')],
+        [sender],
+        { from: maintainer },
+      );
+      const totalTokens = web3.utils
+        .toBN(mintTokens)
+        .add(web3.utils.toBN(synthAmountMinted));
+      const redeemParams = {
+        numTokens: totalTokens.toString(),
+        minCollateral: '0',
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await syntTokenContract.approve(poolAddress, totalTokens, {
+        from: sender,
+      });
+      await truffleAssert.reverts(
+        poolContract.redeem(redeemParams, {
+          from: sender,
+        }),
+      );
     });
   });
 });
