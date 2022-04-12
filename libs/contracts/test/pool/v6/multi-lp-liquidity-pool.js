@@ -1350,4 +1350,155 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should add liquidity', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+    });
+    it('Can add liquidity', async () => {
+      const lp = LPs[getRandomInt(0, lpNumber)];
+      const collateralToDeposit = web3.utils
+        .toBN('50')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(lp, collateralAddress, collateralToDeposit);
+      await collateralContract.approve(poolAddress, collateralToDeposit, {
+        from: lp,
+      });
+      let result = await poolContract.positionLPInfo.call(lp);
+      const prevCollDeposited = result[0];
+      const prevLpBalance = await collateralContract.balanceOf.call(lp);
+      const addLiquidityTx = await poolContract.addLiquidity(
+        collateralToDeposit,
+        {
+          from: lp,
+        },
+      );
+      let collateralAdded;
+      truffleAssert.eventEmitted(addLiquidityTx, 'DepositedLiquidity', ev => {
+        collateralAdded = ev.collateralDeposited.toString();
+        return (
+          ev.lp == lp &&
+          ev.collateralSent.toString() == collateralToDeposit.toString()
+        );
+      });
+      await checkUserBalance(
+        collateralContract,
+        lp,
+        web3.utils.toBN(prevLpBalance).sub(collateralToDeposit),
+      );
+      result = await poolContract.positionLPInfo.call(lp);
+      const actualCollDeposited = result[0];
+      assert.equal(
+        web3.utils
+          .toBN(actualCollDeposited)
+          .gte(
+            web3.utils
+              .toBN(prevCollDeposited)
+              .add(web3.utils.toBN(collateralAdded)),
+          ),
+        true,
+        'Wrong added collateral',
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(collateralAdded)),
+        totalCollateral.add(web3.utils.toBN(collateralAdded)),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(collateralAdded)),
+        totalCollateral.add(web3.utils.toBN(collateralAdded)),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      console.log(
+        'Gas used for add liquidity tx: ',
+        addLiquidityTx.receipt.gasUsed,
+      );
+    });
+    it('Can revert if the LP is not active', async () => {
+      const collateralToDeposit = web3.utils
+        .toBN('50')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(
+        genericSender,
+        collateralAddress,
+        collateralToDeposit,
+      );
+      await collateralContract.approve(poolAddress, collateralToDeposit, {
+        from: genericSender,
+      });
+      await truffleAssert.reverts(
+        poolContract.addLiquidity(collateralToDeposit, {
+          from: genericSender,
+        }),
+        'Sender must be an active LP',
+      );
+    });
+    it('Can revert if not collateral sent for adding', async () => {
+      const lp = LPs[getRandomInt(0, lpNumber)];
+      await truffleAssert.reverts(
+        poolContract.addLiquidity('0', {
+          from: lp,
+        }),
+        'No collateral added',
+      );
+    });
+  });
 });
