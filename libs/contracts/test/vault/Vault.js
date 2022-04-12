@@ -184,6 +184,7 @@ contract('Lending Vault', accounts => {
         // rate should not have changed
         assert.equal((await vault.getRate.call()).toString(), toWei('1'));
       });
+
       it('Changed rate, new deposit', async () => {
         assert.equal((await vault.getRate.call()).toString(), toWei('1'));
 
@@ -272,6 +273,54 @@ contract('Lending Vault', accounts => {
         assert.equal(
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
+        );
+      });
+    });
+    describe('Under-collateralised scenario (above liquidation below collateral requirement)', () => {
+      before(async () => {
+        // mock set position being under collateral requirement
+        await pool.setPositionOvercollateralised(false);
+      });
+
+      it('Correctly provides rate at discount', async () => {
+        let currentRegularRate = await vault.getRate.call();
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
+
+        // mock set collateral expected to be 2.5% above actual collateral on position
+        let collateralExpected = toBN(actualCollateralAmount).add(
+          toBN(actualCollateralAmount).divn(40),
+        );
+        let mockUtilization = toBN(collateralExpected)
+          .mul(toBN(Math.pow(10, 18)))
+          .div(toBN(actualCollateralAmount));
+
+        // mock set the utilization
+        await pool.setUtilization(mockUtilization);
+
+        let expectedCollateralDeficit = collateralExpected.sub(
+          toBN(actualCollateralAmount),
+        );
+        let discountPct = expectedCollateralDeficit
+          .mul(toBN(Math.pow(10, 18)))
+          .div(collateralExpected);
+
+        let expectedDiscountedRate = toBN(currentRegularRate).sub(
+          toBN(currentRegularRate)
+            .mul(discountPct)
+            .div(toBN(Math.pow(10, 18))),
+        );
+
+        // check
+        let actual = await vault.getDiscountedRate.call();
+        assert.equal(
+          actual.discountedRate.toString(),
+          expectedDiscountedRate.toString(),
+        );
+        assert.equal(
+          actual.maxCollateralDiscounted.toString(),
+          expectedCollateralDeficit.toString(),
         );
       });
     });
