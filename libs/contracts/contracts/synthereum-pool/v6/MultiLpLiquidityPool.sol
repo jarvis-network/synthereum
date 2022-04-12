@@ -88,10 +88,10 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 remainingFees;
     uint256 tokens;
     uint256 fees;
-    BestCapacity bestCapacity;
+    BestShare bestShare;
   }
 
-  struct BestCapacity {
+  struct BestShare {
     uint256 share;
     uint256 index;
   }
@@ -305,8 +305,8 @@ contract SynthereumMultiLpLiquidityPool is
   {
     address msgSender = _msgSender();
 
-    require(_collateralAmount > 0, 'No collateral deposited');
     require(isActiveLP(msgSender), 'Sender must be an active LP');
+    require(_collateralAmount > 0, 'No collateral added');
 
     ISynthereumFinder synthFinder = finder;
     ILendingManager.ReturnValues memory lendingValues =
@@ -545,7 +545,7 @@ contract SynthereumMultiLpLiquidityPool is
   {
     address msgSender = _msgSender();
 
-    require(_redeemParams.numTokens > 0, 'Sending tokens amount is equal to 0');
+    require(_redeemParams.numTokens > 0, 'No tokens sent');
 
     ISynthereumFinder synthFinder = finder;
 
@@ -1864,16 +1864,16 @@ contract SynthereumMultiLpLiquidityPool is
         capacityShares[j].div(totalCapacity)
       );
       mintSplit.lpPosition = _positionsCache[j].lpPosition;
-      mintSplit.bestCapacity = capacityShares[j] > mintSplit.bestCapacity.share
-        ? BestCapacity(capacityShares[j], j)
-        : mintSplit.bestCapacity;
+      mintSplit.bestShare = capacityShares[j] > mintSplit.bestShare.share
+        ? BestShare(capacityShares[j], j)
+        : mintSplit.bestShare;
       mintSplit.lpPosition.tokensCollateralized += mintSplit.tokens;
       mintSplit.lpPosition.actualCollateralAmount += mintSplit.fees;
       mintSplit.remainingTokens -= mintSplit.tokens;
       mintSplit.remainingFees = mintSplit.remainingFees - mintSplit.fees;
     }
 
-    mintSplit.lpPosition = _positionsCache[mintSplit.bestCapacity.index]
+    mintSplit.lpPosition = _positionsCache[mintSplit.bestShare.index]
       .lpPosition;
     mintSplit.lpPosition.tokensCollateralized += mintSplit.remainingTokens;
     mintSplit.lpPosition.actualCollateralAmount += mintSplit.remainingFees;
@@ -1937,7 +1937,7 @@ contract SynthereumMultiLpLiquidityPool is
     redeemSplit.remainingTokens = _redeemNumTokens;
     redeemSplit.remainingFees = _feeAmount;
 
-    for (uint256 j = 0; j < lpNumbers - 1; j++) {
+    for (uint256 j = 0; j < lpNumbers; j++) {
       redeemSplit.lpPosition = _positionsCache[j].lpPosition;
       redeemSplit.tokens = redeemSplit.lpPosition.tokensCollateralized.mul(
         _redeemNumTokens.div(_totalNumTokens)
@@ -1945,21 +1945,18 @@ contract SynthereumMultiLpLiquidityPool is
       redeemSplit.fees = _feeAmount.mul(
         redeemSplit.lpPosition.tokensCollateralized.div(_totalNumTokens)
       );
-      redeemSplit.bestCapacity = redeemSplit.lpPosition.tokensCollateralized >
-        redeemSplit.bestCapacity.share
-        ? BestCapacity(redeemSplit.lpPosition.tokensCollateralized, j)
-        : redeemSplit.bestCapacity;
+      redeemSplit.bestShare = redeemSplit.lpPosition.tokensCollateralized >
+        redeemSplit.bestShare.share
+        ? BestShare(redeemSplit.lpPosition.tokensCollateralized, j)
+        : redeemSplit.bestShare;
       redeemSplit.lpPosition.tokensCollateralized -= redeemSplit.tokens;
       redeemSplit.lpPosition.actualCollateralAmount += redeemSplit.fees;
       redeemSplit.remainingTokens -= redeemSplit.tokens;
       redeemSplit.remainingFees -= redeemSplit.fees;
     }
-
-    redeemSplit.lpPosition = _positionsCache[redeemSplit.bestCapacity.index]
+    redeemSplit.lpPosition = _positionsCache[redeemSplit.bestShare.index]
       .lpPosition;
-    redeemSplit.lpPosition.tokensCollateralized -= redeemSplit
-      .lpPosition
-      .tokensCollateralized;
+    redeemSplit.lpPosition.tokensCollateralized -= redeemSplit.remainingTokens;
     redeemSplit.lpPosition.actualCollateralAmount += redeemSplit.remainingFees;
   }
 
