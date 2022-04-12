@@ -143,6 +143,26 @@ contract Vault is
     );
   }
 
+  function getDiscountedRate()
+    external
+    view
+    override
+    returns (uint256 discountedRate, uint256 maxCollateralDiscounted)
+  {
+    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
+      pool.positionLPInfo(address(this));
+
+    // return zeros if not in discount state
+    if (vaultPosition.isOvercollateralized) {
+      return (0, 0);
+    }
+
+    // otherwise calculate discount
+    (, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
+      vaultPosition
+    );
+  }
+
   function getPool() external view override returns (address poolAddress) {
     poolAddress = address(pool);
   }
