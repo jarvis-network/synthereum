@@ -15,6 +15,8 @@ interface IVault {
     uint256 rate
   );
 
+  event LPActivated(uint256 collateralAmount, uint256 overCollateralization);
+
   /**
    * @notice Initialize vault as per OZ Clones pattern
    * @param _lpTokenName name of the LP token representing a share in the vault

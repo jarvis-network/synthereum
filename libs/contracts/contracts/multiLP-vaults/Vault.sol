@@ -19,7 +19,6 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import 'hardhat/console.sol';
 
 contract Vault is
   IVault,
@@ -80,6 +79,7 @@ contract Vault is
         overCollateralization
       );
       isLpActive = true;
+      emit LPActivated(collateralAmount, overCollateralization);
     }
 
     if (vaultPosition.isOvercollateralized) {
@@ -87,7 +87,6 @@ contract Vault is
       uint256 rate = calculateRate(vaultPosition.actualCollateralAmount);
 
       // mint LP tokens to user
-      console.log(netCollateralDeposited);
       lpTokensOut = netCollateralDeposited.div(rate);
       _mint(msg.sender, lpTokensOut);
 
