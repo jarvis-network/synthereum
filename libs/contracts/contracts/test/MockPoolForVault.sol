@@ -75,6 +75,17 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     collateralWithdrawn = _collateralAmount;
   }
 
+  function addInterestToPosition(uint256 _interest) public {
+    this.collateralToken().transferFrom(msg.sender, address(this), _interest);
+    position.actualCollateralAmount += _interest;
+  }
+
+  function addPNL(bool isProfit, uint256 amount) public {
+    isProfit
+      ? position.actualCollateralAmount += amount
+      : position.actualCollateralAmount -= amount;
+  }
+
   function setPositionOvercollateralised(bool isCollateralised) external {
     position.isOvercollateralized = isCollateralised;
   }
