@@ -4,8 +4,16 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
 
+const SynthereumFinder = artifacts.require('SynthereumFinder');
+const SynthereumCollateralWhitelist = artifacts.require(
+  'SynthereumCollateralWhitelist',
+);
+const SynthereumIdentifierWhitelist = artifacts.require(
+  'SynthereumIdentifierWhitelist',
+);
 const TestnetSelfMintingERC20 = artifacts.require('MintableBurnableERC20');
 
+const VaultFactory = artifacts.require('SynthereumMultiLPVaultFactory');
 const Vault = artifacts.require('Vault');
 const PoolMock = artifacts.require('PoolMockForVault');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
@@ -14,7 +22,7 @@ const data = require('../../data/test/lendingTestnet.json');
 const { toBN, toWei, toHex } = web3Utils;
 
 contract('Lending Vault', accounts => {
-  let vault, pool, USDC, jSynth;
+  let vault, factoryVault, pool, USDC, jSynth;
   let networkId;
   let overCollateralization = toWei('0.05');
   let LPName = 'vault LP';
@@ -26,18 +34,28 @@ contract('Lending Vault', accounts => {
   let user5 = accounts[6];
   let mockInterest = accounts[7];
   let collateralAllocation = toWei('100');
+  let priceIdentifier = toHex('jEUR/USDC');
+  const maintainer = accounts[1];
 
   before(async () => {
     networkId = await web3.eth.net.getId();
     USDC = await TestnetSelfMintingERC20.at(data[networkId].USDC);
+    finder = await SynthereumFinder.deployed();
 
     jSynth = await SyntheticToken.new('jarvis euro', 'jEUR', 18, {
       from: accounts[0],
     });
 
-    pool = await PoolMock.new(1, USDC.address, 'jEUR', jSynth.address, {
-      from: accounts[0],
-    });
+    pool = await PoolMock.new(
+      1,
+      USDC.address,
+      'jEUR',
+      jSynth.address,
+      priceIdentifier,
+      {
+        from: accounts[0],
+      },
+    );
 
     vault = await Vault.new();
     await vault.initialize(
@@ -46,6 +64,8 @@ contract('Lending Vault', accounts => {
       pool.address,
       overCollateralization,
     );
+
+    factoryVault = await VaultFactory.new(vault.address, finder.address);
 
     // mint collateral to user
     await USDC.mint(user1, collateralAllocation);
@@ -74,6 +94,147 @@ contract('Lending Vault', accounts => {
         vault.initialize(LPName, LPSymbol, pool.address, overCollateralization),
         'Initializable: contract is already initialized',
       );
+    });
+
+    describe('Factory contract', async () => {
+      before(async () => {
+        await finder.changeImplementationAddress(
+          web3Utils.utf8ToHex('Deployer'),
+          accounts[0],
+          { from: maintainer },
+        );
+
+        let collateralWhiteListInstance = await SynthereumCollateralWhitelist.deployed();
+        await collateralWhiteListInstance.addToWhitelist(USDC.address, {
+          from: maintainer,
+        });
+        identifierWhiteListInstance = await SynthereumIdentifierWhitelist.deployed();
+        await identifierWhiteListInstance.addToWhitelist(priceIdentifier, {
+          from: maintainer,
+        });
+      });
+
+      it('Correctly deploys and initialise a new vault through factory', async () => {
+        let name = 'factoryVaault';
+        let symbol = 'fcv';
+        let overCollateralization = toWei('0.1');
+        let vaultAddr = await factoryVault.createVault.call(
+          name,
+          symbol,
+          pool.address,
+          overCollateralization,
+          { from: accounts[0] },
+        );
+        let tx = await factoryVault.createVault(
+          name,
+          symbol,
+          pool.address,
+          overCollateralization,
+          { from: accounts[0] },
+        );
+        let newVault = await Vault.at(vaultAddr);
+
+        // check event
+        truffleAssert.eventEmitted(tx, 'CreatedVault', ev => {
+          return (ev.vaultAddress = vaultAddr && ev.deployer == accounts[0]);
+        });
+        truffleAssert;
+        assert.equal(await newVault.getPool.call(), pool.address);
+        assert.equal(await newVault.getPoolCollateral.call(), USDC.address);
+        assert.equal(
+          (await newVault.getOvercollateralisation.call()).toString(),
+          overCollateralization.toString(),
+        );
+        assert.equal(await newVault.name.call(), name);
+        assert.equal(await newVault.symbol.call(), symbol);
+        assert.equal((await newVault.getRate.call()).toString(), toWei('1'));
+      });
+
+      it('Revert with bad pool (identifier and collateral not whitelisted)', async () => {
+        let badCollateralPool = await PoolMock.new(
+          1,
+          accounts[5],
+          'jEUR',
+          jSynth.address,
+          priceIdentifier,
+          {
+            from: accounts[0],
+          },
+        );
+        await truffleAssert.reverts(
+          factoryVault.createVault(
+            'name',
+            'symbol',
+            badCollateralPool.address,
+            overCollateralization,
+            { from: accounts[0] },
+          ),
+          'Collateral not supported',
+        );
+
+        let badIdPool = await PoolMock.new(
+          1,
+          USDC.address,
+          'jEUR',
+          jSynth.address,
+          toHex('jEUR/EUR'),
+          {
+            from: accounts[0],
+          },
+        );
+        await truffleAssert.reverts(
+          factoryVault.createVault(
+            'name',
+            'symbol',
+            badIdPool.address,
+            overCollateralization,
+            { from: accounts[0] },
+          ),
+          'Identifier not supported',
+        );
+      });
+      it('Revert if sender is not synthereum deployer', async () => {
+        await truffleAssert.reverts(
+          factoryVault.createVault(
+            'name',
+            'symbol',
+            pool.address,
+            overCollateralization,
+            { from: accounts[1] },
+          ),
+          'Sender must be Synthereum deployer',
+        );
+      });
+      it('Revert without name or symbol', async () => {
+        await truffleAssert.reverts(
+          factoryVault.createVault(
+            '',
+            'symbol',
+            pool.address,
+            overCollateralization,
+            { from: accounts[0] },
+          ),
+          'Missing LP token name',
+        );
+        await truffleAssert.reverts(
+          factoryVault.createVault(
+            'name',
+            '',
+            pool.address,
+            overCollateralization,
+            { from: accounts[0] },
+          ),
+          'Missing LP token symbol',
+        );
+      });
+      it('Revert with 0 overcollateralisation specified', async () => {
+        await truffleAssert.reverts(
+          factoryVault.createVault('name', 'symbol', pool.address, 0, {
+            from: accounts[0],
+          }),
+          'Overcollateral requirement must be bigger than 0%',
+        );
+      });
     });
   });
 
@@ -553,7 +714,6 @@ contract('Lending Vault', accounts => {
       let expectedCollateralOut = currentRate
         .mul(LPInput)
         .div(toBN(Math.pow(10, 18)));
-      console.log(LPInput.toString(), expectedCollateralOut.toString());
 
       let tx = await vault.withdraw(LPInput, { from: user1 });
 

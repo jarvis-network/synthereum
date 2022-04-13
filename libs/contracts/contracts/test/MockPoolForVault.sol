@@ -16,17 +16,20 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
   IERC20 private collateralCurrency;
   string private tokenSymbol;
   IERC20 private token;
+  bytes32 private priceId;
 
   constructor(
     uint8 _version,
     IERC20 _collateralCurrency,
     string memory _syntheticTokenSymbol,
-    IERC20 _syntheticToken
+    IERC20 _syntheticToken,
+    bytes32 id
   ) {
     poolVersion = _version;
     collateralCurrency = _collateralCurrency;
     tokenSymbol = _syntheticTokenSymbol;
     token = _syntheticToken;
+    priceId = id;
   }
 
   function initialize(InitializationParams calldata _params)
@@ -222,7 +225,9 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     view
     override
     returns (bytes32 identifier)
-  {}
+  {
+    identifier = priceId;
+  }
 
   function feePercentage() external view override returns (uint256 fee) {}
 
