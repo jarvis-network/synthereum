@@ -23,7 +23,8 @@ contract('Lending Vault', accounts => {
   let user2 = accounts[3];
   let user3 = accounts[4];
   let user4 = accounts[5];
-  let mockInterest = accounts[5];
+  let user5 = accounts[6];
+  let mockInterest = accounts[7];
   let collateralAllocation = toWei('100');
 
   before(async () => {
@@ -50,6 +51,8 @@ contract('Lending Vault', accounts => {
     await USDC.mint(user1, collateralAllocation);
     await USDC.mint(user2, collateralAllocation);
     await USDC.mint(user3, collateralAllocation);
+    await USDC.mint(user4, collateralAllocation);
+    await USDC.mint(user5, collateralAllocation);
     await USDC.mint(mockInterest, collateralAllocation);
   });
 
@@ -429,6 +432,95 @@ contract('Lending Vault', accounts => {
           ).maxCollateralDiscounted.toString(),
           expectedNewCollateralDeficit.toString(),
         );
+      });
+
+      it('Allows user to buy more collateral than in discount, with rate split', async () => {
+        let currentRegularRate = await vault.getRate.call();
+        let actual = await vault.getDiscountedRate.call();
+        let discountedRate = actual.discountedRate;
+        let maxCollateralAtDiscount = actual.maxCollateralDiscounted;
+
+        let purchaseAmount = toBN(maxCollateralAtDiscount).muln(2);
+
+        let LPTotalSupply = await vault.totalSupply.call();
+
+        // deposit
+        let userBalanceBefore = await USDC.balanceOf.call(user5);
+        let userLPBalanceBefore = await vault.balanceOf.call(user5);
+        assert.equal(userLPBalanceBefore.toString(), '0');
+
+        let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
+
+        await USDC.approve(vault.address, purchaseAmount, { from: user5 });
+        let tx = await vault.deposit(purchaseAmount, { from: user5 });
+
+        // the output is maxCollateral discounted + the remaining on regular rate
+        let remainingCollateral = toBN(purchaseAmount).sub(
+          toBN(maxCollateralAtDiscount),
+        );
+        let expectedLPOut = toBN(maxCollateralAtDiscount)
+          .mul(toBN(Math.pow(10, 18)))
+          .div(discountedRate);
+        expectedLPOut = expectedLPOut.add(
+          remainingCollateral
+            .mul(toBN(Math.pow(10, 18)))
+            .div(currentRegularRate),
+        );
+
+        // check event
+        truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+          return (
+            ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
+            ev.lpTokensOut.toString() == expectedLPOut.toString() &&
+            ev.rate.toString() == currentRegularRate.toString() &&
+            ev.discountedRate.toString() == discountedRate.toString()
+          );
+        });
+
+        // should be in add liquidity branch as lp is already active
+        truffleAssert.eventNotEmitted(tx, 'LPActivated');
+
+        // check
+        let userBalanceAfter = await USDC.balanceOf.call(user5);
+        let userLPBalanceAfter = await vault.balanceOf.call(user5);
+        let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
+        let LPTotalSupplyAfter = await vault.totalSupply.call();
+
+        assert.equal(
+          LPTotalSupplyAfter.toString(),
+          toBN(LPTotalSupply).add(expectedLPOut).toString(),
+        );
+        assert.equal(
+          vaultBalanceAfter.toString(),
+          vaultBalanceBefore.toString(),
+        );
+        let expectedUserBalance = toBN(userBalanceBefore).sub(
+          toBN(purchaseAmount),
+        );
+        assert.equal(
+          expectedUserBalance.toString(),
+          userBalanceAfter.toString(),
+        );
+
+        let expectedUserLP = expectedLPOut;
+        assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
+
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
+
+        // the discount should have diluted the regular rate
+        expectedNewRegularRate = toBN(actualCollateralAmount)
+          .mul(toBN(Math.pow(10, 18)))
+          .div(toBN(LPTotalSupplyAfter));
+        let newRegularRate = await vault.getRate.call();
+        assert.equal(
+          newRegularRate.toString(),
+          expectedNewRegularRate.toString(),
+        );
+
+        // position should be above overcollaterlisation now - mocking it
+        await pool.setPositionOvercollateralised(true);
       });
     });
   });
