@@ -3,11 +3,7 @@ pragma solidity 0.8.9;
 
 import {IVault} from './interfaces/IVault.sol';
 import {Vault} from './Vault.sol';
-import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 
 contract SynthereumMultiLPVaultCreator {
   using Clones for address;
@@ -35,11 +31,6 @@ contract SynthereumMultiLPVaultCreator {
     require(
       _overCollateralization > 0,
       'Overcollateral requirement must be bigger than 0%'
-    );
-    require(
-      address(ISynthereumMultiLpLiquidityPool(_pool).collateralToken()) !=
-        address(0),
-      'Bad pool address'
     );
 
     // clone implementation

@@ -1,9 +1,15 @@
 pragma solidity 0.8.9;
 
+import {IStandardERC20} from '../base/interfaces/IStandardERC20.sol';
 import {
   IDeploymentSignature
 } from '../core/interfaces/IDeploymentSignature.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {
+  ISynthereumMultiLpLiquidityPool
+} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import {SynthereumMultiLPVaultCreator} from './VaultCreator.sol';
+import {FactoryConditions} from '../common/FactoryConditions.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {
   ReentrancyGuard
@@ -12,17 +18,20 @@ import {
 contract SynthereumMultiLPVaultFactory is
   IDeploymentSignature,
   ReentrancyGuard,
+  FactoryConditions,
   SynthereumMultiLPVaultCreator
 {
   bytes4 public immutable override deploymentSignature;
+  ISynthereumFinder immutable synthereumFinder;
 
   /**
    * @param _vaultImplementation Address of the deployed vault implementation used for EIP1167
    */
-  constructor(address _vaultImplementation)
+  constructor(address _vaultImplementation, address _synthereumFinder)
     SynthereumMultiLPVaultCreator(_vaultImplementation)
   {
     deploymentSignature = this.createVault.selector;
+    synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
   /**
@@ -39,6 +48,15 @@ contract SynthereumMultiLPVaultFactory is
     address _pool,
     uint256 _overCollateralization
   ) public override nonReentrant returns (IVault vault) {
+    ISynthereumMultiLpLiquidityPool pool =
+      ISynthereumMultiLpLiquidityPool(_pool);
+
+    checkDeploymentConditions(
+      synthereumFinder,
+      IStandardERC20(address(pool.collateralToken())),
+      pool.priceFeedIdentifier()
+    );
+
     vault = super.createVault(
       _lpTokenName,
       _lpTokenSymbol,
