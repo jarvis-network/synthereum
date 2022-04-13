@@ -279,10 +279,21 @@ contract('Lending Vault', accounts => {
           expectedRate.toString(),
         );
       });
+
+      it('Rejects with 0 amount', async () => {
+        await truffleAssert.reverts(
+          vault.deposit(0, { from: user1 }),
+          'Zero amount',
+        );
+      });
     });
     describe('Under-collateralised scenario (above liquidation below collateral requirement)', () => {
       before(async () => {
         // mock set position being under collateral requirement
+        await pool.setPositionOvercollateralised(false);
+      });
+      after(async () => {
+        // at the end of this suite the position is overcollateralised
         await pool.setPositionOvercollateralised(false);
       });
 
@@ -518,12 +529,69 @@ contract('Lending Vault', accounts => {
           newRegularRate.toString(),
           expectedNewRegularRate.toString(),
         );
-
-        // position should be above overcollaterlisation now - mocking it
-        await pool.setPositionOvercollateralised(true);
       });
     });
   });
 
-  describe('Withdraw', () => {});
+  describe('Withdraw', () => {
+    it('Correctly calculate collateral to withdraw - burn LP tokens', async () => {
+      let userLPBefore = await vault.balanceOf.call(user1);
+      let totalSupplyLPBefore = await vault.totalSupply.call();
+      let userCollateralBefore = await USDC.balanceOf.call(user1);
+
+      let actualCollateralAmount = (
+        await pool.positionLPInfo.call(vault.address)
+      ).actualCollateralAmount;
+
+      let expectedRate = toBN(actualCollateralAmount)
+        .mul(toBN(Math.pow(10, 18)))
+        .div(totalSupplyLPBefore);
+      let currentRate = await vault.getRate.call();
+      assert.equal(expectedRate.toString(), currentRate.toString());
+
+      let LPInput = userLPBefore.divn(2);
+      let expectedCollateralOut = currentRate
+        .mul(LPInput)
+        .div(toBN(Math.pow(10, 18)));
+      console.log(LPInput.toString(), expectedCollateralOut.toString());
+
+      let tx = await vault.withdraw(LPInput, { from: user1 });
+
+      // check event
+      truffleAssert.eventEmitted(tx, 'Withdraw', ev => {
+        return (
+          ev.lpTokensBurned.toString() == LPInput.toString() &&
+          ev.netCollateralOut.toString() == expectedCollateralOut.toString() &&
+          ev.rate.toString() == expectedRate.toString()
+        );
+      });
+
+      let userLPAfter = await vault.balanceOf.call(user1);
+      let totalSupplyLPAfter = await vault.totalSupply.call();
+      let userCollateralAfter = await USDC.balanceOf.call(user1);
+
+      let expectedUserLP = userLPBefore.sub(LPInput);
+      let expectedTotalSupply = totalSupplyLPBefore.sub(LPInput);
+      let expectedUserCollateral = userCollateralBefore.add(
+        expectedCollateralOut,
+      );
+
+      assert.equal(userLPAfter.toString(), expectedUserLP.toString());
+      assert.equal(
+        totalSupplyLPAfter.toString(),
+        expectedTotalSupply.toString(),
+      );
+      assert.equal(
+        userCollateralAfter.toString(),
+        expectedUserCollateral.toString(),
+      );
+    });
+
+    it('Rejects with zero amount', async () => {
+      await truffleAssert.reverts(
+        vault.withdraw(0, { from: user1 }),
+        'Zero amount',
+      );
+    });
+  });
 });
