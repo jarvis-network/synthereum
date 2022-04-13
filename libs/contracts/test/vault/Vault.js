@@ -283,6 +283,7 @@ contract('Lending Vault', accounts => {
         await pool.setPositionOvercollateralised(false);
       });
 
+      let mockUtilization;
       it('Correctly provides rate at discount', async () => {
         let currentRegularRate = await vault.getRate.call();
         let actualCollateralAmount = (
@@ -293,7 +294,7 @@ contract('Lending Vault', accounts => {
         let collateralExpected = toBN(actualCollateralAmount).add(
           toBN(actualCollateralAmount).divn(40),
         );
-        let mockUtilization = toBN(collateralExpected)
+        mockUtilization = toBN(collateralExpected)
           .mul(toBN(Math.pow(10, 18)))
           .div(toBN(actualCollateralAmount));
 
@@ -387,11 +388,47 @@ contract('Lending Vault', accounts => {
         let expectedUserLP = expectedLPOut;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
-        // rate should not have changed
-        // assert.equal(
-        //   (await vault.getRate.call()).toString(),
-        //   expectedRate.toString(),
-        // );
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
+
+        // the discount should have diluted the regular rate
+        expectedNewRegularRate = toBN(actualCollateralAmount)
+          .mul(toBN(Math.pow(10, 18)))
+          .div(toBN(LPTotalSupplyAfter));
+        let newRegularRate = await vault.getRate.call();
+        assert.equal(
+          newRegularRate.toString(),
+          expectedNewRegularRate.toString(),
+        );
+
+        // discount should be less on less collateral
+        let newCollateralExpected = toBN(mockUtilization)
+          .mul(toBN(actualCollateralAmount))
+          .div(toBN(Math.pow(10, 18)));
+        let expectedNewCollateralDeficit = newCollateralExpected.sub(
+          toBN(actualCollateralAmount),
+        );
+        let discountPct = expectedNewCollateralDeficit
+          .mul(toBN(Math.pow(10, 18)))
+          .div(newCollateralExpected);
+
+        let expectedNewDiscountedRate = toBN(newRegularRate).sub(
+          toBN(newRegularRate)
+            .mul(discountPct)
+            .div(toBN(Math.pow(10, 18))),
+        );
+
+        assert.equal(
+          (await vault.getDiscountedRate.call()).discountedRate.toString(),
+          expectedNewDiscountedRate.toString(),
+        );
+        assert.equal(
+          (
+            await vault.getDiscountedRate.call()
+          ).maxCollateralDiscounted.toString(),
+          expectedNewCollateralDeficit.toString(),
+        );
       });
     });
   });
