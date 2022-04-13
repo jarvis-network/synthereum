@@ -117,9 +117,6 @@ contract Vault is
   {
     require(lpTokensAmount > 0, 'Zero amount');
 
-    // Burn LP tokens of user
-    _burn(msg.sender, lpTokensAmount);
-
     // retrieve updated vault position on pool
     uint256 vaultCollateralAmount =
       (pool.positionLPInfo(address(this))).actualCollateralAmount;
@@ -127,6 +124,9 @@ contract Vault is
     // calculate rate and amount of collateral to withdraw
     uint256 rate = calculateRate(vaultCollateralAmount);
     uint256 collateralEquivalent = rate.mul(lpTokensAmount);
+
+    // Burn LP tokens of user
+    _burn(msg.sender, lpTokensAmount);
 
     // withdraw collateral from pool
     collateralOut = pool.removeLiquidity(collateralEquivalent);
