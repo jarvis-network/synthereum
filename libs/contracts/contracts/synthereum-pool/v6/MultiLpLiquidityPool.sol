@@ -254,7 +254,7 @@ contract SynthereumMultiLpLiquidityPool is
     require(_collateralAmount > 0, 'No collateral deposited');
     require(
       _overCollateralization > overCollateralRequirement,
-      'Overcollateralization must be bigger than Overcollateral requirement'
+      'Overcollateralization must be bigger than overcollateral requirement'
     );
 
     ISynthereumFinder synthFinder = finder;
@@ -361,7 +361,7 @@ contract SynthereumMultiLpLiquidityPool is
     address msgSender = _msgSender();
 
     require(isActiveLP(msgSender), 'Sender must be an active LP');
-    require(_collateralAmount > 0, 'No collateral deposited');
+    require(_collateralAmount > 0, 'No collateral withdrawn');
 
     ISynthereumFinder synthFinder = finder;
     ILendingManager.ReturnValues memory lendingValues =
@@ -416,7 +416,7 @@ contract SynthereumMultiLpLiquidityPool is
 
     require(
       _overCollateralization > overCollateralRequirement,
-      'Overcollateralization must be bigger than Overcollateral requirement'
+      'Overcollateralization must be bigger than overcollateral requirement'
     );
 
     ISynthereumFinder synthFinder = finder;
@@ -1330,7 +1330,10 @@ contract SynthereumMultiLpLiquidityPool is
               _price,
               _collateralDecimals
             );
-          require(isOvercollateralized, 'LP is undercollateralized');
+          require(
+            isOvercollateralized,
+            'LP below its overcollateralization level'
+          );
           lpPositions[lp].actualCollateralAmount = newCollateralAmount;
         }
       } else {
@@ -1372,7 +1375,10 @@ contract SynthereumMultiLpLiquidityPool is
             _price,
             _collateralDecimals
           );
-        require(isOvercollateralized, 'LP is undercollateralized');
+        require(
+          isOvercollateralized,
+          'LP below its overcollateralization level'
+        );
         lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
         lpPositions[lp].overCollateralization = _newOverCollateralization;
       } else {
