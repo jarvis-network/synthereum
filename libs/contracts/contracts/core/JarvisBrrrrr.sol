@@ -17,6 +17,7 @@ import {
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract JarvisBrrrrr is
   IJarvisBrrrrr,
@@ -24,11 +25,17 @@ contract JarvisBrrrrr is
   AccessControlEnumerable
 {
   using SafeERC20 for IERC20;
+  using Address for address;
 
   mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
   mapping(IMintableBurnableERC20 => uint256) private circulatingSupply;
 
+  mapping(bytes32 => address) public idToMoneyMarketImplementation;
+  mapping(address => bytes) public moneyMarketArgs;
+
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
+
+  string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
 
   ISynthereumFinder public immutable synthereumFinder;
 
@@ -60,6 +67,7 @@ contract JarvisBrrrrr is
   event Minted(address token, address recipient, uint256 amount);
   event Redeemed(address token, address recipient, uint256 amount);
   event NewMaxSupply(address token, uint256 newMaxSupply);
+  event RegisteredImplementation(string id, address implementation, bytes args);
 
   constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
@@ -70,13 +78,28 @@ contract JarvisBrrrrr is
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
+  function registerMoneyMarketImplementation(
+    string memory id,
+    address implementation,
+    bytes memory extraArgs
+  ) external override onlyMoneyMarketManager() nonReentrant {
+    idToMoneyMarketImplementation[keccak256(abi.encode(id))] = implementation;
+    moneyMarketArgs[implementation] = extraArgs;
+
+    emit RegisteredImplementation(id, implementation, extraArgs);
+  }
+
   /**
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to mint
    * @param amount Amount of tokens to mint
    * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function mint(IMintableBurnableERC20 token, uint256 amount)
+  function mint(
+    IMintableBurnableERC20 token,
+    uint256 amount,
+    string memory moneyMarketId
+  )
     external
     override
     onlyMoneyMarketManager
@@ -89,7 +112,22 @@ contract JarvisBrrrrr is
       'Minting over max limit'
     );
     circulatingSupply[token] = newCirculatingSupply;
-    token.mint(msg.sender, amount);
+    token.mint(address(this), amount);
+
+    // deposit
+    address implementation =
+      idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
+    bytes memory result =
+      implementation.functionDelegateCall(
+        abi.encodeWithSignature(
+          DEPOSIT_SIG,
+          address(token),
+          amount,
+          moneyMarketArgs[implementation]
+        )
+      );
+
+    // uint256 tokensOut = abi.decode(result, (uint256));
     emit Minted(address(token), msg.sender, amount);
   }
 

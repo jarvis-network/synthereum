@@ -6,14 +6,29 @@ import {
 
 interface IJarvisBrrrrr {
   /**
+   * @notice Registers an address implementing the IJarvisBrrMoneyMarket interface
+   * @param id Identifier of the implementation
+   * @param implementation Address of the implementation
+   * @param extraArgs bytes Encoded args for the implementation
+   */
+  function registerMoneyMarketImplementation(
+    string memory id,
+    address implementation,
+    bytes memory extraArgs
+  ) external;
+
+  /**
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to mint
    * @param amount Amount of tokens to mint
+   * @param id identifier of the money market implementation that deposits the tokens into money market
    * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function mint(IMintableBurnableERC20 token, uint256 amount)
-    external
-    returns (uint256 newCirculatingSupply);
+  function mint(
+    IMintableBurnableERC20 token,
+    uint256 amount,
+    string memory id
+  ) external returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Burns synthetic token without releasing collateral from the pre-defined address (SynthereumMoneyMarketManager)
