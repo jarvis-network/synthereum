@@ -26,6 +26,7 @@ import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {ExplicitERC20} from '../../base/utils/ExplicitERC20.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
@@ -54,6 +55,7 @@ contract SynthereumMultiLpLiquidityPool is
   using SafeERC20 for IStandardERC20;
   using SafeERC20 for IMintableBurnableERC20;
   using SafeERC20 for IERC20;
+  using ExplicitERC20 for IERC20;
 
   struct PositionCache {
     // Address of the LP
@@ -107,6 +109,20 @@ contract SynthereumMultiLpLiquidityPool is
     uint256 tokensValue;
     uint256 maxCapacity;
     uint8 decimals;
+  }
+
+  struct WithdrawDust {
+    bool isPositive;
+    uint256 amount;
+  }
+
+  struct LiquidationUpdateArgs {
+    address liquidator;
+    ILendingManager lendingManager;
+    address liquidatedLp;
+    uint256 tokensInLiquidation;
+    uint256 overCollateralRequirement;
+    TempStorageArgs tempStorageArgs;
   }
 
   //----------------------------------------
@@ -334,13 +350,10 @@ contract SynthereumMultiLpLiquidityPool is
       );
 
     collateralDeposited = lendingValues.tokensOut;
-    _updateAndModifyActualLPCollateral(
+    _updateAndIncreaseActualLPCollateral(
       positionsCache,
       msgSender,
-      true,
-      collateralDeposited,
-      tempStorage.price,
-      tempStorage.decimals
+      collateralDeposited
     );
 
     emit DepositedLiquidity(msgSender, _collateralAmount, collateralDeposited);
@@ -364,7 +377,7 @@ contract SynthereumMultiLpLiquidityPool is
     require(_collateralAmount > 0, 'No collateral withdrawn');
 
     ISynthereumFinder synthFinder = finder;
-    ILendingManager.ReturnValues memory lendingValues =
+    (ILendingManager.ReturnValues memory lendingValues, ) =
       _lendingWithdraw(
         _getLendingManager(synthFinder),
         msgSender,
@@ -387,17 +400,20 @@ contract SynthereumMultiLpLiquidityPool is
         tempStorage.decimals
       );
 
-    _updateAndModifyActualLPCollateral(
+    _updateAndDecreaseActualLPCollateral(
       positionsCache,
       msgSender,
-      false,
-      _collateralAmount,
+      lendingValues.tokensOut,
       tempStorage.price,
       tempStorage.decimals
     );
     collateralReceived = lendingValues.tokensTransferred;
 
-    emit WithdrawnLiquidity(msgSender, _collateralAmount, collateralReceived);
+    emit WithdrawnLiquidity(
+      msgSender,
+      lendingValues.tokensOut,
+      collateralReceived
+    );
   }
 
   /**
@@ -563,7 +579,10 @@ contract SynthereumMultiLpLiquidityPool is
         tempStorage.decimals
       );
 
-    ILendingManager.ReturnValues memory lendingValues =
+    (
+      ILendingManager.ReturnValues memory lendingValues,
+      WithdrawDust memory withdrawDust
+    ) =
       _lendingWithdraw(
         _getLendingManager(synthFinder),
         _redeemParams.recipient,
@@ -588,6 +607,7 @@ contract SynthereumMultiLpLiquidityPool is
       tempStorage.totalSyntheticAsset,
       _redeemParams.numTokens,
       redeemValues.feeAmount,
+      withdrawDust,
       positionsCache
     );
 
@@ -619,61 +639,57 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
     returns (uint256)
   {
-    address msgSender = _msgSender();
+    LiquidationUpdateArgs memory liquidationUpdateArgs;
+
+    liquidationUpdateArgs.liquidator = _msgSender();
 
     require(isActiveLP(_lp), 'LP is not active');
     require(_numSynthTokens > 0, 'No synthetic tokens deposited');
 
     ISynthereumFinder synthFinder = finder;
 
-    TempStorageArgs memory tempStorage =
-      TempStorageArgs(
-        _getPriceFeedRate(synthFinder, priceIdentifier),
-        totalSyntheticAsset,
-        collateralDecimals
-      );
+    liquidationUpdateArgs.tempStorageArgs = TempStorageArgs(
+      _getPriceFeedRate(synthFinder, priceIdentifier),
+      totalSyntheticAsset,
+      collateralDecimals
+    );
 
-    ILendingManager lendingManager = _getLendingManager(synthFinder);
+    liquidationUpdateArgs.lendingManager = _getLendingManager(synthFinder);
+    liquidationUpdateArgs.overCollateralRequirement = overCollateralRequirement;
 
     (uint256 poolInterest, uint256 collateralDeposited) =
-      _getLendingInterest(lendingManager);
+      _getLendingInterest(liquidationUpdateArgs.lendingManager);
 
     (PositionCache[] memory positionsCache, ) =
       _calculateNewPositions(
         poolInterest,
-        tempStorage.price,
-        tempStorage.totalSyntheticAsset,
+        liquidationUpdateArgs.tempStorageArgs.price,
+        liquidationUpdateArgs.tempStorageArgs.totalSyntheticAsset,
         collateralDeposited,
-        tempStorage.decimals
+        liquidationUpdateArgs.tempStorageArgs.decimals
       );
 
     (
       uint256 tokensInLiquidation,
       uint256 collateralAmount,
-      uint256 bonusAmount
+      uint256 bonusAmount,
+      uint256 collateralReceived
     ) =
       _updateAndLiquidate(
         positionsCache,
         _lp,
         _numSynthTokens,
-        tempStorage.price,
-        tempStorage.decimals,
-        overCollateralRequirement
+        liquidationUpdateArgs
       );
 
-    ILendingManager.ReturnValues memory lendingValues =
-      _lendingWithdraw(
-        lendingManager,
-        msgSender,
-        collateralAmount + bonusAmount
-      );
-
-    _burnSyntheticTokens(syntheticAsset, tokensInLiquidation, msgSender);
-
-    uint256 collateralReceived = lendingValues.tokensTransferred;
+    _burnSyntheticTokens(
+      syntheticAsset,
+      tokensInLiquidation,
+      liquidationUpdateArgs.liquidator
+    );
 
     emit Liquidate(
-      msgSender,
+      liquidationUpdateArgs.liquidator,
       tokensInLiquidation,
       collateralAmount,
       bonusAmount,
@@ -1209,19 +1225,42 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _recipient Recipient to which collateral is sent
    * @param _collateralAmount Collateral to withdraw
    * @return Return values parameters from lending manager
+   * @return Dust to add/decrease if transfer of bearing token from pool to lending manager is not exact
    */
   function _lendingWithdraw(
     ILendingManager _lendingManager,
     address _recipient,
     uint256 _collateralAmount
-  ) internal returns (ILendingManager.ReturnValues memory) {
+  )
+    internal
+    returns (ILendingManager.ReturnValues memory, WithdrawDust memory)
+  {
     (uint256 bearingAmount, address bearingToken) =
       _lendingManager.collateralToInterestToken(
         address(this),
         _collateralAmount
       );
-    IERC20(bearingToken).safeTransfer(address(_lendingManager), bearingAmount);
-    return _lendingManager.withdraw(bearingAmount, _recipient);
+
+    uint256 amountTransferred =
+      IERC20(bearingToken).explicitSafeTransfer(
+        address(_lendingManager),
+        bearingAmount
+      );
+
+    ILendingManager.ReturnValues memory returnValues =
+      _lendingManager.withdraw(amountTransferred, _recipient);
+
+    bool isPositiveDust = _collateralAmount >= returnValues.tokensOut;
+
+    return (
+      returnValues,
+      WithdrawDust(
+        isPositiveDust,
+        isPositiveDust
+          ? _collateralAmount - returnValues.tokensOut
+          : returnValues.tokensOut - _collateralAmount
+      )
+    );
   }
 
   /**
@@ -1241,15 +1280,16 @@ contract SynthereumMultiLpLiquidityPool is
     IERC20 actualBearingToken =
       IERC20(_lendingStorageManager.getInterestBearingToken(address(this)));
     uint256 actualBearingAmount = actualBearingToken.balanceOf(address(this));
-    actualBearingToken.safeTransfer(
-      address(_lendingManager),
-      actualBearingAmount
-    );
+    uint256 amountTransferred =
+      actualBearingToken.explicitSafeTransfer(
+        address(_lendingManager),
+        actualBearingAmount
+      );
     return
       _lendingManager.migrateLendingModule(
         _lendingId,
         _bearingToken,
-        actualBearingAmount
+        amountTransferred
       );
   }
 
@@ -1292,16 +1332,44 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Update collateral amount of every LP and add the new deposit for one LP
    * @param _positionsCache Temporary memory cache containing LPs positions
    * @param _depositingLp Address of the LP depositing collateral
-   * @param _isIncreased True if collateral to add for the LP, otherwise false
-   * @param _changingCollateral Amount of collateral to increase/decrease to/from the LP
+   * @param _increaseCollateral Amount of collateral to increase to the LP
+   */
+  function _updateAndIncreaseActualLPCollateral(
+    PositionCache[] memory _positionsCache,
+    address _depositingLp,
+    uint256 _increaseCollateral
+  ) internal {
+    PositionCache memory lpCache;
+    address lp;
+    LPPosition memory lpPosition;
+    uint256 actualCollateralAmount;
+    for (uint256 j = 0; j < _positionsCache.length; j++) {
+      lpCache = _positionsCache[j];
+      lp = lpCache.lp;
+      lpPosition = _positionsCache[j].lpPosition;
+      actualCollateralAmount = lpPosition.actualCollateralAmount;
+      if (lp == _depositingLp) {
+        lpPositions[lp].actualCollateralAmount =
+          actualCollateralAmount +
+          _increaseCollateral;
+      } else {
+        lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
+      }
+    }
+  }
+
+  /**
+   * @notice Update collateral amount of every LP and removw withdrawal for one LP
+   * @param _positionsCache Temporary memory cache containing LPs positions
+   * @param _depositingLp Address of the LP withdrawing collateral
+   * @param _decreaseCollateral Amount of collateral to decrease from the LP
    * @param _price Actual price of the pair
    * @param _collateralDecimals Decimals of the collateral token
    */
-  function _updateAndModifyActualLPCollateral(
+  function _updateAndDecreaseActualLPCollateral(
     PositionCache[] memory _positionsCache,
     address _depositingLp,
-    bool _isIncreased,
-    uint256 _changingCollateral,
+    uint256 _decreaseCollateral,
     uint256 _price,
     uint8 _collateralDecimals
   ) internal {
@@ -1316,26 +1384,20 @@ contract SynthereumMultiLpLiquidityPool is
       lpPosition = _positionsCache[j].lpPosition;
       actualCollateralAmount = lpPosition.actualCollateralAmount;
       if (lp == _depositingLp) {
-        if (_isIncreased) {
-          lpPositions[lp].actualCollateralAmount =
-            actualCollateralAmount +
-            _changingCollateral;
-        } else {
-          newCollateralAmount = actualCollateralAmount - _changingCollateral;
-          (bool isOvercollateralized, ) =
-            _isOvercollateralizedLP(
-              newCollateralAmount,
-              lpPosition.overCollateralization,
-              lpPosition.tokensCollateralized,
-              _price,
-              _collateralDecimals
-            );
-          require(
-            isOvercollateralized,
-            'LP below its overcollateralization level'
+        newCollateralAmount = actualCollateralAmount - _decreaseCollateral;
+        (bool isOvercollateralized, ) =
+          _isOvercollateralizedLP(
+            newCollateralAmount,
+            lpPosition.overCollateralization,
+            lpPosition.tokensCollateralized,
+            _price,
+            _collateralDecimals
           );
-          lpPositions[lp].actualCollateralAmount = newCollateralAmount;
-        }
+        require(
+          isOvercollateralized,
+          'LP below its overcollateralization level'
+        );
+        lpPositions[lp].actualCollateralAmount = newCollateralAmount;
       } else {
         lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
       }
@@ -1390,28 +1452,26 @@ contract SynthereumMultiLpLiquidityPool is
   /**
    * @notice Update collateral amount of every LP and add the new deposit for one LP
    * @param _positionsCache Temporary memory cache containing LPs positions
-   * @param _liquidatedLp Address of the LP in liquidation
-   * @param _tokensInLiquidation Amount of  synthetic asset to liquidate
-   * @param _price Actual price of the pair
-   * @param _collateralDecimals Decimals of the collateral token
-   * @param _overCollateralRequirement Overcollateral percentage needed to prevent liquidation
+   * @param _liquidatedLp Address of the LP to liquidate
+   * @param _tokensInLiquidation Amount of synthetic token to liquidate
+   * @param _liquidationUpdateArgs Arguments for update liquidation (see LiquidationUpdateArgs struct)
    * @return tokensToLiquidate Amount of tokens will be liquidated
-   * @return tokensValue Amount of collateral value equivalent to tokens in liquidation
+   * @return collateralAmount Amount of collateral value equivalent to tokens in liquidation
    * @return liquidationBonusAmount Amount of bonus collateral for the liquidation
+   * @return collateralReceived Amount of collateral received by the liquidator
    */
   function _updateAndLiquidate(
     PositionCache[] memory _positionsCache,
     address _liquidatedLp,
     uint256 _tokensInLiquidation,
-    uint256 _price,
-    uint8 _collateralDecimals,
-    uint256 _overCollateralRequirement
+    LiquidationUpdateArgs memory _liquidationUpdateArgs
   )
     internal
     returns (
       uint256 tokensToLiquidate,
-      uint256 tokensValue,
-      uint256 liquidationBonusAmount
+      uint256 collateralAmount,
+      uint256 liquidationBonusAmount,
+      uint256 collateralReceived
     )
   {
     PositionCache memory lpCache;
@@ -1428,27 +1488,45 @@ contract SynthereumMultiLpLiquidityPool is
           _tokensInLiquidation,
           lpPosition.tokensCollateralized
         );
-        tokensValue = _calculateCollateralAmount(
-          lpPosition.tokensCollateralized,
-          _price,
-          _collateralDecimals
+
+        collateralAmount = _calculateCollateralAmount(
+          tokensToLiquidate,
+          _liquidationUpdateArgs.tempStorageArgs.price,
+          _liquidationUpdateArgs.tempStorageArgs.decimals
         );
+
         (bool isOvercollateralized, ) =
           _isOvercollateralizedLP(
             actualCollateralAmount,
-            _overCollateralRequirement,
+            _liquidationUpdateArgs.overCollateralRequirement,
             lpPosition.tokensCollateralized,
-            _price,
-            _collateralDecimals
+            _liquidationUpdateArgs.tempStorageArgs.price,
+            _liquidationUpdateArgs.tempStorageArgs.decimals
           );
         require(!isOvercollateralized, 'LP is overcollateralized');
-        liquidationBonusAmount = actualCollateralAmount
+
+        liquidationBonusAmount = tokensToLiquidate
+          .div(lpPosition.tokensCollateralized)
           .mul(liquidationBonus)
-          .mul(tokensToLiquidate)
-          .div(lpPosition.tokensCollateralized);
-        lpPositions[lp].actualCollateralAmount =
-          actualCollateralAmount -
-          liquidationBonusAmount;
+          .mul(actualCollateralAmount);
+
+        (
+          ILendingManager.ReturnValues memory lendingValues,
+          WithdrawDust memory withdrawDust
+        ) =
+          _lendingWithdraw(
+            _liquidationUpdateArgs.lendingManager,
+            _liquidationUpdateArgs.liquidator,
+            collateralAmount + liquidationBonusAmount
+          );
+
+        liquidationBonusAmount = withdrawDust.isPositive
+          ? liquidationBonusAmount - withdrawDust.amount
+          : liquidationBonusAmount + withdrawDust.amount;
+
+        collateralReceived = lendingValues.tokensTransferred;
+
+        lpPositions[lp].actualCollateralAmount -= liquidationBonusAmount;
         lpPositions[lp].tokensCollateralized -= tokensToLiquidate;
       } else {
         lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
@@ -1930,12 +2008,14 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _totalNumTokens Total amount of synethtic asset in the pool
    * @param _redeemNumTokens Total amount of synethtic asset to redeem
    * @param _feeAmount Total amount of fee to charge to the LPs
+   * @param _withdrawDust Dust to add/decrease if transfer of bearing token from pool to lending manager is not exact
    * @param _positionsCache Temporary memory cache containing LPs positions
    */
   function _calculateRedeemTokensAndFee(
     uint256 _totalNumTokens,
     uint256 _redeemNumTokens,
     uint256 _feeAmount,
+    WithdrawDust memory _withdrawDust,
     PositionCache[] memory _positionsCache
   ) internal pure {
     uint256 lpNumbers = _positionsCache.length;
@@ -1963,7 +2043,13 @@ contract SynthereumMultiLpLiquidityPool is
     redeemSplit.lpPosition = _positionsCache[redeemSplit.bestShare.index]
       .lpPosition;
     redeemSplit.lpPosition.tokensCollateralized -= redeemSplit.remainingTokens;
-    redeemSplit.lpPosition.actualCollateralAmount += redeemSplit.remainingFees;
+    redeemSplit.lpPosition.actualCollateralAmount = _withdrawDust.isPositive
+      ? redeemSplit.lpPosition.actualCollateralAmount +
+        redeemSplit.remainingFees +
+        _withdrawDust.amount
+      : redeemSplit.lpPosition.actualCollateralAmount +
+        redeemSplit.remainingFees -
+        _withdrawDust.amount;
   }
 
   /**

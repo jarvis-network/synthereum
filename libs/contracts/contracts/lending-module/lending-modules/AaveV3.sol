@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {ILendingModule} from '../interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
 import {IPool} from '../interfaces/IAaveV3.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {ILendingModule} from '../interfaces/ILendingModule.sol';
+import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 
 contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
@@ -74,18 +75,20 @@ contract AaveV3Module is ILendingModule {
 
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(poolData.interestBearingToken);
-    require(
-      interestToken.balanceOf(address(this)) >= aTokensAmount,
-      'Wrong balance'
-    );
+
+    uint256 withdrawAmount =
+      PreciseUnitMath.min(
+        interestToken.balanceOf(address(this)),
+        aTokensAmount + 1
+      );
 
     uint256 initialBalance = IERC20(poolData.collateral).balanceOf(recipient);
 
     // aave withdraw - approve
     address moneyMarket = abi.decode(lendingArgs, (address));
 
-    interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
-    IPool(moneyMarket).withdraw(poolData.collateral, aTokensAmount, recipient);
+    interestToken.safeIncreaseAllowance(moneyMarket, withdrawAmount);
+    IPool(moneyMarket).withdraw(poolData.collateral, withdrawAmount, recipient);
 
     // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
     uint256 netWithdrawal =
