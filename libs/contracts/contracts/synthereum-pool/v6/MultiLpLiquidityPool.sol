@@ -790,7 +790,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _bearingToken Token of the lending mosule to be used for intersts accrual
             (used only if the lending manager doesn't automatically find the one associated to the collateral fo this pool)
    */
-  function switchLendingModule(
+  /* function switchLendingModule(
     string calldata _lendingId,
     address _bearingToken
   ) external nonReentrant onlyMaintainer {
@@ -828,7 +828,7 @@ contract SynthereumMultiLpLiquidityPool is
     _updateActualLPPositions(positionsCache);
 
     _setLendingModule(_lendingId);
-  }
+  }*/
 
   /**
    * @notice Get all the registered LPs of this pool
