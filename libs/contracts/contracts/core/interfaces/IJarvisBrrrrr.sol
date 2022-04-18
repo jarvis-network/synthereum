@@ -21,24 +21,29 @@ interface IJarvisBrrrrr {
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to mint
    * @param amount Amount of tokens to mint
-   * @param id identifier of the money market implementation that deposits the tokens into money market
+   * @param moneyMarketId identifier of the money market implementation that deposits the tokens into money market
    * @return newCirculatingSupply New circulating supply in Money Market
    */
   function mint(
     IMintableBurnableERC20 token,
     uint256 amount,
-    string memory id
+    string memory moneyMarketId
   ) external returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Burns synthetic token without releasing collateral from the pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to burn
+   * @param interestToken interest token address to withdraw from money market
    * @param amount Amount of tokens to burn
+   * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
    * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function redeem(IMintableBurnableERC20 token, uint256 amount)
-    external
-    returns (uint256 newCirculatingSupply);
+  function redeem(
+    IMintableBurnableERC20 token,
+    address interestToken,
+    uint256 amount,
+    string memory moneyMarketId
+  ) external returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Sets the max circulating supply that can be minted for a specific token - only manager can set this

@@ -9,10 +9,12 @@ import {
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 // storageless contract to be used as delegate call by JarvisBRR to deposit the minted jSynth into a money market
 contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   using SafeERC20 for IMintableBurnableERC20;
+  using SafeERC20 for IERC20;
 
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
@@ -33,5 +35,29 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     );
 
     tokensOut = amount;
+  }
+
+  function withdraw(
+    IERC20 interestToken,
+    IMintableBurnableERC20 jSynthAsset,
+    uint256 aTokensAmount,
+    bytes memory extraArgs
+  ) external override returns (uint256 jSynthOut) {
+    require(
+      interestToken.balanceOf(address(this)) >= aTokensAmount,
+      'Wrong balance'
+    );
+
+    // aave withdraw - approve
+    address moneyMarket = abi.decode(extraArgs, (address));
+
+    interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
+    IPool(moneyMarket).withdraw(
+      address(jSynthAsset),
+      aTokensAmount,
+      address(this)
+    );
+
+    jSynthOut = aTokensAmount;
   }
 }

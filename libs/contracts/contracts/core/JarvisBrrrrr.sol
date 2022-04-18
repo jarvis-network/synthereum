@@ -36,6 +36,8 @@ contract JarvisBrrrrr is
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
+  string public constant WITHDRAW_SIG =
+    'withdraw(address,address,uint256,bytes)';
 
   ISynthereumFinder public immutable synthereumFinder;
 
@@ -134,10 +136,16 @@ contract JarvisBrrrrr is
   /**
    * @notice Burns synthetic token without releasing collateral from the pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to burn
-   * @param amount Amount of tokens to burn
+   * @param amount Amount of interest tokens to withdraw on the money market
+   * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
    * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function redeem(IMintableBurnableERC20 token, uint256 amount)
+  function redeem(
+    IMintableBurnableERC20 token,
+    address interestToken,
+    uint256 amount,
+    string memory moneyMarketId
+  )
     external
     override
     onlyMoneyMarketManager
@@ -145,11 +153,28 @@ contract JarvisBrrrrr is
     returns (uint256 newCirculatingSupply)
   {
     uint256 actualSupply = circulatingSupply[token];
-    IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-    newCirculatingSupply = actualSupply - amount;
+
+    // withdraw from money market through delegate call
+    address implementation =
+      idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
+
+    bytes memory result =
+      implementation.functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          address(token),
+          interestToken,
+          amount,
+          moneyMarketArgs[implementation]
+        )
+      );
+
+    uint256 burningAmount = abi.decode(result, (uint256));
+    newCirculatingSupply = actualSupply - burningAmount;
     circulatingSupply[token] = newCirculatingSupply;
-    token.burn(amount);
-    emit Redeemed(address(token), msg.sender, amount);
+    token.burn(burningAmount);
+
+    emit Redeemed(address(token), msg.sender, burningAmount);
   }
 
   /**
