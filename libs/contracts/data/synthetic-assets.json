@@ -185,6 +185,16 @@
       "minSponsorTokens": "0",
       "capMintAmount": "",
       "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic New Zealand Dollar",
+      "syntheticSymbol": "jNZD",
+      "priceFeedIdentifier": "NZDUSD",
+      "collateralRequirement": "1050000000000000000",
+      "startingCollateralization": "843500",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
     }
   ]
 }
