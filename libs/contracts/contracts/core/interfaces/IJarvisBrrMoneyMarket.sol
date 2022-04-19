@@ -23,16 +23,36 @@ interface IJarvisBrrMoneyMarket {
   /**
    * @notice withdraw jSynth from the money market
    * @dev the same amount must be burned in the same tx
-   * @param interestTokenAmount of interest tokens to withdraw
-   * @param interestToken address of the interest token
    * @param jSynthAsset address of the jSynth token to withdraw
+   * @param interestTokenAmount of interest tokens to withdraw
    * @param extraArgs bytes Encoded args for the implementation
    * @return jSynthOut amount of j Synth in output
    */
   function withdraw(
-    IERC20 interestToken,
     IMintableBurnableERC20 jSynthAsset,
     uint256 interestTokenAmount,
     bytes memory extraArgs
   ) external returns (uint256 jSynthOut);
+
+  /**
+   * @notice returns the corresponding interest bearing token in the money market
+   * @param jSynthAsset address of the jSynth token to get corresponding interest token
+   * @param args bytes Encoded args for the implementation
+   * @return token interest bearing token
+   */
+  function getInterestBearingToken(address jSynthAsset, bytes memory args)
+    external
+    view
+    returns (address token);
+
+  /**
+   * @notice returns the total deposited + interest generated in the money market
+   * @param jSynthAsset address of the jSynth token to get corresponding balance
+   * @param args bytes Encoded args for the implementation
+   * @return totalJSynth total amount of jSynth
+   */
+  function getTotalBalance(address jSynthAsset, bytes memory args)
+    external
+    view
+    returns (uint256 totalJSynth);
 }

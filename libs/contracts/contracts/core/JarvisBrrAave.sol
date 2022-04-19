@@ -38,11 +38,13 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   }
 
   function withdraw(
-    IERC20 interestToken,
     IMintableBurnableERC20 jSynthAsset,
     uint256 aTokensAmount,
     bytes memory extraArgs
   ) external override returns (uint256 jSynthOut) {
+    IERC20 interestToken =
+      IERC20(interestBearingToken(address(jSynthAsset), extraArgs));
+
     require(
       interestToken.balanceOf(address(this)) >= aTokensAmount,
       'Wrong balance'
@@ -59,5 +61,33 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     );
 
     jSynthOut = aTokensAmount;
+  }
+
+  function getTotalBalance(address jSynth, bytes memory args)
+    external
+    view
+    override
+    returns (uint256 totalJSynth)
+  {
+    IERC20 interestToken = IERC20(interestBearingToken(jSynth, args));
+    totalJSynth = interestToken.balanceOf(msg.sender);
+  }
+
+  function getInterestBearingToken(address jSynth, bytes memory args)
+    external
+    view
+    override
+    returns (address token)
+  {
+    return interestBearingToken(jSynth, args);
+  }
+
+  function interestBearingToken(address jSynth, bytes memory args)
+    internal
+    view
+    returns (address token)
+  {
+    address moneyMarket = abi.decode(args, (address));
+    token = IPool(moneyMarket).getReserveData(jSynth).aTokenAddress;
   }
 }

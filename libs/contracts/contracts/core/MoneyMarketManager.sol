@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {IJarvisBrrrrr} from './interfaces/IJarvisBrrrrr.sol';
+import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
 import {IMoneyMarketManager} from './interfaces/IMoneyMarketManager.sol';
 import {
   IMintableBurnableERC20
@@ -32,8 +33,7 @@ contract MoneyMarketmanager is
   mapping(address => bytes) public moneyMarketArgs;
 
   string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
-  string public constant WITHDRAW_SIG =
-    'withdraw(address,address,uint256,bytes)';
+  string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes)';
 
   ISynthereumFinder public immutable synthereumFinder;
 
@@ -126,7 +126,6 @@ contract MoneyMarketmanager is
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           address(token),
-          interestToken,
           amount,
           moneyMarketArgs[implementation]
         )
@@ -136,5 +135,44 @@ contract MoneyMarketmanager is
 
     // trigger burning of tokens on the printer contract
     IJarvisBrrrrr(jarvisBrr).redeem(token, burningAmount);
+  }
+
+  function withdrawRevenue(
+    IMintableBurnableERC20 jSynthAsset,
+    string memory moneyMarketId
+  ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
+    address jarvisBrr =
+      ISynthereumFinder(finder).getImplementationAddress(
+        SynthereumInterfaces.JarvisBrrrrr
+      );
+
+    address implementation =
+      idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
+    bytes memory args = moneyMarketArgs[implementation];
+
+    // get jSynth circulating supply
+    uint256 supply = IJarvisBrrrrr(jarvisBrr).supply(jSynthAsset);
+
+    // get total balance from money market implementation (deposit + interest)
+    uint256 totalBalance =
+      IJarvisBrrMoneyMarket(implementation).getTotalBalance(
+        address(jSynthAsset),
+        args
+      );
+
+    // withdraw revenues
+    bytes memory result =
+      implementation.functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          address(jSynthAsset),
+          totalBalance - supply,
+          args
+        )
+      );
+
+    // send them to dao
+    jSynthOut = abi.decode(result, (uint256));
+    jSynthAsset.transfer(msg.sender, jSynthOut);
   }
 }
