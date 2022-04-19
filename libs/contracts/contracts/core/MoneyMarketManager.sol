@@ -33,32 +33,40 @@ contract MoneyMarketmanager is
 
   string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
   string public constant WITHDRAW_SIG =
-    'withdraw(address,address,uint256,bytes,address)';
+    'withdraw(address,address,uint256,bytes)';
 
   ISynthereumFinder public immutable synthereumFinder;
 
-  modifier onlyMoneyMarketManager() {
+  // Describe role structure
+  struct Roles {
+    address admin;
+    address maintainer;
+  }
+
+  modifier onlyMaintainer() {
     require(
-      msg.sender ==
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.MoneyMarketManager
-        ),
-      'Only mm manager can perform this operation'
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
     );
     _;
   }
 
   event RegisteredImplementation(string id, address implementation, bytes args);
 
-  constructor(ISynthereumFinder _synthereumFinder) {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
+
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
   function registerMoneyMarketImplementation(
     string memory id,
     address implementation,
     bytes memory extraArgs
-  ) external override onlyMoneyMarketManager() nonReentrant {
+  ) external override onlyMaintainer nonReentrant {
     idToMoneyMarketImplementation[keccak256(abi.encode(id))] = implementation;
     moneyMarketArgs[implementation] = extraArgs;
 
@@ -69,13 +77,7 @@ contract MoneyMarketmanager is
     IMintableBurnableERC20 token,
     uint256 amount,
     string memory moneyMarketId
-  )
-    external
-    override
-    onlyMoneyMarketManager()
-    nonReentrant()
-    returns (uint256 tokensOut)
-  {
+  ) external override onlyMaintainer nonReentrant returns (uint256 tokensOut) {
     // trigger minting of synths from the printer contract
     address jarvisBrr =
       ISynthereumFinder(finder).getImplementationAddress(
@@ -106,8 +108,8 @@ contract MoneyMarketmanager is
   )
     external
     override
-    onlyMoneyMarketManager()
-    nonReentrant()
+    onlyMaintainer
+    nonReentrant
     returns (uint256 burningAmount)
   {
     address jarvisBrr =
