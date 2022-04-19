@@ -21,7 +21,7 @@ import {
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
-contract MoneyMarketmanager is
+contract MoneyMarketManager is
   AccessControlEnumerable,
   IMoneyMarketManager,
   ReentrancyGuard
