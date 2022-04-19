@@ -34,6 +34,7 @@ contract MoneyMarketmanager is
 
   string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
   string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes)';
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   ISynthereumFinder public immutable synthereumFinder;
 
@@ -80,7 +81,7 @@ contract MoneyMarketmanager is
   ) external override onlyMaintainer nonReentrant returns (uint256 tokensOut) {
     // trigger minting of synths from the printer contract
     address jarvisBrr =
-      ISynthereumFinder(finder).getImplementationAddress(
+      synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.JarvisBrrrrr
       );
     IJarvisBrrrrr(jarvisBrr).mint(token, amount);
@@ -100,9 +101,8 @@ contract MoneyMarketmanager is
     tokensOut = abi.decode(result, (uint256));
   }
 
-  function redeem(
+  function withdraw(
     IMintableBurnableERC20 token,
-    address interestToken,
     uint256 amount,
     string memory moneyMarketId
   )
@@ -113,7 +113,7 @@ contract MoneyMarketmanager is
     returns (uint256 burningAmount)
   {
     address jarvisBrr =
-      ISynthereumFinder(finder).getImplementationAddress(
+      synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.JarvisBrrrrr
       );
 
@@ -142,7 +142,7 @@ contract MoneyMarketmanager is
     string memory moneyMarketId
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
     address jarvisBrr =
-      ISynthereumFinder(finder).getImplementationAddress(
+      synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.JarvisBrrrrr
       );
 

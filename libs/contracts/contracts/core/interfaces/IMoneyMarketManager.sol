@@ -36,13 +36,11 @@ interface IMoneyMarketManager {
    * @notice withdraw jSynth from the money market
    * @dev the same amount must be burned in the same tx
    * @param interestTokenAmount of interest tokens to withdraw
-   * @param interestToken address of the interest token
    * @param jSynthAsset address of the jSynth token to withdraw
    * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
    * @return jSynthOut amount of j Synth in output
    */
   function withdraw(
-    IERC20 interestToken,
     IMintableBurnableERC20 jSynthAsset,
     uint256 interestTokenAmount,
     string memory moneyMarketId
