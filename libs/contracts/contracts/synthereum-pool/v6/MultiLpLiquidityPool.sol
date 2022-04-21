@@ -644,7 +644,6 @@ contract SynthereumMultiLpLiquidityPool is
     liquidationUpdateArgs.liquidator = _msgSender();
 
     require(isActiveLP(_lp), 'LP is not active');
-    require(_numSynthTokens > 0, 'No synthetic tokens deposited');
 
     ISynthereumFinder synthFinder = finder;
 
@@ -682,14 +681,19 @@ contract SynthereumMultiLpLiquidityPool is
         liquidationUpdateArgs
       );
 
+    totalSyntheticAsset =
+      liquidationUpdateArgs.tempStorageArgs.totalSyntheticAsset -
+      tokensInLiquidation;
+
     _burnSyntheticTokens(
       syntheticAsset,
       tokensInLiquidation,
       liquidationUpdateArgs.liquidator
     );
 
-    emit Liquidate(
+    emit Liquidated(
       liquidationUpdateArgs.liquidator,
+      _lp,
       tokensInLiquidation,
       collateralAmount,
       bonusAmount,
@@ -1341,13 +1345,11 @@ contract SynthereumMultiLpLiquidityPool is
   ) internal {
     PositionCache memory lpCache;
     address lp;
-    LPPosition memory lpPosition;
     uint256 actualCollateralAmount;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lpCache = _positionsCache[j];
       lp = lpCache.lp;
-      lpPosition = _positionsCache[j].lpPosition;
-      actualCollateralAmount = lpPosition.actualCollateralAmount;
+      actualCollateralAmount = lpCache.lpPosition.actualCollateralAmount;
       if (lp == _depositingLp) {
         lpPositions[lp].actualCollateralAmount =
           actualCollateralAmount +
@@ -1381,7 +1383,7 @@ contract SynthereumMultiLpLiquidityPool is
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lpCache = _positionsCache[j];
       lp = lpCache.lp;
-      lpPosition = _positionsCache[j].lpPosition;
+      lpPosition = lpCache.lpPosition;
       actualCollateralAmount = lpPosition.actualCollateralAmount;
       if (lp == _depositingLp) {
         newCollateralAmount = actualCollateralAmount - _decreaseCollateral;
@@ -1426,7 +1428,7 @@ contract SynthereumMultiLpLiquidityPool is
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lpCache = _positionsCache[j];
       lp = lpCache.lp;
-      lpPosition = _positionsCache[j].lpPosition;
+      lpPosition = lpCache.lpPosition;
       actualCollateralAmount = lpPosition.actualCollateralAmount;
       if (lp == _lp) {
         (bool isOvercollateralized, ) =
@@ -1476,18 +1478,22 @@ contract SynthereumMultiLpLiquidityPool is
   {
     PositionCache memory lpCache;
     address lp;
-    LPPosition memory lpPosition;
+    // LPPosition memory lpPosition;
     uint256 actualCollateralAmount;
+    uint256 actualSynthTokens;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lpCache = _positionsCache[j];
       lp = lpCache.lp;
-      lpPosition = _positionsCache[j].lpPosition;
-      actualCollateralAmount = lpPosition.actualCollateralAmount;
+      // lpPosition = lpCache.lpPosition;
+      actualCollateralAmount = lpCache.lpPosition.actualCollateralAmount;
+      actualSynthTokens = lpCache.lpPosition.tokensCollateralized;
+
       if (lp == _liquidatedLp) {
         tokensToLiquidate = PreciseUnitMath.min(
           _tokensInLiquidation,
-          lpPosition.tokensCollateralized
+          actualSynthTokens
         );
+        require(tokensToLiquidate > 0, 'No synthetic tokens to liquidate');
 
         collateralAmount = _calculateCollateralAmount(
           tokensToLiquidate,
@@ -1499,14 +1505,14 @@ contract SynthereumMultiLpLiquidityPool is
           _isOvercollateralizedLP(
             actualCollateralAmount,
             _liquidationUpdateArgs.overCollateralRequirement,
-            lpPosition.tokensCollateralized,
+            actualSynthTokens,
             _liquidationUpdateArgs.tempStorageArgs.price,
             _liquidationUpdateArgs.tempStorageArgs.decimals
           );
         require(!isOvercollateralized, 'LP is overcollateralized');
 
         liquidationBonusAmount = tokensToLiquidate
-          .div(lpPosition.tokensCollateralized)
+          .div(actualSynthTokens)
           .mul(liquidationBonus)
           .mul(actualCollateralAmount);
 
@@ -1526,8 +1532,12 @@ contract SynthereumMultiLpLiquidityPool is
 
         collateralReceived = lendingValues.tokensTransferred;
 
-        lpPositions[lp].actualCollateralAmount -= liquidationBonusAmount;
-        lpPositions[lp].tokensCollateralized -= tokensToLiquidate;
+        lpPositions[lp].actualCollateralAmount =
+          actualCollateralAmount -
+          liquidationBonusAmount;
+        lpPositions[lp].tokensCollateralized =
+          actualSynthTokens -
+          tokensToLiquidate;
       } else {
         lpPositions[lp].actualCollateralAmount = actualCollateralAmount;
       }

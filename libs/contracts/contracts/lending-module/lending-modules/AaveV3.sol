@@ -69,10 +69,6 @@ contract AaveV3Module is ILendingModule {
       uint256 tokensTransferred
     )
   {
-    // calculate accrued interest since last operation
-    (uint256 totalInterest, ) =
-      calculateGeneratedInterest(pool, poolData, aTokensAmount, false);
-
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(poolData.interestBearingToken);
 
@@ -81,6 +77,14 @@ contract AaveV3Module is ILendingModule {
         interestToken.balanceOf(address(this)),
         aTokensAmount + 1
       );
+
+    // calculate accrued interest since last operation
+    (totalInterest, ) = calculateGeneratedInterest(
+      pool,
+      poolData,
+      withdrawAmount,
+      false
+    );
 
     uint256 initialBalance = IERC20(poolData.collateral).balanceOf(recipient);
 

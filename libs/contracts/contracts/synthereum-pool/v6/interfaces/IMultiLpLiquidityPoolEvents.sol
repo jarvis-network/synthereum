@@ -93,13 +93,15 @@ interface ISynthereumMultiLpLiquidityPoolEvents {
   /**
    * @notice Emitted when a user liquidate an LP
    * @param user Address of the user liquidating
+   * @param lp Address of the LP to liquidate
    * @param synthTokensInLiquidation Amount of synthetic asset in liquidation
    * @param collateralAmount Value of synthetic tokens in liquidation expressed in collateral (synthTokensInLiquidation * price)
    * @param bonusAmount Collateral amount as reward for the liquidator
    * @param collateralReceived Amount of collateral received by liquidator (collateralAmount + liquidation bonus - lending fee/bonus)
    */
-  event Liquidate(
+  event Liquidated(
     address indexed user,
+    address indexed lp,
     uint256 synthTokensInLiquidation,
     uint256 collateralAmount,
     uint256 bonusAmount,
