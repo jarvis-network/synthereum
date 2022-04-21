@@ -135,10 +135,11 @@ contract('MultiLPLiquidityPool', function (accounts) {
     );
   };
 
-  const calculateFeeAndSynthAssetForMint = async (feePrc, collateralAmount) => {
-    const price = await priceFeedContract.getLatestPrice.call(
-      priceIdenitiferBytes,
-    );
+  const calculateFeeAndSynthAssetForMint = async (
+    feePrc,
+    collateralAmount,
+    price,
+  ) => {
     const feeAmount = collateralAmount
       .mul(web3.utils.toBN(feePrc))
       .div(web3.utils.toBN(preciseUnit));
@@ -150,10 +151,11 @@ contract('MultiLPLiquidityPool', function (accounts) {
     return { feeAmount, netAmount, tokensAmount };
   };
 
-  const calculateFeeAndCollateralForRedeem = async (feePrc, tokensAmount) => {
-    const price = await priceFeedContract.getLatestPrice.call(
-      priceIdenitiferBytes,
-    );
+  const calculateFeeAndCollateralForRedeem = async (
+    feePrc,
+    tokensAmount,
+    price,
+  ) => {
     const collAmount = tokensAmount
       .mul(web3.utils.toBN(price))
       .div(web3.utils.toBN(preciseUnit))
@@ -165,13 +167,41 @@ contract('MultiLPLiquidityPool', function (accounts) {
     return { feeAmount, netAmount, collAmount };
   };
 
+  const getLessCollateralizedLP = async (pool, lps) => {
+    let lessCollaterized = {
+      index: 0,
+      coverage: web3.utils.toBN(web3.utils.toWei('1000000')),
+      tokens: web3.utils.toBN('0'),
+    };
+    for (let j = 0; j < lps.length; j++) {
+      const lpInfo = await pool.positionLPInfo.call(lps[j]);
+      const lpCoverage = web3.utils.toBN(lpInfo[5]);
+      if (lpCoverage.lt(lessCollaterized.coverage)) {
+        lessCollaterized = {
+          index: j,
+          coverage: lpCoverage,
+          tokens: web3.utils.toBN(lpInfo[1]),
+        };
+      }
+    }
+    return lessCollaterized;
+  };
+
   const checkUserBalance = async (token, user, expectedBalance) => {
-    const balance = await token.balanceOf(user);
-    return balance;
+    const balance = await token.balanceOf.call(user);
     assert.equal(
       expectedBalance.toString(),
       balance.toString(),
       'Wrong user balance',
+    );
+  };
+
+  const checkTotalSupply = async (token, expectedSupply) => {
+    const actualSupply = await token.totalSupply.call();
+    assert.equal(
+      expectedSupply.toString(),
+      actualSupply.toString(),
+      'Wrong total supply',
     );
   };
 
@@ -240,11 +270,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
       'Wrong result of capacity',
     );
     const decimals = await pool.collateralTokenDecimals.call();
-    const usersValue = web3.utils
-      .toBN(price)
-      .mul(web3.utils.toBN(_totTokens))
-      .div(web3.utils.toBN(preciseUnit.toString()))
-      .div(web3.utils.toBN(Math.pow(10, 18 - decimals).toString()));
+    const usersValue = (
+      await calculateFeeAndCollateralForRedeem(
+        '0',
+        web3.utils.toBN(_totTokens),
+        price,
+      )
+    ).collAmount;
     assert.equal(
       usersValue.toString(),
       collateralInfo[0].toString(),
@@ -835,6 +867,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const prevReceiverBalance = await syntTokenContract.balanceOf.call(
         receiver,
       );
+      const tokensSupply = await syntTokenContract.totalSupply.call();
       let mintParams = {
         minNumTokens: 0,
         collateralAmount: collateralAmount.toString(),
@@ -865,6 +898,10 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
       const price = await priceFeedContract.getLatestPrice.call(
         priceIdenitiferBytes,
+      );
+      await checkTotalSupply(
+        syntTokenContract,
+        web3.utils.toBN(tokensSupply).add(tokensMinted),
       );
       await checkGlobalData(
         poolContract,
@@ -970,9 +1007,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await collateralContract.approve(poolAddress, collateralAmount, {
         from: sender,
       });
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const mintReturnValues = await calculateFeeAndSynthAssetForMint(
         feePercentageWei,
         collateralAmount,
+        price,
       );
       const minTokensAmount = mintReturnValues.tokensAmount;
       const mintParams = {
@@ -1126,14 +1167,19 @@ contract('MultiLPLiquidityPool', function (accounts) {
 
     it('Can redeem', async () => {
       const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
         feePercentageWei,
         tokensAmount,
+        price,
       );
       const prevSenderBalance = await syntTokenContract.balanceOf.call(sender);
       const prevReceiverBalance = await collateralContract.balanceOf.call(
         receiver,
       );
+      const tokensSupply = await syntTokenContract.totalSupply.call();
       const redeemParams = {
         numTokens: tokensAmount.toString(),
         minCollateral: '0',
@@ -1169,8 +1215,9 @@ contract('MultiLPLiquidityPool', function (accounts) {
         sender,
         web3.utils.toBN(prevSenderBalance).sub(tokensAmount),
       );
-      const price = await priceFeedContract.getLatestPrice.call(
-        priceIdenitiferBytes,
+      await checkTotalSupply(
+        syntTokenContract,
+        web3.utils.toBN(tokensSupply).sub(tokensAmount),
       );
       await checkGlobalData(
         poolContract,
@@ -1193,9 +1240,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
       console.log('Gas used for redeem tx: ', redeemTx.receipt.gasUsed);
     });
     it('Can redeem all synthetic tokens', async () => {
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
         feePercentageWei,
         mintTokens,
+        price,
       );
       const prevSenderBalance = await syntTokenContract.balanceOf.call(sender);
       const prevReceiverBalance = await collateralContract.balanceOf.call(
@@ -1235,9 +1286,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
         syntTokenContract,
         sender,
         web3.utils.toBN(prevSenderBalance).sub(mintTokens),
-      );
-      const price = await priceFeedContract.getLatestPrice.call(
-        priceIdenitiferBytes,
       );
       await checkGlobalData(
         poolContract,
@@ -1291,9 +1339,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
     it('Can revert if collateral received less than minimum set', async () => {
       const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
         feePercentageWei,
         tokensAmount,
+        price,
       );
       const minAmount = redeemReturnValues.netAmount.add(
         web3.utils
@@ -1562,9 +1614,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
       let result = await poolContract.positionLPInfo.call(lp);
       const prevCollDeposited = result[0];
       const maxCapacity = result[3];
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const retValues = await calculateFeeAndCollateralForRedeem(
         '0',
         web3.utils.toBN(maxCapacity),
+        price,
       );
       const collateralToWithdraw = retValues.collAmount
         .mul(web3.utils.toBN(result[2]))
@@ -1606,9 +1662,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
           ),
         true,
         'Wrong removed collateral',
-      );
-      const price = await priceFeedContract.getLatestPrice.call(
-        priceIdenitiferBytes,
       );
       await checkGlobalData(
         poolContract,
@@ -1659,9 +1712,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const lp = LPs[getRandomInt(0, lpNumber - 1)];
       let result = await poolContract.positionLPInfo.call(lp);
       const maxCapacity = result[3];
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const retValues = await calculateFeeAndCollateralForRedeem(
         '0',
         web3.utils.toBN(maxCapacity),
+        price,
       );
       const collateralToWithdraw = retValues.collAmount;
       await truffleAssert.reverts(
@@ -1837,9 +1894,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const lp = LPs[getRandomInt(0, lpNumber - 1)];
       let result = await poolContract.positionLPInfo.call(lp);
       const tokens = result[1];
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
       const retValues = await calculateFeeAndCollateralForRedeem(
         '0',
         web3.utils.toBN(tokens),
+        price,
       );
       const newOverColl = web3.utils
         .toBN(result[0])
@@ -1853,6 +1914,339 @@ contract('MultiLPLiquidityPool', function (accounts) {
         }),
         'LP below its overcollateralization level',
       );
+    });
+  });
+
+  describe('Should liquidate', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can liquidate', async () => {
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const exceedCollPcg = lessColl.coverage
+        .mul(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(
+          web3.utils
+            .toBN(overCollateralRequirement)
+            .add(web3.utils.toBN(Math.pow(10, 18).toString())),
+        );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(exceedCollPcg)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('101'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      const liquidationTokens = web3.utils
+        .toBN(lessColl.tokens)
+        .div(web3.utils.toBN('3'));
+      await syntTokenContract.approve(poolContract.address, liquidationTokens, {
+        from: sender,
+      });
+      const prevSenderSynthBalance = await syntTokenContract.balanceOf.call(
+        sender,
+      );
+      const prevSenderCollateral = await collateralContract.balanceOf.call(
+        sender,
+      );
+      const coversionResult = await calculateFeeAndCollateralForRedeem(
+        '0',
+        liquidationTokens,
+        newPrice.toString(),
+      );
+      const tokensSupply = await syntTokenContract.totalSupply.call();
+      const liquidationTx = await poolContract.liquidate(
+        LPs[lessColl.index],
+        liquidationTokens,
+        {
+          from: sender,
+        },
+      );
+      let collateralReceived;
+      let bonusAmount;
+      truffleAssert.eventEmitted(liquidationTx, 'Liquidated', ev => {
+        collateralReceived = ev.collateralReceived.toString();
+        bonusAmount = ev.bonusAmount.toString();
+        return (
+          ev.user == sender &&
+          ev.lp == LPs[lessColl.index] &&
+          ev.synthTokensInLiquidation.toString() ==
+            liquidationTokens.toString() &&
+          ev.collateralAmount.toString() ==
+            coversionResult.collAmount.toString()
+        );
+      });
+      const lpInfo = await poolContract.positionLPInfo.call(
+        LPs[lessColl.index],
+      );
+      assert.equal(
+        web3.utils.toBN(lessColl.tokens).toString(),
+        web3.utils.toBN(lpInfo[1]).add(liquidationTokens).toString(),
+        'Wrong tokens in position',
+      );
+      await checkUserBalance(
+        syntTokenContract,
+        sender,
+        mintTokens.sub(liquidationTokens),
+      );
+      await checkUserBalance(
+        collateralContract,
+        sender,
+        prevSenderCollateral.add(web3.utils.toBN(collateralReceived)),
+      );
+      await checkTotalSupply(
+        syntTokenContract,
+        web3.utils.toBN(tokensSupply).sub(liquidationTokens),
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(liquidationTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(liquidationTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+    });
+    it('Can liquidate all the amount tokens in the position of an LP', async () => {
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const exceedCollPcg = lessColl.coverage
+        .mul(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(
+          web3.utils
+            .toBN(overCollateralRequirement)
+            .add(web3.utils.toBN(Math.pow(10, 18).toString())),
+        );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(exceedCollPcg)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('101'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      const liquidationTokens = web3.utils
+        .toBN(lessColl.tokens)
+        .mul(web3.utils.toBN('100'))
+        .div(web3.utils.toBN('99'));
+      await syntTokenContract.approve(poolContract.address, liquidationTokens, {
+        from: sender,
+      });
+      const prevSenderSynthBalance = await syntTokenContract.balanceOf.call(
+        sender,
+      );
+      const prevSenderCollateral = await collateralContract.balanceOf.call(
+        sender,
+      );
+      const coversionResult = await calculateFeeAndCollateralForRedeem(
+        '0',
+        lessColl.tokens,
+        newPrice.toString(),
+      );
+      let lpInfo = await poolContract.positionLPInfo.call(LPs[lessColl.index]);
+      const tokensSupply = await syntTokenContract.totalSupply.call();
+      const liquidationTx = await poolContract.liquidate(
+        LPs[lessColl.index],
+        liquidationTokens,
+        {
+          from: sender,
+        },
+      );
+      let collateralReceived;
+      let bonusAmount;
+      truffleAssert.eventEmitted(liquidationTx, 'Liquidated', ev => {
+        collateralReceived = ev.collateralReceived.toString();
+        bonusAmount = ev.bonusAmount.toString();
+        return (
+          ev.user == sender &&
+          ev.lp == LPs[lessColl.index] &&
+          ev.synthTokensInLiquidation.toString() ==
+            lessColl.tokens.toString() &&
+          ev.collateralAmount.toString() ==
+            coversionResult.collAmount.toString()
+        );
+      });
+      lpInfo = await poolContract.positionLPInfo.call(LPs[lessColl.index]);
+      assert.equal('0', web3.utils.toBN(lpInfo[1]), 'Wrong tokens in position');
+      await checkUserBalance(
+        syntTokenContract,
+        sender,
+        mintTokens.sub(web3.utils.toBN(lessColl.tokens)),
+      );
+      await checkUserBalance(
+        collateralContract,
+        sender,
+        prevSenderCollateral.add(web3.utils.toBN(collateralReceived)),
+      );
+      await checkTotalSupply(
+        syntTokenContract,
+        web3.utils.toBN(tokensSupply).sub(web3.utils.toBN(lessColl.tokens)),
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(web3.utils.toBN(lessColl.tokens)),
+        collateralAmount
+          .add(totalCollateral)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(web3.utils.toBN(lessColl.tokens)),
+        collateralAmount
+          .add(totalCollateral)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+    });
+    it('Can revert if trying to liquidate a not active LP', async () => {
+      liquidationTokens = '1';
+      await syntTokenContract.approve(poolContract.address, liquidationTokens, {
+        from: sender,
+      });
+      await truffleAssert.reverts(
+        poolContract.liquidate(genericSender, liquidationTokens, {
+          from: sender,
+        }),
+        'LP is not active',
+      );
+    });
+    it('Can revert if not tokens passed for the liquidation', async () => {
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const exceedCollPcg = lessColl.coverage
+        .mul(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(
+          web3.utils
+            .toBN(overCollateralRequirement)
+            .add(web3.utils.toBN(Math.pow(10, 18).toString())),
+        );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(exceedCollPcg)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('101'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      const liquidationTokens = '0';
+      await truffleAssert.reverts(
+        poolContract.liquidate(LPs[lessColl.index], liquidationTokens, {
+          from: sender,
+        }),
+        'No synthetic tokens to liquidate',
+      );
+      await resetOracle();
+    });
+    it('Can revert if the LP is not undercollateralized', async () => {
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const exceedCollPcg = lessColl.coverage
+        .mul(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(
+          web3.utils
+            .toBN(overCollateralRequirement)
+            .add(web3.utils.toBN(Math.pow(10, 18).toString())),
+        );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(exceedCollPcg)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('99'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      const liquidationTokens = web3.utils
+        .toBN(lessColl.tokens)
+        .div(web3.utils.toBN('3'));
+      await syntTokenContract.approve(poolContract.address, liquidationTokens, {
+        from: sender,
+      });
+      await truffleAssert.reverts(
+        poolContract.liquidate(LPs[lessColl.index], liquidationTokens, {
+          from: sender,
+        }),
+        'LP is overcollateralized',
+      );
+      await resetOracle();
     });
   });
 });
