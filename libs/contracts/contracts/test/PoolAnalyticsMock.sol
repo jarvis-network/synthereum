@@ -33,6 +33,8 @@ contract PoolAnalyticsMock {
 
   uint256 public tokensMinted;
 
+  uint256 public poolInterest;
+
   struct TotalCollateral {
     uint256 usersCollateral;
     uint256 lpsCollateral;
@@ -138,5 +140,16 @@ contract PoolAnalyticsMock {
       )
     );
     postCapacity = poolContract.maxTokensCapacity();
+  }
+
+  function updatePositions(address _pool) external {
+    ISynthereumMultiLpLiquidityPool poolContract =
+      ISynthereumMultiLpLiquidityPool(_pool);
+    ILendingManager lendingManager =
+      ILendingManager(
+        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
+      );
+    (poolInterest, , ) = lendingManager.getAccumulatedInterest(_pool);
+    poolContract.updatePositions();
   }
 }

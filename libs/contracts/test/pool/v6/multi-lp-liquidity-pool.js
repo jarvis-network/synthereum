@@ -187,6 +187,30 @@ contract('MultiLPLiquidityPool', function (accounts) {
     return lessCollaterized;
   };
 
+  const calculateLpInterests = (
+    totalInterests,
+    capacity,
+    utilization,
+    totalCapacity,
+    totalUtilization,
+  ) => {
+    const capacityShare = web3.utils
+      .toBN(capacity)
+      .mul(web3.utils.toBN(preciseUnit.toString()))
+      .div(web3.utils.toBN(totalCapacity));
+    const utilizationShare = web3.utils
+      .toBN(utilization)
+      .mul(web3.utils.toBN(preciseUnit.toString()))
+      .div(web3.utils.toBN(totalUtilization));
+    const totalShares = capacityShare
+      .add(utilizationShare)
+      .div(web3.utils.toBN('2'));
+    const lpInterst = totalInterests
+      .mul(totalShares)
+      .div(web3.utils.toBN(preciseUnit.toString()));
+    return lpInterst;
+  };
+
   const checkUserBalance = async (token, user, expectedBalance) => {
     const balance = await token.balanceOf.call(user);
     assert.equal(
@@ -1725,7 +1749,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         poolContract.removeLiquidity(collateralToWithdraw, {
           from: lp,
         }),
-        'reverted with panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block',
+        'reverted with panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)',
       );
     });
     it('Can revert if trying to remove with final position below overcollateralization level', async () => {
@@ -2245,6 +2269,362 @@ contract('MultiLPLiquidityPool', function (accounts) {
           from: sender,
         }),
         'LP is overcollateralized',
+      );
+      await resetOracle();
+    });
+  });
+
+  describe('Should split interests and profit or loss of the LPs', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can split interests correctly', async () => {
+      const lpIndex = getRandomInt(0, lpNumber - 1);
+      const lp = LPs[lpIndex];
+      const lpsInfo = await poolContract.positionLPInfo.call(lp);
+      const prevLpCollateral = lpsInfo[0];
+      const capacity = lpsInfo[3];
+      const utilization = lpsInfo[4];
+      let totalCapacity = web3.utils.toBN('0');
+      let totalUtilization = web3.utils.toBN('0');
+      for (let j = 0; j < LPs.length; j++) {
+        const lpPosition = await poolContract.positionLPInfo.call(LPs[j]);
+        totalCapacity = totalCapacity.add(web3.utils.toBN(lpPosition[3]));
+        totalUtilization = totalUtilization.add(web3.utils.toBN(lpPosition[4]));
+      }
+      await network.provider.send('evm_increaseTime', [
+        getRandomInt(3600, 24 * 7 * 3600),
+      ]);
+      await analyticsMock.updatePositions(poolAddress);
+      const totalInterest = await analyticsMock.poolInterest.call();
+      const lpInterst = calculateLpInterests(
+        totalInterest,
+        capacity,
+        utilization,
+        totalCapacity,
+        totalUtilization,
+      );
+      const actualLpCollateral = (
+        await poolContract.positionLPInfo.call(lp)
+      )[0];
+      assert.equal(
+        web3.utils.toBN(actualLpCollateral).toString(),
+        web3.utils.toBN(prevLpCollateral).add(lpInterst).toString(),
+        'Wrong interest splitting',
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(totalInterest)),
+        totalCollateral.add(web3.utils.toBN(totalInterest)),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(totalInterest)),
+        totalCollateral.add(web3.utils.toBN(totalInterest)),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can split profit between LPs', async () => {
+      const lpIndex = getRandomInt(0, lpNumber - 1);
+      const lp = LPs[lpIndex];
+      const lpsInfo = await poolContract.positionLPInfo.call(lp);
+      const prevLpCollateral = lpsInfo[0];
+      const capacity = lpsInfo[3];
+      const utilization = lpsInfo[4];
+      const tokens = lpsInfo[1];
+      let totalCapacity = web3.utils.toBN('0');
+      let totalUtilization = web3.utils.toBN('0');
+      let totalTokens = web3.utils.toBN('0');
+      let totalLPColl = web3.utils.toBN('0');
+      for (let j = 0; j < LPs.length; j++) {
+        const lpPosition = await poolContract.positionLPInfo.call(LPs[j]);
+        totalCapacity = totalCapacity.add(web3.utils.toBN(lpPosition[3]));
+        totalUtilization = totalUtilization.add(web3.utils.toBN(lpPosition[4]));
+        totalTokens = totalTokens.add(web3.utils.toBN(lpPosition[1]));
+        totalLPColl = totalLPColl.add(web3.utils.toBN(lpPosition[0]));
+      }
+      const totCollateral = (
+        await lendingStorageManagerContract.getPoolData.call(poolAddress)
+      )[5];
+      const actualUserValue = web3.utils
+        .toBN(totCollateral)
+        .sub(web3.utils.toBN(totalLPColl));
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(web3.utils.toBN('97'))
+        .div(web3.utils.toBN('100'));
+      const newUserValue = (
+        await calculateFeeAndCollateralForRedeem(
+          '0',
+          totalTokens,
+          newPrice.toString(),
+        )
+      ).collAmount;
+      const totalLPGain = actualUserValue.sub(newUserValue);
+      const lpGain = totalLPGain
+        .mul(
+          web3.utils
+            .toBN(tokens)
+            .mul(web3.utils.toBN(preciseUnit.toString()))
+            .div(totalTokens),
+        )
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      await network.provider.send('evm_increaseTime', [
+        getRandomInt(3600, 24 * 7 * 3600),
+      ]);
+      await analyticsMock.updatePositions(poolAddress);
+      const totalInterest = await analyticsMock.poolInterest.call();
+      const lpInterst = calculateLpInterests(
+        totalInterest,
+        capacity,
+        utilization,
+        totalCapacity,
+        totalUtilization,
+      );
+      const actualLpCollateral = (
+        await poolContract.positionLPInfo.call(lp)
+      )[0];
+      assert.equal(
+        web3.utils
+          .toBN(actualLpCollateral)
+          .eq(web3.utils.toBN(prevLpCollateral).add(lpInterst).add(lpGain)) ||
+          web3.utils
+            .toBN(actualLpCollateral)
+            .eq(
+              web3.utils
+                .toBN(prevLpCollateral)
+                .add(lpInterst)
+                .add(lpGain)
+                .add(web3.utils.toBN('1')),
+            ) ||
+          web3.utils
+            .toBN(actualLpCollateral)
+            .eq(
+              web3.utils
+                .toBN(prevLpCollateral)
+                .add(lpInterst)
+                .add(lpGain)
+                .sub(web3.utils.toBN('1')),
+            ),
+        true,
+        'Wrong P&L splitting',
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(totalInterest)),
+        totalCollateral.add(web3.utils.toBN(totalInterest)).add(totalLPGain),
+        newPrice,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(totalInterest)),
+        totalCollateral.add(web3.utils.toBN(totalInterest)).add(totalLPGain),
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+    });
+    it('Can split loss between LPs', async () => {
+      const lpIndex = getRandomInt(0, lpNumber - 1);
+      const lp = LPs[lpIndex];
+      const lpsInfo = await poolContract.positionLPInfo.call(lp);
+      const prevLpCollateral = lpsInfo[0];
+      const capacity = lpsInfo[3];
+      const utilization = lpsInfo[4];
+      const tokens = lpsInfo[1];
+      let totalCapacity = web3.utils.toBN('0');
+      let totalUtilization = web3.utils.toBN('0');
+      let totalTokens = web3.utils.toBN('0');
+      let totalLPColl = web3.utils.toBN('0');
+      for (let j = 0; j < LPs.length; j++) {
+        const lpPosition = await poolContract.positionLPInfo.call(LPs[j]);
+        totalCapacity = totalCapacity.add(web3.utils.toBN(lpPosition[3]));
+        totalUtilization = totalUtilization.add(web3.utils.toBN(lpPosition[4]));
+        totalTokens = totalTokens.add(web3.utils.toBN(lpPosition[1]));
+        totalLPColl = totalLPColl.add(web3.utils.toBN(lpPosition[0]));
+      }
+      const totCollateral = (
+        await lendingStorageManagerContract.getPoolData.call(poolAddress)
+      )[5];
+      const actualUserValue = web3.utils
+        .toBN(totCollateral)
+        .sub(web3.utils.toBN(totalLPColl));
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(web3.utils.toBN('101'))
+        .div(web3.utils.toBN('100'));
+      const newUserValue = (
+        await calculateFeeAndCollateralForRedeem(
+          '0',
+          totalTokens,
+          newPrice.toString(),
+        )
+      ).collAmount;
+      const totalLPLoss = newUserValue.sub(actualUserValue);
+      const lpLoss = totalLPLoss
+        .mul(
+          web3.utils
+            .toBN(tokens)
+            .mul(web3.utils.toBN(preciseUnit.toString()))
+            .div(totalTokens),
+        )
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      await network.provider.send('evm_increaseTime', [
+        getRandomInt(3600, 24 * 7 * 3600),
+      ]);
+      await analyticsMock.updatePositions(poolAddress);
+      const totalInterest = await analyticsMock.poolInterest.call();
+      const lpInterst = calculateLpInterests(
+        totalInterest,
+        capacity,
+        utilization,
+        totalCapacity,
+        totalUtilization,
+      );
+      const actualLpCollateral = (
+        await poolContract.positionLPInfo.call(lp)
+      )[0];
+      assert.equal(
+        web3.utils
+          .toBN(actualLpCollateral)
+          .eq(web3.utils.toBN(prevLpCollateral).add(lpInterst).sub(lpLoss)) ||
+          web3.utils
+            .toBN(actualLpCollateral)
+            .eq(
+              web3.utils
+                .toBN(prevLpCollateral)
+                .add(lpInterst)
+                .sub(lpLoss)
+                .add(web3.utils.toBN('1')),
+            ) ||
+          web3.utils
+            .toBN(actualLpCollateral)
+            .eq(
+              web3.utils
+                .toBN(prevLpCollateral)
+                .add(lpInterst)
+                .sub(lpLoss)
+                .sub(web3.utils.toBN('1')),
+            ),
+        true,
+        'Wrong P&L splitting',
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(totalInterest)),
+        totalCollateral.add(web3.utils.toBN(totalInterest)).sub(totalLPLoss),
+        newPrice,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(totalCollateral)
+          .add(web3.utils.toBN(totalInterest)),
+        totalCollateral.add(web3.utils.toBN(totalInterest)).sub(totalLPLoss),
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+    });
+    it('Can revert if one or more Lps are undercapitalized', async () => {
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(lessColl.coverage)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('1001'))
+        .div(web3.utils.toBN('999'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      await truffleAssert.reverts(
+        poolContract.updatePositions(),
+        'reverted with panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)',
       );
       await resetOracle();
     });
