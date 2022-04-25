@@ -1511,10 +1511,9 @@ contract SynthereumMultiLpLiquidityPool is
           );
         require(!isOvercollateralized, 'LP is overcollateralized');
 
-        liquidationBonusAmount = tokensToLiquidate
-          .div(actualSynthTokens)
+        liquidationBonusAmount = actualCollateralAmount
           .mul(liquidationBonus)
-          .mul(actualCollateralAmount);
+          .mul(tokensToLiquidate.div(actualSynthTokens));
 
         (
           ILendingManager.ReturnValues memory lendingValues,
