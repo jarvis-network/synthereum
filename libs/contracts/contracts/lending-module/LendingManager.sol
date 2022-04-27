@@ -217,7 +217,9 @@ contract LendingManager is
   ) external override nonReentrant onlyMaintainer {
     require(pools.length == amounts.length, 'Invalid call');
     address recipient =
-      ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
+      ISynthereumFinder(finder).getImplementationAddress(
+        SynthereumInterfaces.CommissionReceiver
+      );
     uint256 totalAmount;
     for (uint8 i = 0; i < pools.length; i++) {
       claimCommission(pools[i], amounts[i], recipient);
@@ -241,7 +243,7 @@ contract LendingManager is
     uint256 aggregatedCollateral;
     address recipient =
       ISynthereumFinder(finder).getImplementationAddress(
-        'BuybackProgramReceiver'
+        SynthereumInterfaces.BuybackProgramReceiver
       );
     for (uint8 i = 0; i < pools.length; i++) {
       address pool = pools[i];
