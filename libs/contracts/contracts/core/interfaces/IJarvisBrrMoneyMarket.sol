@@ -12,12 +12,14 @@ interface IJarvisBrrMoneyMarket {
    * @param amount of jSynth to deposit
    * @param jSynthAsset address of the jSynth token to deposit
    * @param extraArgs bytes Encoded args for the implementation
+   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return tokensOut amount of eventual tokens received from money market
    */
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
     uint256 amount,
-    bytes memory extraArgs
+    bytes memory extraArgs,
+    bytes memory implementationCallArgs
   ) external returns (uint256 tokensOut);
 
   /**
@@ -26,33 +28,26 @@ interface IJarvisBrrMoneyMarket {
    * @param jSynthAsset address of the jSynth token to withdraw
    * @param interestTokenAmount of interest tokens to withdraw
    * @param extraArgs bytes Encoded args for the implementation
+   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return jSynthOut amount of j Synth in output
    */
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
     uint256 interestTokenAmount,
-    bytes memory extraArgs
+    bytes memory extraArgs,
+    bytes memory implementationCallArgs
   ) external returns (uint256 jSynthOut);
-
-  /**
-   * @notice returns the corresponding interest bearing token in the money market
-   * @param jSynthAsset address of the jSynth token to get corresponding interest token
-   * @param args bytes Encoded args for the implementation
-   * @return token interest bearing token
-   */
-  function getInterestBearingToken(address jSynthAsset, bytes memory args)
-    external
-    view
-    returns (address token);
 
   /**
    * @notice returns the total deposited + interest generated in the money market
    * @param jSynthAsset address of the jSynth token to get corresponding balance
-   * @param args bytes Encoded args for the implementation
+   * @param args general bytes Encoded args for the implementation
+   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return totalJSynth total amount of jSynth
    */
-  function getTotalBalance(address jSynthAsset, bytes memory args)
-    external
-    view
-    returns (uint256 totalJSynth);
+  function getTotalBalance(
+    address jSynthAsset,
+    bytes memory args,
+    bytes memory implementationCallArgs
+  ) external returns (uint256 totalJSynth);
 }

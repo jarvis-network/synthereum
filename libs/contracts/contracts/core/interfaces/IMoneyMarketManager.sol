@@ -24,12 +24,14 @@ interface IMoneyMarketManager {
    * @param jSynthAsset address of the jSynth token to deposit
    * @param amount of jSynth to deposit
    * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
+   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return tokensOut amount of eventual tokens received from money market
    */
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
     uint256 amount,
-    string memory moneyMarketId
+    string memory moneyMarketId,
+    bytes memory implementationCallArgs
   ) external returns (uint256 tokensOut);
 
   /**
@@ -38,23 +40,27 @@ interface IMoneyMarketManager {
    * @param interestTokenAmount of interest tokens to withdraw
    * @param jSynthAsset address of the jSynth token to withdraw
    * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
+   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return jSynthOut amount of j Synth in output
    */
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
     uint256 interestTokenAmount,
-    string memory moneyMarketId
+    string memory moneyMarketId,
+    bytes memory implementationCallArgs
   ) external returns (uint256 jSynthOut);
 
   /**
    * @notice withdraw generated interest from deposits in money market and sends them to dao
    * @param jSynthAsset address of the jSynth token to get revenues of
    * @param moneyMarketId identifier of the money market implementation contract
+   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return jSynthOut amount of jSynth sent to the DAO
    */
   function withdrawRevenue(
     IMintableBurnableERC20 jSynthAsset,
-    string memory moneyMarketId
+    string memory moneyMarketId,
+    bytes memory implementationCallArgs
   ) external returns (uint256 jSynthOut);
 
   /**

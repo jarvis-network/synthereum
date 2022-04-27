@@ -4,19 +4,21 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
-import {IPool} from '../lending-module/interfaces/IAaveV3.sol';
 import {
   IMintableBurnableERC20
 } from '../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ICErc20} from './interfaces/ICErc20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 
 // storageless contract to be used as delegate call by JarvisBRR to deposit the minted jSynth into a money market
-contract JarvisBrrAave is IJarvisBrrMoneyMarket {
+contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   using SafeERC20 for IMintableBurnableERC20;
   using SafeERC20 for IERC20;
+  using PreciseUnitMath for uint256;
 
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
@@ -26,45 +28,34 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   ) external override returns (uint256 tokensOut) {
     require(jSynthAsset.balanceOf(address(this)) == amount, 'Wrong balance');
 
-    // aave deposit - approve
-    address moneyMarket = abi.decode(extraArgs, (address));
+    // initialise compound interest token
+    address cTokenAddress = abi.decode(implementationArgs, (address));
 
-    jSynthAsset.safeIncreaseAllowance(moneyMarket, amount);
-    IPool(moneyMarket).deposit(
-      address(jSynthAsset),
-      amount,
-      address(this),
-      uint16(0)
-    );
-
-    tokensOut = amount;
+    // approve and deposit underlying
+    jSynthAsset.safeIncreaseAllowance(cTokenAddress, amount);
+    tokensOut = ICErc20(cTokenAddress).mint(amount);
   }
 
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
-    uint256 aTokensAmount,
+    uint256 cTokensAmount,
     bytes memory extraArgs,
     bytes memory implementationArgs
   ) external override returns (uint256 jSynthOut) {
-    IERC20 interestToken =
-      IERC20(interestBearingToken(address(jSynthAsset), extraArgs));
+    address cTokenAddr = abi.decode(implementationArgs, (address));
+    // initialise compound interest token
+    ICErc20 cToken = ICErc20(cTokenAddr);
 
     require(
-      interestToken.balanceOf(address(this)) >= aTokensAmount,
+      IERC20(cTokenAddr).balanceOf(address(this)) >= cTokensAmount,
       'Wrong balance'
     );
 
-    // aave withdraw - approve
-    address moneyMarket = abi.decode(extraArgs, (address));
+    // redeem underlying
+    cToken.redeem(cTokensAmount);
 
-    interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
-    IPool(moneyMarket).withdraw(
-      address(jSynthAsset),
-      aTokensAmount,
-      address(this)
-    );
-
-    jSynthOut = aTokensAmount;
+    // calculate jSynthOut // can use balanceOf ?
+    jSynthOut = cTokensAmount.mul(cToken.exchangeRateCurrent());
   }
 
   function getTotalBalance(
@@ -72,16 +63,7 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     bytes memory args,
     bytes memory implementationArgs
   ) external override returns (uint256 totalJSynth) {
-    IERC20 interestToken = IERC20(interestBearingToken(jSynth, args));
-    totalJSynth = interestToken.balanceOf(msg.sender);
-  }
-
-  function interestBearingToken(address jSynth, bytes memory args)
-    internal
-    view
-    returns (address token)
-  {
-    address moneyMarket = abi.decode(args, (address));
-    token = IPool(moneyMarket).getReserveData(jSynth).aTokenAddress;
+    ICErc20 cToken = ICErc20(abi.decode(implementationArgs, (address)));
+    totalJSynth = cToken.balanceOfUnderlying(msg.sender);
   }
 }

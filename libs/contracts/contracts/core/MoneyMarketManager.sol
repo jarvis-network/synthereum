@@ -34,8 +34,8 @@ contract MoneyMarketManager is
   mapping(address => bytes) public moneyMarketArgs;
   mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
 
-  string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
-  string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes)';
+  string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes,bytes)';
+  string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes,bytes)';
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   ISynthereumFinder public immutable synthereumFinder;
@@ -81,7 +81,8 @@ contract MoneyMarketManager is
   function deposit(
     IMintableBurnableERC20 token,
     uint256 amount,
-    string memory moneyMarketId
+    string memory moneyMarketId,
+    bytes memory implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 tokensOut) {
     // trigger minting of synths from the printer contract
     address jarvisBrr =
@@ -102,7 +103,8 @@ contract MoneyMarketManager is
           DEPOSIT_SIG,
           address(token),
           amount,
-          moneyMarketArgs[implementation]
+          moneyMarketArgs[implementation],
+          implementationCallArgs
         )
       );
     tokensOut = abi.decode(result, (uint256));
@@ -113,7 +115,8 @@ contract MoneyMarketManager is
   function withdraw(
     IMintableBurnableERC20 token,
     uint256 amount,
-    string memory moneyMarketId
+    string memory moneyMarketId,
+    bytes memory implementationCallArgs
   )
     external
     override
@@ -135,7 +138,8 @@ contract MoneyMarketManager is
           WITHDRAW_SIG,
           address(token),
           amount,
-          moneyMarketArgs[implementation]
+          moneyMarketArgs[implementation],
+          implementationCallArgs
         )
       );
 
@@ -155,7 +159,8 @@ contract MoneyMarketManager is
 
   function withdrawRevenue(
     IMintableBurnableERC20 jSynthAsset,
-    string memory moneyMarketId
+    string memory moneyMarketId,
+    bytes memory implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
     address implementation = idToMoneyMarketImplementation[hashId];
@@ -165,7 +170,8 @@ contract MoneyMarketManager is
     uint256 totalBalance =
       IJarvisBrrMoneyMarket(implementation).getTotalBalance(
         address(jSynthAsset),
-        args
+        args,
+        implementationCallArgs
       );
 
     uint256 revenues =

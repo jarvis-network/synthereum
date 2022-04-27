@@ -70,6 +70,7 @@ import '../core/interfaces/IMoneyMarketManager.sol';
 import '../core/Constants.sol';
 import '../core/Deployer.sol';
 import '../core/JarvisBrrAave.sol';
+import '../core/JarvisBrrCompound.sol';
 import '../core/JarvisBrrrrr.sol';
 import '../core/MoneyMarketManager.sol';
 import '../core/CollateralWhitelist.sol';
