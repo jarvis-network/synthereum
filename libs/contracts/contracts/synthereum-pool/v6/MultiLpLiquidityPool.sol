@@ -1289,7 +1289,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @param  _bearingToken Bearing token of the new lending protocol to switch (only if requetsed by the protocol)
    * @return Return migration values parameters from lending manager
    */
-  function _lendingMigration(
+  /*function _lendingMigration(
     ILendingManager _lendingManager,
     ILendingStorageManager _lendingStorageManager,
     string calldata _lendingId,
@@ -1309,7 +1309,7 @@ contract SynthereumMultiLpLiquidityPool is
         _bearingToken,
         amountTransferred
       );
-  }
+  }*/
 
   /**
    * @notice Update collateral amount of every LP
