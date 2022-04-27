@@ -461,7 +461,8 @@ contract LendingManager is
     override
     returns (
       uint256 poolInterest,
-      uint256 daoInterest,
+      uint256 commissionInterest,
+      uint256 buybackInterest,
       uint256 collateralDeposited
     )
   {
@@ -485,7 +486,8 @@ contract LendingManager is
         poolData.jrtBuybackShare
       );
     poolInterest = interestSplit.poolInterest;
-    daoInterest = interestSplit.commissionInterest + interestSplit.jrtInterest;
+    commissionInterest = interestSplit.commissionInterest;
+    buybackInterest = interestSplit.jrtInterest;
     collateralDeposited = poolData.collateralDeposited;
   }
 

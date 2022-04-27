@@ -42,7 +42,8 @@ contract PoolAnalyticsMock {
 
   struct Interest {
     uint256 poolInterest;
-    uint256 daoInterest;
+    uint256 commissionInterest;
+    uint256 buybackInterest;
   }
 
   struct Amounts {
@@ -91,15 +92,20 @@ contract PoolAnalyticsMock {
     amounts.poolBearingBalance = IERC20(poolData.interestBearingToken)
       .balanceOf(_pool);
     amounts.poolCollBalance = IERC20(poolData.collateral).balanceOf(_pool);
-    (interest.poolInterest, interest.daoInterest, ) = lendingManager
-      .getAccumulatedInterest(_pool);
+    (
+      interest.poolInterest,
+      interest.commissionInterest,
+      interest.buybackInterest,
+
+    ) = lendingManager.getAccumulatedInterest(_pool);
     (amounts.expectedBearing, ) = lendingManager.collateralToInterestToken(
       _pool,
       poolData.collateralDeposited +
         poolData.unclaimedDaoJRT +
         poolData.unclaimedDaoCommission +
         interest.poolInterest +
-        interest.daoInterest
+        interest.commissionInterest +
+        interest.buybackInterest
     );
     lpsInfo = new ISynthereumMultiLpLiquidityPool.LPInfo[](_lps.length);
     for (uint256 j = 0; j < _lps.length; j++) {
@@ -148,7 +154,7 @@ contract PoolAnalyticsMock {
       ILendingManager(
         finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
-    (poolInterest, , ) = lendingManager.getAccumulatedInterest(_pool);
+    (poolInterest, , , ) = lendingManager.getAccumulatedInterest(_pool);
     poolContract.updatePositions();
   }
 }

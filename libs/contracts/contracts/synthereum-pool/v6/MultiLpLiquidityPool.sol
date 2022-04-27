@@ -1856,7 +1856,7 @@ contract SynthereumMultiLpLiquidityPool is
     view
     returns (uint256 poolInterests, uint256 collateralDeposited)
   {
-    (poolInterests, , collateralDeposited) = _lendingManager
+    (poolInterests, , , collateralDeposited) = _lendingManager
       .getAccumulatedInterest(address(this));
   }
 
