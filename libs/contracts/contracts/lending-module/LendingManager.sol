@@ -256,15 +256,11 @@ contract LendingManager is
       require(poolData.collateral == collateralAddress, 'Collateral mismatch');
 
       (uint256 interestTokenAmount, ) =
-        ILendingManager(address(this)).collateralToInterestToken(
-          pool,
-          collateralAmount
-        );
+        collateralToInterestToken(pool, collateralAmount);
 
       // trigger transfer of interest token from the pool
-      ISynthereumLendingTransfer(pool).transferToLendingManager(
-        interestTokenAmount
-      );
+      interestTokenAmount = ISynthereumLendingTransfer(pool)
+        .transferToLendingManager(interestTokenAmount);
 
       bytes memory withdrawRes =
         address(lendingInfo.lendingModule).functionDelegateCall(
@@ -296,7 +292,7 @@ contract LendingManager is
       poolStorageManager.updateValues(
         pool,
         poolData.collateralDeposited + interestSplit.poolInterest,
-        poolData.unclaimedDaoJRT - collateralAmount + interestSplit.jrtInterest,
+        poolData.unclaimedDaoJRT + interestSplit.jrtInterest - res.tokensOut,
         poolData.unclaimedDaoCommission + interestSplit.commissionInterest
       );
     }
@@ -437,28 +433,6 @@ contract LendingManager is
     );
   }
 
-  function collateralToInterestToken(address pool, uint256 collateralAmount)
-    external
-    view
-    override
-    returns (uint256 interestTokenAmount, address interestTokenAddr)
-  {
-    ILendingStorageManager poolStorageManager = getStorageManager();
-    (
-      ILendingStorageManager.PoolLendingStorage memory lendingStorage,
-      ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getLendingData(pool);
-
-    interestTokenAmount = ILendingModule(lendingInfo.lendingModule)
-      .collateralToInterestToken(
-      collateralAmount,
-      lendingStorage.collateralToken,
-      lendingStorage.interestToken,
-      lendingInfo.args
-    );
-    interestTokenAddr = lendingStorage.interestToken;
-  }
-
   function interestTokenToCollateral(address pool, uint256 interestTokenAmount)
     external
     view
@@ -515,6 +489,28 @@ contract LendingManager is
     collateralDeposited = poolData.collateralDeposited;
   }
 
+  function collateralToInterestToken(address pool, uint256 collateralAmount)
+    public
+    view
+    override
+    returns (uint256 interestTokenAmount, address interestTokenAddr)
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    (
+      ILendingStorageManager.PoolLendingStorage memory lendingStorage,
+      ILendingStorageManager.LendingInfo memory lendingInfo
+    ) = poolStorageManager.getLendingData(pool);
+
+    interestTokenAmount = ILendingModule(lendingInfo.lendingModule)
+      .collateralToInterestToken(
+      collateralAmount,
+      lendingStorage.collateralToken,
+      lendingStorage.interestToken,
+      lendingInfo.args
+    );
+    interestTokenAddr = lendingStorage.interestToken;
+  }
+
   function claimCommission(
     address pool,
     uint256 collateralAmount,
@@ -528,13 +524,9 @@ contract LendingManager is
 
     // trigger transfer of funds from pool
     (uint256 interestTokenAmount, ) =
-      ILendingManager(address(this)).collateralToInterestToken(
-        pool,
-        collateralAmount
-      );
-    ISynthereumLendingTransfer(pool).transferToLendingManager(
-      interestTokenAmount
-    );
+      collateralToInterestToken(pool, collateralAmount);
+    interestTokenAmount = ISynthereumLendingTransfer(pool)
+      .transferToLendingManager(interestTokenAmount);
 
     // delegate call withdraw
     bytes memory result =
@@ -564,9 +556,9 @@ contract LendingManager is
       pool,
       poolData.collateralDeposited + interestSplit.poolInterest,
       poolData.unclaimedDaoJRT + interestSplit.jrtInterest,
-      poolData.unclaimedDaoCommission -
-        collateralAmount +
-        interestSplit.commissionInterest
+      poolData.unclaimedDaoCommission +
+        interestSplit.commissionInterest -
+        res.tokensOut
     );
   }
 

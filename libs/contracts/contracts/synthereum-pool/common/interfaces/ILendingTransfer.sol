@@ -9,6 +9,9 @@ interface ISynthereumLendingTransfer {
    * @notice Transfer a bearing amount to the lending manager
    * @notice Only the lending manager can call the function
    * @param _bearingAmount Amount of bearing token to transfer
+   * @return bearingAmountOut Real bearing amount transferred to the lending manager
    */
-  function transferToLendingManager(uint256 _bearingAmount) external;
+  function transferToLendingManager(uint256 _bearingAmount)
+    external
+    returns (uint256 bearingAmountOut);
 }

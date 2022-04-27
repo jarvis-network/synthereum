@@ -136,18 +136,6 @@ interface ILendingManager {
   ) external returns (MigrateReturnValues memory);
 
   /**
-   * @notice returns the conversion between collateral and interest token of a specific money market
-   * @param pool reference pool to check conversion
-   * @param collateralAmount amount of collateral to calculate conversion on
-   * @return interestTokenAmount amount of interest token after conversion
-   * @return interestTokenAddr address of the associated interest token
-   */
-  function collateralToInterestToken(address pool, uint256 collateralAmount)
-    external
-    view
-    returns (uint256 interestTokenAmount, address interestTokenAddr);
-
-  /**
    * @notice returns the conversion between interest token and collateral of a specific money market
    * @param pool reference pool to check conversion
    * @param interestTokenAmount amount of interest token to calculate conversion on
@@ -175,4 +163,16 @@ interface ILendingManager {
       uint256 daoInterest,
       uint256 collateralDeposited
     );
+
+  /**
+   * @notice returns the conversion between collateral and interest token of a specific money market
+   * @param pool reference pool to check conversion
+   * @param collateralAmount amount of collateral to calculate conversion on
+   * @return interestTokenAmount amount of interest token after conversion
+   * @return interestTokenAddr address of the associated interest token
+   */
+  function collateralToInterestToken(address pool, uint256 collateralAmount)
+    external
+    view
+    returns (uint256 interestTokenAmount, address interestTokenAddr);
 }

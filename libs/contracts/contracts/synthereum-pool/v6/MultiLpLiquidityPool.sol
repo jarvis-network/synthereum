@@ -716,20 +716,13 @@ contract SynthereumMultiLpLiquidityPool is
     ILendingManager.ReturnValues memory lendingValues =
       _getLendingManager(synthFinder).updateAccumulatedInterest();
 
-    TempStorageArgs memory tempStorage =
-      TempStorageArgs(
-        _getPriceFeedRate(synthFinder, priceIdentifier),
-        totalSyntheticAsset,
-        collateralDecimals
-      );
-
     (PositionCache[] memory positionsCache, ) =
       _calculateNewPositions(
         lendingValues.poolInterest,
-        tempStorage.price,
-        tempStorage.totalSyntheticAsset,
+        _getPriceFeedRate(synthFinder, priceIdentifier),
+        totalSyntheticAsset,
         lendingValues.prevTotalCollateral,
-        tempStorage.decimals
+        collateralDecimals
       );
 
     _updateActualLPPositions(positionsCache);
@@ -739,8 +732,13 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Transfer a bearing amount to the lending manager
    * @notice Only the lending manager can call the function
    * @param _bearingAmount Amount of bearing token to transfer
+   * @return bearingAmountOut Real bearing amount transferred to the lending manager
    */
-  function transferToLendingManager(uint256 _bearingAmount) external override {
+  function transferToLendingManager(uint256 _bearingAmount)
+    external
+    override
+    returns (uint256 bearingAmountOut)
+  {
     ILendingManager lendingManager = _getLendingManager(finder);
     require(
       msg.sender == address(lendingManager),
@@ -750,17 +748,29 @@ contract SynthereumMultiLpLiquidityPool is
     (uint256 poolInterest, uint256 totalActualCollateral) =
       _getLendingInterest(lendingManager);
 
+    (PositionCache[] memory positionsCache, ) =
+      _calculateNewPositions(
+        poolInterest,
+        _getPriceFeedRate(finder, priceIdentifier),
+        totalSyntheticAsset,
+        totalActualCollateral,
+        collateralDecimals
+      );
+
+    _updateActualLPPositions(positionsCache);
+
     (uint256 poolBearingValue, address bearingToken) =
       lendingManager.collateralToInterestToken(
         address(this),
         totalActualCollateral + poolInterest
       );
 
-    IERC20 bearingCurrency = IERC20(bearingToken);
-    bearingCurrency.safeTransfer(msg.sender, _bearingAmount);
+    (uint256 amountOut, uint256 remainingBearingValue) =
+      IERC20(bearingToken).explicitSafeTransfer(msg.sender, _bearingAmount);
 
-    uint256 remainingBearingValue = bearingCurrency.balanceOf(address(this));
     require(remainingBearingValue >= poolBearingValue, 'Unfunded pool');
+
+    bearingAmountOut = amountOut;
   }
 
   /**
@@ -1249,7 +1259,7 @@ contract SynthereumMultiLpLiquidityPool is
         _collateralAmount
       );
 
-    uint256 amountTransferred =
+    (uint256 amountTransferred, ) =
       IERC20(bearingToken).explicitSafeTransfer(
         address(_lendingManager),
         bearingAmount
@@ -1288,7 +1298,7 @@ contract SynthereumMultiLpLiquidityPool is
     IERC20 actualBearingToken =
       IERC20(_lendingStorageManager.getInterestBearingToken(address(this)));
     uint256 actualBearingAmount = actualBearingToken.balanceOf(address(this));
-    uint256 amountTransferred =
+    (uint256 amountTransferred, ) =
       actualBearingToken.explicitSafeTransfer(
         address(_lendingManager),
         actualBearingAmount
