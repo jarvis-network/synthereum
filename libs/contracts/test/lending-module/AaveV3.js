@@ -14,6 +14,8 @@ const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
+const IUniswapRouter = artifacts.require('IUniswapV2Router02');
+
 const AToken = artifacts.require('ATokenMock');
 const AAVE = artifacts.require('AAVEMock');
 const JRTSWAP = artifacts.require('UniV2JRTSwapModule');
@@ -34,7 +36,7 @@ contract('AaveV3 Lending module', accounts => {
   const openCDP = async (deposit, borrow, from) => {
     let am = toBN(deposit).divn(50).toString();
     let half = toBN(deposit).divn(2).toString();
-    await USDCInstance.mint(from, deposit);
+    await getUSDC(deposit, from);
     await USDCInstance.approve(data[networkId].AaveV3, deposit, { from });
     await aaveInstance.supply(USDC, half, from, toHex('0'), { from });
     await aaveInstance.borrow(USDC, borrow, 2, toHex('0'), from, { from });
@@ -75,6 +77,33 @@ contract('AaveV3 Lending module', accounts => {
     await aaveInstance.repay(USDC, tx.totalDebtBase.toString(), 2, from, {
       from,
     });
+  };
+
+  const getUSDC = async (collateralAmount, recipient) => {
+    let NativeWrapperAddr = data[networkId].NativeWrapper;
+
+    let deadline = ((Date.now() / 1000) | 0) + 7200;
+    const nativeAmount = web3.utils.toWei('100');
+    const actualBalance = await web3.eth.getBalance(recipient);
+    const newTotal = web3.utils
+      .toBN(nativeAmount)
+      .add(web3.utils.toBN(actualBalance));
+
+    await network.provider.send('hardhat_setBalance', [
+      recipient,
+      web3.utils.toHex(newTotal.toString()),
+    ]);
+
+    let uniswapInstance = await IUniswapRouter.at(
+      data[networkId].JRTSwapRouter,
+    );
+    await uniswapInstance.swapETHForExactTokens(
+      collateralAmount,
+      [NativeWrapperAddr, USDC],
+      recipient,
+      deadline,
+      { from: recipient, value: nativeAmount },
+    );
   };
 
   before(async () => {
@@ -153,9 +182,7 @@ contract('AaveV3 Lending module', accounts => {
         { from: maintainer },
       );
 
-      let poolStorage = await storageManager.getPoolStorage.call(
-        poolMock.address,
-      );
+      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
       assert.equal(poolStorage.lendingInfo.lendingModule, module.address);
       assert.equal(poolStorage.poolData.collateral, USDC);
       assert.equal(poolStorage.poolData.interestBearingToken, aUSDC.address);
@@ -193,7 +220,7 @@ contract('AaveV3 Lending module', accounts => {
         { from: maintainer },
       );
 
-      poolStorage = await storageManager.getPoolStorage.call(poolMock.address);
+      poolStorage = await storageManager.getPoolData.call(poolMock.address);
       assert.equal(poolStorage.lendingInfo.lendingModule, module.address);
       assert.equal(poolStorage.poolData.collateral, USDC);
       assert.equal(poolStorage.poolData.interestBearingToken, aUSDC.address);
@@ -255,7 +282,7 @@ contract('AaveV3 Lending module', accounts => {
         { from: maintainer },
       );
 
-      let poolStorage = await storageManager.getPoolStorage.call(accounts[10]);
+      let poolStorage = await storageManager.getPoolData.call(accounts[10]);
       assert.equal(poolStorage.lendingInfo.lendingModule, poolMock.address);
       assert.equal(poolStorage.poolData.collateral, USDC);
       assert.equal(poolStorage.poolData.interestBearingToken, aUSDC.address);
@@ -300,7 +327,7 @@ contract('AaveV3 Lending module', accounts => {
         { from: maintainer },
       );
 
-      let poolStorageAfter = await storageManager.getPoolData.call(
+      let poolStorageAfter = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
 
@@ -391,11 +418,11 @@ contract('AaveV3 Lending module', accounts => {
   });
   describe('AAVe module', () => {
     const user = accounts[2];
-    let amountMint = toWei('1000000');
-    let amountFirstDeposit = toWei('340000');
+    let amountMint = '10';
+    let amountFirstDeposit = '3';
 
     it('First deposit- Correctly deposits and update values', async () => {
-      await USDCInstance.mint(user, amountMint);
+      await getUSDC(amountMint, user);
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
       assert.equal(userUSDCBefore.toString(), amountMint.toString());
 
@@ -411,7 +438,9 @@ contract('AaveV3 Lending module', accounts => {
       });
       await poolMock.deposit(amountFirstDeposit, USDC, { from: user });
 
-      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
       let userUSDCAfter = await USDCInstance.balanceOf.call(user);
       let userAUSDCAfter = await aUSDC.balanceOf.call(user);
@@ -455,7 +484,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       let generatedInterest = await proxy.getAccumulatedInterest.call(
         poolMock.address,
@@ -466,14 +495,14 @@ contract('AaveV3 Lending module', accounts => {
         userUSDCBefore.toString(),
         toBN(amountMint).sub(toBN(amountFirstDeposit)).toString(),
       );
-      let poolStorageBefore = await storageManager.getPoolData.call(
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
 
       // deposit to trigger interest split update
-      let amountDeposit = toWei('1');
+      let amountDeposit = '1';
       await USDCInstance.approve(poolMock.address, amountDeposit, {
         from: user,
       });
@@ -482,7 +511,9 @@ contract('AaveV3 Lending module', accounts => {
         from: user,
       });
       await poolMock.deposit(amountDeposit, USDC, { from: user });
-      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
       let userUSDCAfter = await USDCInstance.balanceOf.call(user);
       let userAUSDCAfter = await aUSDC.balanceOf.call(user);
@@ -582,13 +613,13 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
-      let amountWithdraw = toWei('1');
+      let amountWithdraw = '1';
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
-      let poolStorageBefore = await storageManager.getPoolData.call(
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
 
@@ -605,7 +636,9 @@ contract('AaveV3 Lending module', accounts => {
         from: user,
       });
 
-      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
       let userUSDCAfter = await USDCInstance.balanceOf.call(user);
       let userAUSDCAfter = await aUSDC.balanceOf.call(user);
@@ -702,7 +735,6 @@ contract('AaveV3 Lending module', accounts => {
     it('Reverts if not enough aToken is sent to proxy', async () => {
       await truffleAssert.reverts(
         poolMock.withdrawShouldRevert(10, user, { from: user }),
-        'Wrong balance',
       );
     });
 
@@ -710,7 +742,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       // sets recipient
       let commissionReceiver = accounts[4];
@@ -723,7 +755,7 @@ contract('AaveV3 Lending module', accounts => {
       let commissionUSDCBefore = await USDCInstance.balanceOf.call(
         commissionReceiver,
       );
-      let poolStorageBefore = await storageManager.getPoolData.call(
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
@@ -742,7 +774,9 @@ contract('AaveV3 Lending module', accounts => {
         );
       });
 
-      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
       let commissionUSDCAfter = await USDCInstance.balanceOf.call(
         commissionReceiver,
       );
@@ -814,7 +848,7 @@ contract('AaveV3 Lending module', accounts => {
       );
 
       // claim commission
-      let amount = (await storageManager.getPoolData.call(poolMock.address))
+      let amount = (await storageManager.getPoolStorage.call(poolMock.address))
         .unclaimedDaoJRT;
       amount = toBN(amount).muln(2);
       await truffleAssert.reverts(
@@ -847,7 +881,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       // sets recipient
       let buybackReceiver = accounts[5];
@@ -859,7 +893,7 @@ contract('AaveV3 Lending module', accounts => {
 
       let receiverJRTBefore = await JRTInstance.balanceOf.call(buybackReceiver);
 
-      let poolStorageBefore = await storageManager.getPoolData.call(
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
@@ -903,7 +937,9 @@ contract('AaveV3 Lending module', accounts => {
         );
       });
 
-      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
       let receiverJRTAfter = await JRTInstance.balanceOf.call(buybackReceiver);
 
       let poolAUSDCAfter = await aUSDC.balanceOf.call(poolMock.address);
@@ -999,7 +1035,6 @@ contract('AaveV3 Lending module', accounts => {
       let res = await proxy.collateralToInterestToken.call(
         poolMock.address,
         collateralAmount,
-        true,
         { from: user },
       );
       assert.equal(
@@ -1012,7 +1047,6 @@ contract('AaveV3 Lending module', accounts => {
       res = await proxy.collateralToInterestToken.call(
         poolMock.address,
         collateralAmount,
-        false,
         { from: user },
       );
       assert.equal(
@@ -1026,9 +1060,9 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
-      let poolStorageBefore = await storageManager.getPoolData.call(
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
 
@@ -1037,7 +1071,9 @@ contract('AaveV3 Lending module', accounts => {
         from: user,
       });
       await poolMock.updateAccumulatedInterest({ from: user });
-      let poolStorage = await storageManager.getPoolData.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
       let poolAUSDCAfter = await aUSDC.balanceOf.call(poolMock.address);
       let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
@@ -1060,7 +1096,6 @@ contract('AaveV3 Lending module', accounts => {
       );
 
       // check tokens have moved correctly
-      assert.equal(userAUSDCBefore.toString(), userAUSDCAfter.toString());
       assert.equal(
         poolAUSDCAfter.toString().substr(0, 14),
         poolAUSDCBefore
@@ -1121,7 +1156,7 @@ contract('AaveV3 Lending module', accounts => {
         );
 
         // borrow on aave to generate interest
-        await openCDP(toWei('100000000'), toWei('40000000'), accounts[3]);
+        await openCDP('1000', '400', accounts[3]);
 
         // deploy new module
         newModule = await LendingModule.new();
@@ -1139,7 +1174,7 @@ contract('AaveV3 Lending module', accounts => {
           from: maintainer,
         });
 
-        let poolStorageBefore = await storageManager.getPoolData.call(
+        let poolStorageBefore = await storageManager.getPoolStorage.call(
           poolMock.address,
         );
 
@@ -1160,7 +1195,7 @@ contract('AaveV3 Lending module', accounts => {
 
         let poolAUSDCAfter = await aUSDC.balanceOf.call(poolMock.address);
         let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
-        let poolStorage = await storageManager.getPoolStorage.call(
+        let poolStorage = await storageManager.getPoolData.call(
           poolMock.address,
         );
         let expectedInterest = poolAUSDCAfter.sub(poolAUSDCBefore);
@@ -1173,11 +1208,11 @@ contract('AaveV3 Lending module', accounts => {
 
         // check return values to pool
         assert.equal(
-          returnValues.prevDepositedCollateral.toString(),
+          returnValues.prevTotalCollateral.toString(),
           poolStorageBefore.collateralDeposited.toString(),
         );
         assert.equal(
-          returnValues.actualCollateralDeposited.toString(),
+          returnValues.actualTotalCollateral.toString(),
           toBN(poolAUSDCAfter)
             .sub(toBN(expectedDaoInterest))
             .sub(toBN(poolStorageBefore.unclaimedDaoCommission))
@@ -1193,11 +1228,7 @@ contract('AaveV3 Lending module', accounts => {
         assert.equal(poolUSDCAfter.toString(), poolUSDCBefore.toString());
         assert.equal(
           poolAUSDCAfter.toString().substr(0, 14),
-          poolAUSDCBefore
-            .add(toBN(returnValues.poolInterest))
-            .add(toBN(returnValues.daoInterest))
-            .toString()
-            .substr(0, 14),
+          returnValues.actualTotalCollateral.toString(),
         );
 
         // check pool storage update on proxy
@@ -1209,9 +1240,13 @@ contract('AaveV3 Lending module', accounts => {
           expectedCollateral.substr(0, 20),
         );
 
+        let expectedUnclaimedDao = toBN(returnValues.actualTotalCollateral)
+          .sub(toBN(returnValues.prevTotalCollateral))
+          .sub(toBN(returnValues.poolInterest));
+
         let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
           .add(
-            toBN(returnValues.daoInterest)
+            expectedUnclaimedDao
               .mul(toBN(jrtShare))
               .div(toBN(Math.pow(10, 18))),
           )
@@ -1225,7 +1260,7 @@ contract('AaveV3 Lending module', accounts => {
           poolStorageBefore.unclaimedDaoCommission,
         )
           .add(
-            toBN(returnValues.daoInterest)
+            expectedUnclaimedDao
               .mul(toBN(commissionShare))
               .div(toBN(Math.pow(10, 18))),
           )
@@ -1273,7 +1308,7 @@ contract('AaveV3 Lending module', accounts => {
           },
         );
 
-        let poolStorageBefore = await storageManager.getPoolStorage.call(
+        let poolStorageBefore = await storageManager.getPoolData.call(
           poolMock.address,
         );
 
@@ -1282,10 +1317,10 @@ contract('AaveV3 Lending module', accounts => {
           from: maintainer,
         });
 
-        let poolStorageAft = await storageManager.getPoolStorage.call(
+        let poolStorageAft = await storageManager.getPoolData.call(
           poolMock.address,
         );
-        let newPoolStorageAft = await storageManager.getPoolStorage.call(
+        let newPoolStorageAft = await storageManager.getPoolData.call(
           newPool.address,
         );
 
