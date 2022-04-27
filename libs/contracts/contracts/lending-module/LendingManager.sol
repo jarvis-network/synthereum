@@ -7,8 +7,8 @@ import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
-  ISynthereumMultiLpLiquidityPool
-} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
+  ISynthereumLendingTransfer
+} from '../synthereum-pool/common/interfaces/ILendingTransfer.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -36,10 +36,10 @@ contract LendingManager is
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string private constant DEPOSIT_SIG =
-    'deposit((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),bytes,uint256,address)';
+    'deposit((bytes32,uint256,uint256,uint256,address,uint64,address,uint64),bytes,uint256,address)';
 
   string private constant WITHDRAW_SIG =
-    'withdraw((bytes32,address,address,uint256,uint256,uint256,uint256,uint256),address,bytes,uint256,address)';
+    'withdraw((bytes32,uint256,uint256,uint256,address,uint64,address,uint64),address,bytes,uint256,address)';
 
   string private JRTSWAP_SIG = 'swapToJRT(address,address,uint256,bytes)';
 
@@ -92,7 +92,7 @@ contract LendingManager is
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
-        poolData.JRTBuybackShare
+        poolData.jrtBuybackShare
       );
 
     // update pool storage values
@@ -146,7 +146,7 @@ contract LendingManager is
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
-        poolData.JRTBuybackShare
+        poolData.jrtBuybackShare
       );
 
     // update storage value
@@ -192,7 +192,7 @@ contract LendingManager is
       splitGeneratedInterest(
         totalInterest,
         poolData.daoInterestShare,
-        poolData.JRTBuybackShare
+        poolData.jrtBuybackShare
       );
 
     //update pool storage
@@ -250,7 +250,7 @@ contract LendingManager is
       (
         ILendingStorageManager.PoolStorage memory poolData,
         ILendingStorageManager.LendingInfo memory lendingInfo
-      ) = poolStorageManager.getPoolStorage(pool);
+      ) = poolStorageManager.getPoolData(pool);
 
       // all pools need to have the same collateral
       require(poolData.collateral == collateralAddress, 'Collateral mismatch');
@@ -262,7 +262,7 @@ contract LendingManager is
         );
 
       // trigger transfer of interest token from the pool
-      ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(
+      ISynthereumLendingTransfer(pool).transferToLendingManager(
         interestTokenAmount
       );
 
@@ -289,7 +289,7 @@ contract LendingManager is
         splitGeneratedInterest(
           res.totalInterest,
           poolData.daoInterestShare,
-          poolData.JRTBuybackShare
+          poolData.jrtBuybackShare
         );
 
       //update pool storage
@@ -324,7 +324,7 @@ contract LendingManager is
   function setLendingModule(
     string memory id,
     ILendingStorageManager.LendingInfo memory lendingInfo
-  ) external override onlyMaintainer {
+  ) external override nonReentrant onlyMaintainer {
     ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setLendingModule(id, lendingInfo);
   }
@@ -341,8 +341,8 @@ contract LendingManager is
 
   function setShares(
     address pool,
-    uint256 daoInterestShare,
-    uint256 jrtBuybackShare
+    uint64 daoInterestShare,
+    uint64 jrtBuybackShare
   ) external override nonReentrant onlyMaintainer {
     ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.setShares(pool, daoInterestShare, jrtBuybackShare);
@@ -384,7 +384,7 @@ contract LendingManager is
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
-        poolData.JRTBuybackShare
+        poolData.jrtBuybackShare
       );
 
     // add interest to pool data
@@ -445,18 +445,40 @@ contract LendingManager is
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
     (
-      ILendingStorageManager.PoolStorage memory poolData,
+      ILendingStorageManager.PoolLendingStorage memory lendingStorage,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getPoolStorage(pool);
+    ) = poolStorageManager.getLendingData(pool);
 
     interestTokenAmount = ILendingModule(lendingInfo.lendingModule)
       .collateralToInterestToken(
       collateralAmount,
-      poolData.collateral,
-      poolData.interestBearingToken,
+      lendingStorage.collateralToken,
+      lendingStorage.interestToken,
       lendingInfo.args
     );
-    interestTokenAddr = poolData.interestBearingToken;
+    interestTokenAddr = lendingStorage.interestToken;
+  }
+
+  function interestTokenToCollateral(address pool, uint256 interestTokenAmount)
+    external
+    view
+    override
+    returns (uint256 collateralAmount, address interestTokenAddr)
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    (
+      ILendingStorageManager.PoolLendingStorage memory lendingStorage,
+      ILendingStorageManager.LendingInfo memory lendingInfo
+    ) = poolStorageManager.getLendingData(pool);
+
+    collateralAmount = ILendingModule(lendingInfo.lendingModule)
+      .interestTokenToCollateral(
+      interestTokenAmount,
+      lendingStorage.collateralToken,
+      lendingStorage.interestToken,
+      lendingInfo.args
+    );
+    interestTokenAddr = lendingStorage.interestToken;
   }
 
   function getAccumulatedInterest(address pool)
@@ -473,7 +495,7 @@ contract LendingManager is
     (
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getPoolStorage(pool);
+    ) = poolStorageManager.getPoolData(pool);
 
     uint256 totalInterest =
       ILendingModule(lendingInfo.lendingModule).getAccumulatedInterest(
@@ -486,7 +508,7 @@ contract LendingManager is
       splitGeneratedInterest(
         totalInterest,
         poolData.daoInterestShare,
-        poolData.JRTBuybackShare
+        poolData.jrtBuybackShare
       );
     poolInterest = interestSplit.poolInterest;
     daoInterest = interestSplit.commissionInterest + interestSplit.jrtInterest;
@@ -502,7 +524,7 @@ contract LendingManager is
     (
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getPoolStorage(pool);
+    ) = poolStorageManager.getPoolData(pool);
 
     // trigger transfer of funds from pool
     (uint256 interestTokenAmount, ) =
@@ -510,7 +532,7 @@ contract LendingManager is
         pool,
         collateralAmount
       );
-    ISynthereumMultiLpLiquidityPool(pool).transferToLendingManager(
+    ISynthereumLendingTransfer(pool).transferToLendingManager(
       interestTokenAmount
     );
 
@@ -534,7 +556,7 @@ contract LendingManager is
       splitGeneratedInterest(
         res.totalInterest,
         poolData.daoInterestShare,
-        poolData.JRTBuybackShare
+        poolData.jrtBuybackShare
       );
 
     //update pool storage
@@ -550,8 +572,8 @@ contract LendingManager is
 
   function splitGeneratedInterest(
     uint256 totalInterestGenerated,
-    uint256 daoRatio,
-    uint256 jrtRatio
+    uint64 daoRatio,
+    uint64 jrtRatio
   ) internal pure returns (InterestSplit memory interestSplit) {
     if (totalInterestGenerated == 0) return interestSplit;
 
@@ -571,7 +593,7 @@ contract LendingManager is
     )
   {
     poolStorageManager = getStorageManager();
-    (poolData, lendingInfo) = poolStorageManager.getPoolStorage(msg.sender);
+    (poolData, lendingInfo) = poolStorageManager.getPoolData(msg.sender);
     require(poolData.lendingModuleId != 0x00, 'Not allowed');
   }
 

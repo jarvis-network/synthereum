@@ -12,7 +12,6 @@ import {
 } from '../lending-module/interfaces/ILendingStorageManager.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import 'hardhat/console.sol';
 
 interface ATokenMock is IERC20 {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);

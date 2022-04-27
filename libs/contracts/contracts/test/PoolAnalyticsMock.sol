@@ -17,7 +17,6 @@ import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import 'hardhat/console.sol';
 
 contract PoolAnalyticsMock {
   using PreciseUnitMath for uint256;
@@ -79,7 +78,7 @@ contract PoolAnalyticsMock {
       ILendingManager(
         finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
-    poolData = storageManager.getPoolData(_pool);
+    poolData = storageManager.getPoolStorage(_pool);
     ISynthereumMultiLpLiquidityPool poolContract =
       ISynthereumMultiLpLiquidityPool(_pool);
     (

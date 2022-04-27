@@ -164,7 +164,7 @@ contract('AaveV3 Lending module', accounts => {
         daoInterestShare.toString(),
       );
       assert.equal(
-        poolStorage.poolData.JRTBuybackShare.toString(),
+        poolStorage.poolData.jrtBuybackShare.toString(),
         jrtShare.toString(),
       );
 
@@ -202,7 +202,7 @@ contract('AaveV3 Lending module', accounts => {
         daoInterestShare.toString(),
       );
       assert.equal(
-        poolStorage.poolData.JRTBuybackShare.toString(),
+        poolStorage.poolData.jrtBuybackShare.toString(),
         jrtShare.toString(),
       );
 
@@ -264,7 +264,7 @@ contract('AaveV3 Lending module', accounts => {
         daoInterestShare.toString(),
       );
       assert.equal(
-        poolStorage.poolData.JRTBuybackShare.toString(),
+        poolStorage.poolData.jrtBuybackShare.toString(),
         jrtShare.toString(),
       );
 
@@ -305,7 +305,7 @@ contract('AaveV3 Lending module', accounts => {
       );
 
       assert.equal(
-        poolStorageAfter.JRTBuybackShare.toString(),
+        poolStorageAfter.jrtBuybackShare.toString(),
         newJRTShare.toString(),
       );
       assert.equal(
@@ -1303,8 +1303,8 @@ contract('AaveV3 Lending module', accounts => {
           newPoolStorageAft.poolData.interestBearingToken,
         );
         assert.equal(
-          poolStorageBefore.poolData.JRTBuybackShare,
-          newPoolStorageAft.poolData.JRTBuybackShare,
+          poolStorageBefore.poolData.jrtBuybackShare,
+          newPoolStorageAft.poolData.jrtBuybackShare,
         );
         assert.equal(
           poolStorageBefore.poolData.daoInterestShare,
@@ -1330,7 +1330,7 @@ contract('AaveV3 Lending module', accounts => {
           poolStorageAft.poolData.interestBearingToken,
           ZERO_ADDRESS,
         );
-        assert.equal(poolStorageAft.poolData.JRTBuybackShare, toWei('0'));
+        assert.equal(poolStorageAft.poolData.jrtBuybackShare, toWei('0'));
         assert.equal(poolStorageAft.poolData.daoInterestShare, toWei('0'));
         assert.equal(poolStorageAft.poolData.collateralDeposited, toWei('0'));
         assert.equal(poolStorageAft.poolData.unclaimedDaoJRT, toWei('0'));

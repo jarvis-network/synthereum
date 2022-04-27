@@ -116,8 +116,8 @@ interface ILendingManager {
    */
   function setShares(
     address pool,
-    uint256 daoInterestShare,
-    uint256 jrtBuybackShare
+    uint64 daoInterestShare,
+    uint64 jrtBuybackShare
   ) external;
 
   /**
@@ -140,12 +140,24 @@ interface ILendingManager {
    * @param pool reference pool to check conversion
    * @param collateralAmount amount of collateral to calculate conversion on
    * @return interestTokenAmount amount of interest token after conversion
-   * @return interestTokenAddr address of the pool associated interest token
+   * @return interestTokenAddr address of the associated interest token
    */
   function collateralToInterestToken(address pool, uint256 collateralAmount)
     external
     view
     returns (uint256 interestTokenAmount, address interestTokenAddr);
+
+  /**
+   * @notice returns the conversion between interest token and collateral of a specific money market
+   * @param pool reference pool to check conversion
+   * @param interestTokenAmount amount of interest token to calculate conversion on
+   * @return collateralAmount amount of collateral after conversion
+   * @return interestTokenAddr address of the associated interest token
+   */
+  function interestTokenToCollateral(address pool, uint256 interestTokenAmount)
+    external
+    view
+    returns (uint256 collateralAmount, address interestTokenAddr);
 
   /**
    * @notice returns accumulated interest of a pool since state-changing last operation

@@ -93,4 +93,19 @@ interface ILendingModule {
     address interestToken,
     bytes memory extraArgs
   ) external view returns (uint256 interestTokenAmount);
+
+  /**
+   * @notice returns the conversion between interest token and collateral of a specific money market
+   * @param interestTokenAmount amount of interest token to calculate conversion on
+   * @param collateral address of collateral token
+   * @param interestToken address of interest token
+   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @return collateralAmount amount of collateral token after conversion
+   */
+  function interestTokenToCollateral(
+    uint256 interestTokenAmount,
+    address collateral,
+    address interestToken,
+    bytes memory extraArgs
+  ) external view returns (uint256 collateralAmount);
 }

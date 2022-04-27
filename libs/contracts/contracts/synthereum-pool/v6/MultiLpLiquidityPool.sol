@@ -6,6 +6,9 @@ import {
   ISynthereumMultiLpLiquidityPool
 } from './interfaces/IMultiLpLiquidityPool.sol';
 import {
+  ISynthereumLendingTransfer
+} from '../common/interfaces/ILendingTransfer.sol';
+import {
   ISynthereumMultiLpLiquidityPoolEvents
 } from './interfaces/IMultiLpLiquidityPoolEvents.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
@@ -45,6 +48,7 @@ import {
  */
 contract SynthereumMultiLpLiquidityPool is
   ISynthereumMultiLpLiquidityPoolEvents,
+  ISynthereumLendingTransfer,
   ISynthereumMultiLpLiquidityPool,
   ERC2771Context,
   ReentrancyGuard,
@@ -1857,7 +1861,7 @@ contract SynthereumMultiLpLiquidityPool is
     returns (uint256)
   {
     (ILendingStorageManager.PoolStorage memory poolStorage, ) =
-      _lendingStorageManager.getPoolStorage(address(this));
+      _lendingStorageManager.getPoolData(address(this));
     return poolStorage.collateralDeposited;
   }
 

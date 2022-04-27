@@ -21,6 +21,7 @@ contract AaveV3Module is ILendingModule {
     address recipient
   )
     external
+    override
     returns (
       uint256 totalInterest,
       uint256 tokensOut,
@@ -63,6 +64,7 @@ contract AaveV3Module is ILendingModule {
     address recipient
   )
     external
+    override
     returns (
       uint256 totalInterest,
       uint256 tokensOut,
@@ -106,7 +108,7 @@ contract AaveV3Module is ILendingModule {
     address poolAddress,
     ILendingStorageManager.PoolStorage calldata poolData,
     bytes memory extraArgs
-  ) external view returns (uint256 totalInterest) {
+  ) external view override returns (uint256 totalInterest) {
     (totalInterest, ) = calculateGeneratedInterest(
       poolAddress,
       poolData,
@@ -118,6 +120,7 @@ contract AaveV3Module is ILendingModule {
   function getInterestBearingToken(address collateral, bytes memory args)
     external
     view
+    override
     returns (address token)
   {
     address moneyMarket = abi.decode(args, (address));
@@ -130,8 +133,17 @@ contract AaveV3Module is ILendingModule {
     address collateral,
     address interestToken,
     bytes memory extraArgs
-  ) external pure returns (uint256 interestTokenAmount) {
+  ) external pure override returns (uint256 interestTokenAmount) {
     interestTokenAmount = collateralAmount;
+  }
+
+  function interestTokenToCollateral(
+    uint256 interestTokenAmount,
+    address collateral,
+    address interestToken,
+    bytes memory extraArgs
+  ) external pure override returns (uint256 collateralAmount) {
+    collateralAmount = interestTokenAmount;
   }
 
   function calculateGeneratedInterest(
@@ -150,19 +162,15 @@ contract AaveV3Module is ILendingModule {
     poolBalance = IERC20(pool.interestBearingToken).balanceOf(poolAddress);
 
     // the total interest is delta between current balance and lastBalance
-    if (isDeposit) {
-      totalInterestGenerated =
-        poolBalance -
+    totalInterestGenerated = isDeposit
+      ? poolBalance -
         pool.collateralDeposited -
         pool.unclaimedDaoCommission -
-        pool.unclaimedDaoJRT;
-    } else {
-      totalInterestGenerated =
-        poolBalance +
+        pool.unclaimedDaoJRT
+      : poolBalance +
         amount -
         pool.collateralDeposited -
         pool.unclaimedDaoCommission -
         pool.unclaimedDaoJRT;
-    }
   }
 }

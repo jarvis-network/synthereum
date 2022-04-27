@@ -318,7 +318,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     const interests = result[4];
     assert.equal(
       web3.utils
-        .toBN(poolData[5])
+        .toBN(poolData[1])
         .add(web3.utils.toBN(interests[0]))
         .toString(),
       collateralInfo[2].toString(),
@@ -2404,8 +2404,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
         totalLPColl = totalLPColl.add(web3.utils.toBN(lpPosition[0]));
       }
       const totCollateral = (
-        await lendingStorageManagerContract.getPoolData.call(poolAddress)
-      )[5];
+        await lendingStorageManagerContract.getPoolStorage.call(poolAddress)
+      )[1];
       const actualUserValue = web3.utils
         .toBN(totCollateral)
         .sub(web3.utils.toBN(totalLPColl));
@@ -2517,8 +2517,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
         totalLPColl = totalLPColl.add(web3.utils.toBN(lpPosition[0]));
       }
       const totCollateral = (
-        await lendingStorageManagerContract.getPoolData.call(poolAddress)
-      )[5];
+        await lendingStorageManagerContract.getPoolStorage.call(poolAddress)
+      )[1];
       const actualUserValue = web3.utils
         .toBN(totCollateral)
         .sub(web3.utils.toBN(totalLPColl));

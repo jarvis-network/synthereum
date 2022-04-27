@@ -42,8 +42,8 @@ contract SynthereumMultiLpLiquidityPoolCreator {
   struct LendingManagerParams {
     string lendingId;
     address interestBearingToken;
-    uint256 daoInterestShare;
-    uint256 jrtBuybackShare;
+    uint64 daoInterestShare;
+    uint64 jrtBuybackShare;
   }
 
   // Address of Synthereum Finder

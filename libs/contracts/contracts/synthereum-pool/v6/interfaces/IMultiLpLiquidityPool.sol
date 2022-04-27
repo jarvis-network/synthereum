@@ -192,13 +192,6 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
   function updatePositions() external;
 
   /**
-   * @notice Transfer a bearing amount to the lending manager
-   * @notice Only the lending manager can call the function
-   * @param _bearingAmount Amount of bearing token to transfer
-   */
-  function transferToLendingManager(uint256 _bearingAmount) external;
-
-  /**
    * @notice Set new liquidation reward percentage
    * @notice This can be called only by the maintainer
    * @param _newLiquidationReward New liquidation reward percentage

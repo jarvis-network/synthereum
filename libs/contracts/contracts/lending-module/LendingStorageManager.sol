@@ -55,6 +55,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
 
   function setLendingModule(string memory id, LendingInfo memory lendingInfo)
     external
+    override
     nonReentrant
     onlyLendingManager
   {
@@ -65,6 +66,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
 
   function setSwapModule(address collateral, address swapModule)
     external
+    override
     nonReentrant
     onlyLendingManager
   {
@@ -73,9 +75,9 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
 
   function setShares(
     address pool,
-    uint256 daoInterestShare,
-    uint256 jrtBuybackShare
-  ) external nonReentrant onlyLendingManager {
+    uint64 daoInterestShare,
+    uint64 jrtBuybackShare
+  ) external override nonReentrant onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
     require(poolData.lendingModuleId != 0x00, 'Bad pool');
     require(
@@ -84,7 +86,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
       'Invalid share'
     );
 
-    poolData.JRTBuybackShare = jrtBuybackShare;
+    poolData.jrtBuybackShare = jrtBuybackShare;
     poolData.daoInterestShare = daoInterestShare;
   }
 
@@ -93,13 +95,13 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     address pool,
     address collateral,
     address interestBearingToken,
-    uint256 daoInterestShare,
-    uint256 jrtBuybackShare
-  ) external nonReentrant onlyPoolFactory {
+    uint64 daoInterestShare,
+    uint64 jrtBuybackShare
+  ) external override nonReentrant onlyPoolFactory {
     bytes32 id = keccak256(abi.encode(lendingID));
     LendingInfo memory lendingInfo = idToLendingInfo[id];
     address lendingModule = lendingInfo.lendingModule;
-    require(lendingModule != address(0), 'Id not existent');
+    require(lendingModule != address(0), 'Module not supported');
     require(
       jrtBuybackShare <= PreciseUnitMath.PRECISE_UNIT &&
         daoInterestShare <= PreciseUnitMath.PRECISE_UNIT,
@@ -111,7 +113,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     require(poolData.lendingModuleId == 0x00, 'Pool already exists');
     poolData.lendingModuleId = id;
     poolData.collateral = collateral;
-    poolData.JRTBuybackShare = jrtBuybackShare;
+    poolData.jrtBuybackShare = jrtBuybackShare;
     poolData.daoInterestShare = daoInterestShare;
 
     // set interest bearing token
@@ -130,6 +132,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
 
   function migratePool(address oldPool, address newPool)
     external
+    override
     nonReentrant
     onlyPoolFactory
   {
@@ -144,7 +147,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     newPoolData.lendingModuleId = oldLendingId;
     newPoolData.collateral = oldPoolData.collateral;
     newPoolData.interestBearingToken = oldPoolData.interestBearingToken;
-    newPoolData.JRTBuybackShare = oldPoolData.JRTBuybackShare;
+    newPoolData.jrtBuybackShare = oldPoolData.jrtBuybackShare;
     newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
     newPoolData.collateralDeposited = oldPoolData.collateralDeposited;
     newPoolData.unclaimedDaoJRT = oldPoolData.unclaimedDaoJRT;
@@ -160,6 +163,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     address newInterestBearingToken
   )
     external
+    override
     nonReentrant
     onlyLendingManager
     returns (PoolStorage memory, LendingInfo memory)
@@ -194,7 +198,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     uint256 collateralDeposited,
     uint256 daoJRT,
     uint256 daoInterest
-  ) external nonReentrant onlyLendingManager {
+  ) external override nonReentrant onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
 
     // update collateral deposit amount of the pool
@@ -205,26 +209,45 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     poolData.unclaimedDaoCommission = daoInterest;
   }
 
-  function getPoolStorage(address pool)
+  function getPoolData(address pool)
     external
     view
+    override
     returns (PoolStorage memory poolData, LendingInfo memory lendingInfo)
   {
     poolData = poolStorage[pool];
     lendingInfo = idToLendingInfo[poolData.lendingModuleId];
   }
 
-  function getPoolData(address pool)
+  function getPoolStorage(address pool)
     external
     view
+    override
     returns (PoolStorage memory poolData)
   {
     poolData = poolStorage[pool];
   }
 
+  function getLendingData(address pool)
+    external
+    view
+    override
+    returns (
+      PoolLendingStorage memory lendingStorage,
+      LendingInfo memory lendingInfo
+    )
+  {
+    PoolStorage storage poolData = poolStorage[pool];
+
+    lendingStorage.collateralToken = poolData.collateral;
+    lendingStorage.interestToken = poolData.interestBearingToken;
+    lendingInfo = idToLendingInfo[poolData.lendingModuleId];
+  }
+
   function getCollateralSwapModule(address collateral)
     external
     view
+    override
     returns (address)
   {
     return collateralToSwapModule[collateral];
@@ -233,9 +256,20 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
   function getInterestBearingToken(address pool)
     external
     view
+    override
     returns (address interestTokenAddr)
   {
     interestTokenAddr = poolStorage[pool].interestBearingToken;
+  }
+
+  function getShares(address pool)
+    external
+    view
+    override
+    returns (uint256 jrtBuybackShare, uint256 daoInterestShare)
+  {
+    jrtBuybackShare = poolStorage[pool].jrtBuybackShare;
+    daoInterestShare = poolStorage[pool].daoInterestShare;
   }
 
   function _checkSenderIsFactory(
