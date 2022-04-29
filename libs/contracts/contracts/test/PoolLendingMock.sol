@@ -2,9 +2,6 @@
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {
   ILendingManager
 } from '../lending-module/interfaces/ILendingManager.sol';
 import {
@@ -12,6 +9,10 @@ import {
 } from '../lending-module/interfaces/ILendingStorageManager.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {ExplicitERC20} from '../base/utils/ExplicitERC20.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 interface ATokenMock is IERC20 {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
@@ -61,6 +62,7 @@ interface AAVEMock {
 
 contract PoolLendingMock is ISynthereumDeployment {
   using SafeERC20 for IERC20;
+  using ExplicitERC20 for IERC20;
 
   IERC20 collToken;
   IERC20 synthToken;
@@ -137,10 +139,15 @@ contract PoolLendingMock is ISynthereumDeployment {
     return proxy.withdraw(amount, recipient);
   }
 
-  function transferToLendingManager(uint256 bearingAmount) external {
+  function transferToLendingManager(uint256 bearingAmount)
+    external
+    returns (uint256)
+  {
     address interestAddr =
       storageManager.getInterestBearingToken(address(this));
-    IERC20(interestAddr).transfer(address(proxy), bearingAmount);
+    (uint256 amountTransferred, ) =
+      IERC20(interestAddr).explicitSafeTransfer(address(proxy), bearingAmount);
+    return amountTransferred;
   }
 
   function migrateLendingModule(

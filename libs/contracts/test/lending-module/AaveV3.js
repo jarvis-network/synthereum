@@ -702,6 +702,7 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
+      console.log(expectedDaoCommisson.toString());
       assert.equal(
         poolStorage.unclaimedDaoCommission.toString(),
         expectedDaoCommisson,
