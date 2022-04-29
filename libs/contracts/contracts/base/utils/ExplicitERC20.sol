@@ -24,7 +24,7 @@ library ExplicitERC20 {
    * @param _to The account to transfer tokens to
    * @param _quantity The quantity to transfer
    * @return amountTransferred Real amount removed from user balance
-   * @return newBalance Final balance after transfer
+   * @return newBalance Final balance of the sender after transfer
    */
   function explicitSafeTransferFrom(
     IERC20 _token,
@@ -32,13 +32,13 @@ library ExplicitERC20 {
     address _to,
     uint256 _quantity
   ) internal returns (uint256 amountTransferred, uint256 newBalance) {
-    uint256 existingBalance = _token.balanceOf(_to);
+    uint256 existingBalance = _token.balanceOf(_from);
 
     _token.safeTransferFrom(_from, _to, _quantity);
 
-    newBalance = _token.balanceOf(_to);
+    newBalance = _token.balanceOf(_from);
 
-    amountTransferred = newBalance - existingBalance;
+    amountTransferred = existingBalance - newBalance;
   }
 
   /**
@@ -49,19 +49,19 @@ library ExplicitERC20 {
    * @param _to The account to transfer tokens to
    * @param _quantity The quantity to transfer
    * @return amountTransferred Real amount removed from user balance
-   * @return newBalance Final balance after transfer
+   * @return newBalance Final balance of the sender after transfer
    */
   function explicitSafeTransfer(
     IERC20 _token,
     address _to,
     uint256 _quantity
   ) internal returns (uint256 amountTransferred, uint256 newBalance) {
-    uint256 existingBalance = _token.balanceOf(_to);
+    uint256 existingBalance = _token.balanceOf(address(this));
 
     _token.safeTransfer(_to, _quantity);
 
-    newBalance = _token.balanceOf(_to);
+    newBalance = _token.balanceOf(address(this));
 
-    amountTransferred = newBalance - existingBalance;
+    amountTransferred = existingBalance - newBalance;
   }
 }

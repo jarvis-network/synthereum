@@ -2629,4 +2629,107 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await resetOracle();
     });
   });
+
+  describe('Should transfer to the lending manager', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+      await synthFinder.changeImplementationAddress(
+        web3.utils.padRight(web3.utils.toHex('CommissionReceiver'), 64),
+        receiver,
+        { from: maintainer },
+      );
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can transfer to the lending manager', async () => {
+      const storageResult = await lendingStorageManagerContract.getPoolStorage(
+        poolAddress,
+      );
+      const claimAmount = web3.utils
+        .toBN(storageResult[3])
+        .div(web3.utils.toBN('2'));
+      await lendingManagerContract.batchClaimCommission(
+        [poolAddress],
+        [claimAmount],
+        { from: maintainer },
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can revert if the sender is not a pool', async () => {
+      const storageResult = await lendingStorageManagerContract.getPoolStorage(
+        poolAddress,
+      );
+      const claimAmount = web3.utils
+        .toBN(storageResult[3])
+        .div(web3.utils.toBN('2'));
+      await truffleAssert.reverts(
+        poolContract.transferToLendingManager(claimAmount, { from: sender }),
+        'Sender must be lending manager',
+      );
+    });
+  });
 });
