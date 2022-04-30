@@ -36,13 +36,13 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     // The addresses of admin and maintainer
     Roles roles;
     // The fee percentage
-    uint256 fee;
+    uint64 fee;
     // Identifier of price to be used in the price feed
     bytes32 priceIdentifier;
     // Percentage of overcollateralization to which a liquidation can triggered
-    uint256 overCollateralRequirement;
+    uint128 overCollateralRequirement;
     // Percentage of reward for correct liquidation by a liquidator
-    uint256 liquidationReward;
+    uint64 liquidationReward;
     // Name of the lending protocol used
     string lendingModuleId;
   }
@@ -53,7 +53,7 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     // Number of tokens collateralized
     uint256 tokensCollateralized;
     // Overcollateralization percentage
-    uint256 overCollateralization;
+    uint128 overCollateralization;
   }
 
   struct MintParams {
@@ -119,7 +119,7 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @param _overCollateralization Overcollateralization to set by the LP
    * @return collateralDeposited Net collateral deposited in the LP position
    */
-  function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
+  function activateLP(uint256 _collateralAmount, uint128 _overCollateralization)
     external
     returns (uint256 collateralDeposited);
 
@@ -148,7 +148,7 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @notice This can be called only by an active LP
    * @param _overCollateralization New overCollateralizations
    */
-  function setOvercollateralization(uint256 _overCollateralization) external;
+  function setOvercollateralization(uint128 _overCollateralization) external;
 
   /**
    * @notice Mint synthetic tokens using fixed amount of collateral
@@ -196,14 +196,14 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @notice This can be called only by the maintainer
    * @param _newLiquidationReward New liquidation reward percentage
    */
-  function setLiquidationReward(uint256 _newLiquidationReward) external;
+  function setLiquidationReward(uint64 _newLiquidationReward) external;
 
   /**
    * @notice Set new fee percentage
    * @notice This can be called only by the maintainer
    * @param _fee New fee percentage
    */
-  function setFee(uint256 _fee) external;
+  function setFee(uint64 _fee) external;
 
   /**
    * @notice Set new lending protocol for this pool

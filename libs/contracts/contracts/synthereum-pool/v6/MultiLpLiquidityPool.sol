@@ -147,29 +147,29 @@ contract SynthereumMultiLpLiquidityPool is
 
   mapping(address => LPPosition) internal lpPositions;
 
-  uint256 internal totalSyntheticAsset;
-
-  uint256 internal fee;
-
-  uint256 internal liquidationBonus;
-
-  uint256 internal overCollateralRequirement;
+  string internal lendingModuleId;
 
   bytes32 internal priceIdentifier;
 
-  string internal lendingModuleId;
+  uint256 internal totalSyntheticAsset;
+
+  IStandardERC20 internal collateralAsset;
+
+  uint64 internal fee;
+
+  uint8 internal collateralDecimals;
+
+  bool internal isInitialized;
+
+  uint8 internal poolVersion;
+
+  uint128 internal overCollateralRequirement;
+
+  uint64 internal liquidationBonus;
 
   ISynthereumFinder internal finder;
 
   IMintableBurnableERC20 internal syntheticAsset;
-
-  IStandardERC20 internal collateralAsset;
-
-  uint8 internal collateralDecimals;
-
-  uint8 internal poolVersion;
-
-  bool internal isInitialized;
 
   //----------------------------------------
   // Modifiers
@@ -262,7 +262,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _overCollateralization Overcollateralization to set by the LP
    * @return collateralDeposited Net collateral deposited in the LP position
    */
-  function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
+  function activateLP(uint256 _collateralAmount, uint128 _overCollateralization)
     external
     override
     nonReentrant
@@ -425,7 +425,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice This can be called only by an active LP
    * @param _overCollateralization New overCollateralizations
    */
-  function setOvercollateralization(uint256 _overCollateralization)
+  function setOvercollateralization(uint128 _overCollateralization)
     external
     override
     nonReentrant
@@ -778,7 +778,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice This can be called only by the maintainer
    * @param _newLiquidationReward New liquidation reward percentage
    */
-  function setLiquidationReward(uint256 _newLiquidationReward)
+  function setLiquidationReward(uint64 _newLiquidationReward)
     external
     override
     nonReentrant
@@ -792,7 +792,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice This can be called only by the maintainer
    * @param _newFee New fee percentage
    */
-  function setFee(uint256 _newFee)
+  function setFee(uint64 _newFee)
     external
     override
     nonReentrant
@@ -1182,7 +1182,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Set new fee percentage
    * @param _newFee New fee percentage
    */
-  function _setFee(uint256 _newFee) internal {
+  function _setFee(uint64 _newFee) internal {
     require(
       _newFee < PreciseUnitMath.PRECISE_UNIT,
       'Fee Percentage must be less than 100%'
@@ -1204,7 +1204,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Set new liquidation reward percentage
    * @param _newLiquidationReward New liquidation reward percentage
    */
-  function _setLiquidationReward(uint256 _newLiquidationReward) internal {
+  function _setLiquidationReward(uint64 _newLiquidationReward) internal {
     require(
       _newLiquidationReward > 0 &&
         _newLiquidationReward <= PreciseUnitMath.PRECISE_UNIT,
@@ -1431,7 +1431,7 @@ contract SynthereumMultiLpLiquidityPool is
   function _updateAndModifyActualLPOverCollateral(
     PositionCache[] memory _positionsCache,
     address _lp,
-    uint256 _newOverCollateralization,
+    uint128 _newOverCollateralization,
     uint256 _price,
     uint8 _collateralDecimals
   ) internal {

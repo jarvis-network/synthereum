@@ -84,7 +84,7 @@ contract AaveV3Module is ILendingModule {
     (totalInterest, ) = calculateGeneratedInterest(
       pool,
       poolData,
-      withdrawAmount,
+      aTokensAmount,
       false
     );
 

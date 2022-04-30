@@ -32,10 +32,10 @@ contract SynthereumMultiLpLiquidityPoolCreator {
     string syntheticSymbol;
     address syntheticToken;
     ISynthereumMultiLpLiquidityPool.Roles roles;
-    uint256 fee;
+    uint64 fee;
     bytes32 priceIdentifier;
-    uint256 overCollateralRequirement;
-    uint256 liquidationReward;
+    uint128 overCollateralRequirement;
+    uint64 liquidationReward;
     LendingManagerParams lendingManagerParams;
   }
 
