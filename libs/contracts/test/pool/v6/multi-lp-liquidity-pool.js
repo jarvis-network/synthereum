@@ -1658,15 +1658,14 @@ contract('MultiLPLiquidityPool', function (accounts) {
         },
       );
       let collateralReceived;
+      let collateralRemoved;
       truffleAssert.eventEmitted(
         removeLiquidityTx,
         'WithdrawnLiquidity',
         ev => {
           collateralReceived = ev.collateralReceived.toString();
-          return (
-            ev.lp == lp &&
-            ev.collateralWithdrawn.toString() == collateralToWithdraw.toString()
-          );
+          collateralRemoved = ev.collateralWithdrawn.toString();
+          return ev.lp == lp;
         },
       );
       await checkUserBalance(
@@ -1682,7 +1681,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
           .gte(
             web3.utils
               .toBN(prevCollDeposited)
-              .sub(web3.utils.toBN(collateralToWithdraw)),
+              .sub(web3.utils.toBN(collateralRemoved)),
           ),
         true,
         'Wrong removed collateral',
@@ -1693,8 +1692,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
         web3.utils.toBN(mintTokens),
         collateralAmount
           .add(totalCollateral)
-          .sub(web3.utils.toBN(collateralToWithdraw)),
-        totalCollateral.sub(web3.utils.toBN(collateralToWithdraw)),
+          .sub(web3.utils.toBN(collateralRemoved)),
+        totalCollateral.sub(web3.utils.toBN(collateralRemoved)),
         price,
         0,
       );
@@ -1704,8 +1703,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
         web3.utils.toBN(mintTokens),
         collateralAmount
           .add(totalCollateral)
-          .sub(web3.utils.toBN(collateralToWithdraw)),
-        totalCollateral.sub(web3.utils.toBN(collateralToWithdraw)),
+          .sub(web3.utils.toBN(collateralRemoved)),
+        totalCollateral.sub(web3.utils.toBN(collateralRemoved)),
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
@@ -2729,6 +2728,135 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await truffleAssert.reverts(
         poolContract.transferToLendingManager(claimAmount, { from: sender }),
         'Sender must be lending manager',
+      );
+    });
+  });
+
+  describe('Should set pool params by the maintainer', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+      await synthFinder.changeImplementationAddress(
+        web3.utils.padRight(web3.utils.toHex('CommissionReceiver'), 64),
+        receiver,
+        { from: maintainer },
+      );
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can set liquidation reward', async () => {
+      const newLiquidationReward = web3.utils.toWei('0.5');
+      const setRwrdTx = await poolContract.setLiquidationReward(
+        newLiquidationReward,
+        { from: maintainer },
+      );
+      truffleAssert.eventEmitted(setRwrdTx, 'SetLiquidationReward', ev => {
+        return (
+          ev.newLiquidationReward.toString() == newLiquidationReward.toString()
+        );
+      });
+      const contractRwrd = await poolContract.liquidationReward.call();
+      assert.equal(
+        newLiquidationReward.toString(),
+        contractRwrd.toString(),
+        'Wrong liquidation reward set',
+      );
+    });
+    it('Can revert in setting liquidation reward if sender is not the maintainer', async () => {
+      const newLiquidationReward = web3.utils.toWei('0.5');
+      await truffleAssert.reverts(
+        poolContract.setLiquidationReward(newLiquidationReward, {
+          from: sender,
+        }),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can revert if 0% is set as reward', async () => {
+      const newLiquidationReward = web3.utils.toWei('0');
+      await truffleAssert.reverts(
+        poolContract.setLiquidationReward(newLiquidationReward, {
+          from: maintainer,
+        }),
+        'Liquidation reward must be between 0 and 100%',
+      );
+    });
+    it('Can revert if more than 100% is set as reward', async () => {
+      const newLiquidationReward = web3.utils.toWei('1.001');
+      await truffleAssert.reverts(
+        poolContract.setLiquidationReward(newLiquidationReward, {
+          from: maintainer,
+        }),
+        'Liquidation reward must be between 0 and 100%',
+      );
+    });
+    it('Can set fee', async () => {
+      const newFee = web3.utils.toWei('0.002');
+      const setFeeTx = await poolContract.setFee(newFee, { from: maintainer });
+      truffleAssert.eventEmitted(setFeeTx, 'SetFeePercentage', ev => {
+        return ev.newFee.toString() == newFee.toString();
+      });
+      const feePrc = await poolContract.feePercentage.call();
+      assert.equal(newFee.toString(), feePrc.toString(), 'Wrong fee set');
+    });
+    it('Can revert in setting fee if sender is not the maintainer', async () => {
+      const newFee = web3.utils.toWei('0.002');
+      await truffleAssert.reverts(
+        poolContract.setFee(newFee, {
+          from: sender,
+        }),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can revert if fee is equal or bigger than 100%', async () => {
+      const newFee = web3.utils.toWei('1');
+      await truffleAssert.reverts(
+        poolContract.setFee(newFee, {
+          from: maintainer,
+        }),
+        'Fee Percentage must be less than 100%',
       );
     });
   });
