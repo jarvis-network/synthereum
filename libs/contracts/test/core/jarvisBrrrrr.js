@@ -185,8 +185,13 @@ contract('Jarvis Printer', async accounts => {
   describe('Money market manager', () => {
     let id = 'aave';
     let aaveAddress, args;
-
+    let USDC = '0xF61Cffd6071a8DB7cD5E8DF1D3A5450D9903cF1c';
+    let aUSDC = '0xc78fd49C2bAd9C8f41ddcE069e34F6a6A627d37f';
+    let USDCInst, aUSDCInst;
     before(async () => {
+      USDCInst = await MintableBurnableSyntheticToken.at(USDC);
+      aUSDCInst = await MintableBurnableSyntheticToken.at(aUSDC);
+
       let networkId = await web3.eth.net.getId();
       aaveAddress = data[networkId].AaveV3;
       args = web3.eth.abi.encodeParameters(['address'], [aaveAddress]);
@@ -238,6 +243,81 @@ contract('Jarvis Printer', async accounts => {
           { from: accounts[5] },
         ),
         'Sender must be the maintainer',
+      );
+    });
+
+    it('Should mint and deposit into aave', async () => {
+      let amount = toWei('1');
+
+      let USDCBalanceBefore = await USDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      let aUSDCBalanceBefore = await aUSDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+
+      // set minting capacity
+      await jarvisBrrrrr.setMaxSupply(USDC, toWei('1000'), {
+        from: roles.maintainer,
+      });
+      let tx = await moneyMarketManager.deposit(USDC, amount, id, {
+        from: roles.maintainer,
+      });
+      truffleAssert.eventEmitted(tx, 'MintAndDeposit', ev => {
+        return (
+          ev.token == USDC &&
+          ev.moneyMarketId == id &&
+          ev.amount.toString() == amount.toString()
+        );
+      });
+
+      let USDCBalanceAfter = await USDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      let aUSDCBalanceAfter = await aUSDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+
+      assert.equal(USDCBalanceAfter.toString(), USDCBalanceBefore.toString());
+      assert.equal(
+        toBN(aUSDCBalanceBefore).add(toBN(amount)).toString(),
+        aUSDCBalanceAfter.toString(),
+      );
+    });
+
+    it('Should redeem from aave and burn', async () => {
+      let aUSDCBalanceBefore = await aUSDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      let amount = aUSDCBalanceBefore.divn(2);
+
+      let USDCBalanceBefore = await USDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      console.log(USDCInst);
+      // await USDCInst.approve(aaveAddress, amount.toString(), {from:})
+      let tx = await moneyMarketManager.withdraw(USDC, amount, id, {
+        from: roles.maintainer,
+      });
+      truffleAssert.eventEmitted(tx, 'RedeemAndBurn', ev => {
+        return (
+          ev.token == USDC &&
+          ev.moneyMarketId == id &&
+          ev.amount.toString() == amount.toString()
+        );
+      });
+
+      let USDCBalanceAfter = await USDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      let aUSDCBalanceAfter = await aUSDCInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+
+      assert.equal(USDCBalanceAfter.toString(), USDCBalanceBefore.toString());
+      assert.equal(
+        toBN(aUSDCBalanceBefore).sub(toBN(amount)).toString(),
+        aUSDCBalanceAfter.toString(),
       );
     });
   });
