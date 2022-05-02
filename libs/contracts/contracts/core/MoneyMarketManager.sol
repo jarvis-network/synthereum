@@ -27,6 +27,7 @@ contract MoneyMarketManager is
   ReentrancyGuard
 {
   using SafeERC20 for IERC20;
+  using SafeERC20 for IMintableBurnableERC20;
   using Address for address;
 
   mapping(bytes32 => address) public idToMoneyMarketImplementation;
@@ -53,6 +54,8 @@ contract MoneyMarketManager is
   }
 
   event RegisteredImplementation(string id, address implementation, bytes args);
+  event MintAndDeposit(address token, string moneyMarketId, uint256 amount);
+  event RedeemAndBurn(address token, string moneyMarketId, uint256 amount);
 
   constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
@@ -99,6 +102,8 @@ contract MoneyMarketManager is
         )
       );
     tokensOut = abi.decode(result, (uint256));
+
+    emit MintAndDeposit(address(token), moneyMarketId, tokensOut);
   }
 
   function withdraw(
@@ -134,7 +139,10 @@ contract MoneyMarketManager is
     burningAmount = abi.decode(result, (uint256));
 
     // trigger burning of tokens on the printer contract
+    token.safeIncreaseAllowance(jarvisBrr, burningAmount);
     IJarvisBrrrrr(jarvisBrr).redeem(token, burningAmount);
+
+    emit RedeemAndBurn(address(token), moneyMarketId, burningAmount);
   }
 
   function withdrawRevenue(
