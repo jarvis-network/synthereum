@@ -68,7 +68,7 @@ export const config = {
     },
   },
   mocha: {
-    timeout: 1800000,
+    timeout: 18000000,
   },
 };
 
