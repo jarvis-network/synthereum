@@ -248,7 +248,7 @@ contract('Jarvis Printer', async accounts => {
 
     it('Should mint and deposit into aave', async () => {
       let amount = toWei('1');
-
+      let circSupplyBefore = await jarvisBrrrrr.supply.call(USDC);
       let USDCBalanceBefore = await USDCInst.balanceOf.call(
         moneyMarketManager.address,
       );
@@ -277,7 +277,12 @@ contract('Jarvis Printer', async accounts => {
       let aUSDCBalanceAfter = await aUSDCInst.balanceOf.call(
         moneyMarketManager.address,
       );
+      let circSupplyAfter = await jarvisBrrrrr.supply.call(USDC);
 
+      assert.equal(
+        circSupplyAfter.toString(),
+        toBN(circSupplyBefore).add(toBN(amount)).toString(),
+      );
       assert.equal(USDCBalanceAfter.toString(), USDCBalanceBefore.toString());
       assert.equal(
         toBN(aUSDCBalanceBefore).add(toBN(amount)).toString(),
@@ -294,7 +299,6 @@ contract('Jarvis Printer', async accounts => {
       let USDCBalanceBefore = await USDCInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      console.log(USDCInst);
       // await USDCInst.approve(aaveAddress, amount.toString(), {from:})
       let tx = await moneyMarketManager.withdraw(USDC, amount, id, {
         from: roles.maintainer,
