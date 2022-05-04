@@ -32,6 +32,7 @@ contract MoneyMarketManager is
 
   mapping(bytes32 => address) public idToMoneyMarketImplementation;
   mapping(address => bytes) public moneyMarketArgs;
+  mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
 
   string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes)';
   string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes)';
@@ -90,8 +91,11 @@ contract MoneyMarketManager is
     IJarvisBrrrrr(jarvisBrr).mint(token, amount);
 
     // deposit into money market through delegate-call
-    address implementation =
-      idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
+    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    address implementation = idToMoneyMarketImplementation[hashId];
+
+    moneyMarketBalances[hashId][address(token)] += amount;
+
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
@@ -117,14 +121,13 @@ contract MoneyMarketManager is
     nonReentrant
     returns (uint256 burningAmount)
   {
-    address jarvisBrr =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.JarvisBrrrrr
-      );
-
     // withdraw from money market through delegate call
-    address implementation =
-      idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
+    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    address implementation = idToMoneyMarketImplementation[hashId];
+    require(
+      amount <= moneyMarketBalances[hashId][address(token)],
+      'Max amount limit'
+    );
 
     bytes memory result =
       implementation.functionDelegateCall(
@@ -137,8 +140,13 @@ contract MoneyMarketManager is
       );
 
     burningAmount = abi.decode(result, (uint256));
+    moneyMarketBalances[hashId][address(token)] -= burningAmount;
 
     // trigger burning of tokens on the printer contract
+    address jarvisBrr =
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.JarvisBrrrrr
+      );
     token.safeIncreaseAllowance(jarvisBrr, burningAmount);
     IJarvisBrrrrr(jarvisBrr).redeem(token, burningAmount);
 
@@ -158,9 +166,6 @@ contract MoneyMarketManager is
       idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
     bytes memory args = moneyMarketArgs[implementation];
 
-    // get jSynth circulating supply
-    uint256 supply = IJarvisBrrrrr(jarvisBrr).supply(jSynthAsset);
-
     // get total balance from money market implementation (deposit + interest)
     uint256 totalBalance =
       IJarvisBrrMoneyMarket(implementation).getTotalBalance(
@@ -174,13 +179,15 @@ contract MoneyMarketManager is
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           address(jSynthAsset),
-          totalBalance - supply,
+          totalBalance - moneyMarketBalances[hashId][address(jSynthAsset)],
           args
         )
       );
 
     // send them to dao
     jSynthOut = abi.decode(result, (uint256));
+    moneyMarketBalances[hashId][address(jSynthAsset)] -= jSynthOut;
+
     jSynthAsset.transfer(msg.sender, jSynthOut);
   }
 }
