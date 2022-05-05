@@ -58,8 +58,8 @@ contract MoneyMarketManager is
   event MintAndDeposit(address token, string moneyMarketId, uint256 amount);
   event RedeemAndBurn(address token, string moneyMarketId, uint256 amount);
 
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
-    synthereumFinder = _synthereumFinder;
+  constructor(address _synthereumFinder, Roles memory _roles) {
+    synthereumFinder = ISynthereumFinder(_synthereumFinder);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -157,13 +157,8 @@ contract MoneyMarketManager is
     IMintableBurnableERC20 jSynthAsset,
     string memory moneyMarketId
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
-    address jarvisBrr =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.JarvisBrrrrr
-      );
-
-    address implementation =
-      idToMoneyMarketImplementation[keccak256(abi.encode(moneyMarketId))];
+    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    address implementation = idToMoneyMarketImplementation[hashId];
     bytes memory args = moneyMarketArgs[implementation];
 
     // get total balance from money market implementation (deposit + interest)
@@ -173,21 +168,31 @@ contract MoneyMarketManager is
         args
       );
 
+    uint256 revenues =
+      totalBalance - moneyMarketBalances[hashId][address(jSynthAsset)];
+    require(revenues > 0, 'No revenues');
+
     // withdraw revenues
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           address(jSynthAsset),
-          totalBalance - moneyMarketBalances[hashId][address(jSynthAsset)],
+          revenues,
           args
         )
       );
 
     // send them to dao
     jSynthOut = abi.decode(result, (uint256));
-    moneyMarketBalances[hashId][address(jSynthAsset)] -= jSynthOut;
-
     jSynthAsset.transfer(msg.sender, jSynthOut);
+  }
+
+  function getMoneyMarketDeposited(
+    address jSynthAsset,
+    string memory moneyMarketId
+  ) external override returns (uint256 amount) {
+    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    amount = moneyMarketBalances[hashId][jSynthAsset];
   }
 }

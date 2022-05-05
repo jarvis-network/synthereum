@@ -56,4 +56,15 @@ interface IMoneyMarketManager {
     IMintableBurnableERC20 jSynthAsset,
     string memory moneyMarketId
   ) external returns (uint256 jSynthOut);
+
+  /**
+   * @notice reads the amount of jSynth currently minted + deposited into a money market
+   * @param jSynthAsset address of the jSynth token to get amount
+   * @param moneyMarketId identifier of the money market implementation contract
+   * @return amount amount of jSynth currently minted + deposited into moneyMarketId
+   */
+  function getMoneyMarketDeposited(
+    address jSynthAsset,
+    string memory moneyMarketId
+  ) external returns (uint256 amount);
 }
