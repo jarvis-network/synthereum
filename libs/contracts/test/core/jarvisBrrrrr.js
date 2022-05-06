@@ -28,6 +28,7 @@ contract('Jarvis Printer', async accounts => {
     maintainer: accounts[1],
   };
   before(async () => {
+    console.log('TEST', accounts);
     DAOAddress = accounts[2];
     networkId = await web3.eth.net.getId();
 
@@ -64,7 +65,7 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe('JarvisBrrr', () => {
+  describe.only('JarvisBrrr', () => {
     it('Correctly mints and burns to DAO address', async () => {
       // mint
       let balanceBefore = await jEurInstance.balanceOf.call(DAOAddress);
@@ -182,30 +183,37 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe('Money market manager', () => {
+  // these needs to be run on polygon fork and needs exclusive roles
+  // skipping it
+  describe('Money market manager - Polygon', () => {
     let id = 'aave';
+    let bytesId = web3.utils.sha3(
+      web3.eth.abi.encodeParameters(['string'], [id]),
+    );
     let aaveAddress, args;
-    let USDC = '0xF61Cffd6071a8DB7cD5E8DF1D3A5450D9903cF1c';
-    let aUSDC = '0xc78fd49C2bAd9C8f41ddcE069e34F6a6A627d37f';
-    let USDCInst, aUSDCInst;
+    let jEURPol = '0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c';
+    let ajEURPol = '0x6533afac2E7BCCB20dca161449A13A32D391fb00';
+    let jEurInst, ajEurInst;
+
     before(async () => {
-      USDCInst = await MintableBurnableSyntheticToken.at(USDC);
-      aUSDCInst = await MintableBurnableSyntheticToken.at(aUSDC);
+      jEurInst = await MintableBurnableSyntheticToken.at(jEURPol);
+      ajEurInst = await MintableBurnableSyntheticToken.at(ajEURPol);
 
       let networkId = await web3.eth.net.getId();
       aaveAddress = data[networkId].AaveV3;
       args = web3.eth.abi.encodeParameters(['address'], [aaveAddress]);
+      jarvisBrrrrr = await JarvisBrrrrr.at(
+        '0xb51c6fDbf82eA5C1c2f39e7e6a3f82586C29c81e',
+      );
 
       // deploy money market manager
-      moneyMarketManager = await MoneyMarketManager.new(finder.address, roles);
-      //deploy aave implementation
-      aaveImpl = await AaveImplementation.new();
+      moneyMarketManager = await MoneyMarketManager.at(
+        '0x9bd4220809e88d4efc1f36365872e688f33cddf0',
+      );
 
-      // set the contract as token recipient
-      await finder.changeImplementationAddress(
-        web3Utils.toHex('MoneyMarketManager'),
-        moneyMarketManager.address,
-        { from: roles.maintainer },
+      //deploy aave implementation
+      aaveImpl = await AaveImplementation.at(
+        '0x37f08323214e8C851e118C4C9Db71321264D1e60',
       );
     });
 
@@ -223,9 +231,6 @@ contract('Jarvis Printer', async accounts => {
           ev.args == args
         );
       });
-      let bytesId = web3.utils.sha3(
-        web3.eth.abi.encodeParameters(['string'], [id]),
-      );
 
       assert.equal(
         await moneyMarketManager.idToMoneyMarketImplementation.call(bytesId),
@@ -246,82 +251,187 @@ contract('Jarvis Printer', async accounts => {
       );
     });
 
-    it('Should mint and deposit into aave', async () => {
-      let amount = toWei('1');
-      let circSupplyBefore = await jarvisBrrrrr.supply.call(USDC);
-      let USDCBalanceBefore = await USDCInst.balanceOf.call(
+    it('Only maintainer can mint and deposit into aave', async () => {
+      let amount = toWei('1', 'gwei');
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
+      let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
+      let jEurBalanceBefore = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      let aUSDCBalanceBefore = await aUSDCInst.balanceOf.call(
+      let ajEurBalanceBefore = await ajEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
 
-      // set minting capacity
-      await jarvisBrrrrr.setMaxSupply(USDC, toWei('1000'), {
-        from: roles.maintainer,
-      });
-      let tx = await moneyMarketManager.deposit(USDC, amount, id, {
+      let tx = await moneyMarketManager.deposit(jEURPol, amount, id, {
         from: roles.maintainer,
       });
       truffleAssert.eventEmitted(tx, 'MintAndDeposit', ev => {
         return (
-          ev.token == USDC &&
+          ev.token.toLowerCase() == jEURPol.toLowerCase() &&
           ev.moneyMarketId == id &&
           ev.amount.toString() == amount.toString()
         );
       });
 
-      let USDCBalanceAfter = await USDCInst.balanceOf.call(
+      let jEurBalanceAfter = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      let aUSDCBalanceAfter = await aUSDCInst.balanceOf.call(
+      let ajEurBalanceAfter = await ajEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      let circSupplyAfter = await jarvisBrrrrr.supply.call(USDC);
+      let circSupplyAfter = await jarvisBrrrrr.supply.call(jEURPol);
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
 
+      assert.equal(
+        depositedSupplyAfter.toString(),
+        toBN(depositedSupplyBefore).add(toBN(amount)).toString(),
+      );
       assert.equal(
         circSupplyAfter.toString(),
         toBN(circSupplyBefore).add(toBN(amount)).toString(),
       );
-      assert.equal(USDCBalanceAfter.toString(), USDCBalanceBefore.toString());
-      assert.equal(
-        toBN(aUSDCBalanceBefore).add(toBN(amount)).toString(),
-        aUSDCBalanceAfter.toString(),
+      assert.equal(jEurBalanceAfter.toString(), jEurBalanceBefore.toString());
+
+      let assertion = toBN(ajEurBalanceAfter).gte(
+        toBN(ajEurBalanceBefore).add(toBN(amount)),
+      );
+      assert.equal(assertion, true);
+
+      //revert check
+      await truffleAssert.reverts(
+        moneyMarketManager.deposit(jEURPol, amount, id, {
+          from: roles.admin,
+        }),
+        'Sender must be the maintainer',
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.deposit(jEURPol, amount, id, {
+          from: accounts[3],
+        }),
+        'Sender must be the maintainer',
       );
     });
 
-    it('Should redeem from aave and burn', async () => {
-      let aUSDCBalanceBefore = await aUSDCInst.balanceOf.call(
-        moneyMarketManager.address,
+    it('Only maintainer can redeem from aave and burn', async () => {
+      let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
       );
-      let amount = aUSDCBalanceBefore.divn(2);
 
-      let USDCBalanceBefore = await USDCInst.balanceOf.call(
+      let jEurBalanceBefore = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      // await USDCInst.approve(aaveAddress, amount.toString(), {from:})
-      let tx = await moneyMarketManager.withdraw(USDC, amount, id, {
+
+      let ajEurBalanceBefore = await ajEurInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      let amount = ajEurBalanceBefore.divn(2);
+      let tx = await moneyMarketManager.withdraw(jEURPol, amount, id, {
         from: roles.maintainer,
       });
+      let ajEurBalanceAfter = await ajEurInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      let circSupplyAfter = await jarvisBrrrrr.supply.call(jEURPol);
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
+
+      assert.equal(
+        depositedSupplyAfter.toString(),
+        toBN(depositedSupplyBefore).sub(toBN(amount)).toString(),
+      );
+      assert.equal(
+        circSupplyAfter.toString(),
+        toBN(circSupplyBefore).sub(toBN(amount)).toString(),
+      );
+
       truffleAssert.eventEmitted(tx, 'RedeemAndBurn', ev => {
         return (
-          ev.token == USDC &&
+          ev.token.toLowerCase() == jEURPol.toLowerCase() &&
           ev.moneyMarketId == id &&
           ev.amount.toString() == amount.toString()
         );
       });
 
-      let USDCBalanceAfter = await USDCInst.balanceOf.call(
+      let jEurBalanceAfter = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      let aUSDCBalanceAfter = await aUSDCInst.balanceOf.call(
+      assert.equal(jEurBalanceAfter.toString(), jEurBalanceBefore.toString());
+
+      let assertion = toBN(ajEurBalanceAfter).gte(
+        toBN(ajEurBalanceBefore).sub(toBN(amount)),
+      );
+      assert.equal(assertion, true);
+
+      //revert check
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(jEURPol, amount, id, {
+          from: roles.admin,
+        }),
+        'Sender must be the maintainer',
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(jEURPol, amount, id, {
+          from: accounts[3],
+        }),
+        'Sender must be the maintainer',
+      );
+    });
+
+    it('Only maintainer can withdraw revenues from deposit', async () => {
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
+      let maintainerjEurBalanceBefore = await jEurInst.balanceOf.call(
+        roles.maintainer,
+      );
+
+      let ajEurBalanceBefore = await ajEurInst.balanceOf.call(
+        moneyMarketManager.address,
+      );
+      await moneyMarketManager.withdrawRevenue(jEURPol, id, {
+        from: roles.maintainer,
+      });
+      let ajEurBalanceAfter = await ajEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
 
-      assert.equal(USDCBalanceAfter.toString(), USDCBalanceBefore.toString());
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
+      let maintainerjEurBalanceAfter = await jEurInst.balanceOf.call(
+        roles.maintainer,
+      );
+      let expectedRevenue = toBN(ajEurBalanceBefore).sub(
+        toBN(depositedSupplyBefore),
+      );
+
       assert.equal(
-        toBN(aUSDCBalanceBefore).sub(toBN(amount)).toString(),
-        aUSDCBalanceAfter.toString(),
+        depositedSupplyBefore.toString(),
+        depositedSupplyAfter.toString(),
+      );
+
+      let assertion = maintainerjEurBalanceAfter.gte(
+        toBN(maintainerjEurBalanceBefore).add(toBN(expectedRevenue)),
+      );
+      assert.equal(assertion, true);
+
+      assert.equal(
+        ajEurBalanceAfter.toString(),
+        toBN(ajEurBalanceBefore).sub(expectedRevenue),
       );
     });
   });
