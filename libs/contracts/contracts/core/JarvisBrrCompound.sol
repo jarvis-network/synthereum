@@ -31,14 +31,20 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
     // initialise compound interest token
     address cTokenAddress = abi.decode(implementationArgs, (address));
 
+    // scale the amount in compound decimals (8)
+    uint256 scaledAmount = amount.div(10**10);
+
     // approve and deposit underlying
     jSynthAsset.safeIncreaseAllowance(cTokenAddress, amount);
-    tokensOut = ICErc20(cTokenAddress).mint(amount);
+    tokensOut = ICErc20(cTokenAddress).mint(scaledAmount);
+
+    // scale up the tokens out in 18 decimals
+    tokensOut = tokensOut.mul(10**10);
   }
 
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
-    uint256 cTokensAmount,
+    uint256 jSynthAmount,
     bytes memory extraArgs,
     bytes memory implementationArgs
   ) external override returns (uint256 jSynthOut) {
@@ -46,16 +52,19 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
     // initialise compound interest token
     ICErc20 cToken = ICErc20(cTokenAddr);
 
+    // obtain cToken amount conversion
+    uint256 cTokenAmountScaled =
+      jSynthAmount.div(cToken.exchangeRateCurrent()).div(10**10);
+
     require(
-      IERC20(cTokenAddr).balanceOf(address(this)) >= cTokensAmount,
+      IERC20(cTokenAddr).balanceOf(address(this)) >= cTokenAmountScaled,
       'Wrong balance'
     );
 
     // redeem underlying
-    cToken.redeem(cTokensAmount);
+    cToken.redeem(cTokenAmountScaled);
 
-    // calculate jSynthOut // can use balanceOf ?
-    jSynthOut = cTokensAmount.mul(cToken.exchangeRateCurrent());
+    jSynthOut = cTokenAmountScaled;
   }
 
   function getTotalBalance(
