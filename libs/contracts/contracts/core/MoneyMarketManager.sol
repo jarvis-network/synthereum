@@ -185,7 +185,8 @@ contract MoneyMarketManager is
           WITHDRAW_SIG,
           address(jSynthAsset),
           revenues,
-          args
+          args,
+          implementationCallArgs
         )
       );
 
