@@ -10,6 +10,7 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
+const MockCToken = artifacts.require('ICErc20');
 const JarvisBrrrrr = artifacts.require('JarvisBrrrrr');
 const MoneyMarketManager = artifacts.require('MoneyMarketManager');
 const AaveImplementation = artifacts.require('JarvisBrrAave');
@@ -29,7 +30,6 @@ contract('Jarvis Printer', async accounts => {
     maintainer: accounts[1],
   };
   before(async () => {
-    console.log('TEST', accounts);
     DAOAddress = accounts[2];
     networkId = await web3.eth.net.getId();
 
@@ -66,7 +66,7 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe.only('JarvisBrrr', () => {
+  describe('JarvisBrrr', () => {
     it('Correctly mints and burns to DAO address', async () => {
       // mint
       let balanceBefore = await jEurInstance.balanceOf.call(DAOAddress);
@@ -210,12 +210,12 @@ contract('Jarvis Printer', async accounts => {
 
       // deploy money market manager
       moneyMarketManager = await MoneyMarketManager.at(
-        '0x9bd4220809e88d4efc1f36365872e688f33cddf0',
+        '0x95956ae0175e6a681cf54db19c69888079b068b5',
       );
 
       //deploy aave implementation
       aaveImpl = await AaveImplementation.at(
-        '0x37f08323214e8C851e118C4C9Db71321264D1e60',
+        '0xdccf2dc10890fec67f858d0c0cabeb6db84c65a7',
       );
     });
 
@@ -484,7 +484,7 @@ contract('Jarvis Printer', async accounts => {
           id,
           implementationCallArgs,
           {
-            from: roles.maintainer,
+            from: roles.admin,
           },
         ),
         'Sender must be the maintainer',
@@ -496,7 +496,7 @@ contract('Jarvis Printer', async accounts => {
           id,
           implementationCallArgs,
           {
-            from: roles.maintainer,
+            from: accounts[0],
           },
         ),
         'Sender must be the maintainer',
@@ -504,14 +504,14 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe('Money market manager - Polygonv - MarketXyz', () => {
+  describe('Money market manager - Polygon - MarketXyz', () => {
     let id = 'marketxyz';
     let bytesId = web3.utils.sha3(
       web3.eth.abi.encodeParameters(['string'], [id]),
     );
     let args = '0x0000';
     let jEURPol = '0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c';
-    let ajEURPol = '0xcfa81742393b52c493b8d76e55ffe4992a5cffd9';
+    let ajEURPol = '0xDc55282A0BBC4822b6E58d9c8Bfc5ff885972A82';
     let implementationCallArgs = web3.eth.abi.encodeParameters(
       ['address'],
       [ajEURPol],
@@ -521,7 +521,7 @@ contract('Jarvis Printer', async accounts => {
     let implementation;
     before(async () => {
       jEurInst = await MintableBurnableSyntheticToken.at(jEURPol);
-      ajEurInst = await MintableBurnableSyntheticToken.at(ajEURPol);
+      ajEurInst = await MockCToken.at(ajEURPol);
 
       jarvisBrrrrr = await JarvisBrrrrr.at(
         '0xb51c6fDbf82eA5C1c2f39e7e6a3f82586C29c81e',
@@ -529,13 +529,11 @@ contract('Jarvis Printer', async accounts => {
 
       // deploy money market manager
       moneyMarketManager = await MoneyMarketManager.at(
-        '0x9bd4220809e88d4efc1f36365872e688f33cddf0',
+        '0x95956ae0175e6a681cf54db19c69888079b068b5',
       );
 
-      //deploy aave implementation
-      implementation = await CompoundImplementation.at(
-        '0x37f08323214e8C851e118C4C9Db71321264D1e60',
-      );
+      //deploy market xyz implementation
+      implementation = await CompoundImplementation.new();
     });
 
     it('Only maintainer can set a money market implementation', async () => {
@@ -573,7 +571,7 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Only maintainer can mint and deposit into market xyz', async () => {
-      let amount = toWei('1', 'gwei');
+      let amount = toWei('1');
       let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jEURPol,
@@ -585,7 +583,6 @@ contract('Jarvis Printer', async accounts => {
       let ajEurBalanceBefore = await ajEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-
       let tx = await moneyMarketManager.deposit(
         jEURPol,
         amount,
@@ -595,14 +592,14 @@ contract('Jarvis Printer', async accounts => {
           from: roles.maintainer,
         },
       );
+      let tokensOut;
       truffleAssert.eventEmitted(tx, 'MintAndDeposit', ev => {
+        tokensOut = ev.amount;
         return (
           ev.token.toLowerCase() == jEURPol.toLowerCase() &&
-          ev.moneyMarketId == id &&
-          ev.amount.toString() == amount.toString()
+          ev.moneyMarketId == id
         );
       });
-
       let jEurBalanceAfter = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
@@ -624,11 +621,10 @@ contract('Jarvis Printer', async accounts => {
         toBN(circSupplyBefore).add(toBN(amount)).toString(),
       );
       assert.equal(jEurBalanceAfter.toString(), jEurBalanceBefore.toString());
-
-      let assertion = toBN(ajEurBalanceAfter).gte(
-        toBN(ajEurBalanceBefore).add(toBN(amount)),
+      assert.equal(
+        ajEurBalanceAfter.toString(),
+        toBN(ajEurBalanceBefore).add(toBN(tokensOut)).toString(),
       );
-      assert.equal(assertion, true);
 
       //revert check
       await truffleAssert.reverts(
@@ -656,9 +652,12 @@ contract('Jarvis Printer', async accounts => {
         ),
         'Sender must be the maintainer',
       );
+
+      await network.provider.send('evm_increaseTime', [30000]);
+      await network.provider.send('evm_mine');
     });
 
-    it('Only maintainer can redeem from aave and burn', async () => {
+    it('Only maintainer can redeem from market xyz and burn', async () => {
       let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
       let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
@@ -672,7 +671,7 @@ contract('Jarvis Printer', async accounts => {
       let ajEurBalanceBefore = await ajEurInst.balanceOf.call(
         moneyMarketManager.address,
       );
-      let amount = ajEurBalanceBefore.divn(2);
+      let amount = ajEurBalanceBefore.divn(10);
       let tx = await moneyMarketManager.withdraw(
         jEURPol,
         amount,
@@ -755,7 +754,7 @@ contract('Jarvis Printer', async accounts => {
         roles.maintainer,
       );
 
-      let ajEurBalanceBefore = await ajEurInst.balanceOf.call(
+      let ajEurBalanceBefore = await ajEurInst.balanceOfUnderlying.call(
         moneyMarketManager.address,
       );
       await moneyMarketManager.withdrawRevenue(
@@ -766,7 +765,7 @@ contract('Jarvis Printer', async accounts => {
           from: roles.maintainer,
         },
       );
-      let ajEurBalanceAfter = await ajEurInst.balanceOf.call(
+      let ajEurBalanceAfter = await ajEurInst.balanceOfUnderlying.call(
         moneyMarketManager.address,
       );
 
@@ -777,7 +776,7 @@ contract('Jarvis Printer', async accounts => {
       let maintainerjEurBalanceAfter = await jEurInst.balanceOf.call(
         roles.maintainer,
       );
-      let expectedRevenue = toBN(ajEurBalanceBefore).sub(
+      let expectedMinRevenue = toBN(ajEurBalanceBefore).sub(
         toBN(depositedSupplyBefore),
       );
 
@@ -787,14 +786,14 @@ contract('Jarvis Printer', async accounts => {
       );
 
       let assertion = maintainerjEurBalanceAfter.gte(
-        toBN(maintainerjEurBalanceBefore).add(toBN(expectedRevenue)),
+        toBN(maintainerjEurBalanceBefore).add(toBN(expectedMinRevenue)),
       );
       assert.equal(assertion, true);
 
-      assert.equal(
-        ajEurBalanceAfter.toString(),
-        toBN(ajEurBalanceBefore).sub(expectedRevenue),
+      assertion = ajEurBalanceAfter.gte(
+        toBN(ajEurBalanceBefore).sub(expectedMinRevenue),
       );
+      assert.equal(assertion, true);
 
       //revert check
       await truffleAssert.reverts(
@@ -803,7 +802,7 @@ contract('Jarvis Printer', async accounts => {
           id,
           implementationCallArgs,
           {
-            from: roles.maintainer,
+            from: accounts[4],
           },
         ),
         'Sender must be the maintainer',
@@ -815,7 +814,7 @@ contract('Jarvis Printer', async accounts => {
           id,
           implementationCallArgs,
           {
-            from: roles.maintainer,
+            from: roles.admin,
           },
         ),
         'Sender must be the maintainer',
