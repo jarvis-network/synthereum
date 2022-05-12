@@ -427,6 +427,26 @@ contract('Jarvis Printer', async accounts => {
       );
     });
 
+    it('Cant redeem and burn more than what deposited', async () => {
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(
+          jEURPol,
+          depositedSupplyBefore.add(toBN(1)),
+          id,
+          implementationCallArgs,
+          {
+            from: roles.maintainer,
+          },
+        ),
+        'Max amount limit',
+      );
+    });
+
     it('Only maintainer can withdraw revenues from deposit', async () => {
       let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
@@ -742,6 +762,26 @@ contract('Jarvis Printer', async accounts => {
           },
         ),
         'Sender must be the maintainer',
+      );
+    });
+
+    it('Cant redeem and burn more than what deposited', async () => {
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
+        bytesId,
+        jEURPol,
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(
+          jEURPol,
+          depositedSupplyBefore.add(toBN(1)),
+          id,
+          implementationCallArgs,
+          {
+            from: roles.maintainer,
+          },
+        ),
+        'Max amount limit',
       );
     });
 
