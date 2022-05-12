@@ -66,7 +66,7 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe('JarvisBrrr', () => {
+  describe.only('JarvisBrrr', () => {
     it('Correctly mints and burns to DAO address', async () => {
       // mint
       let balanceBefore = await jEurInstance.balanceOf.call(DAOAddress);
