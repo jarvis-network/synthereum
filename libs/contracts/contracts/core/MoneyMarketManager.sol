@@ -57,6 +57,12 @@ contract MoneyMarketManager is
   event RegisteredImplementation(string id, address implementation, bytes args);
   event MintAndDeposit(address token, string moneyMarketId, uint256 amount);
   event RedeemAndBurn(address token, string moneyMarketId, uint256 amount);
+  event WithdrawRevenues(
+    address token,
+    string moneyMarketId,
+    uint256 amount,
+    address receiver
+  );
 
   constructor(address _synthereumFinder, Roles memory _roles) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
@@ -193,6 +199,13 @@ contract MoneyMarketManager is
     // send them to dao
     jSynthOut = abi.decode(result, (uint256));
     jSynthAsset.transfer(msg.sender, jSynthOut);
+
+    emit WithdrawRevenues(
+      address(jSynthAsset),
+      moneyMarketId,
+      jSynthOut,
+      msg.sender
+    );
   }
 
   function getMoneyMarketDeposited(
