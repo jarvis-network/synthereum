@@ -2718,7 +2718,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         getRandomInt(3600, 24 * 7 * 3600),
       );
     });
-    it('Can revert if the sender is not a pool', async () => {
+    it('Can revert if the sender is not the lending manager', async () => {
       const storageResult = await lendingStorageManagerContract.getPoolStorage(
         poolAddress,
       );

@@ -11,6 +11,9 @@ import {
 } from '../../../common/interfaces/IDeployment.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
@@ -18,6 +21,24 @@ import {
  * @title Multi LP pool interface
  */
 interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
+  struct Storage {
+    EnumerableSet.AddressSet registeredLPs;
+    EnumerableSet.AddressSet activeLPs;
+    mapping(address => LPPosition) lpPositions;
+    string lendingModuleId;
+    bytes32 priceIdentifier;
+    uint256 totalSyntheticAsset;
+    IStandardERC20 collateralAsset;
+    uint64 fee;
+    uint8 collateralDecimals;
+    bool isInitialized;
+    uint8 poolVersion;
+    uint128 overCollateralRequirement;
+    uint64 liquidationBonus;
+    ISynthereumFinder finder;
+    IMintableBurnableERC20 syntheticAsset;
+  }
+
   // Describe role structure
   struct Roles {
     address admin;
@@ -212,10 +233,10 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
    * @param _bearingToken Token of the lending mosule to be used for intersts accrual
             (used only if the lending manager doesn't automatically find the one associated to the collateral fo this pool)
    */
-  /*function switchLendingModule(
+  function switchLendingModule(
     string calldata _lendingId,
     address _bearingToken
-  ) external;*/
+  ) external;
 
   /**
    * @notice Get all the registered LPs of this pool

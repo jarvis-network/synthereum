@@ -4,6 +4,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumLiquidityPoolLib',
   'SynthereumLiquidityPoolFactory',
   'SynthereumMultiLpLiquidityPool',
+  'SynthereumMultiLpLiquidityPoolLib',
   'SynthereumMultiLpLiquidityPoolFactory',
 ]);
 
@@ -18,6 +19,7 @@ async function migrate(deployer, network, accounts) {
     SynthereumLiquidityPoolLib,
     SynthereumLiquidityPoolFactory,
     SynthereumMultiLpLiquidityPool,
+    SynthereumMultiLpLiquidityPoolLib,
     SynthereumMultiLpLiquidityPoolFactory,
   } = migrate.getContracts(artifacts);
 
@@ -57,7 +59,6 @@ async function migrate(deployer, network, accounts) {
         from: keys.deployer,
       },
     );
-
     // Due to how truffle-plugin works, it statefully links it
     // and throws an error if its already linked. So we'll just ignore it...
     try {
@@ -89,6 +90,24 @@ async function migrate(deployer, network, accounts) {
     console.log('LiquidityPoolFactory added to SynthereumFactoryVersioning');
   }
   if (poolVersions[networkId]?.MultiLpLiquidityPoolFactory?.isEnabled ?? true) {
+    const { contract: synthereumMultiLiquidityPoolLib } = await deploy(
+      web3,
+      deployer,
+      network,
+      SynthereumMultiLpLiquidityPoolLib,
+      {
+        from: keys.deployer,
+      },
+    );
+    // Due to how truffle-plugin works, it statefully links it
+    // and throws an error if its already linked. So we'll just ignore it...
+    try {
+      await SynthereumMultiLpLiquidityPool.link(
+        synthereumMultiLiquidityPoolLib,
+      );
+    } catch (e) {
+      // Allow this to fail in the Buidler case.
+    }
     await deploy(web3, deployer, network, SynthereumMultiLpLiquidityPool, {
       from: keys.deployer,
     });
