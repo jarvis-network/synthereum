@@ -1234,7 +1234,7 @@ contract SynthereumMultiLpLiquidityPool is
       _collateralAmount
     );
 
-    return _lendingManager.deposit(_collateralAmount, address(this));
+    return _lendingManager.deposit(_collateralAmount);
   }
 
   /**

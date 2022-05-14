@@ -106,14 +106,14 @@ contract PoolLendingMock is ISynthereumDeployment {
     returns (ILendingManager.ReturnValues memory)
   {
     IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
-    return proxy.deposit(amount, address(this));
+    return proxy.deposit(amount);
   }
 
   function depositShouldRevert(uint256 amount)
     external
     returns (ILendingManager.ReturnValues memory)
   {
-    return proxy.deposit(amount, address(this));
+    return proxy.deposit(amount);
   }
 
   function updateAccumulatedInterest()

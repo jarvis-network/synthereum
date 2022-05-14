@@ -16,7 +16,6 @@ interface ILendingModule {
    * @param poolData pool storage information
    * @param lendingArgs encoded args needed by the specific implementation
    * @param amount of collateral to deposit
-   * @param recipient address receiving the interest token from money market
    * @return totalInterest check ReturnValues struct
    * @return tokensOut check ReturnValues struct
    * @return tokensTransferred check ReturnValues struct
@@ -24,8 +23,7 @@ interface ILendingModule {
   function deposit(
     ILendingStorageManager.PoolStorage calldata poolData,
     bytes memory lendingArgs,
-    uint256 amount,
-    address recipient
+    uint256 amount
   )
     external
     returns (

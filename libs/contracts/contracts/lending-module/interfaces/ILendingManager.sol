@@ -37,10 +37,9 @@ interface ILendingManager {
    * @notice deposits collateral into the pool's associated money market
    * @dev calculates and return the generated interest since last state-changing operation
    * @param collateralAmount amount of collateral to deposit
-   * @param recipient the address receiving the interest tokens from money market
    * @return returnValues check struct
    */
-  function deposit(uint256 collateralAmount, address recipient)
+  function deposit(uint256 collateralAmount)
     external
     returns (ReturnValues memory returnValues);
 

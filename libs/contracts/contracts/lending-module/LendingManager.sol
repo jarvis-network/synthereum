@@ -36,7 +36,7 @@ contract LendingManager is
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   string private constant DEPOSIT_SIG =
-    'deposit((bytes32,uint256,uint256,uint256,address,uint64,address,uint64),bytes,uint256,address)';
+    'deposit((bytes32,uint256,uint256,uint256,address,uint64,address,uint64),bytes,uint256)';
 
   string private constant WITHDRAW_SIG =
     'withdraw((bytes32,uint256,uint256,uint256,address,uint64,address,uint64),address,bytes,uint256,address)';
@@ -60,7 +60,7 @@ contract LendingManager is
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
-  function deposit(uint256 amount, address recipient)
+  function deposit(uint256 amount)
     external
     override
     nonReentrant
@@ -75,13 +75,7 @@ contract LendingManager is
     // delegate call implementation
     bytes memory result =
       address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          DEPOSIT_SIG,
-          poolData,
-          lendingInfo.args,
-          amount,
-          recipient
-        )
+        abi.encodeWithSignature(DEPOSIT_SIG, poolData, lendingInfo.args, amount)
       );
 
     ILendingModule.ReturnValues memory res =
