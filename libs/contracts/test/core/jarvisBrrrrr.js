@@ -66,7 +66,7 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe.only('JarvisBrrr', () => {
+  describe('JarvisBrrr', () => {
     it('Correctly mints and burns to DAO address', async () => {
       // mint
       let balanceBefore = await jEurInstance.balanceOf.call(DAOAddress);
@@ -186,7 +186,7 @@ contract('Jarvis Printer', async accounts => {
 
   // these needs to be run on polygon fork and needs exclusive roles
   // skipping it
-  describe('Money market manager - Polygonv - AAVEV3', () => {
+  describe.skip('Money market manager - Polygonv - AAVEV3', () => {
     let id = 'aave';
     let bytesId = web3.utils.sha3(
       web3.eth.abi.encodeParameters(['string'], [id]),
@@ -524,7 +524,7 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe('Money market manager - Polygon - MarketXyz', () => {
+  describe.skip('Money market manager - Polygon - MarketXyz', () => {
     let id = 'marketxyz';
     let bytesId = web3.utils.sha3(
       web3.eth.abi.encodeParameters(['string'], [id]),
