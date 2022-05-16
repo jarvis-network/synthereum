@@ -30,13 +30,20 @@ contract SynthereumChainlinkPriceFeed is
     address maintainer;
   }
 
+  struct Pair {
+    string base; // first asset in the pair
+    string quote; // second asset in the pair
+    string commonQuote; // common quote of both assets
+    bool isInversePrice; // dictates if to be intended as reverse price or as multiple aggregators
+  }
+
   //----------------------------------------
   // Storage
   //----------------------------------------
 
   ISynthereumFinder public immutable synthereumFinder;
   mapping(bytes32 => AggregatorV3Interface) private aggregators;
-
+  mapping(bytes32 => Pair) private pairs;
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -137,6 +144,16 @@ contract SynthereumChainlinkPriceFeed is
     emit SetAggregator(priceIdentifier, address(aggregator));
   }
 
+  function setPair(
+    bytes32 priceIdentifier,
+    string memory quote,
+    string memory base,
+    string memory commonQuote,
+    bool isInverse
+  ) external onlyMaintainer {
+    pairs[priceIdentifier] = Pair(base, quote, commonQuote, isInverse);
+  }
+
   /**
    * @notice Remove the address of aggregator associated to a price identifier
    * @param priceIdentifier Price feed identifier
@@ -166,8 +183,15 @@ contract SynthereumChainlinkPriceFeed is
     onlyPoolsOrSelfMinting
     returns (uint256 price)
   {
-    OracleData memory oracleData = _getOracleLatestRoundData(priceIdentifier);
-    price = getScaledValue(oracleData.answer, oracleData.decimals);
+    Pair memory pair = pairs[priceIdentifier];
+    if (bytes(pair.base).length > 0) {
+      pairs[priceIdentifier].isInversePrice
+        ? price = getInversePrice(pair.base, pair.quote)
+        : price = getComputedPrice(pair);
+    } else {
+      OracleData memory oracleData = _getOracleLatestRoundData(priceIdentifier);
+      price = getScaledValue(oracleData.answer, oracleData.decimals);
+    }
   }
 
   /**
@@ -222,6 +246,34 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
   // Public view functions
   //----------------------------------------
+  function getComputedPrice(Pair memory pair)
+    public
+    view
+    returns (uint256 price)
+  {
+    // retrieve base asset price in USD (ie jEUR/USD)
+    bytes32 basePriceId =
+      keccak256(abi.encodePacked(pair.base, pair.commonQuote));
+    OracleData memory baseOracleData = _getOracleLatestRoundData(basePriceId);
+    uint256 basePrice =
+      getScaledValue(baseOracleData.answer, baseOracleData.decimals);
+
+    // retrieve quote asset inverse price (ie USD/ETH)
+    uint256 inverseQuotePrice = getInversePrice(pair.quote, pair.commonQuote);
+
+    // final price basePrice * inverseQuotePrice (ier jEUR/USD * USD/ETH)
+    price = (basePrice * inverseQuotePrice) / 10**18;
+  }
+
+  function getInversePrice(string memory base, string memory quote)
+    public
+    view
+    returns (uint256 price)
+  {
+    bytes32 reverseId = keccak256(abi.encodePacked(quote, base));
+    OracleData memory oracleData = _getOracleLatestRoundData(reverseId);
+    price = 10**18 / getScaledValue(oracleData.answer, oracleData.decimals);
+  }
 
   /**
    * @notice Returns the address of aggregator if exists, otherwise it reverts
