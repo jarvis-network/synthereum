@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import {ISynthereumFinder} from './interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
 import {IPool} from '../lending-module/interfaces/IAaveV3.sol';
 import {

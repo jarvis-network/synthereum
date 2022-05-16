@@ -2,14 +2,14 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {ISynthereumFinder} from './interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IJarvisBrrrrr} from './interfaces/IJarvisBrrrrr.sol';
 import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
 import {IMoneyMarketManager} from './interfaces/IMoneyMarketManager.sol';
 import {
   IMintableBurnableERC20
 } from '../tokens/interfaces/IMintableBurnableERC20.sol';
-import {SynthereumInterfaces} from './Constants.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
