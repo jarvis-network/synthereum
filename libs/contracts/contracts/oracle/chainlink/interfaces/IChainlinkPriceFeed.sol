@@ -26,6 +26,14 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
     AggregatorV3Interface aggregator
   ) external;
 
+  function setPair(
+    bytes32 priceIdentifier,
+    string memory base,
+    string memory quote,
+    string memory commonQuote,
+    bool isInverse
+  ) external;
+
   /**
    * @notice Remove the address of aggregator associated to a price identifier
    * @param priceIdentifier Price feed identifier

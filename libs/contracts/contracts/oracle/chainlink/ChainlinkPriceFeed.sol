@@ -17,6 +17,7 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import 'hardhat/console.sol';
 
 contract SynthereumChainlinkPriceFeed is
   ISynthereumChainlinkPriceFeed,
@@ -146,11 +147,11 @@ contract SynthereumChainlinkPriceFeed is
 
   function setPair(
     bytes32 priceIdentifier,
-    string memory quote,
     string memory base,
+    string memory quote,
     string memory commonQuote,
     bool isInverse
-  ) external onlyMaintainer {
+  ) external override onlyMaintainer {
     pairs[priceIdentifier] = Pair(base, quote, commonQuote, isInverse);
   }
 
@@ -253,7 +254,7 @@ contract SynthereumChainlinkPriceFeed is
   {
     // retrieve base asset price in USD (ie jEUR/USD)
     bytes32 basePriceId =
-      keccak256(abi.encodePacked(pair.base, pair.commonQuote));
+      bytes32(abi.encodePacked(pair.base, pair.commonQuote));
     OracleData memory baseOracleData = _getOracleLatestRoundData(basePriceId);
     uint256 basePrice =
       getScaledValue(baseOracleData.answer, baseOracleData.decimals);
@@ -270,9 +271,9 @@ contract SynthereumChainlinkPriceFeed is
     view
     returns (uint256 price)
   {
-    bytes32 reverseId = keccak256(abi.encodePacked(quote, base));
-    OracleData memory oracleData = _getOracleLatestRoundData(reverseId);
-    price = 10**18 / getScaledValue(oracleData.answer, oracleData.decimals);
+    bytes32 inverseId = bytes32(abi.encodePacked(quote, base));
+    OracleData memory oracleData = _getOracleLatestRoundData(inverseId);
+    price = 10**36 / getScaledValue(oracleData.answer, oracleData.decimals);
   }
 
   /**
