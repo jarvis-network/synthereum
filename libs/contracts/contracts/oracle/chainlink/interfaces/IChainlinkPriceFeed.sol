@@ -26,6 +26,14 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
     AggregatorV3Interface aggregator
   ) external;
 
+  /**
+   * @notice Set a pair object associated to a price identifier
+   * @param priceIdentifier Price feed identifier of the pair
+   * @param base String identifying the base asset ticker symbol
+   * @param quote String identifying the quote asset ticker symbol
+   * @param commonQuote String identifying the quote asset ticker symbol shared by base and quote aggregators
+   * @param isInverse Boolean dictating if the pair is used to calculate an inverse price or a computed price
+   */
   function setPair(
     bytes32 priceIdentifier,
     string memory base,

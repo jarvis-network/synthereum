@@ -247,6 +247,13 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
   // Public view functions
   //----------------------------------------
+
+  /**
+   * @notice Calculate a computed price of a specific pair
+   * @notice A computed price is obtained by combining two prices from separate aggregators
+   * @param pair Struct identifying the pair of assets
+   * @return price 18 decimals scaled price of the pair
+   */
   function getComputedPrice(Pair memory pair)
     public
     view
@@ -266,6 +273,12 @@ contract SynthereumChainlinkPriceFeed is
     price = (basePrice * inverseQuotePrice) / 10**18;
   }
 
+  /**
+   * @notice Calculate the inverse price of a given pair
+   * @param base String identifying the base asset ticker symbol
+   * @param quote String identifying the quote asset ticker symbol
+   * @return price 18 decimals scaled price of the pair
+   */
   function getInversePrice(string memory base, string memory quote)
     public
     view
