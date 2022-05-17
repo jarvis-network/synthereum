@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import {IMintableBurnableERC20} from './IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from './interfaces/IMintableBurnableERC20.sol';
 
 /**
  * @title ERC20 interface that includes burn mint and roles methods.

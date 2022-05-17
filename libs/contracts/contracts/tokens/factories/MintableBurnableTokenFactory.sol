@@ -11,7 +11,7 @@ import {
 } from '../../core/Constants.sol';
 import {
   BaseControlledMintableBurnableERC20
-} from '../interfaces/BaseControlledMintableBurnableERC20.sol';
+} from '../BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Factory for creating new mintable and burnable tokens.

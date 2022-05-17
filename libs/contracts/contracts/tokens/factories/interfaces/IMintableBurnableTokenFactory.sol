@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 import {
   BaseControlledMintableBurnableERC20
-} from '../../interfaces/BaseControlledMintableBurnableERC20.sol';
+} from '../../BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Interface for interacting with the MintableBurnableTokenFactory contract

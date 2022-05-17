@@ -74,7 +74,7 @@ import '../self-minting/v2/interfaces/ICreditLine.sol';
 import '../self-minting/v2/interfaces/ICreditLineController.sol';
 import '../tokens/MintableBurnableSyntheticToken.sol';
 import '../tokens/MintableBurnableSyntheticTokenPermit.sol';
-import '../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+import '../tokens/BaseControlledMintableBurnableERC20.sol';
 import '../tokens/interfaces/IMintableBurnableERC20.sol';
 import '../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
 import '../tokens/MintableBurnableERC20.sol';

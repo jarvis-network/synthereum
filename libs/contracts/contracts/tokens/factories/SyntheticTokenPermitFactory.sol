@@ -3,7 +3,7 @@ pragma solidity 0.8.9;
 
 import {
   BaseControlledMintableBurnableERC20
-} from '../interfaces/BaseControlledMintableBurnableERC20.sol';
+} from '../BaseControlledMintableBurnableERC20.sol';
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 import {
   MintableBurnableSyntheticTokenPermit

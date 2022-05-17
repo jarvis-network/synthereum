@@ -17,7 +17,7 @@ import {
 } from '../../lending-module/interfaces/ILendingStorageManager.sol';
 import {
   BaseControlledMintableBurnableERC20
-} from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
 import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';

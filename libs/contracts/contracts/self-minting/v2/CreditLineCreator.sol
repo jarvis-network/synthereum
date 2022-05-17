@@ -10,7 +10,7 @@ import {
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
-} from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {

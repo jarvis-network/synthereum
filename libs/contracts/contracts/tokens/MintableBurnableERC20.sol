@@ -3,7 +3,7 @@ pragma solidity 0.8.9;
 
 import {
   BaseControlledMintableBurnableERC20
-} from './interfaces/BaseControlledMintableBurnableERC20.sol';
+} from './BaseControlledMintableBurnableERC20.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -73,7 +73,7 @@ contract MintableBurnableERC20 is
   function mint(address recipient, uint256 value)
     external
     override
-    onlyMinter()
+    onlyMinter
     returns (bool)
   {
     _mint(recipient, value);
@@ -84,7 +84,7 @@ contract MintableBurnableERC20 is
    * @notice Burn ERC20 tokens
    * @param value Amount of ERC20 tokens to be burned
    */
-  function burn(uint256 value) external override onlyBurner() {
+  function burn(uint256 value) external override onlyBurner {
     _burn(msg.sender, value);
   }
 

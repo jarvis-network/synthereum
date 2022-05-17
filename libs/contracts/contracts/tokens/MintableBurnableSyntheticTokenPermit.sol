@@ -10,7 +10,7 @@ import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {MintableBurnableERC20} from './MintableBurnableERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
-} from './interfaces/BaseControlledMintableBurnableERC20.sol';
+} from './BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Synthetic token contract
