@@ -260,7 +260,7 @@ contract SynthereumChainlinkPriceFeed is
       getScaledValue(baseOracleData.answer, baseOracleData.decimals);
 
     // retrieve quote asset inverse price (ie USD/ETH)
-    uint256 inverseQuotePrice = getInversePrice(pair.quote, pair.commonQuote);
+    uint256 inverseQuotePrice = getInversePrice(pair.commonQuote, pair.quote);
 
     // final price basePrice * inverseQuotePrice (ier jEUR/USD * USD/ETH)
     price = (basePrice * inverseQuotePrice) / 10**18;
