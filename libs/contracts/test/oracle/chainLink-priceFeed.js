@@ -7,6 +7,7 @@ const {
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
+const { toBN, toWei, toHex } = web3Utils;
 const {
   encodeLiquidityPool,
   encodeCreditLineDerivative,
@@ -525,6 +526,97 @@ contract('Synthereum chainlink price feed', function (accounts) {
         priceFeedInstance.getLatestPrice.call(priceFeedId),
         'Negative value',
       );
+    });
+  });
+
+  describe('Inverse price', async () => {
+    it('Should retrieve the inverse price of a pair', async () => {
+      let newPrice = web3Utils.toWei('150', 'mwei');
+      // update price
+      await aggregator.updateAnswer(newPrice);
+
+      let expectedInversePrice = toBN(Math.pow(10, 18))
+        .mul(toBN(Math.pow(10, 8)))
+        .div(toBN(newPrice));
+
+      let pair = {
+        base: 'USD',
+        quote: 'EUR',
+        commonQuote: 'USD',
+        isInversePrice: true,
+      };
+
+      // inverse pair
+      let inverseId = web3.utils.utf8ToHex('USDEUR');
+      await priceFeedInstance.setPair(
+        inverseId,
+        pair.base,
+        pair.quote,
+        pair.commonQuote,
+        pair.isInversePrice,
+        { from: maintainer },
+      );
+
+      // call the inverse price
+      let actualInversePrice = await priceFeedInstance.getLatestPrice.call(
+        inverseId,
+      );
+      assert.equal(
+        actualInversePrice.toString(),
+        expectedInversePrice.toString(),
+      );
+    });
+    it('Should retrieve a computed price of a pair', async () => {
+      let ETHUSD = web3.utils.utf8ToHex('ETHUSD');
+      let jEURUSD = web3.utils.utf8ToHex('jEURUSD');
+      let jEURETH = web3.utils.utf8ToHex('jEURETH');
+
+      let ETHUSDPrice = web3Utils.toWei('3000', 'mwei');
+      let jEURUSDPrice = web3Utils.toWei('1.1', 'mwei');
+
+      console.log(ETHUSDPrice.toString(), jEURUSDPrice.toString());
+      let ETHUSDAggregator = await MockAggregator.new(8, 120000000);
+      let jEURUSDAggregator = await MockAggregator.new(8, 120000000);
+
+      // register aggregators
+      await priceFeedInstance.setAggregator(ETHUSD, ETHUSDAggregator.address, {
+        from: maintainer,
+      });
+
+      await priceFeedInstance.setAggregator(
+        jEURUSD,
+        jEURUSDAggregator.address,
+        { from: maintainer },
+      );
+
+      // update prices
+      await ETHUSDAggregator.updateAnswer(ETHUSDPrice);
+      await jEURUSDAggregator.updateAnswer(jEURUSDPrice);
+
+      // register jEUR/ETH pair
+      let pair = {
+        base: 'jEUR',
+        quote: 'ETH',
+        commonQuote: 'USD',
+        isInversePrice: false,
+      };
+      let pairID = web3.utils.utf8ToHex(jEURETH);
+      await priceFeedInstance.setPair(
+        pairID,
+        pair.base,
+        pair.quote,
+        pair.commonQuote,
+        pair.isInversePrice,
+        { from: maintainer },
+      );
+
+      let expectedPrice = toBN(jEURUSDPrice)
+        .mul(toBN(Math.pow(10, 18)))
+        .div(toBN(ETHUSDPrice));
+
+      // call the inverse price
+      let actualPrice = await priceFeedInstance.getLatestPrice.call(pairID);
+      assert.equal(actualPrice.toString(), expectedPrice.toString());
     });
   });
 });
