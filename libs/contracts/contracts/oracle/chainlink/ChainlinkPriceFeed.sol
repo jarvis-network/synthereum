@@ -163,7 +163,11 @@ contract SynthereumChainlinkPriceFeed is
     emit SetPair(priceIdentifier, base, quote, commonQuote, isInverse);
   }
 
-  function removePair(bytes32 priceIdentifier) external onlyMaintainer {
+  function removePair(bytes32 priceIdentifier)
+    external
+    override
+    onlyMaintainer
+  {
     require(
       bytes(pairs[priceIdentifier].base).length > 0,
       'Price identifier does not exist'

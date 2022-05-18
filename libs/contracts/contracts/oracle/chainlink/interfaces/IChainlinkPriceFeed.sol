@@ -49,6 +49,12 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
   function removeAggregator(bytes32 priceIdentifier) external;
 
   /**
+   * @notice Delete the Pair object associated to a price identifier
+   * @param priceIdentifier Price feed identifier
+   */
+  function removePair(bytes32 priceIdentifier) external;
+
+  /**
    * @notice Returns the address of aggregator if exists, otherwise it reverts
    * @param priceIdentifier Price feed identifier
    * @return aggregator Aggregator associated with price identifier
