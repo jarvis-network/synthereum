@@ -17,7 +17,6 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import 'hardhat/console.sol';
 
 contract SynthereumChainlinkPriceFeed is
   ISynthereumChainlinkPriceFeed,

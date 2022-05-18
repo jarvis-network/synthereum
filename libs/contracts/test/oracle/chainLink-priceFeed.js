@@ -622,7 +622,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
 
     it('Should retrieve the inverse price of a pair', async () => {
-      let newPrice = web3Utils.toWei('150', 'mwei');
+      let newPrice = web3Utils.toWei('110', 'mwei');
       // update price
       await aggregator.updateAnswer(newPrice);
       let inverseId = web3.utils.utf8ToHex('USDEUR');
@@ -645,8 +645,8 @@ contract('Synthereum chainlink price feed', function (accounts) {
       let jEURUSD = web3.utils.utf8ToHex('jEURUSD');
       let jEURETH = web3.utils.utf8ToHex('jEURETH');
 
-      let ETHUSDPrice = web3Utils.toWei('3000', 'mwei');
-      let jEURUSDPrice = web3Utils.toWei('1.1', 'mwei');
+      let ETHUSDPrice = web3Utils.toWei('300000', 'mwei');
+      let jEURUSDPrice = web3Utils.toWei('110', 'mwei');
 
       let ETHUSDAggregator = await MockAggregator.new(8, 120000000);
       let jEURUSDAggregator = await MockAggregator.new(8, 120000000);
@@ -687,7 +687,6 @@ contract('Synthereum chainlink price feed', function (accounts) {
         .mul(toBN(Math.pow(10, 18)))
         .div(toBN(ETHUSDPrice));
 
-      // call the inverse price
       let actualPrice = await priceFeedInstance.getLatestPrice.call(pairID);
       assert.equal(actualPrice.toString(), expectedPrice.toString());
     });
