@@ -44,13 +44,21 @@ contract SynthereumChainlinkPriceFeed is
 
   ISynthereumFinder public immutable synthereumFinder;
   mapping(bytes32 => AggregatorV3Interface) private aggregators;
-  mapping(bytes32 => Pair) private pairs;
+  mapping(bytes32 => Pair) public pairs;
   //----------------------------------------
   // Events
   //----------------------------------------
 
   event SetAggregator(bytes32 indexed priceIdentifier, address aggregator);
+  event SetPair(
+    bytes32 indexed priceIdentifier,
+    string base,
+    string quote,
+    string commonQuote,
+    bool isInversePrice
+  );
 
+  event RemovePair(bytes32 indexed priceIdentifier);
   event RemoveAggregator(bytes32 indexed priceIdentifier);
 
   //----------------------------------------
@@ -153,6 +161,16 @@ contract SynthereumChainlinkPriceFeed is
     bool isInverse
   ) external override onlyMaintainer {
     pairs[priceIdentifier] = Pair(base, quote, commonQuote, isInverse);
+    emit SetPair(priceIdentifier, base, quote, commonQuote, isInverse);
+  }
+
+  function removePair(bytes32 priceIdentifier) external onlyMaintainer {
+    require(
+      bytes(pairs[priceIdentifier].base).length > 0,
+      'Price identifier does not exist'
+    );
+    delete pairs[priceIdentifier];
+    emit RemovePair(priceIdentifier);
   }
 
   /**
