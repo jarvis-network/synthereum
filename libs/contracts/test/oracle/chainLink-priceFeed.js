@@ -530,15 +530,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
   });
 
   describe('Inverse price', async () => {
-    it('Should retrieve the inverse price of a pair', async () => {
-      let newPrice = web3Utils.toWei('150', 'mwei');
-      // update price
-      await aggregator.updateAnswer(newPrice);
-
-      let expectedInversePrice = toBN(Math.pow(10, 18))
-        .mul(toBN(Math.pow(10, 8)))
-        .div(toBN(newPrice));
-
+    it('Only maintainer should set a pair', async () => {
       let pair = {
         base: 'USD',
         quote: 'EUR',
@@ -548,7 +540,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
 
       // inverse pair
       let inverseId = web3.utils.utf8ToHex('USDEUR');
-      await priceFeedInstance.setPair(
+      let tx = await priceFeedInstance.setPair(
         inverseId,
         pair.base,
         pair.quote,
@@ -556,6 +548,88 @@ contract('Synthereum chainlink price feed', function (accounts) {
         pair.isInversePrice,
         { from: maintainer },
       );
+
+      truffleAssert.eventEmitted(tx, 'SetPair', ev => {
+        return (
+          ev.base == pair.base &&
+          ev.quote == pair.quote &&
+          ev.commonQuote == pair.commonQuote &&
+          ev.isInversePrice == pair.isInversePrice
+        );
+      });
+
+      let actualStorage = await priceFeedInstance.pairs.call(inverseId);
+      assert.equal(actualStorage.base, pair.base);
+      assert.equal(actualStorage.quote, pair.quote);
+      assert.equal(actualStorage.commonQuote, pair.commonQuote);
+      assert.equal(actualStorage.isInversePrice, pair.isInversePrice);
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(
+          inverseId,
+          pair.base,
+          pair.quote,
+          pair.commonQuote,
+          pair.isInversePrice,
+          { from: accounts[0] },
+        ),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Only maintainer should delete a pair', async () => {
+      let pair = {
+        base: 'USD',
+        quote: 'EUR',
+        commonQuote: 'USD',
+        isInversePrice: true,
+      };
+
+      let inverseId = web3.utils.utf8ToHex('TESTEUR');
+      let tx = await priceFeedInstance.setPair(
+        inverseId,
+        pair.base,
+        pair.quote,
+        pair.commonQuote,
+        pair.isInversePrice,
+        { from: maintainer },
+      );
+
+      truffleAssert.eventEmitted(tx, 'SetPair', ev => {
+        return (
+          ev.priceIdentifier == web3.utils.padRight(inverseId, 64) &&
+          ev.base == pair.base &&
+          ev.quote == pair.quote &&
+          ev.commonQuote == pair.commonQuote &&
+          ev.isInversePrice == pair.isInversePrice
+        );
+      });
+
+      tx = await priceFeedInstance.removePair(inverseId, { from: maintainer });
+      truffleAssert.eventEmitted(tx, 'RemovePair', ev => {
+        return ev.priceIdentifier == web3.utils.padRight(inverseId, 64);
+      });
+
+      let actualStorage = await priceFeedInstance.pairs.call(inverseId);
+      assert.equal(actualStorage.base, '');
+      assert.equal(actualStorage.quote, '');
+      assert.equal(actualStorage.commonQuote, '');
+      assert.equal(actualStorage.isInversePrice, false);
+
+      await truffleAssert.reverts(
+        priceFeedInstance.removePair(inverseId, { from: accounts[0] }),
+        'Sender must be the maintainer',
+      );
+    });
+
+    it('Should retrieve the inverse price of a pair', async () => {
+      let newPrice = web3Utils.toWei('150', 'mwei');
+      // update price
+      await aggregator.updateAnswer(newPrice);
+      let inverseId = web3.utils.utf8ToHex('USDEUR');
+
+      let expectedInversePrice = toBN(Math.pow(10, 18))
+        .mul(toBN(Math.pow(10, 8)))
+        .div(toBN(newPrice));
 
       // call the inverse price
       let actualInversePrice = await priceFeedInstance.getLatestPrice.call(
@@ -574,7 +648,6 @@ contract('Synthereum chainlink price feed', function (accounts) {
       let ETHUSDPrice = web3Utils.toWei('3000', 'mwei');
       let jEURUSDPrice = web3Utils.toWei('1.1', 'mwei');
 
-      console.log(ETHUSDPrice.toString(), jEURUSDPrice.toString());
       let ETHUSDAggregator = await MockAggregator.new(8, 120000000);
       let jEURUSDAggregator = await MockAggregator.new(8, 120000000);
 
