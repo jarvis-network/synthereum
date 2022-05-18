@@ -9,6 +9,7 @@ import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
+import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -18,11 +19,11 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
   mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
   mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
 
-  address immutable finder;
+  ISynthereumFinder immutable synthereumFinder;
 
   modifier onlyLendingManager() {
     address lendingManager =
-      ISynthereumFinder(finder).getImplementationAddress(
+      synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.LendingManager
       );
     require(msg.sender == lendingManager, 'Not allowed');
@@ -30,27 +31,12 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
   }
 
   modifier onlyPoolFactory() {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        ISynthereumFinder(finder).getImplementationAddress(
-          SynthereumInterfaces.FactoryVersioning
-        )
-      );
-    uint8 numberOfPoolFactories =
-      factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
-    require(
-      _checkSenderIsFactory(
-        factoryVersioning,
-        numberOfPoolFactories,
-        FactoryInterfaces.PoolFactory
-      ),
-      'Not allowed'
-    );
+    SynthereumFactoryAccess._onlyPoolFactory(synthereumFinder);
     _;
   }
 
-  constructor(address _finder) {
-    finder = _finder;
+  constructor(ISynthereumFinder _finder) {
+    synthereumFinder = _finder;
   }
 
   function setLendingModule(string memory id, LendingInfo memory lendingInfo)

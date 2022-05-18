@@ -9,6 +9,7 @@ import {
   SynthereumInterfaces,
   FactoryInterfaces
 } from '../../core/Constants.sol';
+import {SynthereumFactoryAccess} from '../../common/libs/FactoryAccess.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from '../BaseControlledMintableBurnableERC20.sol';
@@ -28,39 +29,10 @@ abstract contract MintableBurnableTokenFactory {
   //----------------------------------------
 
   modifier onlyPoolFactoryOrFixedRateFactory() {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.FactoryVersioning
-        )
-      );
-    uint8 numberOfPoolFactories =
-      factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
-    uint8 numberOfFixedRateFactories =
-      factoryVersioning.numberOfFactoryVersions(
-        FactoryInterfaces.FixedRateFactory
-      );
-    bool isPoolFactory =
-      _checkSenderIsFactory(
-        factoryVersioning,
-        numberOfPoolFactories,
-        FactoryInterfaces.PoolFactory
-      );
-    if (isPoolFactory) {
-      _;
-      return;
-    }
-    bool isFixedRateFactory =
-      _checkSenderIsFactory(
-        factoryVersioning,
-        numberOfFixedRateFactories,
-        FactoryInterfaces.FixedRateFactory
-      );
-    if (isFixedRateFactory) {
-      _;
-      return;
-    }
-    revert('Sender must be a Pool or FixedRate factory');
+    SynthereumFactoryAccess._onlyPoolFactoryOrFixedRateFactory(
+      synthereumFinder
+    );
+    _;
   }
 
   //----------------------------------------

@@ -11,7 +11,7 @@ import {
 } from '../core/interfaces/IIdentifierWhitelist.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 
-/** @title Contract factory of self-minting derivatives
+/** @title Contract to use iniside factories for checking deployment data
  */
 contract FactoryConditions {
   /**

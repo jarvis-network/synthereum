@@ -31,7 +31,7 @@ contract LendingManager is
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
-  address immutable finder;
+  ISynthereumFinder immutable synthereumFinder;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
@@ -51,8 +51,8 @@ contract LendingManager is
     _;
   }
 
-  constructor(address _finder, Roles memory _roles) nonReentrant {
-    finder = _finder;
+  constructor(ISynthereumFinder _finder, Roles memory _roles) nonReentrant {
+    synthereumFinder = _finder;
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -211,7 +211,7 @@ contract LendingManager is
   ) external override nonReentrant onlyMaintainer {
     require(pools.length == amounts.length, 'Invalid call');
     address recipient =
-      ISynthereumFinder(finder).getImplementationAddress(
+      synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.CommissionReceiver
       );
     uint256 totalAmount;
@@ -236,7 +236,7 @@ contract LendingManager is
     // withdraw collateral and update all pools
     uint256 aggregatedCollateral;
     address recipient =
-      ISynthereumFinder(finder).getImplementationAddress(
+      synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.BuybackProgramReceiver
       );
     for (uint8 i = 0; i < pools.length; i++) {
@@ -590,7 +590,7 @@ contract LendingManager is
   function getStorageManager() internal view returns (ILendingStorageManager) {
     return
       ILendingStorageManager(
-        ISynthereumFinder(finder).getImplementationAddress(
+        synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.LendingStorageManager
         )
       );

@@ -29,7 +29,7 @@ import {
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
- * @title Token Issuer Contract
+ * @title Synthetic token Issuer Contract
  * @notice Collects collateral and issues synthetic assets
  */
 contract SynthereumLiquidityPool is
