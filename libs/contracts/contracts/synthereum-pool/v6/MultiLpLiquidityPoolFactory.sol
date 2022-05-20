@@ -58,6 +58,7 @@ contract SynthereumMultiLpLiquidityPoolFactory is
     public
     override
     nonReentrant
+    onlyDeployer(synthereumFinder)
     returns (ISynthereumMultiLpLiquidityPool pool)
   {
     checkDeploymentConditions(

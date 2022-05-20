@@ -54,6 +54,7 @@ contract CreditLineFactory is
     public
     override
     nonReentrant
+    onlyDeployer(synthereumFinder)
     returns (CreditLine creditLine)
   {
     checkDeploymentConditions(

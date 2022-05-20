@@ -15,37 +15,47 @@ import {SynthereumInterfaces} from '../core/Constants.sol';
  */
 contract FactoryConditions {
   /**
+   * @notice Check if the sender is the deployer
+   */
+  modifier onlyDeployer(ISynthereumFinder _synthereumFinder) {
+    address deployer =
+      _synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
+    require(msg.sender == deployer, 'Sender must be Synthereum deployer');
+    _;
+  }
+
+  /**
    * @notice Check if the sender is the deployer and if identifier and collateral are supported
-   * @param synthereumFinder Synthereum finder
-   * @param collateralToken Collateral token to check if it's in the whithelist
-   * @param priceFeedIdentifier Identifier to check if it's in the whithelist
+   * @param _synthereumFinder Synthereum finder
+   * @param _collateralToken Collateral token to check if it's in the whithelist
+   * @param _priceFeedIdentifier Identifier to check if it's in the whithelist
    */
   function checkDeploymentConditions(
-    ISynthereumFinder synthereumFinder,
-    IStandardERC20 collateralToken,
-    bytes32 priceFeedIdentifier
+    ISynthereumFinder _synthereumFinder,
+    IStandardERC20 _collateralToken,
+    bytes32 _priceFeedIdentifier
   ) internal view {
     address deployer =
-      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
+      _synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
     ISynthereumCollateralWhitelist collateralWhitelist =
       ISynthereumCollateralWhitelist(
-        synthereumFinder.getImplementationAddress(
+        _synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.CollateralWhitelist
         )
       );
     require(
-      collateralWhitelist.isOnWhitelist(address(collateralToken)),
+      collateralWhitelist.isOnWhitelist(address(_collateralToken)),
       'Collateral not supported'
     );
     ISynthereumIdentifierWhitelist identifierWhitelist =
       ISynthereumIdentifierWhitelist(
-        synthereumFinder.getImplementationAddress(
+        _synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.IdentifierWhitelist
         )
       );
     require(
-      identifierWhitelist.isOnWhitelist(priceFeedIdentifier),
+      identifierWhitelist.isOnWhitelist(_priceFeedIdentifier),
       'Identifier not supported'
     );
   }
