@@ -35,7 +35,6 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint8 poolVersion;
     uint128 overCollateralRequirement;
     uint64 liquidationBonus;
-    ISynthereumFinder finder;
     IMintableBurnableERC20 syntheticAsset;
   }
 

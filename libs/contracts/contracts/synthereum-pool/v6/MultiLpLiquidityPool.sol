@@ -2,6 +2,10 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+import {
+  IMintableBurnableERC20
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {
   ISynthereumMultiLpLiquidityPool
 } from './interfaces/IMultiLpLiquidityPool.sol';
@@ -11,25 +15,37 @@ import {
 import {
   ISynthereumMultiLpLiquidityPoolEvents
 } from './interfaces/IMultiLpLiquidityPoolEvents.sol';
-import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ILendingManager
 } from '../../lending-module/interfaces/ILendingManager.sol';
+import {
+  ILendingStorageManager
+} from '../../lending-module/interfaces/ILendingStorageManager.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {SynthereumMultiLpLiquidityPoolLib} from './MultiLpLiquidityPoolLib.sol';
-import {ERC2771Context} from '../../common/ERC2771Context.sol';
 import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+  SynthereumPoolMigrationFrom
+} from '../common/migration/PoolMigrationFrom.sol';
+import {
+  SynthereumPoolMigrationTo
+} from '../common/migration/PoolMigrationTo.sol';
+import {
+  ISynthereumPoolMigrationStorage
+} from '../common/migration/interfaces/IPoolMigrationStorage.sol';
+import {ExplicitERC20} from '../../base/utils/ExplicitERC20.sol';
+import {ERC2771Context} from '../../common/ERC2771Context.sol';
 import {
   AccessControlEnumerable,
   Context
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title Multi LP Synthereum pool
@@ -38,12 +54,15 @@ contract SynthereumMultiLpLiquidityPool is
   ISynthereumMultiLpLiquidityPoolEvents,
   ISynthereumLendingTransfer,
   ISynthereumMultiLpLiquidityPool,
-  ERC2771Context,
   ReentrancyGuard,
-  AccessControlEnumerable
+  AccessControlEnumerable,
+  ERC2771Context,
+  SynthereumPoolMigrationTo,
+  SynthereumPoolMigrationFrom
 {
   using EnumerableSet for EnumerableSet.AddressSet;
   using SynthereumMultiLpLiquidityPoolLib for Storage;
+  using SynthereumMultiLpLiquidityPoolLib for ISynthereumFinder;
 
   //----------------------------------------
   // Constants
@@ -76,6 +95,12 @@ contract SynthereumMultiLpLiquidityPool is
     _;
   }
 
+  modifier isNotInitialized() {
+    require(!storageParams.isInitialized, 'Pool already initialized');
+    _;
+    storageParams.isInitialized = true;
+  }
+
   /**
    * @notice Initialize pool
    * @param _params Params used for initialization (see InitializationParams struct)
@@ -84,7 +109,9 @@ contract SynthereumMultiLpLiquidityPool is
     external
     override
     nonReentrant
+    isNotInitialized
   {
+    finder = _params.finder;
     storageParams.initialize(_params);
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -123,6 +150,7 @@ contract SynthereumMultiLpLiquidityPool is
       storageParams.activateLP(
         _collateralAmount,
         _overCollateralization,
+        finder,
         _msgSender()
       );
   }
@@ -139,7 +167,7 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
     returns (uint256 collateralDeposited)
   {
-    return storageParams.addLiquidity(_collateralAmount, _msgSender());
+    return storageParams.addLiquidity(_collateralAmount, finder, _msgSender());
   }
 
   /**
@@ -154,7 +182,8 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
     returns (uint256 collateralReceived)
   {
-    return storageParams.removeLiquidity(_collateralAmount, _msgSender());
+    return
+      storageParams.removeLiquidity(_collateralAmount, finder, _msgSender());
   }
 
   /**
@@ -169,6 +198,7 @@ contract SynthereumMultiLpLiquidityPool is
   {
     storageParams.setOvercollateralization(
       _overCollateralization,
+      finder,
       _msgSender()
     );
   }
@@ -188,7 +218,7 @@ contract SynthereumMultiLpLiquidityPool is
     isNotExpired(_mintParams.expiration)
     returns (uint256, uint256)
   {
-    return storageParams.mint(_mintParams, _msgSender());
+    return storageParams.mint(_mintParams, finder, _msgSender());
   }
 
   /**
@@ -206,7 +236,7 @@ contract SynthereumMultiLpLiquidityPool is
     isNotExpired(_redeemParams.expiration)
     returns (uint256, uint256)
   {
-    return storageParams.redeem(_redeemParams, _msgSender());
+    return storageParams.redeem(_redeemParams, finder, _msgSender());
   }
 
   /**
@@ -222,7 +252,7 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
     returns (uint256)
   {
-    return storageParams.liquidate(_lp, _numSynthTokens, _msgSender());
+    return storageParams.liquidate(_lp, _numSynthTokens, finder, _msgSender());
   }
 
   /**
@@ -230,7 +260,7 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Everyone can call this function
    */
   function updatePositions() external override nonReentrant {
-    storageParams.updatePositions();
+    storageParams.updatePositions(finder);
   }
 
   /**
@@ -245,7 +275,7 @@ contract SynthereumMultiLpLiquidityPool is
     nonReentrant
     returns (uint256 bearingAmountOut)
   {
-    return storageParams.transferToLendingManager(_bearingAmount);
+    return storageParams.transferToLendingManager(_bearingAmount, finder);
   }
 
   /**
@@ -287,7 +317,7 @@ contract SynthereumMultiLpLiquidityPool is
     string calldata _lendingId,
     address _bearingToken
   ) external override nonReentrant onlyMaintainer {
-    storageParams.switchLendingModule(_lendingId, _bearingToken);
+    storageParams.switchLendingModule(_lendingId, _bearingToken, finder);
   }
 
   /**
@@ -304,20 +334,20 @@ contract SynthereumMultiLpLiquidityPool is
   }
 
   /**
+   * @notice Get all the active LPs of this pool
+   * @return The list of addresses of all the active LPs in the pool.
+   */
+  function getActiveLPs() external view override returns (address[] memory) {
+    return storageParams.getActiveLPs();
+  }
+
+  /**
    * @notice Check if the input LP is registered
    * @param _lp Address of the LP
    * @return Return true if the LP is regitered, otherwise false
    */
   function isRegisteredLP(address _lp) external view override returns (bool) {
     return storageParams.registeredLPs.contains(_lp);
-  }
-
-  /**
-   * @notice Get all the active LPs of this pool
-   * @return The list of addresses of all the active LPs in the pool.
-   */
-  function getActiveLPs() external view override returns (address[] memory) {
-    return storageParams.getActiveLPs();
   }
 
   /**
@@ -339,7 +369,7 @@ contract SynthereumMultiLpLiquidityPool is
     override
     returns (ISynthereumFinder)
   {
-    return storageParams.finder;
+    return finder;
   }
 
   /**
@@ -444,7 +474,7 @@ contract SynthereumMultiLpLiquidityPool is
       uint256 totalCollateral
     )
   {
-    return storageParams.totalCollateralAmount();
+    return storageParams.totalCollateralAmount(finder);
   }
 
   /**
@@ -457,7 +487,7 @@ contract SynthereumMultiLpLiquidityPool is
     override
     returns (uint256 maxCapacity)
   {
-    return storageParams.maxTokensCapacity();
+    return storageParams.maxTokensCapacity(finder);
   }
 
   /**
@@ -471,7 +501,7 @@ contract SynthereumMultiLpLiquidityPool is
     override
     returns (LPInfo memory info)
   {
-    return storageParams.positionLPInfo(_lp);
+    return storageParams.positionLPInfo(_lp, finder);
   }
 
   /**
@@ -484,7 +514,7 @@ contract SynthereumMultiLpLiquidityPool is
     view
     returns (string memory lendingId, address bearingToken)
   {
-    return storageParams.lendingProtocolInfo();
+    return storageParams.lendingProtocolInfo(finder);
   }
 
   /**
@@ -499,9 +529,7 @@ contract SynthereumMultiLpLiquidityPool is
     returns (bool)
   {
     try
-      storageParams.finder.getImplementationAddress(
-        SynthereumInterfaces.TrustedForwarder
-      )
+      finder.getImplementationAddress(SynthereumInterfaces.TrustedForwarder)
     returns (address trustedForwarder) {
       if (forwarder == trustedForwarder) {
         return true;
@@ -529,5 +557,70 @@ contract SynthereumMultiLpLiquidityPool is
     returns (bytes calldata)
   {
     return ERC2771Context._msgData();
+  }
+
+  /**
+   * @notice Clean and reset the storage to the initial state during migration
+   */
+  function _cleanStorage() internal override {
+    address[] memory registeredLPsList = storageParams.getRegisteredLPs();
+
+    address[] memory activeLPsList = storageParams.getActiveLPs();
+
+    storageParams.cleanStorage(registeredLPsList, activeLPsList);
+  }
+
+  /**
+   * @notice Set the storage to the new pool during migration
+   * @param _poolVersion Version of the pool
+   * @param _storageBytes Pool storage encoded in bytes
+   */
+  function _setStorage(uint8 _poolVersion, bytes calldata _storageBytes)
+    internal
+    override
+    isNotInitialized
+  {
+    storageParams.setStorage(_poolVersion, _storageBytes);
+  }
+
+  /**
+   * @notice Update positions during migration
+   */
+  function _modifyStorageFrom() internal override {
+    storageParams.updatePositions(finder);
+  }
+
+  /**
+   * @notice Update the storage of the new pool after the migration
+   * @param _sourceCollateralAmount Collateral amount from the source pool
+   * @param _actualCollateralAmount Collateral amount of the new pool
+   */
+  function _modifyStorageTo(
+    uint256 _sourceCollateralAmount,
+    uint256 _actualCollateralAmount
+  ) internal override {
+    storageParams.updateMigrationStorage(
+      _sourceCollateralAmount,
+      _actualCollateralAmount,
+      finder
+    );
+  }
+
+  /**
+   * @notice Encode storage in bytes during migration
+   * @return poolVersion Version of the pool
+   * @return storageBytes Pool storage encoded in bytes
+   */
+  function _encodeStorage()
+    internal
+    view
+    override
+    returns (uint8 poolVersion, bytes memory storageBytes)
+  {
+    address[] memory registeredLPsList = storageParams.getRegisteredLPs();
+
+    address[] memory activeLPsList = storageParams.getActiveLPs();
+
+    storageParams.encodeStorage(registeredLPsList, activeLPsList);
   }
 }
