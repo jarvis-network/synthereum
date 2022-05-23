@@ -339,7 +339,9 @@ contract SynthereumChainlinkPriceFeed is
     override
     returns (bool isSupported)
   {
-    isSupported = address(aggregators[priceIdentifier]) != address(0)
+    bool isPair = bytes(pairs[priceIdentifier].base).length > 0;
+    isSupported = (isPair ||
+      address(aggregators[priceIdentifier]) != address(0))
       ? true
       : false;
   }
