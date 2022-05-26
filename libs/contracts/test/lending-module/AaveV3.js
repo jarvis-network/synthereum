@@ -135,6 +135,11 @@ contract('AaveV3 Lending module', accounts => {
       maintainer,
       { from: maintainer },
     );
+    await finder.changeImplementationAddress(
+      web3Utils.utf8ToHex('JarvisToken'),
+      JRT,
+      { from: maintainer },
+    );
     await factoryVers.setFactory(
       web3Utils.utf8ToHex('PoolFactory'),
       1,
@@ -890,6 +895,7 @@ contract('AaveV3 Lending module', accounts => {
               routerAddress: 'address',
               tokenSwapPath: 'address[]',
               expiration: 'uint256',
+              minTokensOut: 'uint256',
             },
           },
         ],
@@ -898,6 +904,7 @@ contract('AaveV3 Lending module', accounts => {
             routerAddress: data[networkId].JRTSwapRouter,
             tokenSwapPath: [USDC, JRT],
             expiration,
+            minTokensOut: 0,
           },
         ],
       );
