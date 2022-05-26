@@ -42,7 +42,8 @@ contract LendingManager is
   string private constant WITHDRAW_SIG =
     'withdraw((bytes32,uint256,uint256,uint256,address,uint64,address,uint64),address,bytes,uint256,address)';
 
-  string private JRTSWAP_SIG = 'swapToJRT(address,address,uint256,bytes)';
+  string private JRTSWAP_SIG =
+    'swapToJRT(address,address,address,uint256,bytes)';
 
   string private TOTAL_TRANSFER_SIG =
     'totalTransfer(address,address,address,address,bytes)';
@@ -303,6 +304,10 @@ contract LendingManager is
     }
 
     // execute the buyback call with all the withdrawn collateral
+    address JARVIS =
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.JarvisToken
+      );
     bytes memory result =
       address(poolStorageManager.getCollateralSwapModule(collateralAddress))
         .functionDelegateCall(
@@ -310,6 +315,7 @@ contract LendingManager is
           JRTSWAP_SIG,
           recipient,
           collateralAddress,
+          JARVIS,
           aggregatedCollateral,
           swapParams
         )

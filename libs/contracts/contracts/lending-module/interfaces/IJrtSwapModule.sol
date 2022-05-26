@@ -6,6 +6,7 @@ interface IJRTSwapModule {
    * @notice executes an AMM swap from collateral to JRT
    * @param recipient address receiving JRT tokens
    * @param collateral address of the collateral token to swap
+   * @param jarvisToken address of the jarvis token to buy
    * @param amountIn exact amount of collateral to swap
    * @param params extra params needed on the specific implementation (with different AMM)
    * @return amountOut amount of JRT in output
@@ -13,6 +14,7 @@ interface IJRTSwapModule {
   function swapToJRT(
     address recipient,
     address collateral,
+    address jarvisToken,
     uint256 amountIn,
     bytes memory params
   ) external returns (uint256 amountOut);

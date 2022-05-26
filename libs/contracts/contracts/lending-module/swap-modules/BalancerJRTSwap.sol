@@ -16,7 +16,6 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
   struct SwapInfo {
     bytes32 poolId;
     address routerAddress;
-    address jrtAddress;
     uint256 minTokensOut; // anti slippage
     uint256 expiration;
   }
@@ -24,6 +23,7 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
   function swapToJRT(
     address recipient,
     address collateral,
+    address jarvisToken,
     uint256 amountIn,
     bytes memory params
   ) external override returns (uint256 amountOut) {
@@ -36,7 +36,7 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
         swapInfo.poolId,
         IBalancerVault.SwapKind.GIVEN_IN,
         collateral,
-        swapInfo.jrtAddress,
+        jarvisToken,
         amountIn,
         '0x00'
       );
