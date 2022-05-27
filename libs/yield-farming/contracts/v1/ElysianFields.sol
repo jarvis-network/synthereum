@@ -207,6 +207,7 @@ contract ElysianFields is Ownable {
   function deposit(uint256 _pid, uint256 _amount) external {
     PoolInfo storage pool = poolInfo[_pid];
     UserInfo storage user = userInfo[_pid][msg.sender];
+    require(startBlock != 0, 'Program parameters not set');
     updatePool(_pid);
     if (user.amount > 0) {
       uint256 pending =
@@ -260,6 +261,9 @@ contract ElysianFields is Ownable {
     view
     returns (uint256)
   {
+    if (startBlock == 0 || block.number < startBlock) {
+      return 0;
+    }
     PoolInfo storage pool = poolInfo[_pid];
     UserInfo storage user = userInfo[_pid][_user];
     uint256 accRwdPerShare = pool.accRwdPerShare;
