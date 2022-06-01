@@ -4,9 +4,6 @@ pragma solidity 0.8.9;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
   ISynthereumMultiLpLiquidityPool
 } from './interfaces/IMultiLpLiquidityPool.sol';
 import {
@@ -16,28 +13,23 @@ import {
   ISynthereumMultiLpLiquidityPoolEvents
 } from './interfaces/IMultiLpLiquidityPoolEvents.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ILendingManager
-} from '../../lending-module/interfaces/ILendingManager.sol';
-import {
-  ILendingStorageManager
-} from '../../lending-module/interfaces/ILendingStorageManager.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {SynthereumMultiLpLiquidityPoolLib} from './MultiLpLiquidityPoolLib.sol';
+import {
+  SynthereumMultiLpLiquidityPoolMainLib
+} from './MultiLpLiquidityPoolMainLib.sol';
+import {
+  SynthereumMultiLpLiquidityPoolMigrationLib
+} from './MultiLpLiquidityPoolMigrationLib.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../common/migration/PoolMigrationFrom.sol';
 import {
   SynthereumPoolMigrationTo
 } from '../common/migration/PoolMigrationTo.sol';
-import {
-  ISynthereumPoolMigrationStorage
-} from '../common/migration/interfaces/IPoolMigrationStorage.sol';
-import {ExplicitERC20} from '../../base/utils/ExplicitERC20.sol';
 import {ERC2771Context} from '../../common/ERC2771Context.sol';
 import {
   AccessControlEnumerable,
@@ -61,8 +53,9 @@ contract SynthereumMultiLpLiquidityPool is
   SynthereumPoolMigrationFrom
 {
   using EnumerableSet for EnumerableSet.AddressSet;
-  using SynthereumMultiLpLiquidityPoolLib for Storage;
-  using SynthereumMultiLpLiquidityPoolLib for ISynthereumFinder;
+  using SynthereumMultiLpLiquidityPoolMainLib for Storage;
+  using SynthereumMultiLpLiquidityPoolMainLib for ISynthereumFinder;
+  using SynthereumMultiLpLiquidityPoolMigrationLib for Storage;
 
   //----------------------------------------
   // Constants

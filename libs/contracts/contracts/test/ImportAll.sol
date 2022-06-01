@@ -49,6 +49,8 @@ import '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPoolEvents.sol';
 import '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import '../synthereum-pool/v6/MultiLpLiquidityPool.sol';
 import '../synthereum-pool/v6/MultiLpLiquidityPoolLib.sol';
+import '../synthereum-pool/v6/MultiLpLiquidityPoolMainLib.sol';
+import '../synthereum-pool/v6/MultiLpLiquidityPoolMigrationLib.sol';
 import '../synthereum-pool/v6/MultiLpLiquidityPoolCreator.sol';
 import '../synthereum-pool/v6/MultiLpLiquidityPoolFactory.sol';
 import '../core/Manager.sol';
