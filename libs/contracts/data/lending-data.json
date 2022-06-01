@@ -9,6 +9,10 @@
     "AaveV3": {
       "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
       "isEnabled": true
+    },
+    "SwapModules": {
+      "uniV2": true,
+      "balancer": true
     }
   }
 }

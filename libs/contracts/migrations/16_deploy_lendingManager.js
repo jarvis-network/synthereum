@@ -3,6 +3,8 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'LendingManager',
   'LendingStorageManager',
   'AaveV3Module',
+  'UniV2JRTSwapModule',
+  'BalancerJRTSwapModule',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -15,6 +17,8 @@ async function migrate(deployer, network, accounts) {
     LendingManager,
     LendingStorageManager,
     AaveV3Module,
+    UniV2JRTSwapModule,
+    BalancerJRTSwapModule,
   } = migrate.getContracts(artifacts);
   const lendingData = require('../data/lending-data.json');
   const {
@@ -117,5 +121,32 @@ async function migrate(deployer, network, accounts) {
       })
       .send({ from: maintainer });
     console.log('AaveV3Module added to LendingManager');
+  }
+
+  // JARVIS TOKEN SWAP MODULES
+  if (lendingData[networkId]?.SwapModules?.uniV2 ?? false) {
+    await deploy(web3, deployer, network, UniV2JRTSwapModule, {
+      from: keys.deployer,
+    });
+    const univ2SwapModule = await getExistingInstance(
+      web3,
+      UniV2JRTSwapModule,
+      '@jarvis-network/synthereum-contracts',
+    );
+    console.log(
+      'UniswapV2 Module deployed at:',
+      univ2SwapModule.options.address,
+    );
+  }
+  if (lendingData[networkId]?.SwapModules?.balancer ?? false) {
+    await deploy(web3, deployer, network, BalancerJRTSwapModule, {
+      from: keys.deployer,
+    });
+    const balancerModule = await getExistingInstance(
+      web3,
+      BalancerJRTSwapModule,
+      '@jarvis-network/synthereum-contracts',
+    );
+    console.log('Balancer Module deployed at:', balancerModule.options.address);
   }
 }
