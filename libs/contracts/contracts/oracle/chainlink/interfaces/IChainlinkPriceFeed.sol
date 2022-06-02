@@ -17,36 +17,18 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
   }
 
   /**
-   * @notice Set the address of aggregator associated to a pricee identifier
-   * @param priceIdentifier Price feed identifier
-   * @param aggregator Address of chainlink proxy aggregator
-   */
-  function setAggregator(
-    bytes32 priceIdentifier,
-    AggregatorV3Interface aggregator
-  ) external;
-
-  /**
    * @notice Set a pair object associated to a price identifier
    * @param priceIdentifier Price feed identifier of the pair
-   * @param base String identifying the base asset ticker symbol
-   * @param quote String identifying the quote asset ticker symbol
-   * @param commonQuote String identifying the quote asset ticker symbol shared by base and quote aggregators
+   * @param aggregator Address of chainlink proxy aggregator
+   * @param intermediatePairs Price feed identifier of the pairs to use for computed price
    * @param isInverse Boolean dictating if the pair is used to calculate an inverse price or a computed price
    */
   function setPair(
+    bool isInverse,
     bytes32 priceIdentifier,
-    string memory base,
-    string memory quote,
-    string memory commonQuote,
-    bool isInverse
+    address aggregator,
+    bytes32[] memory intermediatePairs
   ) external;
-
-  /**
-   * @notice Remove the address of aggregator associated to a price identifier
-   * @param priceIdentifier Price feed identifier
-   */
-  function removeAggregator(bytes32 priceIdentifier) external;
 
   /**
    * @notice Delete the Pair object associated to a price identifier

@@ -17,6 +17,7 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import 'hardhat/console.sol';
 
 contract SynthereumChainlinkPriceFeed is
   ISynthereumChainlinkPriceFeed,
@@ -30,11 +31,12 @@ contract SynthereumChainlinkPriceFeed is
     address maintainer;
   }
 
+  enum Type {STANDARD, INVERSE, COMPUTED}
   struct Pair {
-    string base; // first asset in the pair
-    string quote; // second asset in the pair
-    string commonQuote; // common quote of both assets
-    bool isInversePrice; // dictates if to be intended as reverse price or as multiple aggregators
+    bool isSupported;
+    Type priceType;
+    AggregatorV3Interface aggregator;
+    bytes32[] intermediatePairs;
   }
 
   //----------------------------------------
@@ -42,7 +44,6 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
 
   ISynthereumFinder public immutable synthereumFinder;
-  mapping(bytes32 => AggregatorV3Interface) private aggregators;
   mapping(bytes32 => Pair) public pairs;
   //----------------------------------------
   // Events
@@ -51,10 +52,8 @@ contract SynthereumChainlinkPriceFeed is
   event SetAggregator(bytes32 indexed priceIdentifier, address aggregator);
   event SetPair(
     bytes32 indexed priceIdentifier,
-    string base,
-    string quote,
-    string commonQuote,
-    bool isInversePrice
+    bool isInverse,
+    address aggregator
   );
 
   event RemovePair(bytes32 indexed priceIdentifier);
@@ -135,32 +134,24 @@ contract SynthereumChainlinkPriceFeed is
   // External functions
   //----------------------------------------
 
-  /**
-   * @notice Set the address of aggregator associated to a price identifier
-   * @param priceIdentifier Price feed identifier
-   * @param aggregator Address of chainlink proxy aggregator
-   */
-  function setAggregator(
-    bytes32 priceIdentifier,
-    AggregatorV3Interface aggregator
-  ) external override onlyMaintainer {
-    require(
-      address(aggregators[priceIdentifier]) != address(aggregator),
-      'Aggregator address is the same'
-    );
-    aggregators[priceIdentifier] = aggregator;
-    emit SetAggregator(priceIdentifier, address(aggregator));
-  }
-
   function setPair(
+    bool isInverse,
     bytes32 priceIdentifier,
-    string memory base,
-    string memory quote,
-    string memory commonQuote,
-    bool isInverse
+    address aggregator,
+    bytes32[] memory intermediatePairs
   ) external override onlyMaintainer {
-    pairs[priceIdentifier] = Pair(base, quote, commonQuote, isInverse);
-    emit SetPair(priceIdentifier, base, quote, commonQuote, isInverse);
+    Type pType =
+      isInverse ? Type.INVERSE : intermediatePairs.length > 0
+        ? Type.COMPUTED
+        : Type.STANDARD;
+
+    pairs[priceIdentifier] = Pair(
+      true,
+      pType,
+      AggregatorV3Interface(aggregator),
+      intermediatePairs
+    );
+    emit SetPair(priceIdentifier, isInverse, aggregator);
   }
 
   function removePair(bytes32 priceIdentifier)
@@ -169,28 +160,11 @@ contract SynthereumChainlinkPriceFeed is
     onlyMaintainer
   {
     require(
-      bytes(pairs[priceIdentifier].base).length > 0,
+      pairs[priceIdentifier].isSupported,
       'Price identifier does not exist'
     );
     delete pairs[priceIdentifier];
     emit RemovePair(priceIdentifier);
-  }
-
-  /**
-   * @notice Remove the address of aggregator associated to a price identifier
-   * @param priceIdentifier Price feed identifier
-   */
-  function removeAggregator(bytes32 priceIdentifier)
-    external
-    override
-    onlyMaintainer
-  {
-    require(
-      address(aggregators[priceIdentifier]) != address(0),
-      'Price identifier does not exist'
-    );
-    delete aggregators[priceIdentifier];
-    emit RemoveAggregator(priceIdentifier);
   }
 
   /**
@@ -205,15 +179,7 @@ contract SynthereumChainlinkPriceFeed is
     onlyPoolsOrSelfMinting
     returns (uint256 price)
   {
-    Pair memory pair = pairs[priceIdentifier];
-    if (bytes(pair.base).length > 0) {
-      pairs[priceIdentifier].isInversePrice
-        ? price = getInversePrice(pair.base, pair.quote)
-        : price = getComputedPrice(pair);
-    } else {
-      OracleData memory oracleData = _getOracleLatestRoundData(priceIdentifier);
-      price = getScaledValue(oracleData.answer, oracleData.decimals);
-    }
+    price = _getLatestPrice(priceIdentifier);
   }
 
   /**
@@ -271,7 +237,7 @@ contract SynthereumChainlinkPriceFeed is
 
   /**
    * @notice Calculate a computed price of a specific pair
-   * @notice A computed price is obtained by combining two prices from separate aggregators
+   * @notice A computed price is obtained by combining prices from separate aggregators
    * @param pair Struct identifying the pair of assets
    * @return price 18 decimals scaled price of the pair
    */
@@ -280,33 +246,28 @@ contract SynthereumChainlinkPriceFeed is
     view
     returns (uint256 price)
   {
-    // retrieve base asset price in USD (ie jEUR/USD)
-    bytes32 basePriceId =
-      bytes32(abi.encodePacked(pair.base, pair.commonQuote));
-    OracleData memory baseOracleData = _getOracleLatestRoundData(basePriceId);
-    uint256 basePrice =
-      getScaledValue(baseOracleData.answer, baseOracleData.decimals);
+    bytes32[] memory intermediatePairs = pair.intermediatePairs;
 
-    // retrieve quote asset inverse price (ie USD/ETH)
-    uint256 inverseQuotePrice = getInversePrice(pair.commonQuote, pair.quote);
-
-    // final price basePrice * inverseQuotePrice (ier jEUR/USD * USD/ETH)
-    price = (basePrice * inverseQuotePrice) / 10**18;
+    for (uint8 i = 0; i < intermediatePairs.length; i++) {
+      uint256 intermediatePrice = _getLatestPrice(intermediatePairs[i]);
+      price = price == 0
+        ? intermediatePrice
+        : (price * intermediatePrice) / 10**18;
+      console.log('P', price);
+    }
   }
 
   /**
    * @notice Calculate the inverse price of a given pair
-   * @param base String identifying the base asset ticker symbol
-   * @param quote String identifying the quote asset ticker symbol
+   * @param priceId Price feed identifier
    * @return price 18 decimals scaled price of the pair
    */
-  function getInversePrice(string memory base, string memory quote)
+  function getInversePrice(bytes32 priceId)
     public
     view
     returns (uint256 price)
   {
-    bytes32 inverseId = bytes32(abi.encodePacked(quote, base));
-    OracleData memory oracleData = _getOracleLatestRoundData(inverseId);
+    OracleData memory oracleData = _getOracleLatestRoundData(priceId);
     price = 10**36 / getScaledValue(oracleData.answer, oracleData.decimals);
   }
 
@@ -321,7 +282,7 @@ contract SynthereumChainlinkPriceFeed is
     override
     returns (AggregatorV3Interface aggregator)
   {
-    aggregator = aggregators[priceIdentifier];
+    aggregator = pairs[priceIdentifier].aggregator;
     require(
       address(aggregator) != address(0),
       'Price identifier does not exist'
@@ -339,11 +300,7 @@ contract SynthereumChainlinkPriceFeed is
     override
     returns (bool isSupported)
   {
-    bool isPair = bytes(pairs[priceIdentifier].base).length > 0;
-    isSupported = (isPair ||
-      address(aggregators[priceIdentifier]) != address(0))
-      ? true
-      : false;
+    isSupported = pairs[priceIdentifier].isSupported;
   }
 
   //----------------------------------------
@@ -412,6 +369,22 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
   // Internal pure functions
   //----------------------------------------
+  function _getLatestPrice(bytes32 priceIdentifier)
+    internal
+    view
+    returns (uint256 price)
+  {
+    Pair memory pair = pairs[priceIdentifier];
+
+    if (pair.priceType == Type.STANDARD) {
+      OracleData memory oracleData = _getOracleLatestRoundData(priceIdentifier);
+      price = getScaledValue(oracleData.answer, oracleData.decimals);
+    } else if (pair.priceType == Type.INVERSE) {
+      price = getInversePrice(priceIdentifier);
+    } else {
+      price = getComputedPrice(pair);
+    }
+  }
 
   /**
    * @notice Covert the price from int to uint and it reverts if negative
