@@ -83,24 +83,29 @@ contract('Synthereum chainlink price feed', function (accounts) {
     aggregator = await MockAggregator.new(8, 120000000);
     checkingPrice = web3Utils.toWei('1.2');
     priceFeedId = web3Utils.toHex('EURUSD');
-    await priceFeedInstance.setAggregator(
+    await priceFeedInstance.setPair(
+      false,
       web3.utils.utf8ToHex(priceFeedIdentifier),
       aggregator.address,
+      [],
       { from: maintainer },
     );
   });
   describe('Should manage aggregators', async () => {
     it('Can add aggregator', async () => {
-      const addAggregatortTx = await priceFeedInstance.setAggregator(
+      const addAggregatortTx = await priceFeedInstance.setPair(
+        false,
         newAggregatorIdentifier,
         newAggregatorAddress,
+        [],
         { from: maintainer },
       );
-      truffleAssert.eventEmitted(addAggregatortTx, 'SetAggregator', ev => {
+      truffleAssert.eventEmitted(addAggregatortTx, 'SetPair', ev => {
         return (
           ev.priceIdentifier ==
             web3Utils.padRight(newAggregatorIdentifier, 64) &&
-          ev.aggregator == newAggregatorAddress
+          ev.aggregator == newAggregatorAddress &&
+          ev.isInverse == false
         );
       });
       assert.equal(
@@ -108,7 +113,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         true,
         'Price identifier not supported',
       );
-      await priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
+      await priceFeedInstance.removePair(newAggregatorIdentifier, {
         from: maintainer,
       });
       assert.equal(
@@ -118,66 +123,57 @@ contract('Synthereum chainlink price feed', function (accounts) {
       );
     });
     it('Can update aggregator', async () => {
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        false,
         newAggregatorIdentifier,
         newAggregatorAddress,
+        [],
         { from: maintainer },
       );
-      const updateAggregatortTx = await priceFeedInstance.setAggregator(
+      const updateAggregatortTx = await priceFeedInstance.setPair(
+        false,
         newAggregatorIdentifier,
         secondNewAggregatorAddress,
+        [],
         { from: maintainer },
       );
-      truffleAssert.eventEmitted(updateAggregatortTx, 'SetAggregator', ev => {
+      truffleAssert.eventEmitted(updateAggregatortTx, 'SetPair', ev => {
         return (
           ev.priceIdentifier ==
             web3Utils.padRight(newAggregatorIdentifier, 64) &&
-          ev.aggregator == secondNewAggregatorAddress
+          ev.aggregator == secondNewAggregatorAddress &&
+          ev.isInverse == false
         );
       });
-      await priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
-        from: maintainer,
-      });
-    });
-    it('Can revert if the the aggregator of an existing identifier has same address', async () => {
-      const addAggregatortTx = await priceFeedInstance.setAggregator(
-        newAggregatorIdentifier,
-        newAggregatorAddress,
-        { from: maintainer },
-      );
-      await truffleAssert.reverts(
-        priceFeedInstance.setAggregator(
-          newAggregatorIdentifier,
-          newAggregatorAddress,
-          { from: maintainer },
-        ),
-        'Aggregator address is the same',
-      );
-      await priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
+      await priceFeedInstance.removePair(newAggregatorIdentifier, {
         from: maintainer,
       });
     });
     it('Can revert if the transaction for setting the aggregator is not sent by the maintainer', async () => {
       await truffleAssert.reverts(
-        priceFeedInstance.setAggregator(
+        priceFeedInstance.setPair(
+          false,
           newAggregatorIdentifier,
           newAggregatorAddress,
+          [],
           { from: sender },
         ),
         'Sender must be the maintainer',
       );
     });
     it('Can remove aggregator', async () => {
-      const addAggregatortTx = await priceFeedInstance.setAggregator(
+      const addAggregatortTx = await priceFeedInstance.setPair(
+        false,
         newAggregatorIdentifier,
         newAggregatorAddress,
+        [],
         { from: maintainer },
       );
-      const removeAggregatorTx = await priceFeedInstance.removeAggregator(
+      const removePairTx = await priceFeedInstance.removePair(
         newAggregatorIdentifier,
         { from: maintainer },
       );
-      truffleAssert.eventEmitted(removeAggregatorTx, 'RemoveAggregator', ev => {
+      truffleAssert.eventEmitted(removePairTx, 'RemovePair', ev => {
         return (
           ev.priceIdentifier == web3Utils.padRight(newAggregatorIdentifier, 64)
         );
@@ -185,32 +181,36 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
     it('Can revert if remove a non existing aggregator', async () => {
       await truffleAssert.reverts(
-        priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
+        priceFeedInstance.removePair(newAggregatorIdentifier, {
           from: maintainer,
         }),
         'Price identifier does not exist',
       );
     });
     it('Can revert if the transaction for remove the aggregator is not sent by the maintainer', async () => {
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        false,
         newAggregatorIdentifier,
         newAggregatorAddress,
+        [],
         { from: maintainer },
       );
       await truffleAssert.reverts(
-        priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
+        priceFeedInstance.removePair(newAggregatorIdentifier, {
           from: sender,
         }),
         'Sender must be the maintainer',
       );
-      await priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
+      await priceFeedInstance.removePair(newAggregatorIdentifier, {
         from: maintainer,
       });
     });
     it('Can check get aggreagtor view function', async () => {
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        false,
         newAggregatorIdentifier,
         newAggregatorAddress,
+        [],
         { from: maintainer },
       );
       const aggregator = await priceFeedInstance.getAggregator.call(
@@ -222,7 +222,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
           aggregator,
           'Wrong aggregator address',
         );
-      await priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
+      await priceFeedInstance.removePair(newAggregatorIdentifier, {
         from: maintainer,
       });
     });
@@ -531,92 +531,35 @@ contract('Synthereum chainlink price feed', function (accounts) {
 
   describe('Inverse price', async () => {
     it('Only maintainer should set a pair', async () => {
-      let pair = {
-        base: 'USD',
-        quote: 'EUR',
-        commonQuote: 'USD',
-        isInversePrice: true,
-      };
-
       // inverse pair
       let inverseId = web3.utils.utf8ToHex('USDEUR');
       let tx = await priceFeedInstance.setPair(
+        true,
         inverseId,
-        pair.base,
-        pair.quote,
-        pair.commonQuote,
-        pair.isInversePrice,
+        aggregator.address,
+        [],
         { from: maintainer },
       );
 
       truffleAssert.eventEmitted(tx, 'SetPair', ev => {
         return (
-          ev.base == pair.base &&
-          ev.quote == pair.quote &&
-          ev.commonQuote == pair.commonQuote &&
-          ev.isInversePrice == pair.isInversePrice
+          ev.priceIdentifier == web3Utils.padRight(inverseId, 64) &&
+          ev.aggregator == aggregator.address &&
+          ev.isInverse == true
         );
       });
 
       let actualStorage = await priceFeedInstance.pairs.call(inverseId);
-      assert.equal(actualStorage.base, pair.base);
-      assert.equal(actualStorage.quote, pair.quote);
-      assert.equal(actualStorage.commonQuote, pair.commonQuote);
-      assert.equal(actualStorage.isInversePrice, pair.isInversePrice);
+      console.log(actualStorage);
+      assert.equal(actualStorage.isSupported, true);
+      assert.equal(actualStorage.priceType, 1);
+      assert.equal(actualStorage.aggregator, aggregator.address);
+      // assert.equal(actualStorage.intermediatePairs.length, 0);
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(
-          inverseId,
-          pair.base,
-          pair.quote,
-          pair.commonQuote,
-          pair.isInversePrice,
-          { from: accounts[0] },
-        ),
-        'Sender must be the maintainer',
-      );
-    });
-    it('Only maintainer should delete a pair', async () => {
-      let pair = {
-        base: 'USD',
-        quote: 'EUR',
-        commonQuote: 'USD',
-        isInversePrice: true,
-      };
-
-      let inverseId = web3.utils.utf8ToHex('TESTEUR');
-      let tx = await priceFeedInstance.setPair(
-        inverseId,
-        pair.base,
-        pair.quote,
-        pair.commonQuote,
-        pair.isInversePrice,
-        { from: maintainer },
-      );
-
-      truffleAssert.eventEmitted(tx, 'SetPair', ev => {
-        return (
-          ev.priceIdentifier == web3.utils.padRight(inverseId, 64) &&
-          ev.base == pair.base &&
-          ev.quote == pair.quote &&
-          ev.commonQuote == pair.commonQuote &&
-          ev.isInversePrice == pair.isInversePrice
-        );
-      });
-
-      tx = await priceFeedInstance.removePair(inverseId, { from: maintainer });
-      truffleAssert.eventEmitted(tx, 'RemovePair', ev => {
-        return ev.priceIdentifier == web3.utils.padRight(inverseId, 64);
-      });
-
-      let actualStorage = await priceFeedInstance.pairs.call(inverseId);
-      assert.equal(actualStorage.base, '');
-      assert.equal(actualStorage.quote, '');
-      assert.equal(actualStorage.commonQuote, '');
-      assert.equal(actualStorage.isInversePrice, false);
-
-      await truffleAssert.reverts(
-        priceFeedInstance.removePair(inverseId, { from: accounts[0] }),
+        priceFeedInstance.setPair(true, inverseId, aggregator.address, [], {
+          from: accounts[0],
+        }),
         'Sender must be the maintainer',
       );
     });
@@ -644,6 +587,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
       let ETHUSD = web3.utils.utf8ToHex('ETHUSD');
       let jEURUSD = web3.utils.utf8ToHex('jEURUSD');
       let jEURETH = web3.utils.utf8ToHex('jEURETH');
+      let USDETH = web3.utils.utf8ToHex('USDETH');
 
       let ETHUSDPrice = web3Utils.toWei('300000', 'mwei');
       let jEURUSDPrice = web3Utils.toWei('110', 'mwei');
@@ -652,13 +596,27 @@ contract('Synthereum chainlink price feed', function (accounts) {
       let jEURUSDAggregator = await MockAggregator.new(8, 120000000);
 
       // register aggregators
-      await priceFeedInstance.setAggregator(ETHUSD, ETHUSDAggregator.address, {
-        from: maintainer,
-      });
-
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        false,
         jEURUSD,
         jEURUSDAggregator.address,
+        [],
+        { from: maintainer },
+      );
+
+      await priceFeedInstance.setPair(
+        false,
+        ETHUSD,
+        ETHUSDAggregator.address,
+        [],
+        { from: maintainer },
+      );
+
+      await priceFeedInstance.setPair(
+        true,
+        USDETH,
+        ETHUSDAggregator.address,
+        [],
         { from: maintainer },
       );
 
@@ -667,27 +625,21 @@ contract('Synthereum chainlink price feed', function (accounts) {
       await jEURUSDAggregator.updateAnswer(jEURUSDPrice);
 
       // register jEUR/ETH pair
-      let pair = {
-        base: 'jEUR',
-        quote: 'ETH',
-        commonQuote: 'USD',
-        isInversePrice: false,
-      };
-      let pairID = web3.utils.utf8ToHex(jEURETH);
       await priceFeedInstance.setPair(
-        pairID,
-        pair.base,
-        pair.quote,
-        pair.commonQuote,
-        pair.isInversePrice,
-        { from: maintainer },
+        false,
+        jEURETH,
+        ZERO_ADDRESS,
+        [jEURUSD, USDETH],
+        {
+          from: maintainer,
+        },
       );
 
       let expectedPrice = toBN(jEURUSDPrice)
         .mul(toBN(Math.pow(10, 18)))
         .div(toBN(ETHUSDPrice));
 
-      let actualPrice = await priceFeedInstance.getLatestPrice.call(pairID);
+      let actualPrice = await priceFeedInstance.getLatestPrice.call(jEURETH);
       assert.equal(actualPrice.toString(), expectedPrice.toString());
     });
   });
