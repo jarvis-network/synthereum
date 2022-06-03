@@ -253,7 +253,6 @@ contract SynthereumChainlinkPriceFeed is
       price = price == 0
         ? intermediatePrice
         : (price * intermediatePrice) / 10**18;
-      console.log('P', price);
     }
   }
 
@@ -282,11 +281,11 @@ contract SynthereumChainlinkPriceFeed is
     override
     returns (AggregatorV3Interface aggregator)
   {
-    aggregator = pairs[priceIdentifier].aggregator;
     require(
-      address(aggregator) != address(0),
+      pairs[priceIdentifier].isSupported,
       'Price identifier does not exist'
     );
+    aggregator = pairs[priceIdentifier].aggregator;
   }
 
   /**
