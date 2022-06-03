@@ -183,21 +183,6 @@ contract SynthereumChainlinkPriceFeed is
   }
 
   /**
-   * @notice Get last chainlink oracle data for a given price identifier
-   * @param priceIdentifier Price feed identifier
-   * @return oracleData Oracle data
-   */
-  function getOracleLatestData(bytes32 priceIdentifier)
-    external
-    view
-    override
-    onlyPoolsOrSelfMinting
-    returns (OracleData memory oracleData)
-  {
-    oracleData = _getOracleLatestRoundData(priceIdentifier);
-  }
-
-  /**
    * @notice Get chainlink oracle price in a given round for a given price identifier
    * @param priceIdentifier Price feed identifier
    * @param _roundId Round Id
@@ -213,22 +198,6 @@ contract SynthereumChainlinkPriceFeed is
     OracleData memory oracleData =
       _getOracleRoundData(priceIdentifier, _roundId);
     price = getScaledValue(oracleData.answer, oracleData.decimals);
-  }
-
-  /**
-   * @notice Get chainlink oracle data in a given round for a given price identifier
-   * @param priceIdentifier Price feed identifier
-   * @param _roundId Round Id
-   * @return oracleData Oracle data
-   */
-  function getOracleRoundData(bytes32 priceIdentifier, uint80 _roundId)
-    external
-    view
-    override
-    onlyPoolsOrSelfMinting
-    returns (OracleData memory oracleData)
-  {
-    oracleData = _getOracleRoundData(priceIdentifier, _roundId);
   }
 
   //----------------------------------------

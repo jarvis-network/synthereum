@@ -47,16 +47,6 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
     returns (AggregatorV3Interface aggregator);
 
   /**
-   * @notice Get last chainlink oracle data for a given price identifier
-   * @param priceIdentifier Price feed identifier
-   * @return oracleData Oracle data
-   */
-  function getOracleLatestData(bytes32 priceIdentifier)
-    external
-    view
-    returns (OracleData memory oracleData);
-
-  /**
    * @notice Get chainlink oracle price in a given round for a given price identifier
    * @param priceIdentifier Price feed identifier
    * @param _roundId Round Id
@@ -66,15 +56,4 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
     external
     view
     returns (uint256 price);
-
-  /**
-   * @notice Get chainlink oracle data in a given round for a given price identifier
-   * @param priceIdentifier Price feed identifier
-   * @param _roundId Round Id
-   * @return oracleData Oracle data
-   */
-  function getOracleRoundData(bytes32 priceIdentifier, uint80 _roundId)
-    external
-    view
-    returns (OracleData memory oracleData);
 }
