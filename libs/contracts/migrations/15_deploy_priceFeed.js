@@ -7,7 +7,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
-  const aggregators = require('../data/aggregators.json');
+  const pairs = require('../data/aggregators.json');
   const randomOracleConfig = require('../data/test/randomAggregator.json');
   const {
     getExistingInstance,
@@ -84,26 +84,34 @@ async function migrate(deployer, network, accounts) {
         MockRandomAggregator,
         '@jarvis-network/synthereum-contracts',
       );
-
       aggregatorsData.push({
+        isInverse: false,
         asset: assets[j],
         pair: web3.utils.utf8ToHex(assets[j]),
         aggregator: mockRandomAggregator.options.address,
+        intermediateIds: [],
       });
     }
   } else {
-    const assets = Object.keys(aggregators[networkId]);
+    const assets = Object.keys(pairs[networkId]);
     assets.map(async asset => {
       aggregatorsData.push({
+        isInverse: pairs[networkId][asset].isInverse,
         asset: asset,
         pair: web3.utils.utf8ToHex(asset),
-        aggregator: aggregators[networkId][asset],
+        aggregator: pairs[networkId][asset].aggregator,
+        intermediateIds: pairs[networkId][asset].intermediatePairs,
       });
     });
   }
   for (let j = 0; j < aggregatorsData.length; j++) {
     await synthereumChainlinkPriceFeed.methods
-      .setAggregator(aggregatorsData[j].pair, aggregatorsData[j].aggregator)
+      .setPair(
+        aggregatorsData[j].isInverse,
+        aggregatorsData[j].pair,
+        aggregatorsData[j].aggregator,
+        aggregatorsData[j].intermediateIds,
+      )
       .send({ from: maintainer });
     console.log(`   Add '${aggregatorsData[j].asset}' aggregator`);
   }
