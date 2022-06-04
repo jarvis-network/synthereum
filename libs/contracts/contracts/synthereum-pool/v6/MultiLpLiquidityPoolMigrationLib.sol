@@ -71,6 +71,9 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     SynthereumMultiLpLiquidityPoolLib._calculateSwitchingOrMigratingCollateral(
       prevTotalLpsCollateral,
       migrationValues,
+      _storageParams.overCollateralRequirement,
+      tempStorage.price,
+      tempStorage.decimals,
       positionsCache
     );
 
@@ -176,6 +179,12 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
           0,
           _actualCollateralAmount
         ),
+        _storageParams.overCollateralRequirement,
+        SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
+          _finder,
+          _storageParams.priceIdentifier
+        ),
+        _storageParams.collateralDecimals,
         positionsCache
       );
       SynthereumMultiLpLiquidityPoolLib._updateActualLPPositions(

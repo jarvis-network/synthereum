@@ -94,6 +94,18 @@ library SynthereumMultiLpLiquidityPoolLib {
     uint256 actualSynthTokens;
   }
 
+  struct TempMigrationArgs {
+    uint256 prevTotalAmount;
+    bool isLpGain;
+    uint256 globalLpsProfitOrLoss;
+    uint256 actualLpsCollateral;
+    uint256 share;
+    uint256 shareAmount;
+    uint256 remainingAmount;
+    uint256 lpNumbers;
+    bool isOvercollateralized;
+  }
+
   struct WithdrawDust {
     bool isPositive;
     uint256 amount;
@@ -1057,43 +1069,80 @@ library SynthereumMultiLpLiquidityPoolLib {
    * @notice Calculate the new collateral amount of the LPs after the switching of lending module
    * @param _prevLpsCollateral Total amount of collateral holded by the LPs before this operation
    * @param _migrationValues Values returned by the lending manager after the migration
+   * @param _overCollateralRequirement Percentage of overcollateralization to which a liquidation can triggered
+   * @param _price Actual price of the pair
+   * @param _collateralDecimals Decimals of the collateral token
    * @param _positionsCache Temporary memory cache containing LPs positions
    */
   function _calculateSwitchingOrMigratingCollateral(
     uint256 _prevLpsCollateral,
     ILendingManager.MigrateReturnValues memory _migrationValues,
+    uint128 _overCollateralRequirement,
+    uint256 _price,
+    uint8 _collateralDecimals,
     PositionCache[] memory _positionsCache
   ) internal pure {
-    uint256 prevTotalAmount =
-      _migrationValues.prevTotalCollateral + _migrationValues.poolInterest;
-    bool isLpGain = _migrationValues.actualTotalCollateral > prevTotalAmount;
-    uint256 globalLpsProfitOrLoss =
-      isLpGain
-        ? _migrationValues.actualTotalCollateral - prevTotalAmount
-        : prevTotalAmount - _migrationValues.actualTotalCollateral;
-    if (globalLpsProfitOrLoss == 0) return;
+    TempMigrationArgs memory _tempMigrationArgs;
+    _tempMigrationArgs.prevTotalAmount =
+      _migrationValues.prevTotalCollateral +
+      _migrationValues.poolInterest;
+    _tempMigrationArgs.isLpGain =
+      _migrationValues.actualTotalCollateral >
+      _tempMigrationArgs.prevTotalAmount;
+    _tempMigrationArgs.globalLpsProfitOrLoss = _tempMigrationArgs.isLpGain
+      ? _migrationValues.actualTotalCollateral -
+        _tempMigrationArgs.prevTotalAmount
+      : _tempMigrationArgs.prevTotalAmount -
+        _migrationValues.actualTotalCollateral;
+    if (_tempMigrationArgs.globalLpsProfitOrLoss == 0) return;
 
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
-    uint256 actualLpsCollateral =
-      _prevLpsCollateral + _migrationValues.poolInterest;
-    uint256 share;
-    uint256 shareAmount;
-    uint256 remainingAmount = globalLpsProfitOrLoss;
-    uint256 lpNumbers = _positionsCache.length;
-    for (uint256 j = 0; j < lpNumbers - 1; j++) {
+    _tempMigrationArgs.actualLpsCollateral =
+      _prevLpsCollateral +
+      _migrationValues.poolInterest;
+    _tempMigrationArgs.remainingAmount = _tempMigrationArgs
+      .globalLpsProfitOrLoss;
+    _tempMigrationArgs.lpNumbers = _positionsCache.length;
+    for (uint256 j = 0; j < _tempMigrationArgs.lpNumbers - 1; j++) {
       lpPosition = _positionsCache[j].lpPosition;
-      share = lpPosition.actualCollateralAmount.div(actualLpsCollateral);
-      shareAmount = globalLpsProfitOrLoss.mul(share);
-      lpPosition.actualCollateralAmount = isLpGain
-        ? lpPosition.actualCollateralAmount + shareAmount
-        : lpPosition.actualCollateralAmount - shareAmount;
-      remainingAmount -= shareAmount;
+      _tempMigrationArgs.share = lpPosition.actualCollateralAmount.div(
+        _tempMigrationArgs.actualLpsCollateral
+      );
+      _tempMigrationArgs.shareAmount = _tempMigrationArgs
+        .globalLpsProfitOrLoss
+        .mul(_tempMigrationArgs.share);
+      lpPosition.actualCollateralAmount = _tempMigrationArgs.isLpGain
+        ? lpPosition.actualCollateralAmount + _tempMigrationArgs.shareAmount
+        : lpPosition.actualCollateralAmount - _tempMigrationArgs.shareAmount;
+      _tempMigrationArgs.remainingAmount -= _tempMigrationArgs.shareAmount;
+      (_tempMigrationArgs.isOvercollateralized, ) = _isOvercollateralizedLP(
+        lpPosition.actualCollateralAmount,
+        _overCollateralRequirement,
+        lpPosition.tokensCollateralized,
+        _price,
+        _collateralDecimals
+      );
+      require(
+        _tempMigrationArgs.isOvercollateralized,
+        'LP below collateral requirement level'
+      );
     }
 
-    lpPosition = _positionsCache[lpNumbers - 1].lpPosition;
-    lpPosition.actualCollateralAmount = isLpGain
-      ? lpPosition.actualCollateralAmount + remainingAmount
-      : lpPosition.actualCollateralAmount - remainingAmount;
+    lpPosition = _positionsCache[_tempMigrationArgs.lpNumbers - 1].lpPosition;
+    lpPosition.actualCollateralAmount = _tempMigrationArgs.isLpGain
+      ? lpPosition.actualCollateralAmount + _tempMigrationArgs.remainingAmount
+      : lpPosition.actualCollateralAmount - _tempMigrationArgs.remainingAmount;
+    (_tempMigrationArgs.isOvercollateralized, ) = _isOvercollateralizedLP(
+      lpPosition.actualCollateralAmount,
+      _overCollateralRequirement,
+      lpPosition.tokensCollateralized,
+      _price,
+      _collateralDecimals
+    );
+    require(
+      _tempMigrationArgs.isOvercollateralized,
+      'LP below collateral requirement level'
+    );
   }
 
   /**
