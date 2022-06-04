@@ -24,6 +24,68 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   /**
+   * @notice Set new lending protocol for this pool
+   * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
+   * @param _lendingId Name of the new lending module
+   * @param _bearingToken Token of the lending mosule to be used for intersts accrual
+            (used only if the lending manager doesn't automatically find the one associated to the collateral fo this pool)
+   * @param _finder Synthereum finder
+   */
+  function switchLendingModule(
+    ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
+    string calldata _lendingId,
+    address _bearingToken,
+    ISynthereumFinder _finder
+  ) external {
+    ILendingManager.MigrateReturnValues memory migrationValues =
+      SynthereumMultiLpLiquidityPoolLib._lendingMigration(
+        SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder),
+        SynthereumMultiLpLiquidityPoolLib._getLendingStorageManager(_finder),
+        _lendingId,
+        _bearingToken
+      );
+
+    SynthereumMultiLpLiquidityPoolLib.TempStorageArgs memory tempStorage =
+      SynthereumMultiLpLiquidityPoolLib.TempStorageArgs(
+        SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
+          _finder,
+          _storageParams.priceIdentifier
+        ),
+        _storageParams.totalSyntheticAsset,
+        _storageParams.collateralDecimals
+      );
+
+    (
+      SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      uint256 prevTotalLpsCollateral
+    ) =
+      SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
+        _storageParams,
+        migrationValues.poolInterest,
+        tempStorage.price,
+        tempStorage.totalSyntheticAsset,
+        migrationValues.prevTotalCollateral,
+        tempStorage.decimals
+      );
+
+    SynthereumMultiLpLiquidityPoolLib._calculateSwitchingOrMigratingCollateral(
+      prevTotalLpsCollateral,
+      migrationValues,
+      positionsCache
+    );
+
+    SynthereumMultiLpLiquidityPoolLib._updateActualLPPositions(
+      _storageParams,
+      positionsCache
+    );
+
+    SynthereumMultiLpLiquidityPoolLib._setLendingModule(
+      _storageParams,
+      _lendingId
+    );
+  }
+
+  /**
    * @notice Reset storage to the initial status
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _registeredLPsList List of every registered LP
