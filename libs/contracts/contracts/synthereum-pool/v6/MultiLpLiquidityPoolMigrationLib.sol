@@ -119,15 +119,17 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   /**
    * @notice Set the storage to the new pool during migration
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
-   * @param _poolVersion Version of the pool
+   * @param _oldVersion Version of the migrated pool
    * @param _storageBytes Pool storage encoded in bytes
+   * @param _newVersion Version of the new deployed pool
    */
   function setStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
-    uint8 _poolVersion,
-    bytes calldata _storageBytes
+    uint8 _oldVersion,
+    bytes calldata _storageBytes,
+    uint8 _newVersion
   ) external {
-    _storageParams.poolVersion = _poolVersion;
+    _storageParams.poolVersion = _newVersion;
 
     ISynthereumPoolMigrationStorage.MigrationV6 memory migrationStorage =
       abi.decode(_storageBytes, (ISynthereumPoolMigrationStorage.MigrationV6));

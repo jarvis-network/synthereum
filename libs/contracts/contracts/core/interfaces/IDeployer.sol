@@ -3,6 +3,9 @@ pragma solidity >=0.8.0;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
+import {
+  SynthereumPoolMigrationFrom
+} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 
 /**
  * @title Provides interface with functions of Synthereum deployer
@@ -17,6 +20,19 @@ interface ISynthereumDeployer {
   function deployPool(uint8 poolVersion, bytes calldata poolParamsData)
     external
     returns (ISynthereumDeployment pool);
+
+  /**
+   * @notice Migrate storage of an existing pool to e new deployed one
+   * @param migrationPool Pool from which migrate storage
+   * @param poolVersion Version of the pool contract to create
+   * @param migrationParamsData Input params of migration (if needed)
+   * @return pool Pool contract deployed
+   */
+  function migratePool(
+    SynthereumPoolMigrationFrom migrationPool,
+    uint8 poolVersion,
+    bytes calldata migrationParamsData
+  ) external returns (ISynthereumDeployment pool);
 
   /**
    * @notice Deploy a new self minting derivative contract

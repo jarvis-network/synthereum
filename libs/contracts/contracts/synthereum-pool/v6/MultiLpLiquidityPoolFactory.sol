@@ -82,15 +82,19 @@ contract SynthereumMultiLpLiquidityPoolFactory is
    * @notice Migrate storage from a pool to a new depolyed one
    * @notice Only the deployer can call this function
    * @param _migrationPool Pool from which migrate storage
+   * @param _version Version of the new pool
    * @return pool address of the new deployed pool contract to which storage is migrated
    */
-  function migratePool(SynthereumPoolMigrationFrom _migrationPool)
+  function migratePool(
+    SynthereumPoolMigrationFrom _migrationPool,
+    uint8 _version
+  )
     public
     override
     nonReentrant
     onlyDeployer(synthereumFinder)
     returns (SynthereumMultiLpLiquidityPool pool)
   {
-    pool = super.migratePool(_migrationPool);
+    pool = super.migratePool(_migrationPool, _version);
   }
 }

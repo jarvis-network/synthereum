@@ -58,15 +58,6 @@ contract SynthereumMultiLpLiquidityPoolCreator {
   address public immutable poolImplementation;
 
   //----------------------------------------
-  // Events
-  //----------------------------------------
-  event CreatedPool(
-    address indexed poolAddress,
-    uint8 indexed version,
-    address indexed deployerAddress
-  );
-
-  //----------------------------------------
   // Constructor
   //----------------------------------------
 
@@ -141,31 +132,31 @@ contract SynthereumMultiLpLiquidityPoolCreator {
       address(_params.collateralToken),
       _params.lendingManagerParams
     );
-    emit CreatedPool(address(pool), _params.version, msg.sender);
   }
 
   /**
    * @notice Migrate storage from a pool to a new depolyed one
    * @param _migrationPool Pool from which migrate storage
+   * @param _version Version of the new pool
    * @return pool address of the new deployed pool contract to which storage is migrated
    */
-  function migratePool(SynthereumPoolMigrationFrom _migrationPool)
-    public
-    virtual
-    returns (SynthereumMultiLpLiquidityPool pool)
-  {
+  function migratePool(
+    SynthereumPoolMigrationFrom _migrationPool,
+    uint8 _version
+  ) public virtual returns (SynthereumMultiLpLiquidityPool pool) {
     pool = SynthereumMultiLpLiquidityPool(poolImplementation.clone());
     (
       ISynthereumFinder synthFinder,
-      uint8 poolVersion,
+      uint8 oldPoolVersion,
       bytes memory storageBytes
     ) = _migrationPool.migrateStorage();
     (uint256 sourceCollateralAmount, uint256 actualCollateralAmount) =
       _getLendingManager().migratePool(address(_migrationPool), address(pool));
     pool.setMigratedStorage(
       synthFinder,
-      poolVersion,
+      oldPoolVersion,
       storageBytes,
+      _version,
       sourceCollateralAmount,
       actualCollateralAmount
     );
