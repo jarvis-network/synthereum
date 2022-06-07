@@ -59,6 +59,26 @@ interface ILendingModule {
     );
 
   /**
+   * @notice transfer all interest token balance from an old pool to a new one
+   * @param oldPool Address of the old pool
+   * @param newPool Address of the new pool
+   * @param collateral address of collateral token
+   * @param interestToken address of interest token
+   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @return prevTotalCollateral Total collateral in the old pool
+   * @return actualTotalCollateral Total collateral in the new pool
+   */
+  function totalTransfer(
+    address oldPool,
+    address newPool,
+    address collateral,
+    address interestToken,
+    bytes memory extraArgs
+  )
+    external
+    returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral);
+
+  /**
    * @notice returns accumulated interest of a pool since state-changing last operation
    * @dev does not update state
    * @param poolAddress reference pool to check accumulated interest

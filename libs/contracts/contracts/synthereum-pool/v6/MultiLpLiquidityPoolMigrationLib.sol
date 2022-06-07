@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ILendingManager
@@ -15,6 +16,9 @@ import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {SynthereumMultiLpLiquidityPoolLib} from './MultiLpLiquidityPoolLib.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * @title Multi LP Synthereum pool lib for migration of the storage
@@ -22,6 +26,7 @@ import {SynthereumMultiLpLiquidityPoolLib} from './MultiLpLiquidityPoolLib.sol';
 
 library SynthereumMultiLpLiquidityPoolMigrationLib {
   using EnumerableSet for EnumerableSet.AddressSet;
+  using SafeERC20 for IERC20;
 
   /**
    * @notice Set new lending protocol for this pool
@@ -229,5 +234,33 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
         positions
       )
     );
+  }
+
+  /**
+   * @notice Transfer all bearing tokens to another address
+   * @notice Only the lending manager can call the function
+   * @param _recipient Address receving bearing amount
+   * @param _finder Synthereum finder
+   * @return migrationAmount Total balance of the pool in bearing tokens before migration
+   */
+  function migrateTotalFunds(address _recipient, ISynthereumFinder _finder)
+    external
+    returns (uint256 migrationAmount)
+  {
+    ILendingManager lendingManager =
+      SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder);
+    require(
+      msg.sender == address(lendingManager),
+      'Sender must be lending manager'
+    );
+
+    IERC20 bearingToken =
+      IERC20(
+        SynthereumMultiLpLiquidityPoolLib
+          ._getLendingStorageManager(_finder)
+          .getInterestBearingToken(address(this))
+      );
+    migrationAmount = bearingToken.balanceOf(address(this));
+    bearingToken.safeTransfer(_recipient, migrationAmount);
   }
 }

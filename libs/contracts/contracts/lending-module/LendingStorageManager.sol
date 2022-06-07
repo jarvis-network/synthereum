@@ -116,12 +116,11 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     }
   }
 
-  function migratePool(address oldPool, address newPool)
-    external
-    override
-    nonReentrant
-    onlyPoolFactory
-  {
+  function migratePoolStorage(
+    address oldPool,
+    address newPool,
+    uint256 newCollateralDeposited
+  ) external override nonReentrant onlyLendingManager {
     PoolStorage memory oldPoolData = poolStorage[oldPool];
     bytes32 oldLendingId = oldPoolData.lendingModuleId;
     require(oldLendingId != 0x00, 'Bad migration pool');
@@ -135,7 +134,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     newPoolData.interestBearingToken = oldPoolData.interestBearingToken;
     newPoolData.jrtBuybackShare = oldPoolData.jrtBuybackShare;
     newPoolData.daoInterestShare = oldPoolData.daoInterestShare;
-    newPoolData.collateralDeposited = oldPoolData.collateralDeposited;
+    newPoolData.collateralDeposited = newCollateralDeposited;
     newPoolData.unclaimedDaoJRT = oldPoolData.unclaimedDaoJRT;
     newPoolData.unclaimedDaoCommission = oldPoolData.unclaimedDaoCommission;
 
@@ -258,26 +257,12 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     daoInterestShare = poolStorage[pool].daoInterestShare;
   }
 
-  function _checkSenderIsFactory(
-    ISynthereumFactoryVersioning factoryVersioning,
-    uint8 numberOfFactories,
-    bytes32 factoryKind
-  ) internal view returns (bool isFactory) {
-    uint8 counterFactory;
-    for (uint8 i = 0; counterFactory < numberOfFactories; i++) {
-      try factoryVersioning.getFactoryVersion(factoryKind, i) returns (
-        address factory
-      ) {
-        if (msg.sender == factory) {
-          isFactory = true;
-          break;
-        } else {
-          counterFactory++;
-          if (counterFactory == numberOfFactories) {
-            isFactory = false;
-          }
-        }
-      } catch {}
-    }
+  function getCollateralDeposited(address pool)
+    external
+    view
+    override
+    returns (uint256 collateralAmount)
+  {
+    collateralAmount = poolStorage[pool].collateralDeposited;
   }
 }

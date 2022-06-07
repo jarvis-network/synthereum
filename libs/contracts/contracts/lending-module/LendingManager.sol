@@ -15,6 +15,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -43,11 +44,19 @@ contract LendingManager is
 
   string private JRTSWAP_SIG = 'swapToJRT(address,address,uint256,bytes)';
 
+  string private TOTAL_TRANSFER_SIG =
+    'totalTransfer(address,address,address,address,bytes)';
+
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
       'Sender must be the maintainer'
     );
+    _;
+  }
+
+  modifier onlyPoolFactory() {
+    SynthereumFactoryAccess._onlyPoolFactory(synthereumFinder);
     _;
   }
 
@@ -426,6 +435,51 @@ contract LendingManager is
         interestSplit.poolInterest,
         actualCollateralDeposited
       )
+    );
+  }
+
+  function migratePool(address migrationPool, address newPool)
+    external
+    override
+    nonReentrant
+    onlyPoolFactory
+    returns (uint256 sourceCollateralAmount, uint256 actualCollateralAmount)
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    (
+      ILendingStorageManager.PoolLendingStorage memory lendingStorage,
+      ILendingStorageManager.LendingInfo memory lendingInfo
+    ) = poolStorageManager.getLendingData(migrationPool);
+
+    // delegate call deposit into new module
+    bytes memory result =
+      address(lendingInfo.lendingModule).functionDelegateCall(
+        abi.encodeWithSignature(
+          TOTAL_TRANSFER_SIG,
+          migrationPool,
+          newPool,
+          lendingStorage.collateralToken,
+          lendingStorage.interestToken,
+          lendingInfo.args
+        )
+      );
+
+    (uint256 prevTotalAmount, uint256 newTotalAmount) =
+      abi.decode(result, (uint256, uint256));
+
+    sourceCollateralAmount = poolStorageManager.getCollateralDeposited(
+      migrationPool
+    );
+
+    actualCollateralAmount =
+      sourceCollateralAmount +
+      newTotalAmount -
+      prevTotalAmount;
+
+    poolStorageManager.migratePoolStorage(
+      migrationPool,
+      newPool,
+      actualCollateralAmount
     );
   }
 

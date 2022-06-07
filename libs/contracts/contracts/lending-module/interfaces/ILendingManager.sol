@@ -135,6 +135,17 @@ interface ILendingManager {
   ) external returns (MigrateReturnValues memory);
 
   /**
+   * @notice migrates pool storage from a deployed pool to a new pool
+   * @param migrationPool Pool from which the storage is migrated
+   * @param newPool address of the new pool
+   * @return sourceCollateralAmount Collateral amount of the pool to migrate
+   * @return actualCollateralAmount Collateral amount of the new deployed pool
+   */
+  function migratePool(address migrationPool, address newPool)
+    external
+    returns (uint256 sourceCollateralAmount, uint256 actualCollateralAmount);
+
+  /**
    * @notice returns the conversion between interest token and collateral of a specific money market
    * @param pool reference pool to check conversion
    * @param interestTokenAmount amount of interest token to calculate conversion on

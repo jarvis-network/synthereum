@@ -13,8 +13,14 @@ import {
   IMintableBurnableERC20
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {
+  ILendingManager
+} from '../../lending-module/interfaces/ILendingManager.sol';
+import {
   ILendingStorageManager
 } from '../../lending-module/interfaces/ILendingStorageManager.sol';
+import {
+  SynthereumPoolMigrationFrom
+} from '../common/migration/PoolMigrationFrom.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from '../../tokens/BaseControlledMintableBurnableERC20.sol';
@@ -86,9 +92,9 @@ contract SynthereumMultiLpLiquidityPoolCreator {
   function createPool(Params calldata _params)
     public
     virtual
-    returns (ISynthereumMultiLpLiquidityPool pool)
+    returns (SynthereumMultiLpLiquidityPool pool)
   {
-    pool = ISynthereumMultiLpLiquidityPool(poolImplementation.clone());
+    pool = SynthereumMultiLpLiquidityPool(poolImplementation.clone());
     require(bytes(_params.syntheticName).length != 0, 'Missing synthetic name');
     require(
       bytes(_params.syntheticSymbol).length != 0,
@@ -138,6 +144,33 @@ contract SynthereumMultiLpLiquidityPoolCreator {
     emit CreatedPool(address(pool), _params.version, msg.sender);
   }
 
+  /**
+   * @notice Migrate storage from a pool to a new depolyed one
+   * @param _migrationPool Pool from which migrate storage
+   * @return pool address of the new deployed pool contract to which storage is migrated
+   */
+  function migratePool(SynthereumPoolMigrationFrom _migrationPool)
+    public
+    virtual
+    returns (SynthereumMultiLpLiquidityPool pool)
+  {
+    pool = SynthereumMultiLpLiquidityPool(poolImplementation.clone());
+    (
+      ISynthereumFinder synthFinder,
+      uint8 poolVersion,
+      bytes memory storageBytes
+    ) = _migrationPool.migrateStorage();
+    (uint256 sourceCollateralAmount, uint256 actualCollateralAmount) =
+      _getLendingManager().migratePool(address(_migrationPool), address(pool));
+    pool.setMigratedStorage(
+      synthFinder,
+      poolVersion,
+      storageBytes,
+      sourceCollateralAmount,
+      actualCollateralAmount
+    );
+  }
+
   // Converts createPool params to constructor params.
   function _convertParams(
     Params memory _params,
@@ -174,13 +207,7 @@ contract SynthereumMultiLpLiquidityPoolCreator {
     address _collateral,
     LendingManagerParams calldata _lendingManagerParams
   ) internal {
-    ILendingStorageManager lendingStorageManager =
-      ILendingStorageManager(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.LendingStorageManager
-        )
-      );
-    lendingStorageManager.setPoolStorage(
+    _getLendingStorageManager().setPoolStorage(
       _lendingManagerParams.lendingId,
       _pool,
       _collateral,
@@ -188,5 +215,27 @@ contract SynthereumMultiLpLiquidityPoolCreator {
       _lendingManagerParams.daoInterestShare,
       _lendingManagerParams.jrtBuybackShare
     );
+  }
+
+  function _getLendingManager() internal view returns (ILendingManager) {
+    return
+      ILendingManager(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.LendingManager
+        )
+      );
+  }
+
+  function _getLendingStorageManager()
+    internal
+    view
+    returns (ILendingStorageManager)
+  {
+    return
+      ILendingStorageManager(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.LendingStorageManager
+        )
+      );
   }
 }

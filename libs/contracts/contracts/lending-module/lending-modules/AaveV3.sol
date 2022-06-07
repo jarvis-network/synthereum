@@ -10,6 +10,9 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
+import {
+  SynthereumPoolMigrationFrom
+} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 
 contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
@@ -101,6 +104,21 @@ contract AaveV3Module is ILendingModule {
 
     tokensOut = aTokensAmount;
     tokensTransferred = netWithdrawal;
+  }
+
+  function totalTransfer(
+    address oldPool,
+    address newPool,
+    address collateral,
+    address interestToken,
+    bytes memory extraArgs
+  )
+    external
+    returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
+  {
+    prevTotalCollateral = SynthereumPoolMigrationFrom(oldPool)
+      .migrateTotalFunds(newPool);
+    actualTotalCollateral = IERC20(interestToken).balanceOf(newPool);
   }
 
   function getAccumulatedInterest(

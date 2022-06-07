@@ -558,7 +558,7 @@ library SynthereumMultiLpLiquidityPoolLib {
   function _loadPositions(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     PositionCache[] memory _positionsCache
-  ) internal returns (uint256 totalLPsCollateral) {
+  ) internal view returns (uint256 totalLPsCollateral) {
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       address lp = _storageParams.activeLPs.at(j);
       ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition =

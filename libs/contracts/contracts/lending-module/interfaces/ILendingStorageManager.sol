@@ -74,8 +74,13 @@ interface ILendingStorageManager {
    * @dev is used when a pool is redeployed and the liquidity transferred over
    * @param oldPool address of old pool to migrate storage from
    * @param newPool address of the new pool receiving state of oldPool
+   * @param newCollateralDeposited Amount of collateral deposited in the new pool after the migration
    */
-  function migratePool(address oldPool, address newPool) external;
+  function migratePoolStorage(
+    address oldPool,
+    address newPool,
+    uint256 newCollateralDeposited
+  ) external;
 
   /**
    * @notice sets new lending info on a pool
@@ -173,4 +178,14 @@ interface ILendingStorageManager {
     external
     view
     returns (uint256 jrtBuybackShare, uint256 daoInterestShare);
+
+  /**
+   * @notice reads the last collateral amount deposited in the pool
+   * @param pool address of the pool to retrieve collateral amount
+   * @return collateralAmount Amount of collateral deposited in the pool
+   */
+  function getCollateralDeposited(address pool)
+    external
+    view
+    returns (uint256 collateralAmount);
 }

@@ -5,17 +5,22 @@ import {
   IDeploymentSignature
 } from '../../core/interfaces/IDeploymentSignature.sol';
 import {
+  IMigrationSignature
+} from '../../core/interfaces/IMigrationSignature.sol';
+import {
   SynthereumMultiLpLiquidityPoolCreator
 } from './MultiLpLiquidityPoolCreator.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from './interfaces/IMultiLpLiquidityPool.sol';
 import {FactoryConditions} from '../../common/FactoryConditions.sol';
+import {
+  SynthereumPoolMigrationFrom
+} from '../common/migration/PoolMigrationFrom.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';
 
 contract SynthereumMultiLpLiquidityPoolFactory is
+  IMigrationSignature,
   IDeploymentSignature,
   ReentrancyGuard,
   FactoryConditions,
@@ -26,6 +31,8 @@ contract SynthereumMultiLpLiquidityPoolFactory is
   //----------------------------------------
 
   bytes4 public immutable override deploymentSignature;
+
+  bytes4 public immutable override migrationSignature;
 
   //----------------------------------------
   // Constructor
@@ -43,6 +50,7 @@ contract SynthereumMultiLpLiquidityPoolFactory is
     )
   {
     deploymentSignature = this.createPool.selector;
+    migrationSignature = this.migratePool.selector;
   }
 
   //----------------------------------------
@@ -50,7 +58,8 @@ contract SynthereumMultiLpLiquidityPoolFactory is
   //----------------------------------------
 
   /**
-   * @notice Check if the sender is the deployer and deploy a pool
+   * @notice Deploy a pool
+   * @notice Only the deployer can call this function
    * @param params input parameters of the pool
    * @return pool Deployed pool
    */
@@ -59,7 +68,7 @@ contract SynthereumMultiLpLiquidityPoolFactory is
     override
     nonReentrant
     onlyDeployer(synthereumFinder)
-    returns (ISynthereumMultiLpLiquidityPool pool)
+    returns (SynthereumMultiLpLiquidityPool pool)
   {
     checkDeploymentConditions(
       synthereumFinder,
@@ -67,5 +76,21 @@ contract SynthereumMultiLpLiquidityPoolFactory is
       params.priceIdentifier
     );
     pool = super.createPool(params);
+  }
+
+  /**
+   * @notice Migrate storage from a pool to a new depolyed one
+   * @notice Only the deployer can call this function
+   * @param _migrationPool Pool from which migrate storage
+   * @return pool address of the new deployed pool contract to which storage is migrated
+   */
+  function migratePool(SynthereumPoolMigrationFrom _migrationPool)
+    public
+    override
+    nonReentrant
+    onlyDeployer(synthereumFinder)
+    returns (SynthereumMultiLpLiquidityPool pool)
+  {
+    pool = super.migratePool(_migrationPool);
   }
 }

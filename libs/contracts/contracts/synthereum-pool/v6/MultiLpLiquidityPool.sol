@@ -54,7 +54,6 @@ contract SynthereumMultiLpLiquidityPool is
 {
   using EnumerableSet for EnumerableSet.AddressSet;
   using SynthereumMultiLpLiquidityPoolMainLib for Storage;
-  using SynthereumMultiLpLiquidityPoolMainLib for ISynthereumFinder;
   using SynthereumMultiLpLiquidityPoolMigrationLib for Storage;
 
   //----------------------------------------
@@ -269,6 +268,25 @@ contract SynthereumMultiLpLiquidityPool is
     returns (uint256 bearingAmountOut)
   {
     return storageParams.transferToLendingManager(_bearingAmount, finder);
+  }
+
+  /**
+   * @notice Transfer all bearing tokens to another address
+   * @notice Only the lending manager can call the function
+   * @param _recipient Address receving bearing amount
+   * @return migrationAmount Total balance of the pool in bearing tokens before migration
+   */
+  function migrateTotalFunds(address _recipient)
+    external
+    override
+    nonReentrant
+    returns (uint256 migrationAmount)
+  {
+    return
+      SynthereumMultiLpLiquidityPoolMigrationLib.migrateTotalFunds(
+        _recipient,
+        finder
+      );
   }
 
   /**
@@ -534,6 +552,9 @@ contract SynthereumMultiLpLiquidityPool is
     }
   }
 
+  /**
+   * @notice Return sender of the transaction
+   */
   function _msgSender()
     internal
     view
@@ -543,6 +564,9 @@ contract SynthereumMultiLpLiquidityPool is
     return ERC2771Context._msgSender();
   }
 
+  /**
+   * @notice Return data of the transaction
+   */
   function _msgData()
     internal
     view
@@ -614,6 +638,6 @@ contract SynthereumMultiLpLiquidityPool is
 
     address[] memory activeLPsList = storageParams.getActiveLPs();
 
-    storageParams.encodeStorage(registeredLPsList, activeLPsList);
+    return storageParams.encodeStorage(registeredLPsList, activeLPsList);
   }
 }

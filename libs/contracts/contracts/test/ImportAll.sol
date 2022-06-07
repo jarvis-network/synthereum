@@ -60,6 +60,7 @@ import '../core/interfaces/IFinder.sol';
 import '../core/interfaces/IManager.sol';
 import '../core/interfaces/IFactoryVersioning.sol';
 import '../core/interfaces/IDeploymentSignature.sol';
+import '../core/interfaces/IMigrationSignature.sol';
 import '../core/interfaces/IDeployer.sol';
 import '../core/interfaces/IJarvisBrrrrr.sol';
 import '../core/Constants.sol';
