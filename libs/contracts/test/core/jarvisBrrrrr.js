@@ -10,12 +10,15 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
+const CToken = artifacts.require('CToken');
+const Comptroller = artifacts.require('Comptroller');
 const MockCToken = artifacts.require('ICErc20');
 const JarvisBrrrrr = artifacts.require('JarvisBrrrrr');
 const MoneyMarketManager = artifacts.require('MoneyMarketManager');
 const AaveImplementation = artifacts.require('JarvisBrrAave');
 const CompoundImplementation = artifacts.require('JarvisBrrCompound');
 const data = require('../../data/test/lendingTestnet.json');
+const { createToken } = require('typescript');
 
 contract('Jarvis Printer', async accounts => {
   let jEURAddress,
@@ -861,4 +864,21 @@ contract('Jarvis Printer', async accounts => {
       );
     });
   });
+
+  describe('Money market manager - BSC - Midas Capital', () => {
+    it('print', async () => {
+      let compt = await Comptroller.at('0x31d76A64Bc8BbEffb601fac5884372DEF910F044');
+      let tokens = [
+      '0x92897f3De21E2FFa8dd8b3a48D1Edf29B5fCef0e',
+      '0xa7213deB44f570646Ea955771Cc7f39B58841363'
+    ]
+    let markets = await compt.getAllMarkets.call();
+    console.log("MA", markets);
+      for(let i=0; i<tokens.length; i++){
+        let token = await MockCToken.at(tokens[i]);
+        console.log
+        console.log(await token.name.call());
+      }
+    })
+  })
 });
