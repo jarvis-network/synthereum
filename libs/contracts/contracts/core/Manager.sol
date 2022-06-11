@@ -7,6 +7,9 @@ import {
   IAccessControlEnumerable
 } from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {IEmergencyShutdown} from '../common/interfaces/IEmergencyShutdown.sol';
+import {
+  ISynthereumLendingSwitch
+} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 import {SynthereumInterfaces} from './Constants.sol';
 import {
   AccessControlEnumerable
@@ -84,7 +87,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     address[] calldata accounts
   ) external override onlyMaintainerOrDeployer {
     uint256 rolesCount = roles.length;
-    require(rolesCount > 0, 'No roles paased');
+    require(rolesCount > 0, 'No roles passed');
     require(
       rolesCount == accounts.length,
       'Number of roles and accounts must be the same'
@@ -110,7 +113,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     address[] calldata accounts
   ) external override onlyMaintainerOrDeployer {
     uint256 rolesCount = roles.length;
-    require(rolesCount > 0, 'No roles paased');
+    require(rolesCount > 0, 'No roles passed');
     require(
       rolesCount == accounts.length,
       'Number of roles and accounts must be the same'
@@ -134,7 +137,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     bytes32[] calldata roles
   ) external override onlyMaintainerOrDeployer {
     uint256 rolesCount = roles.length;
-    require(rolesCount > 0, 'No roles paased');
+    require(rolesCount > 0, 'No roles passed');
     require(
       rolesCount == contracts.length,
       'Number of roles and contracts must be the same'
@@ -159,6 +162,31 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     require(contracts.length > 0, 'No Derivative passed');
     for (uint256 i; i < contracts.length; i++) {
       contracts[i].emergencyShutdown();
+    }
+  }
+
+  /**
+   * @notice Set new lending protocol for a list of pool
+   * @param lendingIds Name of the new lending modules of the pools
+   * @param bearingTokens Tokens of the lending mosule to be used for intersts accrual in the pools
+   */
+  function switchLendingModule(
+    ISynthereumLendingSwitch[] calldata pools,
+    string[] calldata lendingIds,
+    address[] calldata bearingTokens
+  ) external override onlyMaintainer {
+    uint256 numberOfPools = pools.length;
+    require(numberOfPools > 0, 'No pools');
+    require(
+      numberOfPools == lendingIds.length,
+      'Number of pools and ids must be the same'
+    );
+    require(
+      numberOfPools == bearingTokens.length,
+      'Number of pools and bearing tokens must be the same'
+    );
+    for (uint256 i; i < numberOfPools; i++) {
+      pools[i].switchLendingModule(lendingIds[i], bearingTokens[i]);
     }
   }
 }

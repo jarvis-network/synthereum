@@ -4,6 +4,9 @@ pragma solidity >=0.8.0;
 import {
   IEmergencyShutdown
 } from '../../common/interfaces/IEmergencyShutdown.sol';
+import {
+  ISynthereumLendingSwitch
+} from '../../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 
 interface ISynthereumManager {
   /**
@@ -45,4 +48,15 @@ interface ISynthereumManager {
    * @param contracts Contracts to shutdown
    */
   function emergencyShutdown(IEmergencyShutdown[] calldata contracts) external;
+
+  /**
+   * @notice Set new lending protocol for a list of pool
+   * @param lendingIds Name of the new lending modules of the pools
+   * @param bearingTokens Tokens of the lending mosule to be used for intersts accrual in the pools
+   */
+  function switchLendingModule(
+    ISynthereumLendingSwitch[] calldata pools,
+    string[] calldata lendingIds,
+    address[] calldata bearingTokens
+  ) external;
 }

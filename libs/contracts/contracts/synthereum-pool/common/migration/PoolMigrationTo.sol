@@ -24,7 +24,7 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
     uint8 _newVersion,
     uint256 _sourceCollateralAmount,
     uint256 _actualCollateralAmount
-  ) external onlyPoolFactory {
+  ) external virtual onlyPoolFactory {
     finder = _finder;
     _setStorage(_oldVersion, _storageBytes, _newVersion);
     _modifyStorageTo(_sourceCollateralAmount, _actualCollateralAmount);

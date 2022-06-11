@@ -7,6 +7,9 @@ import {
   ISynthereumMultiLpLiquidityPool
 } from './interfaces/IMultiLpLiquidityPool.sol';
 import {
+  ISynthereumLendingSwitch
+} from '../common/interfaces/ILendingSwitch.sol';
+import {
   ISynthereumLendingTransfer
 } from '../common/interfaces/ILendingTransfer.sol';
 import {
@@ -45,6 +48,7 @@ import {
 contract SynthereumMultiLpLiquidityPool is
   ISynthereumMultiLpLiquidityPoolEvents,
   ISynthereumLendingTransfer,
+  ISynthereumLendingSwitch,
   ISynthereumMultiLpLiquidityPool,
   ReentrancyGuard,
   AccessControlEnumerable,
@@ -319,7 +323,7 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Set new lending protocol for this pool
-   * @notice This can be called only by the maintainer
+   * @notice This can be called only by the synthereum manager
    * @param _lendingId Name of the new lending module
    * @param _bearingToken Token of the lending mosule to be used for intersts accrual
             (used only if the lending manager doesn't automatically find the one associated to the collateral fo this pool)
@@ -327,7 +331,7 @@ contract SynthereumMultiLpLiquidityPool is
   function switchLendingModule(
     string calldata _lendingId,
     address _bearingToken
-  ) external override nonReentrant onlyMaintainer {
+  ) external override nonReentrant {
     storageParams.switchLendingModule(_lendingId, _bearingToken, finder);
   }
 
@@ -526,6 +530,44 @@ contract SynthereumMultiLpLiquidityPool is
     returns (string memory lendingId, address bearingToken)
   {
     return storageParams.lendingProtocolInfo(finder);
+  }
+
+  /**
+   * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
+   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust and reverting due to dust splitting
+   * @param _collateralAmount Input collateral amount to be exchanged
+   * @return synthTokensReceived Synthetic tokens will be minted
+   * @return feePaid Collateral fee will be paid
+   */
+  function getMintTradeInfo(uint256 _collateralAmount)
+    external
+    view
+    override
+    returns (uint256 synthTokensReceived, uint256 feePaid)
+  {
+    (synthTokensReceived, feePaid) = storageParams.getMintTradeInfo(
+      _collateralAmount,
+      finder
+    );
+  }
+
+  /**
+   * @notice Returns the collateral amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
+   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust and undercap of one or more LPs
+   * @param  _syntTokensAmount Amount of synthetic tokens to be exchanged
+   * @return collateralAmountReceived Collateral amount will be received by the user
+   * @return feePaid Collateral fee will be paid
+   */
+  function getRedeemTradeInfo(uint256 _syntTokensAmount)
+    external
+    view
+    override
+    returns (uint256 collateralAmountReceived, uint256 feePaid)
+  {
+    (collateralAmountReceived, feePaid) = storageParams.getRedeemTradeInfo(
+      _syntTokensAmount,
+      finder
+    );
   }
 
   /**

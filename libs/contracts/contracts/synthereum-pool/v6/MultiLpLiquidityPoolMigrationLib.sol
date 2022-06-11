@@ -12,6 +12,7 @@ import {
 import {
   ISynthereumPoolMigrationStorage
 } from '../common/migration/interfaces/IPoolMigrationStorage.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
@@ -42,6 +43,12 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     address _bearingToken,
     ISynthereumFinder _finder
   ) external {
+    require(
+      msg.sender ==
+        _finder.getImplementationAddress(SynthereumInterfaces.Manager),
+      'Sender must be the Synthereum manager'
+    );
+
     ILendingManager.MigrateReturnValues memory migrationValues =
       SynthereumMultiLpLiquidityPoolLib._lendingMigration(
         SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder),
@@ -253,7 +260,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
       SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder);
     require(
       msg.sender == address(lendingManager),
-      'Sender must be lending manager'
+      'Sender must be the lending manager'
     );
 
     IERC20 bearingToken =

@@ -2727,7 +2727,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         .div(web3.utils.toBN('2'));
       await truffleAssert.reverts(
         poolContract.transferToLendingManager(claimAmount, { from: sender }),
-        'Sender must be lending manager',
+        'Sender must be the lending manager',
       );
     });
   });

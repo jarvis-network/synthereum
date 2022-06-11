@@ -17,6 +17,7 @@ abstract contract SynthereumPoolMigrationFrom is SynthereumPoolMigration {
    */
   function migrateStorage()
     external
+    virtual
     onlyPoolFactory
     returns (
       ISynthereumFinder synthFinder,
@@ -29,6 +30,17 @@ abstract contract SynthereumPoolMigrationFrom is SynthereumPoolMigration {
     (poolVersion, storageBytes) = _encodeStorage();
     _cleanStorage();
   }
+
+  /**
+   * @notice Transfer all bearing tokens to another address
+   * @notice Only the lending manager can call the function
+   * @param _recipient Address receving bearing amount
+   * @return migrationAmount Total balance of the pool in bearing tokens before migration
+   */
+  function migrateTotalFunds(address _recipient)
+    external
+    virtual
+    returns (uint256 migrationAmount);
 
   /**
    * @notice Function to implement for modifying storage before the encoding
@@ -50,15 +62,4 @@ abstract contract SynthereumPoolMigrationFrom is SynthereumPoolMigration {
     view
     virtual
     returns (uint8 poolVersion, bytes memory storageBytes);
-
-  /**
-   * @notice Transfer all bearing tokens to another address
-   * @notice Only the lending manager can call the function
-   * @param _recipient Address receving bearing amount
-   * @return migrationAmount Total balance of the pool in bearing tokens before migration
-   */
-  function migrateTotalFunds(address _recipient)
-    external
-    virtual
-    returns (uint256 migrationAmount);
 }

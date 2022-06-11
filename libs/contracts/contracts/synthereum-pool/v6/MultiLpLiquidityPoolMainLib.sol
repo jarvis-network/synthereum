@@ -753,7 +753,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
       SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder);
     require(
       msg.sender == address(lendingManager),
-      'Sender must be lending manager'
+      'Sender must be the lending manager'
     );
 
     (uint256 poolInterest, uint256 totalActualCollateral) =
@@ -909,36 +909,14 @@ library SynthereumMultiLpLiquidityPoolMainLib {
         _storageParams.priceIdentifier
       );
 
-    (uint256 poolInterest, uint256 collateralDeposited) =
-      SynthereumMultiLpLiquidityPoolLib._getLendingInterest(
-        SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder)
-      );
-
     uint8 decimals = _storageParams.collateralDecimals;
-    (
-      SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
 
-    ) =
-      SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
-        _storageParams,
-        poolInterest,
-        price,
-        _storageParams.totalSyntheticAsset,
-        collateralDeposited,
-        decimals
-      );
-
-    ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
-    for (uint256 j = 0; j < positionsCache.length; j++) {
-      lpPosition = positionsCache[j].lpPosition;
-      uint256 lpCapacity =
-        SynthereumMultiLpLiquidityPoolLib._calculateCapacity(
-          lpPosition,
-          price,
-          decimals
-        );
-      maxCapacity += lpCapacity;
-    }
+    maxCapacity = SynthereumMultiLpLiquidityPoolLib._calculateMaxCapacity(
+      _storageParams,
+      price,
+      decimals,
+      _finder
+    );
   }
 
   /**
@@ -1072,5 +1050,84 @@ library SynthereumMultiLpLiquidityPoolMainLib {
         return info;
       }
     }
+  }
+
+  /**
+   * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
+   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust and reverting due to dust splitting
+   * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
+   * @param _collateralAmount Input collateral amount to be exchanged
+   * @param _finder Synthereum finder
+   * @return synthTokensReceived Synthetic tokens will be minted
+   * @return feePaid Collateral fee will be paid
+   */
+  function getMintTradeInfo(
+    ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
+    uint256 _collateralAmount,
+    ISynthereumFinder _finder
+  ) external view returns (uint256 synthTokensReceived, uint256 feePaid) {
+    require(_collateralAmount > 0, 'No input collateral');
+
+    uint256 price =
+      SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
+        _finder,
+        _storageParams.priceIdentifier
+      );
+    uint8 decimals = _storageParams.collateralDecimals;
+
+    ISynthereumMultiLpLiquidityPoolEvents.MintValues memory mintValues =
+      SynthereumMultiLpLiquidityPoolLib._calculateMint(
+        _storageParams,
+        _collateralAmount,
+        price,
+        decimals
+      );
+
+    uint256 maxCapacity =
+      SynthereumMultiLpLiquidityPoolLib._calculateMaxCapacity(
+        _storageParams,
+        price,
+        decimals,
+        _finder
+      );
+
+    require(maxCapacity >= mintValues.numTokens, 'No enough liquidity');
+
+    return (mintValues.numTokens, mintValues.feeAmount);
+  }
+
+  /**
+   * @notice Returns the collateral amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
+   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust
+   * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
+   * @param  _syntTokensAmount Amount of synthetic tokens to be exchanged
+   * @param _finder Synthereum finder
+   * @return collateralAmountReceived Collateral amount will be received by the user
+   * @return feePaid Collateral fee will be paid
+   */
+  function getRedeemTradeInfo(
+    ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
+    uint256 _syntTokensAmount,
+    ISynthereumFinder _finder
+  ) external view returns (uint256 collateralAmountReceived, uint256 feePaid) {
+    require(_syntTokensAmount > 0, 'No tokens sent');
+
+    ISynthereumMultiLpLiquidityPoolEvents.RedeemValues memory redeemValues =
+      SynthereumMultiLpLiquidityPoolLib._calculateRedeem(
+        _storageParams,
+        _syntTokensAmount,
+        SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
+          _finder,
+          _storageParams.priceIdentifier
+        ),
+        _storageParams.collateralDecimals
+      );
+
+    require(
+      _syntTokensAmount <= _storageParams.totalSyntheticAsset,
+      'No enough synth tokens'
+    );
+
+    return (redeemValues.collateralAmount, redeemValues.feeAmount);
   }
 }
