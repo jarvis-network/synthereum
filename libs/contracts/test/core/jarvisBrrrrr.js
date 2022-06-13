@@ -866,19 +866,316 @@ contract('Jarvis Printer', async accounts => {
   });
 
   describe('Money market manager - BSC - Midas Capital', () => {
-    it('print', async () => {
-      let compt = await Comptroller.at('0x31d76A64Bc8BbEffb601fac5884372DEF910F044');
-      let tokens = [
-      '0x92897f3De21E2FFa8dd8b3a48D1Edf29B5fCef0e',
-      '0xa7213deB44f570646Ea955771Cc7f39B58841363'
-    ]
-    let markets = await compt.getAllMarkets.call();
-    console.log("MA", markets);
-      for(let i=0; i<tokens.length; i++){
-        let token = await MockCToken.at(tokens[i]);
-        console.log
-        console.log(await token.name.call());
-      }
-    })
-  })
+    let id = 'marketxyz';
+    let bytesId = web3.utils.sha3(
+      web3.eth.abi.encodeParameters(['string'], [id]),
+    );
+    let jBRL = '0x316622977073bbc3df32e7d2a9b3c77596a0a603';
+    let jBRLInstance, cjBRLInstance;
+    let cjBRL = '0x82A3103bc306293227B756f7554AfAeE82F8ab7a';
+    let args = '0x0000';
+    let implementationCallArgs = web3.eth.abi.encodeParameters(
+      ['address'],
+      [cjBRL],
+    );
+
+    before(async () => {
+      jBRLInstance = await MintableBurnableSyntheticToken.at(jBRL);
+      cjBRLInstance = await MockCToken.at(cjBRL);
+
+      // deploy money market manager
+      moneyMarketManager = await MoneyMarketManager.new(finder.address, roles);
+
+      await finder.changeImplementationAddress(
+        web3Utils.toHex('MoneyMarketManager'),
+        moneyMarketManager.address,
+        { from: roles.maintainer },
+      );
+
+      //deploy market xyz implementation
+      implementation = await CompoundImplementation.new();
+
+      // set minting capacity
+      await jarvisBrrrrr.setMaxSupply(jBRL, toWei('1000'), {
+        from: roles.maintainer,
+      });
+
+      // set jarvisBrrrrr as minter
+      await jBRLInstance.addMinter(jarvisBrrrrr.address, {
+        from: roles.admin,
+      });
+
+      await jBRLInstance.addBurner(jarvisBrrrrr.address, {
+        from: roles.admin,
+      });
+    });
+
+    it('Only maintainer can set a money market implementation', async () => {
+      let tx = await moneyMarketManager.registerMoneyMarketImplementation(
+        id,
+        implementation.address,
+        args,
+        { from: roles.maintainer },
+      );
+      truffleAssert.eventEmitted(tx, 'RegisteredImplementation', ev => {
+        return (
+          ev.id == id &&
+          ev.implementation == implementation.address &&
+          ev.args == args
+        );
+      });
+      assert.equal(
+        await moneyMarketManager.idToMoneyMarketImplementation.call(bytesId),
+        implementation.address,
+      );
+      assert.equal(
+        await moneyMarketManager.moneyMarketArgs.call(implementation.address),
+        args,
+      );
+      await truffleAssert.reverts(
+        moneyMarketManager.registerMoneyMarketImplementation(
+          id,
+          implementation.address,
+          args,
+          { from: accounts[5] },
+        ),
+        'Sender must be the maintainer',
+      );
+    });
+
+    it('Only maintainer can mint and deposit into market xyz', async () => {
+      let amount = toWei('1');
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+      let circSupplyBefore = await jarvisBrrrrr.supply(jBRL);
+      let jBRLBalanceBefore = await jBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let cjBLRBalanceBefore = await cjBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let tx = await moneyMarketManager.deposit(
+        jBRL,
+        amount,
+        id,
+        implementationCallArgs,
+        {
+          from: roles.maintainer,
+        },
+      );
+      let tokensOut;
+      truffleAssert.eventEmitted(tx, 'MintAndDeposit', ev => {
+        tokensOut = ev.amount;
+        return (
+          ev.token.toLowerCase() == jBRL.toLowerCase() && ev.moneyMarketId == id
+        );
+      });
+      let jBRLBalanceAfter = await jBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let cjBLRBalanceAfter = await cjBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let circSupplyAfter = await jarvisBrrrrr.supply(jBRL);
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+
+      assert.equal(
+        depositedSupplyAfter.toString(),
+        toBN(depositedSupplyBefore).add(toBN(amount)).toString(),
+      );
+      assert.equal(
+        circSupplyAfter.toString(),
+        toBN(circSupplyBefore).add(toBN(amount)).toString(),
+      );
+      assert.equal(jBRLBalanceAfter.toString(), jBRLBalanceBefore.toString());
+      assert.equal(
+        cjBLRBalanceAfter.toString(),
+        toBN(cjBLRBalanceBefore).add(toBN(tokensOut)).toString(),
+      );
+
+      //revert check
+      await truffleAssert.reverts(
+        moneyMarketManager.deposit(jBRL, amount, id, implementationCallArgs, {
+          from: roles.admin,
+        }),
+        'Sender must be the maintainer',
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.deposit(jBRL, amount, id, implementationCallArgs, {
+          from: accounts[3],
+        }),
+        'Sender must be the maintainer',
+      );
+
+      await network.provider.send('evm_increaseTime', [30000]);
+      await network.provider.send('evm_mine');
+    });
+
+    it('Only maintainer can redeem from market xyz and burn', async () => {
+      let circSupplyBefore = await jarvisBrrrrr.supply(jBRL);
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+
+      let jBRLBalanceBefore = await jBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let cjBLRBalanceBefore = await cjBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let amount = ajEurBalanceBefore.divn(10);
+      let tx = await moneyMarketManager.withdraw(
+        jBRL,
+        amount,
+        id,
+        implementationCallArgs,
+        {
+          from: roles.maintainer,
+        },
+      );
+      let cjBRLBalanceAfter = await jBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      let circSupplyAfter = await jarvisBrrrrr.supply(jBRL);
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+
+      assert.equal(
+        depositedSupplyAfter.toString(),
+        toBN(depositedSupplyBefore).sub(toBN(amount)).toString(),
+      );
+      assert.equal(
+        circSupplyAfter.toString(),
+        toBN(circSupplyBefore).sub(toBN(amount)).toString(),
+      );
+
+      truffleAssert.eventEmitted(tx, 'RedeemAndBurn', ev => {
+        return (
+          ev.token.toLowerCase() == jBRL.toLowerCase() &&
+          ev.moneyMarketId == id &&
+          ev.amount.toString() == amount.toString()
+        );
+      });
+
+      let jBRLBalanceAfter = await jBRLInstance.balanceOf(
+        moneyMarketManager.address,
+      );
+      assert.equal(jBRLBalanceAfter.toString(), jBRLBalanceBefore.toString());
+
+      let assertion = toBN(cjBLRBalanceBefore).gte(
+        toBN(cjBRLBalanceAfter).sub(toBN(amount)),
+      );
+      assert.equal(assertion, true);
+
+      //revert check
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(jBRL, amount, id, implementationCallArgs, {
+          from: roles.admin,
+        }),
+        'Sender must be the maintainer',
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(jBRL, amount, id, implementationCallArgs, {
+          from: accounts[3],
+        }),
+        'Sender must be the maintainer',
+      );
+    });
+
+    it('Cant redeem and burn more than what deposited', async () => {
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.withdraw(
+          jBRL,
+          depositedSupplyBefore.add(toBN(1)),
+          id,
+          implementationCallArgs,
+          {
+            from: roles.maintainer,
+          },
+        ),
+        'Max amount limit',
+      );
+    });
+
+    it('Only maintainer can withdraw revenues from deposit', async () => {
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+      let maintainerjEurBalanceBefore = await jBRLInstance.balanceOf(
+        roles.maintainer,
+      );
+
+      let ajEurBalanceBefore = await cjBRLInstance.balanceOfUnderlying(
+        moneyMarketManager.address,
+      );
+      await moneyMarketManager.withdrawRevenue(
+        jBRL,
+        id,
+        implementationCallArgs,
+        {
+          from: roles.maintainer,
+        },
+      );
+      let ajEurBalanceAfter = await cjBRLInstance.balanceOfUnderlying(
+        moneyMarketManager.address,
+      );
+
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances(
+        bytesId,
+        jBRL,
+      );
+      let maintainerjEurBalanceAfter = await jBRLInstance.balanceOf(
+        roles.maintainer,
+      );
+      let expectedMinRevenue = toBN(ajEurBalanceBefore).sub(
+        toBN(depositedSupplyBefore),
+      );
+
+      assert.equal(
+        depositedSupplyBefore.toString(),
+        depositedSupplyAfter.toString(),
+      );
+
+      let assertion = maintainerjEurBalanceAfter.gte(
+        toBN(maintainerjEurBalanceBefore).add(toBN(expectedMinRevenue)),
+      );
+      assert.equal(assertion, true);
+
+      assertion = ajEurBalanceAfter.gte(
+        toBN(ajEurBalanceBefore).sub(expectedMinRevenue),
+      );
+      assert.equal(assertion, true);
+
+      //revert check
+      await truffleAssert.reverts(
+        moneyMarketManager.withdrawRevenue(jBRL, id, implementationCallArgs, {
+          from: accounts[4],
+        }),
+        'Sender must be the maintainer',
+      );
+
+      await truffleAssert.reverts(
+        moneyMarketManager.withdrawRevenue(jBRL, id, implementationCallArgs, {
+          from: roles.admin,
+        }),
+        'Sender must be the maintainer',
+      );
+    });
+  });
 });
