@@ -16,4 +16,6 @@ interface ICErc20 {
   function balanceOfUnderlying(address owner) external returns (uint256);
 
   function balanceOf(address owner) external view returns (uint256);
+
+  function name() external view returns (string memory);
 }
