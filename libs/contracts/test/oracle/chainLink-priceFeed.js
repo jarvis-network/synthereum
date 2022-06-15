@@ -84,7 +84,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
     checkingPrice = web3Utils.toWei('1.2');
     priceFeedId = web3Utils.toHex('EURUSD');
     await priceFeedInstance.setPair(
-      false,
+      0,
       web3.utils.utf8ToHex(priceFeedIdentifier),
       aggregator.address,
       [],
@@ -94,7 +94,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
   describe('Should manage aggregators', async () => {
     it('Can add aggregator', async () => {
       const addAggregatortTx = await priceFeedInstance.setPair(
-        false,
+        0,
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
@@ -105,7 +105,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
           ev.priceIdentifier ==
             web3Utils.padRight(newAggregatorIdentifier, 64) &&
           ev.aggregator == newAggregatorAddress &&
-          ev.isInverse == false
+          ev.kind == 0
         );
       });
       assert.equal(
@@ -124,14 +124,14 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
     it('Can update aggregator', async () => {
       await priceFeedInstance.setPair(
-        false,
+        0,
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
         { from: maintainer },
       );
       const updateAggregatortTx = await priceFeedInstance.setPair(
-        false,
+        0,
         newAggregatorIdentifier,
         secondNewAggregatorAddress,
         [],
@@ -142,7 +142,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
           ev.priceIdentifier ==
             web3Utils.padRight(newAggregatorIdentifier, 64) &&
           ev.aggregator == secondNewAggregatorAddress &&
-          ev.isInverse == false
+          ev.kind == 0
         );
       });
       await priceFeedInstance.removePair(newAggregatorIdentifier, {
@@ -152,7 +152,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
     it('Can revert if the transaction for setting the aggregator is not sent by the maintainer', async () => {
       await truffleAssert.reverts(
         priceFeedInstance.setPair(
-          false,
+          0,
           newAggregatorIdentifier,
           newAggregatorAddress,
           [],
@@ -163,7 +163,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
     it('Can remove aggregator', async () => {
       const addAggregatortTx = await priceFeedInstance.setPair(
-        false,
+        0,
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
@@ -189,7 +189,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
     it('Can revert if the transaction for remove the aggregator is not sent by the maintainer', async () => {
       await priceFeedInstance.setPair(
-        false,
+        0,
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
@@ -207,7 +207,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
     it('Can check get aggreagtor view function', async () => {
       await priceFeedInstance.setPair(
-        false,
+        0,
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
@@ -540,7 +540,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
       // inverse pair
       let inverseId = web3.utils.utf8ToHex('USDEUR');
       let tx = await priceFeedInstance.setPair(
-        true,
+        1,
         inverseId,
         aggregator.address,
         [],
@@ -551,7 +551,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         return (
           ev.priceIdentifier == web3Utils.padRight(inverseId, 64) &&
           ev.aggregator == aggregator.address &&
-          ev.isInverse == true
+          ev.kind == 1
         );
       });
 
@@ -562,10 +562,60 @@ contract('Synthereum chainlink price feed', function (accounts) {
       // assert.equal(actualStorage.intermediatePairs.length, 0);
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(true, inverseId, aggregator.address, [], {
+        priceFeedInstance.setPair(1, inverseId, aggregator.address, [], {
           from: accounts[0],
         }),
         'Sender must be the maintainer',
+      );
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(1, inverseId, ZERO_ADDRESS, [], {
+          from: maintainer,
+        }),
+        'No aggregator set',
+      );
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(0, inverseId, ZERO_ADDRESS, [], {
+          from: maintainer,
+        }),
+        'No aggregator set',
+      );
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(
+          1,
+          inverseId,
+          aggregator.address,
+          [ZERO_ADDRESS],
+          { from: maintainer },
+        ),
+        'No intermediate pairs should be specified',
+      );
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(
+          0,
+          inverseId,
+          aggregator.address,
+          [ZERO_ADDRESS],
+          { from: maintainer },
+        ),
+        'No intermediate pairs should be specified',
+      );
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(2, inverseId, aggregator.address, [], {
+          from: maintainer,
+        }),
+        'Aggregator should not be set',
+      );
+
+      await truffleAssert.reverts(
+        priceFeedInstance.setPair(2, inverseId, ZERO_ADDRESS, [], {
+          from: maintainer,
+        }),
+        'No intermediate pairs set',
       );
     });
 
@@ -588,6 +638,32 @@ contract('Synthereum chainlink price feed', function (accounts) {
         expectedInversePrice.toString(),
       );
     });
+    it('Should retrieve previous round price of an inverse pair', async () => {
+      let inverseId = web3.utils.utf8ToHex('USDEUR');
+      prevRound = (await aggregator.latestRoundData.call()).roundId;
+      prevRound = (parseInt(prevRound) + 1).toString();
+      newAnswer = web3Utils.toWei('130', 'mwei');
+      prevAnswerUnscaled = web3Utils.toWei('1.30');
+      await aggregator.updateAnswer(newAnswer);
+
+      newAnswer = web3Utils.toWei('140', 'mwei');
+      newAnswerUnscaled = web3Utils.toWei('1.40');
+      const updateTx = await aggregator.updateAnswer(newAnswer);
+      txTimestamp = (await web3.eth.getBlock(updateTx.receipt.blockNumber))
+        .timestamp;
+      const price = (
+        await priceFeedInstance.getRoundPrice.call(inverseId, prevRound)
+      ).toString();
+      let expectedInversePrice = toBN(Math.pow(10, 18))
+        .mul(toBN(Math.pow(10, 18)))
+        .div(toBN(prevAnswerUnscaled));
+
+      assert.equal(
+        price,
+        expectedInversePrice.toString(),
+        'Wrong previous price getter',
+      );
+    });
     it('Should retrieve a computed price of a pair', async () => {
       let ETHUSD = web3.utils.utf8ToHex('ETHUSD');
       let jEURUSD = web3.utils.utf8ToHex('jEURUSD');
@@ -602,28 +678,20 @@ contract('Synthereum chainlink price feed', function (accounts) {
 
       // register aggregators
       await priceFeedInstance.setPair(
-        false,
+        0,
         jEURUSD,
         jEURUSDAggregator.address,
         [],
         { from: maintainer },
       );
 
-      await priceFeedInstance.setPair(
-        false,
-        ETHUSD,
-        ETHUSDAggregator.address,
-        [],
-        { from: maintainer },
-      );
+      await priceFeedInstance.setPair(0, ETHUSD, ETHUSDAggregator.address, [], {
+        from: maintainer,
+      });
 
-      await priceFeedInstance.setPair(
-        true,
-        USDETH,
-        ETHUSDAggregator.address,
-        [],
-        { from: maintainer },
-      );
+      await priceFeedInstance.setPair(1, USDETH, ETHUSDAggregator.address, [], {
+        from: maintainer,
+      });
 
       // update prices
       await ETHUSDAggregator.updateAnswer(ETHUSDPrice);
@@ -631,7 +699,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
 
       // register jEUR/ETH pair
       await priceFeedInstance.setPair(
-        false,
+        2,
         jEURETH,
         ZERO_ADDRESS,
         [jEURUSD, USDETH],
@@ -646,6 +714,14 @@ contract('Synthereum chainlink price feed', function (accounts) {
 
       let actualPrice = await priceFeedInstance.getLatestPrice.call(jEURETH);
       assert.equal(actualPrice.toString(), expectedPrice.toString());
+    });
+    it('Should not support round data of a computer pair', async () => {
+      let jEURETH = web3.utils.utf8ToHex('jEURETH');
+
+      await truffleAssert.reverts(
+        priceFeedInstance.getRoundPrice.call(jEURETH, '2'),
+        'Computed price not supported',
+      );
     });
   });
 });
