@@ -31,7 +31,6 @@ contract SynthereumChainlinkPriceFeed is
     address maintainer;
   }
 
-  enum Type {STANDARD, INVERSE, COMPUTED}
   struct Pair {
     bool isSupported;
     Type priceType;
@@ -49,15 +48,14 @@ contract SynthereumChainlinkPriceFeed is
   // Events
   //----------------------------------------
 
-  event SetAggregator(bytes32 indexed priceIdentifier, address aggregator);
   event SetPair(
     bytes32 indexed priceIdentifier,
-    bool isInverse,
-    address aggregator
+    Type kind,
+    address aggregator,
+    bytes32[] intermediatePairs
   );
 
   event RemovePair(bytes32 indexed priceIdentifier);
-  event RemoveAggregator(bytes32 indexed priceIdentifier);
 
   //----------------------------------------
   // Constructor
@@ -78,7 +76,6 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
   // Modifiers
   //----------------------------------------
-
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
@@ -135,23 +132,29 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
 
   function setPair(
-    bool isInverse,
+    Type kind,
     bytes32 priceIdentifier,
     address aggregator,
     bytes32[] memory intermediatePairs
   ) external override onlyMaintainer {
-    Type pType =
-      isInverse ? Type.INVERSE : intermediatePairs.length > 0
-        ? Type.COMPUTED
-        : Type.STANDARD;
+    if (kind == Type.INVERSE || kind == Type.STANDARD) {
+      require(aggregator != address(0), 'No aggregator set');
+      require(
+        intermediatePairs.length == 0,
+        'No intermediate pairs should be specified'
+      );
+    } else {
+      require(aggregator == address(0), 'Aggregator should not be set');
+      require(intermediatePairs.length > 0, 'No intermediate pairs set');
+    }
 
     pairs[priceIdentifier] = Pair(
       true,
-      pType,
+      kind,
       AggregatorV3Interface(aggregator),
       intermediatePairs
     );
-    emit SetPair(priceIdentifier, isInverse, aggregator);
+    emit SetPair(priceIdentifier, kind, aggregator, intermediatePairs);
   }
 
   function removePair(bytes32 priceIdentifier)
@@ -195,49 +198,21 @@ contract SynthereumChainlinkPriceFeed is
     onlyPoolsOrSelfMinting
     returns (uint256 price)
   {
+    Type priceType = pairs[priceIdentifier].priceType;
+    require(priceType != Type.COMPUTED, 'Computed price not supported');
+
     OracleData memory oracleData =
       _getOracleRoundData(priceIdentifier, _roundId);
     price = getScaledValue(oracleData.answer, oracleData.decimals);
+
+    if (priceType == Type.INVERSE) {
+      price = 10**36 / price;
+    }
   }
 
   //----------------------------------------
   // Public view functions
   //----------------------------------------
-
-  /**
-   * @notice Calculate a computed price of a specific pair
-   * @notice A computed price is obtained by combining prices from separate aggregators
-   * @param pair Struct identifying the pair of assets
-   * @return price 18 decimals scaled price of the pair
-   */
-  function getComputedPrice(Pair memory pair)
-    public
-    view
-    returns (uint256 price)
-  {
-    bytes32[] memory intermediatePairs = pair.intermediatePairs;
-
-    for (uint8 i = 0; i < intermediatePairs.length; i++) {
-      uint256 intermediatePrice = _getLatestPrice(intermediatePairs[i]);
-      price = price == 0
-        ? intermediatePrice
-        : (price * intermediatePrice) / 10**18;
-    }
-  }
-
-  /**
-   * @notice Calculate the inverse price of a given pair
-   * @param priceId Price feed identifier
-   * @return price 18 decimals scaled price of the pair
-   */
-  function getInversePrice(bytes32 priceId)
-    public
-    view
-    returns (uint256 price)
-  {
-    OracleData memory oracleData = _getOracleLatestRoundData(priceId);
-    price = 10**36 / getScaledValue(oracleData.answer, oracleData.decimals);
-  }
 
   /**
    * @notice Returns the address of aggregator if exists, otherwise it reverts
@@ -274,6 +249,40 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
   // Internal view functions
   //----------------------------------------
+
+  /**
+   * @notice Calculate a computed price of a specific pair
+   * @notice A computed price is obtained by combining prices from separate aggregators
+   * @param pair Struct identifying the pair of assets
+   * @return price 18 decimals scaled price of the pair
+   */
+  function getComputedPrice(Pair memory pair)
+    internal
+    view
+    returns (uint256 price)
+  {
+    bytes32[] memory intermediatePairs = pair.intermediatePairs;
+
+    price = 10**18;
+    for (uint8 i = 0; i < intermediatePairs.length; i++) {
+      uint256 intermediatePrice = _getLatestPrice(intermediatePairs[i]);
+      price = (price * intermediatePrice) / 10**18;
+    }
+  }
+
+  /**
+   * @notice Calculate the inverse price of a given pair
+   * @param priceId Price feed identifier
+   * @return price 18 decimals scaled price of the pair
+   */
+  function getInversePrice(bytes32 priceId)
+    internal
+    view
+    returns (uint256 price)
+  {
+    OracleData memory oracleData = _getOracleLatestRoundData(priceId);
+    price = 10**36 / getScaledValue(oracleData.answer, oracleData.decimals);
+  }
 
   /**
    * @notice Get last chainlink oracle data for a given price identifier

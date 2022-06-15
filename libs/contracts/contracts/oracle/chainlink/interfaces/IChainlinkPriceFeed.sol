@@ -15,16 +15,17 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
     uint80 answeredInRound;
     uint8 decimals;
   }
+  enum Type {STANDARD, INVERSE, COMPUTED}
 
   /**
    * @notice Set a pair object associated to a price identifier
    * @param priceIdentifier Price feed identifier of the pair
    * @param aggregator Address of chainlink proxy aggregator
    * @param intermediatePairs Price feed identifier of the pairs to use for computed price
-   * @param isInverse Boolean dictating if the pair is used to calculate an inverse price or a computed price
+   * @param kind Dictates what kind of price identifier is being registered
    */
   function setPair(
-    bool isInverse,
+    Type kind,
     bytes32 priceIdentifier,
     address aggregator,
     bytes32[] memory intermediatePairs
