@@ -203,7 +203,7 @@ contract SynthereumChainlinkPriceFeed is
 
     OracleData memory oracleData =
       _getOracleRoundData(priceIdentifier, _roundId);
-    price = getScaledValue(oracleData.answer, oracleData.decimals);
+    price = _getScaledValue(oracleData.answer, oracleData.decimals);
 
     if (priceType == Type.INVERSE) {
       price = 10**36 / price;
@@ -281,7 +281,7 @@ contract SynthereumChainlinkPriceFeed is
     returns (uint256 price)
   {
     OracleData memory oracleData = _getOracleLatestRoundData(priceId);
-    price = 10**36 / getScaledValue(oracleData.answer, oracleData.decimals);
+    price = 10**36 / _getScaledValue(oracleData.answer, oracleData.decimals);
   }
 
   /**
@@ -295,7 +295,7 @@ contract SynthereumChainlinkPriceFeed is
     returns (uint256 price)
   {
     OracleData memory oracleData = _getOracleLatestRoundData(priceId);
-    price = getScaledValue(oracleData.answer, oracleData.decimals);
+    price = _getScaledValue(oracleData.answer, oracleData.decimals);
   }
 
   /**
@@ -319,7 +319,7 @@ contract SynthereumChainlinkPriceFeed is
     uint8 decimals = aggregator.decimals();
     oracleData = OracleData(
       roundId,
-      convertPrice(answer),
+      _convertPrice(answer),
       startedAt,
       updatedAt,
       answeredInRound,
@@ -349,7 +349,7 @@ contract SynthereumChainlinkPriceFeed is
     uint8 decimals = aggregator.decimals();
     oracleData = OracleData(
       roundId,
-      convertPrice(answer),
+      _convertPrice(answer),
       startedAt,
       updatedAt,
       answeredInRound,
@@ -382,7 +382,7 @@ contract SynthereumChainlinkPriceFeed is
    * @return price Price after conversion
    */
 
-  function convertPrice(int256 uncovertedPrice)
+  function _convertPrice(int256 uncovertedPrice)
     internal
     pure
     returns (uint256 price)
@@ -398,7 +398,7 @@ contract SynthereumChainlinkPriceFeed is
    * @return price Price after conversion
    */
 
-  function getScaledValue(uint256 unscaledPrice, uint8 decimals)
+  function _getScaledValue(uint256 unscaledPrice, uint8 decimals)
     internal
     pure
     returns (uint256 price)
