@@ -256,7 +256,7 @@ contract SynthereumChainlinkPriceFeed is
    * @param pair Struct identifying the pair of assets
    * @return price 18 decimals scaled price of the pair
    */
-  function getComputedPrice(Pair memory pair)
+  function _getComputedPrice(Pair memory pair)
     internal
     view
     returns (uint256 price)
@@ -275,13 +275,27 @@ contract SynthereumChainlinkPriceFeed is
    * @param priceId Price feed identifier
    * @return price 18 decimals scaled price of the pair
    */
-  function getInversePrice(bytes32 priceId)
+  function _getInversePrice(bytes32 priceId)
     internal
     view
     returns (uint256 price)
   {
     OracleData memory oracleData = _getOracleLatestRoundData(priceId);
     price = 10**36 / getScaledValue(oracleData.answer, oracleData.decimals);
+  }
+
+  /**
+   * @notice Retrieve from aggregator the price of a given pair
+   * @param priceId Price feed identifier
+   * @return price 18 decimals scaled price of the pair
+   */
+  function _getStandardPrice(bytes32 priceId)
+    internal
+    view
+    returns (uint256 price)
+  {
+    OracleData memory oracleData = _getOracleLatestRoundData(priceId);
+    price = getScaledValue(oracleData.answer, oracleData.decimals);
   }
 
   /**
@@ -354,12 +368,11 @@ contract SynthereumChainlinkPriceFeed is
     Pair memory pair = pairs[priceIdentifier];
 
     if (pair.priceType == Type.STANDARD) {
-      OracleData memory oracleData = _getOracleLatestRoundData(priceIdentifier);
-      price = getScaledValue(oracleData.answer, oracleData.decimals);
+      price = _getStandardPrice(priceIdentifier);
     } else if (pair.priceType == Type.INVERSE) {
-      price = getInversePrice(priceIdentifier);
+      price = _getInversePrice(priceIdentifier);
     } else {
-      price = getComputedPrice(pair);
+      price = _getComputedPrice(pair);
     }
   }
 
