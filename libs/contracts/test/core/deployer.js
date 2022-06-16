@@ -95,9 +95,11 @@ contract('Deployer', function (accounts) {
       .address;
     mockAggregator = await MockAggregator.new(8, 120000000);
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setAggregator(
+    await synthereumChainlinkPriceFeed.setPair(
+      0,
       web3.utils.utf8ToHex(priceFeedIdentifier),
       mockAggregator.address,
+      [],
       { from: maintainer },
     );
     collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
@@ -356,9 +358,11 @@ contract('Deployer', function (accounts) {
         await TestnetSelfMintingERC20.new('Self-minting Testnet', 'jrt', 18)
       ).address;
       mockAggregator = await MockAggregator.new(8, 140000000);
-      await synthereumChainlinkPriceFeed.setAggregator(
+      await synthereumChainlinkPriceFeed.setPair(
+        0,
         web3.utils.utf8ToHex(selfMintingPriceFeedIdentifier),
         mockAggregator.address,
+        [],
         { from: maintainer },
       );
       await collateralWhitelistInstance.addToWhitelist(

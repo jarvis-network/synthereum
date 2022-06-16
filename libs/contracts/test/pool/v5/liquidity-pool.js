@@ -196,9 +196,11 @@ contract('LiquidityPool', function (accounts) {
       web3Utils.toWei('120', 'mwei'),
     );
     aggregatorInstanceAddress = aggregatorInstance.address;
-    await priceFeedInstance.setAggregator(
+    await priceFeedInstance.setPair(
+      0,
       priceIdentifier,
       aggregatorInstanceAddress,
+      [],
       { from: maintainer },
     );
     params = {
@@ -898,9 +900,11 @@ contract('LiquidityPool', function (accounts) {
       destSynthTokenAddress = destSynthTokenInstance.address;
       destAggregatorInstance = await MockAggregator.new(8, destRate);
       destAggregatorAddress = destAggregatorInstance.address;
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        0,
         destPriceFeedIdentifier,
         destAggregatorAddress,
+        [],
         { from: maintainer },
       );
       const destParams = {
@@ -3790,9 +3794,11 @@ contract('LiquidityPool', function (accounts) {
       destSynthTokenAddress = destSynthTokenInstance.address;
       destAggregatorInstance = await MockAggregator.new(8, destRate);
       destAggregatorAddress = destAggregatorInstance.address;
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        0,
         destPriceFeedIdentifier,
         destAggregatorAddress,
+        [],
         { from: maintainer },
       );
       const wrongParams = {
@@ -4179,9 +4185,11 @@ contract('LiquidityPool', function (accounts) {
       const destSynthTokenAddress = destSynthTokenInstance.address;
       const destAggregatorInstance = await MockAggregator.new(8, destRate);
       const destAggregatorAddress = destAggregatorInstance.address;
-      await priceFeedInstance.setAggregator(
+      await priceFeedInstance.setPair(
+        0,
         destPriceFeedIdentifier,
         destAggregatorAddress,
+        [],
         { from: maintainer },
       );
       const destParams = {

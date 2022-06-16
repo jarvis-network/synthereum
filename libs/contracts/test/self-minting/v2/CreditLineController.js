@@ -108,9 +108,11 @@ contract('Self-minting controller', function (accounts) {
 
     mockAggregator = await MockAggregator.new(8, 140000000);
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setAggregator(
+    await synthereumChainlinkPriceFeed.setPair(
+      0,
       utf8ToHex(priceFeedIdentifier),
       mockAggregator.address,
+      [],
       { from: roles.maintainer },
     );
 

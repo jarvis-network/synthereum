@@ -97,9 +97,11 @@ contract('Self-minting creator', function (accounts) {
     );
     mockAggregator = await MockAggregator.new(8, 140000000);
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setAggregator(
+    await synthereumChainlinkPriceFeed.setPair(
+      0,
       priceFeedIdentifier,
       mockAggregator.address,
+      [],
       { from: roles.maintainer },
     );
   });

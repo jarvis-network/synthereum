@@ -83,9 +83,11 @@ contract('Manager', function (accounts) {
       .address;
     mockAggregator = await MockAggregator.new(8, 120000000);
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setAggregator(
+    await synthereumChainlinkPriceFeed.setPair(
+      0,
       web3.utils.utf8ToHex(priceFeedIdentifier),
       mockAggregator.address,
+      [],
       { from: maintainer },
     );
     collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();

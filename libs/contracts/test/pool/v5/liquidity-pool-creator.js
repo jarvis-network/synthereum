@@ -90,9 +90,11 @@ contract('LiquidityPoolCreator', function (accounts) {
       );
       mockAggregator = await MockAggregator.new(8, 140000000);
       synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-      await synthereumChainlinkPriceFeed.setAggregator(
+      await synthereumChainlinkPriceFeed.setPair(
+        0,
         web3.utils.utf8ToHex(identifier),
         mockAggregator.address,
+        [],
         { from: maintainer },
       );
     });
