@@ -1,174 +1,174 @@
 {
   "42": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x0c15Ab9A0DB086e062194c273CC79f41597Bbf13",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xed0616BeF04D374969f302a34AE4A63882490A8C",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x28b0061f44E6A9780224AA61BEc8C3Fcb0d37de9",
       "intermediatePairs": []
     },
     "XAUUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xc8fb5684f2707C82f28595dEaC017Bfdf44EE9c5",
       "intermediatePairs": []
     }
   },
   "4": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x5e601CF5EF284Bcd12decBDa189479413284E1d2",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x7B17A813eEC55515Fb8F49F2ef51502bC54DD40F",
       "intermediatePairs": []
     },
     "XAUUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x81570059A0cb83888f1459Ec66Aad1Ac16730243",
       "intermediatePairs": []
     }
   },
   "1": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xb49f677943BC038e9857d61E7d053CaA2C1734C1",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x449d117117838fFA61263B61dA6301AA2a88B13A",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x5c0Ab2d9b5a7ed9f470386e82BB36A3613cDd4b5",
       "intermediatePairs": []
     }
   },
   "80001": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "",
       "intermediatePairs": []
     }
   },
   "3": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "",
       "intermediatePairs": []
     }
   },
   "31337": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x73366Fe0AA0Ded304479862808e02506FE556a98",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xc76f762CedF0F78a439727861628E0fdfE1e70c2",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x099a2540848573e94fb1Ca0Fa420b00acbBc845a",
       "intermediatePairs": []
     },
     "PHPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x218231089Bebb2A31970c3b77E96eCfb3BA006D1",
       "intermediatePairs": []
     },
     "SGDUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299",
       "intermediatePairs": []
     },
     "CADUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xACA44ABb8B04D07D883202F99FA5E3c53ed57Fb5",
       "intermediatePairs": []
     },
     "JPYUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xD647a6fC9BC6402301583C91decC5989d8Bc382D",
       "intermediatePairs": []
     },
     "SEKUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xbd92B4919ae82be8473859295dEF0e778A626302",
       "intermediatePairs": []
     },
     "AUDUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x062Df9C4efd2030e243ffCc398b652e8b8F95C6f",
       "intermediatePairs": []
     },
     "COPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xDe6302Dfa0ac45B2B1b1a23304469DA630b2F59B",
       "intermediatePairs": []
     }
   },
   "56": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x0bf79F617988C472DcA68ff41eFe1338955b9A80",
       "intermediatePairs": []
     },
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x964261740356cB4aaD0C3D2003Ce808A4176a46d",
       "intermediatePairs": []
     },
     "GBPUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x8FAf16F710003E538189334541F5D4a391Da46a0",
       "intermediatePairs": []
     },
     "NGNUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x1FF2B48ed0A1669d6CcC83f4B3c84FDdF13Ea594",
       "intermediatePairs": []
     },
     "BRLUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x5cb1Cb3eA5FB46de1CE1D0F3BaDB3212e8d8eF48",
       "intermediatePairs": []
     }
@@ -176,21 +176,21 @@
   "97": {},
   "100": {
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0xFb00261Af80ADb1629D3869E377ae1EEC7bE659F",
       "intermediatePairs": []
     }
   },
   "250": {
     "EURUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x3E68e68ea2c3698400465e3104843597690ae0f7",
       "intermediatePairs": []
     }
   },
   "43114": {
     "CHFUSD": {
-      "isInverse": false,
+      "type": 0,
       "aggregator": "0x3B37950485b450edF90cBB85d0cD27308Af4AB9A",
       "intermediatePairs": []
     }

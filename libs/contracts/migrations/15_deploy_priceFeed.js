@@ -85,7 +85,7 @@ async function migrate(deployer, network, accounts) {
         '@jarvis-network/synthereum-contracts',
       );
       aggregatorsData.push({
-        isInverse: false,
+        kind: 0,
         asset: assets[j],
         pair: web3.utils.utf8ToHex(assets[j]),
         aggregator: mockRandomAggregator.options.address,
@@ -96,7 +96,7 @@ async function migrate(deployer, network, accounts) {
     const assets = Object.keys(pairs[networkId]);
     assets.map(async asset => {
       aggregatorsData.push({
-        isInverse: pairs[networkId][asset].isInverse,
+        kind: pairs[networkId][asset].type,
         asset: asset,
         pair: web3.utils.utf8ToHex(asset),
         aggregator: pairs[networkId][asset].aggregator,
@@ -107,7 +107,7 @@ async function migrate(deployer, network, accounts) {
   for (let j = 0; j < aggregatorsData.length; j++) {
     await synthereumChainlinkPriceFeed.methods
       .setPair(
-        aggregatorsData[j].isInverse,
+        aggregatorsData[j].kind,
         aggregatorsData[j].pair,
         aggregatorsData[j].aggregator,
         aggregatorsData[j].intermediateIds,
