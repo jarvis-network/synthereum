@@ -654,14 +654,17 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Update the storage of the new pool after the migration
    * @param _sourceCollateralAmount Collateral amount from the source pool
    * @param _actualCollateralAmount Collateral amount of the new pool
+   * @param _price Actual price of the pair
    */
   function _modifyStorageTo(
     uint256 _sourceCollateralAmount,
-    uint256 _actualCollateralAmount
+    uint256 _actualCollateralAmount,
+    uint256 _price
   ) internal override {
     storageParams.updateMigrationStorage(
       _sourceCollateralAmount,
       _actualCollateralAmount,
+      _price,
       finder
     );
   }
@@ -669,18 +672,27 @@ contract SynthereumMultiLpLiquidityPool is
   /**
    * @notice Encode storage in bytes during migration
    * @return poolVersion Version of the pool
+   * @return price Actual price of the pair
    * @return storageBytes Pool storage encoded in bytes
    */
   function _encodeStorage()
     internal
     view
     override
-    returns (uint8 poolVersion, bytes memory storageBytes)
+    returns (
+      uint8 poolVersion,
+      uint256 price,
+      bytes memory storageBytes
+    )
   {
     address[] memory registeredLPsList = storageParams.getRegisteredLPs();
 
     address[] memory activeLPsList = storageParams.getActiveLPs();
 
-    return storageParams.encodeStorage(registeredLPsList, activeLPsList);
+    (poolVersion, price, storageBytes) = storageParams.encodeStorage(
+      registeredLPsList,
+      activeLPsList,
+      finder
+    );
   }
 }

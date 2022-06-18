@@ -18,6 +18,7 @@ interface ISynthereumPoolMigrationStorage {
     bytes32 priceIdentifier;
     uint256 totalSyntheticAsset;
     IStandardERC20 collateralAsset;
+    uint64 fee;
     uint8 collateralDecimals;
     uint128 overCollateralRequirement;
     uint64 liquidationBonus;

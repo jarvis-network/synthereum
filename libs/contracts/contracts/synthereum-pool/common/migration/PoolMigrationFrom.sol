@@ -11,8 +11,8 @@ abstract contract SynthereumPoolMigrationFrom is SynthereumPoolMigration {
   /**
    * @notice Migrate storage from this pool resetting and cleaning data
    * @notice This can be called only by a pool factory
-   * @return synthFinder Synthereum finder of the pool
    * @return poolVersion Version of the pool
+   * @return price Actual price of the pair
    * @return storageBytes Pool storage encoded in bytes
    */
   function migrateStorage()
@@ -20,14 +20,13 @@ abstract contract SynthereumPoolMigrationFrom is SynthereumPoolMigration {
     virtual
     onlyPoolFactory
     returns (
-      ISynthereumFinder synthFinder,
       uint8 poolVersion,
+      uint256 price,
       bytes memory storageBytes
     )
   {
     _modifyStorageFrom();
-    synthFinder = finder;
-    (poolVersion, storageBytes) = _encodeStorage();
+    (poolVersion, price, storageBytes) = _encodeStorage();
     _cleanStorage();
   }
 
@@ -55,11 +54,16 @@ abstract contract SynthereumPoolMigrationFrom is SynthereumPoolMigration {
   /**
    * @notice Function to implement for encoding storage in bytes
    * @return poolVersion Version of the pool
+   * @return price Actual price of the pair
    * @return storageBytes Pool storage encoded in bytes
    */
   function _encodeStorage()
     internal
     view
     virtual
-    returns (uint8 poolVersion, bytes memory storageBytes);
+    returns (
+      uint8 poolVersion,
+      uint256 price,
+      bytes memory storageBytes
+    );
 }

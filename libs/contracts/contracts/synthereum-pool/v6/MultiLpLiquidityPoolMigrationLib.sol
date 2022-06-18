@@ -145,6 +145,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     _storageParams.priceIdentifier = migrationStorage.priceIdentifier;
     _storageParams.totalSyntheticAsset = migrationStorage.totalSyntheticAsset;
     _storageParams.collateralAsset = migrationStorage.collateralAsset;
+    _storageParams.fee = migrationStorage.fee;
     _storageParams.collateralDecimals = migrationStorage.collateralDecimals;
     _storageParams.overCollateralRequirement = migrationStorage
       .overCollateralRequirement;
@@ -168,12 +169,14 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _sourceCollateralAmount Collateral amount from the source pool
    * @param _actualCollateralAmount Collateral amount of the new pool
+   * @param _price Actual price of the pair
    * @param _finder Synthereum finder
    */
   function updateMigrationStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     uint256 _sourceCollateralAmount,
     uint256 _actualCollateralAmount,
+    uint256 _price,
     ISynthereumFinder _finder
   ) external {
     uint256 lpNumbers = _storageParams.activeLPs.length();
@@ -194,10 +197,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
           _actualCollateralAmount
         ),
         _storageParams.overCollateralRequirement,
-        SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
-          _finder,
-          _storageParams.priceIdentifier
-        ),
+        _price,
         _storageParams.collateralDecimals,
         positionsCache
       );
@@ -213,15 +213,31 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _registeredLPsList List of every registered LP
    * @param _activeLPsList List of every active LP
+   * @param _finder Synthereum finder
    * @return poolVersion Version of the pool
+   * @return price Actual price of the pair
    * @return storageBytes Encoded pool storage in bytes
    */
   function encodeStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     address[] calldata _registeredLPsList,
-    address[] calldata _activeLPsList
-  ) external view returns (uint8 poolVersion, bytes memory storageBytes) {
+    address[] calldata _activeLPsList,
+    ISynthereumFinder _finder
+  )
+    external
+    view
+    returns (
+      uint8 poolVersion,
+      uint256 price,
+      bytes memory storageBytes
+    )
+  {
     poolVersion = _storageParams.poolVersion;
+    bytes32 priceIdentifier = _storageParams.priceIdentifier;
+    price = SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
+      _finder,
+      priceIdentifier
+    );
     uint256 numberOfLps = _activeLPsList.length;
     ISynthereumMultiLpLiquidityPool.LPPosition[] memory positions =
       new ISynthereumMultiLpLiquidityPool.LPPosition[](numberOfLps);
@@ -231,9 +247,10 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     storageBytes = abi.encode(
       ISynthereumPoolMigrationStorage.MigrationV6(
         _storageParams.lendingModuleId,
-        _storageParams.priceIdentifier,
+        priceIdentifier,
         _storageParams.totalSyntheticAsset,
         _storageParams.collateralAsset,
+        _storageParams.fee,
         _storageParams.collateralDecimals,
         _storageParams.overCollateralRequirement,
         _storageParams.liquidationBonus,
