@@ -6,6 +6,9 @@ const ERC20 = artifacts.require('ERC20');
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
+const SynthereumFactoryVersioning = artifacts.require(
+  'SynthereumFactoryVersioning',
+);
 const SynthereumCollateralWhitelist = artifacts.require(
   'SynthereumCollateralWhitelist',
 );
@@ -27,6 +30,7 @@ const IUniswapRouter = artifacts.require('IUniswapV2Router02');
 const MockOnChainOracle = artifacts.require('MockOnChainOracle');
 const {
   encodeMultiLpLiquidityPool,
+  encodeMultiLpLiquidityPoolMigration,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const PoolV6Data = require('../../../data/test/poolV6.json');
 const { network } = require('hardhat');
@@ -54,6 +58,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   let LPsCollateral = [];
   let LPsOverCollateral = [];
   let lendingStorageManagerContract;
+  let factoryVersioningContract;
   let analyticsMock;
   let sender;
   let receiver;
@@ -372,6 +377,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     deployer = await SynthereumDeployer.deployed();
     managerContract = await SynthereumManager.deployed();
     priceFeedContract = await SynthereumChainlinkPriceFeed.deployed();
+    factoryVersioningContract = await SynthereumFactoryVersioning.deployed();
     chainlinkAggregator = await priceFeedContract.getAggregator.call(
       priceIdenitiferBytes,
     );
@@ -2857,6 +2863,223 @@ contract('MultiLPLiquidityPool', function (accounts) {
           from: maintainer,
         }),
         'Fee Percentage must be less than 100%',
+      );
+    });
+  });
+
+  describe('Should migrate storage', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can migrate storage', async () => {
+      const factoryInterface = await web3.utils.stringToHex('PoolFactory');
+      const newVersion = 7;
+      const actualFactory = await factoryVersioningContract.getFactoryVersion.call(
+        factoryInterface,
+        poolVersion,
+      );
+      await factoryVersioningContract.setFactory(
+        factoryInterface,
+        newVersion,
+        actualFactory,
+        { from: maintainer },
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await network.provider.send('evm_increaseTime', [3600]);
+      const bearingToken = (await poolContract.lendingProtocolInfo.call())[1];
+      const bearingTokenContract = await ERC20.at(bearingToken);
+      const prevPoolBalance = await bearingTokenContract.balanceOf.call(
+        poolAddress,
+      );
+      let lpPrevPositions = [];
+      for (let j = 0; j < lpNumber; j++) {
+        const lpActualInfo = await poolContract.positionLPInfo.call(LPs[j]);
+        lpPrevPositions.push({
+          collateral: lpActualInfo[0],
+          tokens: lpActualInfo[1],
+          overCollateralization: lpActualInfo[2],
+        });
+      }
+      const migrationPayload = encodeMultiLpLiquidityPoolMigration(
+        poolAddress,
+        newVersion,
+      );
+      const newPool = await deployer.migratePool.call(
+        poolAddress,
+        newVersion,
+        migrationPayload,
+        {
+          from: maintainer,
+        },
+      );
+      await deployer.migratePool(poolAddress, newVersion, migrationPayload, {
+        from: maintainer,
+      });
+      const newPoolContract = await SynthereumMultiLpLiquidityPool.at(newPool);
+      let version = await newPoolContract.version.call();
+      assert.equal(version, newVersion, 'Wrong version');
+      let finder = await newPoolContract.synthereumFinder.call();
+      assert.equal(finder, syntheFinderAddress, 'Wrong finder');
+      let collateral = await newPoolContract.collateralToken.call();
+      assert.equal(collateral, collateralAddress, 'Wrong collateral');
+      let synthToken = await newPoolContract.syntheticToken.call();
+      let synthTokenInstance = await ERC20.at(synthToken);
+      let tokenName = await synthTokenInstance.name.call();
+      assert.equal(tokenName, synthTokenName, 'Wrong synthetic name');
+      let symbol = await poolContract.syntheticTokenSymbol.call();
+      assert.equal(symbol, synthTokenSymbol, 'Wrong synth symbol');
+      let lendingProtocolInfo = await newPoolContract.lendingProtocolInfo.call();
+      assert.equal(lendingId, lendingProtocolInfo[0], 'Wrong lending id');
+      let collateralRequirement = await newPoolContract.collateralRequirement.call();
+      assert.equal(
+        collateralRequirement.toString(),
+        web3.utils
+          .toBN(overCollateralRequirement)
+          .add(web3.utils.toBN(web3.utils.toWei('1')))
+          .toString(),
+        'Wrong overCollateral',
+      );
+      let liqReward = await newPoolContract.liquidationReward.call();
+      assert.equal(
+        liqReward.toString(),
+        liquidationReward.toString(),
+        'Wrong liquidation reward',
+      );
+      let identifier = await newPoolContract.priceFeedIdentifier.call();
+      assert.equal(identifier, priceIdenitiferBytes, 'Wrong price identifier');
+      let feePrc = await newPoolContract.feePercentage.call();
+      assert.equal(
+        feePrc.toString(),
+        feePercentageWei.toString(),
+        'Wrong fee percentage',
+      );
+      version = await newPoolContract.version.call();
+      assert.equal(version, 0, 'Wrong version');
+      finder = await newPoolContract.synthereumFinder.call();
+      assert.equal(finder, ZERO_ADDRESS, 'Wrong finder');
+      collateral = await newPoolContract.collateralToken.call();
+      assert.equal(collateral, ZERO_ADDRESS, 'Wrong collateral');
+      synthToken = await newPoolContract.syntheticToken.call();
+      synthTokenInstance = await ERC20.at(synthToken);
+      tokenName = await synthTokenInstance.name.call();
+      assert.equal(tokenName, '', 'Wrong synthetic name');
+      symbol = await poolContract.syntheticTokenSymbol.call();
+      assert.equal(symbol, '', 'Wrong synth symbol');
+      lendingProtocolInfo = await newPoolContract.lendingProtocolInfo.call();
+      assert.equal('', lendingProtocolInfo[0], 'Wrong lending id');
+      collateralRequirement = await newPoolContract.collateralRequirement.call();
+      assert.equal(collateralRequirement, 0, 'Wrong overCollateral');
+      liqReward = await newPoolContract.liquidationReward.call();
+      assert.equal(liqReward, 0, 'Wrong liquidation reward');
+      identifier = await newPoolContract.priceFeedIdentifier.call();
+      assert.equal(identifier, '0x', 'Wrong price identifier');
+      feePrc = await newPoolContract.feePercentage.call();
+      assert.equal(feePrc, 0, 'Wrong fee percentage');
+      await checkGlobalData(
+        newPoolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        price,
+        0,
+      );
+      const actualPoolBalance = await bearingTokenContract.balanceOf.call(
+        newPoolContract.address,
+      );
+      console.log('POOL BALANCE: ');
+      console.log('before migration: ' + prevPoolBalance.toString());
+      console.log('after migration: ' + actualPoolBalance.toString());
+      let lpActualPositions = [];
+      for (let j = 0; j < lpNumber; j++) {
+        const lpActualInfo = await newPoolContract.positionLPInfo.call(LPs[j]);
+        lpActualPositions.push({
+          collateral: lpActualInfo[0],
+          tokens: lpActualInfo[1],
+          overCollateralization: lpActualInfo[2],
+        });
+      }
+      for (let j = 0; j < lpNumber; j++) {
+        console.log('LP POSITIONS: ' + j);
+        console.log('prev: ', lpPrevPositions[j]);
+        console.log('actual: ', lpActualPositions[j]);
+      }
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(web3.utils.toBN('99'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      await checkGlobalData(
+        newPoolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+      await factoryVersioningContract.removeFactory(
+        factoryInterface,
+        newVersion,
+        { from: maintainer },
       );
     });
   });

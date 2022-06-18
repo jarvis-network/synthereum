@@ -207,7 +207,7 @@ contract('Manager', function (accounts) {
     it('Can revert if no roles are passed in revoking roles', async () => {
       await truffleAssert.reverts(
         managerInstance.revokeSynthereumRole([], [], [], { from: maintainer }),
-        'No roles paased',
+        'No roles passed',
       );
     });
     it('Can revert if different number of roles and accounts in revoking roles', async () => {
@@ -287,7 +287,7 @@ contract('Manager', function (accounts) {
     it('Can revert if no roles are passed in adding roles', async () => {
       await truffleAssert.reverts(
         managerInstance.grantSynthereumRole([], [], [], { from: maintainer }),
-        'No roles paased',
+        'No roles passed',
       );
     });
     it('Can revert if different number of roles and accounts in adding roles', async () => {
@@ -351,7 +351,7 @@ contract('Manager', function (accounts) {
     it('Can revert if no roles are passed in renouncing roles', async () => {
       await truffleAssert.reverts(
         managerInstance.renounceSynthereumRole([], [], { from: maintainer }),
-        'No roles paased',
+        'No roles passed',
       );
     });
     it('Can revert if different number of roles and contracts in renouncing roles', async () => {

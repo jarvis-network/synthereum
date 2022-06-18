@@ -276,9 +276,21 @@ function encodeFixedRate(
   return fixedRatePayload;
 }
 
+function encodeMultiLpLiquidityPoolMigration(
+  migrationPool: string,
+  version: number,
+) {
+  const migrationPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+    ['address', 'uint8'],
+    [migrationPool, version],
+  );
+  return migrationPayload;
+}
+
 module.exports = {
   encodeLiquidityPool,
   encodeMultiLpLiquidityPool,
   encodeCreditLineDerivative,
   encodeFixedRate,
+  encodeMultiLpLiquidityPoolMigration,
 };
