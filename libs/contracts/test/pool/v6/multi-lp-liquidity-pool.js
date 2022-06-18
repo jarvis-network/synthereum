@@ -2960,7 +2960,9 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const migrationPayload = encodeMultiLpLiquidityPoolMigration(
         poolAddress,
         newVersion,
+        '0x',
       );
+      console.log(migrationPayload);
       const newPool = await deployer.migratePool.call(
         poolAddress,
         newVersion,
@@ -3010,28 +3012,12 @@ contract('MultiLPLiquidityPool', function (accounts) {
         feePercentageWei.toString(),
         'Wrong fee percentage',
       );
-      version = await newPoolContract.version.call();
-      assert.equal(version, 0, 'Wrong version');
-      finder = await newPoolContract.synthereumFinder.call();
-      assert.equal(finder, ZERO_ADDRESS, 'Wrong finder');
-      collateral = await newPoolContract.collateralToken.call();
-      assert.equal(collateral, ZERO_ADDRESS, 'Wrong collateral');
-      synthToken = await newPoolContract.syntheticToken.call();
-      synthTokenInstance = await ERC20.at(synthToken);
-      tokenName = await synthTokenInstance.name.call();
-      assert.equal(tokenName, '', 'Wrong synthetic name');
-      symbol = await poolContract.syntheticTokenSymbol.call();
-      assert.equal(symbol, '', 'Wrong synth symbol');
-      lendingProtocolInfo = await newPoolContract.lendingProtocolInfo.call();
-      assert.equal('', lendingProtocolInfo[0], 'Wrong lending id');
-      collateralRequirement = await newPoolContract.collateralRequirement.call();
-      assert.equal(collateralRequirement, 0, 'Wrong overCollateral');
-      liqReward = await newPoolContract.liquidationReward.call();
-      assert.equal(liqReward, 0, 'Wrong liquidation reward');
-      identifier = await newPoolContract.priceFeedIdentifier.call();
-      assert.equal(identifier, '0x', 'Wrong price identifier');
-      feePrc = await newPoolContract.feePercentage.call();
-      assert.equal(feePrc, 0, 'Wrong fee percentage');
+      const registeredLps = await poolContract.getRegisteredLPs.call();
+      assert.equal(registeredLps.length, 0, 'Wrong registered lps');
+      const activeLps = await poolContract.getActiveLPs.call();
+      assert.equal(activeLps.length, 0, 'Wrong registered lps');
+      const totalTokens = await poolContract.totalSyntheticTokens.call();
+      assert.equal(totalTokens, 0, 'Wrong total tokens');
       await checkGlobalData(
         newPoolContract,
         LPs,

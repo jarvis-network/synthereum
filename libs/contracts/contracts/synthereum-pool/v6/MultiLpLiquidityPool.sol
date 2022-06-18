@@ -634,13 +634,20 @@ contract SynthereumMultiLpLiquidityPool is
    * @param _oldVersion Version of the migrated pool
    * @param _storageBytes Pool storage encoded in bytes
    * @param _newVersion Version of the new deployed pool
+   * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
    */
   function _setStorage(
     uint8 _oldVersion,
     bytes calldata _storageBytes,
-    uint8 _newVersion
+    uint8 _newVersion,
+    bytes calldata _extraInputParams
   ) internal override isNotInitialized {
-    storageParams.setStorage(_oldVersion, _storageBytes, _newVersion);
+    storageParams.setStorage(
+      _oldVersion,
+      _storageBytes,
+      _newVersion,
+      _extraInputParams
+    );
   }
 
   /**

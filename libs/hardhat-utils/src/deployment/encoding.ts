@@ -279,10 +279,11 @@ function encodeFixedRate(
 function encodeMultiLpLiquidityPoolMigration(
   migrationPool: string,
   version: number,
+  extraInputParams: string,
 ) {
   const migrationPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
-    ['address', 'uint8'],
-    [migrationPool, version],
+    ['address', 'uint8', 'bytes'],
+    [migrationPool, version, extraInputParams],
   );
   return migrationPayload;
 }

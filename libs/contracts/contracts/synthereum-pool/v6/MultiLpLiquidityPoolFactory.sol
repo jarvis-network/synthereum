@@ -83,12 +83,14 @@ contract SynthereumMultiLpLiquidityPoolFactory is
    * @notice Only the deployer can call this function
    * @param _migrationPool Pool from which migrate storage
    * @param _version Version of the new pool
+   * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
    * @return migrationPoolUsed Pool from which migrate storage
    * @return pool address of the new deployed pool contract to which storage is migrated
    */
   function migratePool(
     SynthereumPoolMigrationFrom _migrationPool,
-    uint8 _version
+    uint8 _version,
+    bytes calldata _extraInputParams
   )
     public
     override
@@ -99,6 +101,10 @@ contract SynthereumMultiLpLiquidityPoolFactory is
       SynthereumMultiLpLiquidityPool pool
     )
   {
-    (migrationPoolUsed, pool) = super.migratePool(_migrationPool, _version);
+    (migrationPoolUsed, pool) = super.migratePool(
+      _migrationPool,
+      _version,
+      _extraInputParams
+    );
   }
 }

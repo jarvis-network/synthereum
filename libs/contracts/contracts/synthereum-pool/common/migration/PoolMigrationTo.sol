@@ -14,6 +14,7 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
    * @param _oldVersion Version of the migrated pool
    * @param _storageBytes Pool storage encoded in bytes
    * @param _newVersion Version of the new deployed pool
+   * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
    * @param _sourceCollateralAmount Collateral amount from the source pool
    * @param _actualCollateralAmount Collateral amount of the new pool
    * @param _price Actual price of the pair
@@ -23,6 +24,7 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
     uint8 _oldVersion,
     bytes calldata _storageBytes,
     uint8 _newVersion,
+    bytes calldata _extraInputParams,
     uint256 _sourceCollateralAmount,
     uint256 _actualCollateralAmount,
     uint256 _price
@@ -32,6 +34,7 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
       _oldVersion,
       _storageBytes,
       _newVersion,
+      _extraInputParams,
       _sourceCollateralAmount,
       _actualCollateralAmount,
       _price
@@ -44,6 +47,7 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
    * @param _oldVersion Version of the migrated pool
    * @param _storageBytes Pool storage encoded in bytes
    * @param _newVersion Version of the new deployed pool
+   * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
    * @param _sourceCollateralAmount Collateral amount from the source pool
    * @param _actualCollateralAmount Collateral amount of the new pool
    * @param _price Actual price of the pair
@@ -52,11 +56,12 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
     uint8 _oldVersion,
     bytes calldata _storageBytes,
     uint8 _newVersion,
+    bytes calldata _extraInputParams,
     uint256 _sourceCollateralAmount,
     uint256 _actualCollateralAmount,
     uint256 _price
   ) internal onlyPoolFactory {
-    _setStorage(_oldVersion, _storageBytes, _newVersion);
+    _setStorage(_oldVersion, _storageBytes, _newVersion, _extraInputParams);
     _modifyStorageTo(_sourceCollateralAmount, _actualCollateralAmount, _price);
   }
 
@@ -65,11 +70,13 @@ abstract contract SynthereumPoolMigrationTo is SynthereumPoolMigration {
    * @param _oldVersion Version of the migrated pool
    * @param _storageBytes Pool storage encoded in bytes
    * @param _newVersion Version of the new deployed pool
+   * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
    */
   function _setStorage(
     uint8 _oldVersion,
     bytes calldata _storageBytes,
-    uint8 _newVersion
+    uint8 _newVersion,
+    bytes calldata _extraInputParams
   ) internal virtual;
 
   /**

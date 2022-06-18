@@ -129,12 +129,14 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
    * @param _oldVersion Version of the migrated pool
    * @param _storageBytes Pool storage encoded in bytes
    * @param _newVersion Version of the new deployed pool
+   * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
    */
   function setStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     uint8 _oldVersion,
     bytes calldata _storageBytes,
-    uint8 _newVersion
+    uint8 _newVersion,
+    bytes calldata _extraInputParams
   ) external {
     _storageParams.poolVersion = _newVersion;
 
