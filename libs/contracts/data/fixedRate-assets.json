@@ -1,5 +1,12 @@
 {
-  "137": {},
+  "137": [
+    {
+      "syntheticName": "Dunia Franc CFA",
+      "syntheticSymbol": "cXOF",
+      "rate": "655957000000000000000",
+      "collateralAddress": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
+    }
+  ],
   "80001": [
     {
       "syntheticName": "Jarvis Synthetic Bulgarian Lev",
