@@ -929,7 +929,7 @@ contract('Jarvis Printer', async accounts => {
       );
     });
 
-    it('Only maintainer can mint and deposit into market xyz', async () => {
+    it('Only maintainer can mint and deposit into midas capital', async () => {
       let amount = toWei('1');
       let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
@@ -1003,7 +1003,7 @@ contract('Jarvis Printer', async accounts => {
       await network.provider.send('evm_mine');
     });
 
-    it('Only maintainer can redeem from market xyz and burn', async () => {
+    it('Only maintainer can redeem from midas capital and burn', async () => {
       let circSupplyBefore = await jarvisBrrrrr.supply(jBRL);
       let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
@@ -1107,7 +1107,7 @@ contract('Jarvis Printer', async accounts => {
         roles.maintainer,
       );
 
-      let ajEurBalanceBefore = await cjBRLInstance.balanceOfUnderlying.call(
+      let cjBLRBalanceBefore = await cjBRLInstance.balanceOfUnderlying.call(
         moneyMarketManager.address,
       );
       await moneyMarketManager.withdrawRevenue(
@@ -1118,7 +1118,7 @@ contract('Jarvis Printer', async accounts => {
           from: roles.maintainer,
         },
       );
-      let ajEurBalanceAfter = await cjBRLInstance.balanceOfUnderlying.call(
+      let cjBLRBalanceAfter = await cjBRLInstance.balanceOfUnderlying.call(
         moneyMarketManager.address,
       );
 
@@ -1129,7 +1129,7 @@ contract('Jarvis Printer', async accounts => {
       let maintainerjEurBalanceAfter = await jBRLInstance.balanceOf.call(
         roles.maintainer,
       );
-      let expectedMinRevenue = toBN(ajEurBalanceBefore).sub(
+      let expectedMinRevenue = toBN(cjBLRBalanceBefore).sub(
         toBN(depositedSupplyBefore),
       );
 
@@ -1143,8 +1143,8 @@ contract('Jarvis Printer', async accounts => {
       );
       assert.equal(assertion, true);
 
-      assertion = ajEurBalanceAfter.gte(
-        toBN(ajEurBalanceBefore).sub(expectedMinRevenue),
+      assertion = cjBLRBalanceAfter.gte(
+        toBN(cjBLRBalanceBefore).sub(expectedMinRevenue),
       );
       assert.equal(assertion, true);
 
