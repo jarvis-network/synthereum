@@ -10,8 +10,8 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
-const CToken = artifacts.require('CToken');
-const Comptroller = artifacts.require('Comptroller');
+// const CToken = artifacts.require('CToken');
+// const Comptroller = artifacts.require('Comptroller');
 const MockCToken = artifacts.require('ICErc20');
 const JarvisBrrrrr = artifacts.require('JarvisBrrrrr');
 const MoneyMarketManager = artifacts.require('MoneyMarketManager');
@@ -865,7 +865,7 @@ contract('Jarvis Printer', async accounts => {
     });
   });
 
-  describe('Money market manager - BSC - Midas Capital', () => {
+  describe.skip('Money market manager - BSC - Midas Capital', () => {
     let id = 'marketxyz';
     let bytesId = web3.utils.sha3(
       web3.eth.abi.encodeParameters(['string'], [id]),
@@ -883,31 +883,17 @@ contract('Jarvis Printer', async accounts => {
       jBRLInstance = await MintableBurnableSyntheticToken.at(jBRL);
       cjBRLInstance = await MockCToken.at(cjBRL);
 
-      // deploy money market manager
-      moneyMarketManager = await MoneyMarketManager.new(finder.address, roles);
-
-      await finder.changeImplementationAddress(
-        web3Utils.toHex('MoneyMarketManager'),
-        moneyMarketManager.address,
-        { from: roles.maintainer },
+      jarvisBrrrrr = await JarvisBrrrrr.at(
+        '0xd7FC91baAd9f3E9145bA361E21c4dD256Ae8D588',
       );
 
-      //deploy market xyz implementation
+      // deploy money market manager
+      moneyMarketManager = await MoneyMarketManager.at(
+        '0x95aac93585f93587e43f70a1b7e371bf8c03e353',
+      );
+
+      //deploy midas adapter implementation
       implementation = await CompoundImplementation.new();
-
-      // set minting capacity
-      await jarvisBrrrrr.setMaxSupply(jBRL, toWei('1000'), {
-        from: roles.maintainer,
-      });
-
-      // set jarvisBrrrrr as minter
-      await jBRLInstance.addMinter(jarvisBrrrrr.address, {
-        from: roles.admin,
-      });
-
-      await jBRLInstance.addBurner(jarvisBrrrrr.address, {
-        from: roles.admin,
-      });
     });
 
     it('Only maintainer can set a money market implementation', async () => {
@@ -945,15 +931,15 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can mint and deposit into market xyz', async () => {
       let amount = toWei('1');
-      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
       let circSupplyBefore = await jarvisBrrrrr.supply(jBRL);
-      let jBRLBalanceBefore = await jBRLInstance.balanceOf(
+      let jBRLBalanceBefore = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
-      let cjBLRBalanceBefore = await cjBRLInstance.balanceOf(
+      let cjBLRBalanceBefore = await cjBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
       let tx = await moneyMarketManager.deposit(
@@ -972,14 +958,14 @@ contract('Jarvis Printer', async accounts => {
           ev.token.toLowerCase() == jBRL.toLowerCase() && ev.moneyMarketId == id
         );
       });
-      let jBRLBalanceAfter = await jBRLInstance.balanceOf(
+      let jBRLBalanceAfter = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
-      let cjBLRBalanceAfter = await cjBRLInstance.balanceOf(
+      let cjBLRBalanceAfter = await cjBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply(jBRL);
-      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
@@ -1019,18 +1005,18 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can redeem from market xyz and burn', async () => {
       let circSupplyBefore = await jarvisBrrrrr.supply(jBRL);
-      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
 
-      let jBRLBalanceBefore = await jBRLInstance.balanceOf(
+      let jBRLBalanceBefore = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
-      let cjBLRBalanceBefore = await cjBRLInstance.balanceOf(
+      let cjBLRBalanceBefore = await cjBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
-      let amount = ajEurBalanceBefore.divn(10);
+      let amount = cjBLRBalanceBefore.divn(10);
       let tx = await moneyMarketManager.withdraw(
         jBRL,
         amount,
@@ -1040,11 +1026,11 @@ contract('Jarvis Printer', async accounts => {
           from: roles.maintainer,
         },
       );
-      let cjBRLBalanceAfter = await jBRLInstance.balanceOf(
+      let cjBRLBalanceAfter = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply(jBRL);
-      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
@@ -1066,7 +1052,7 @@ contract('Jarvis Printer', async accounts => {
         );
       });
 
-      let jBRLBalanceAfter = await jBRLInstance.balanceOf(
+      let jBRLBalanceAfter = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
       );
       assert.equal(jBRLBalanceAfter.toString(), jBRLBalanceBefore.toString());
@@ -1093,7 +1079,7 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Cant redeem and burn more than what deposited', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
@@ -1113,15 +1099,15 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Only maintainer can withdraw revenues from deposit', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyBefore = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
-      let maintainerjEurBalanceBefore = await jBRLInstance.balanceOf(
+      let maintainerjEurBalanceBefore = await jBRLInstance.balanceOf.call(
         roles.maintainer,
       );
 
-      let ajEurBalanceBefore = await cjBRLInstance.balanceOfUnderlying(
+      let ajEurBalanceBefore = await cjBRLInstance.balanceOfUnderlying.call(
         moneyMarketManager.address,
       );
       await moneyMarketManager.withdrawRevenue(
@@ -1132,15 +1118,15 @@ contract('Jarvis Printer', async accounts => {
           from: roles.maintainer,
         },
       );
-      let ajEurBalanceAfter = await cjBRLInstance.balanceOfUnderlying(
+      let ajEurBalanceAfter = await cjBRLInstance.balanceOfUnderlying.call(
         moneyMarketManager.address,
       );
 
-      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances(
+      let depositedSupplyAfter = await moneyMarketManager.moneyMarketBalances.call(
         bytesId,
         jBRL,
       );
-      let maintainerjEurBalanceAfter = await jBRLInstance.balanceOf(
+      let maintainerjEurBalanceAfter = await jBRLInstance.balanceOf.call(
         roles.maintainer,
       );
       let expectedMinRevenue = toBN(ajEurBalanceBefore).sub(
