@@ -12,7 +12,7 @@
     "compile": "hardhat compile",
     "deploy": "MIGRATION_TYPE=OCLR_poolV5 hardhat test ./test/correct-migration.js",
     "test": "yarn run test:v3",
-    "test:v3": "MIGRATION_TYPE=OCLR_poolV5 FORKCHAINID=3 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v3/*",
+    "test:v3": "MIGRATION_TYPE=OCLR_poolV5 FORKCHAINID=3 BLOCK=12000000 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v3/*",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat --network mainnet_fork coverage --solcoverjs ./test/.solcover.js",
     "verify": "hardhat verify"
   },
