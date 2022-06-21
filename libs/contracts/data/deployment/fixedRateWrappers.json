@@ -19,6 +19,8 @@
   "137": {
     "isEnabled": true,
     "FixedRateWrapper": 1,
-    "SynthToken": {}
+    "SynthToken": {
+      "jEUR": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
+    }
   }
 }

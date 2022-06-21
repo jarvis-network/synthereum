@@ -63,5 +63,12 @@
       "admin": "0xC198a2baBd2F00E968A296684e238e7B34123b54",
       "maintainer": "0x88e350b6681a8Fcf9aB17455206034C09Cbb1c14"
     }
+  ],
+  "0xd7FC91baAd9f3E9145bA361E21c4dD256Ae8D588": [
+    "0x8f0Bf7DD7d235A5d784Dd68f8e14E14964418EE5",
+    {
+      "admin": "0xC198a2baBd2F00E968A296684e238e7B34123b54",
+      "maintainer": "0x88e350b6681a8Fcf9aB17455206034C09Cbb1c14"
+    }
   ]
 }

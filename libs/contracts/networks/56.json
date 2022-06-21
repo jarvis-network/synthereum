@@ -68,5 +68,10 @@
     "contractName": "SynthereumChainlinkPriceFeed",
     "address": "0x9f3ecE8F5b493d853272B013f9643eF36152f661",
     "transactionHash": "0x299b6712f7ccad14ab7b6e5ceaa1886f9ab6498b2e4cc56232585c7307dadaa9"
+  },
+  {
+    "contractName": "JarvisBrrrrr",
+    "address": "0xd7FC91baAd9f3E9145bA361E21c4dD256Ae8D588",
+    "transactionHash": "0xb2cbde77c257d052da4aac037f93f462ad516f49797c2caa039400507216ab64"
   }
 ]

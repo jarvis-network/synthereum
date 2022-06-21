@@ -5,6 +5,12 @@
       "syntheticSymbol": "cXOF",
       "rate": "655957000000000000000",
       "collateralAddress": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "rate": "1000000000000000000",
+      "collateralAddress": "0x18ec0A6E18E5bc3784fDd3a3634b31245ab704F6"
     }
   ],
   "80001": [
