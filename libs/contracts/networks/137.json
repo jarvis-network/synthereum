@@ -98,5 +98,10 @@
     "contractName": "SynthereumFixedRateFactory",
     "address": "0x67BEE8eDC1E2Df4cF1fBA6A311ed73B09617bc55",
     "transactionHash": "0x28022f37fe27533918ef3a80ea7f527e7f6375461c1df48374c060ba2b6eee64"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0x711d663256358ECA83840541bd3A59a1d8105F86",
+    "transactionHash": "0xedb14262db17fcc985810b533aac96697aeee7190fdaad8acbc57e630cbed65b"
   }
 ]
