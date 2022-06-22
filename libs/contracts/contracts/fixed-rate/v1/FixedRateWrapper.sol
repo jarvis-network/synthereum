@@ -156,7 +156,7 @@ contract SynthereumFixedRateWrapper is
       (_collateral * (10**(18 - pegCollateralToken.decimals())) * rate) /
       PRECISION;
     totalDeposited = totalDeposited + _collateral;
-    totalSyntheticTokens = totalSyntheticTokens + amountTokens;
+    totalSyntheticTokens += amountTokens;
     fixedRateToken.mint(_recipient, amountTokens);
     emit Wrap(amountTokens, _recipient);
   }
@@ -183,7 +183,7 @@ contract SynthereumFixedRateWrapper is
       PRECISION;
     fixedRateToken.burn(_tokenAmount);
     totalDeposited = totalDeposited - amountCollateral;
-    totalSyntheticTokens = totalSyntheticTokens - _tokenAmount;
+    totalSyntheticTokens -= _tokenAmount;
     pegCollateralToken.transfer(_recipient, amountCollateral);
     emit Unwrap(amountCollateral, _recipient);
   }
