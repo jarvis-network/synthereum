@@ -72,8 +72,14 @@ contract SynthereumFixedRateWrapper is
   // Total amount of peg collateral tokens deposited
   uint256 private totalDeposited;
 
+  // Total amount of synthetic tokens minted
+  uint256 private totalSyntheticTokens;
+
   // When contract is paused minting is revoked
   bool private paused;
+
+  // Max supply of synthetic tokens that can be minted
+  uint256 private maxSupply;
 
   //----------------------------------------
   // Modifiers
@@ -153,6 +159,11 @@ contract SynthereumFixedRateWrapper is
       (_collateral * (10**(18 - pegCollateralToken.decimals())) * rate) /
       PRECISION;
     totalDeposited = totalDeposited + _collateral;
+    require(
+      totalDeposited <= maxSupply,
+      'Maximum supply of synthetic tokens reached'
+    );
+    totalSyntheticTokens = totalSyntheticTokens + amountTokens;
     fixedRateToken.mint(_recipient, amountTokens);
     emit Wrap(amountTokens, _recipient);
   }
@@ -175,11 +186,11 @@ contract SynthereumFixedRateWrapper is
     );
     fixedRateToken.transferFrom(_msgSender(), address(this), _tokenAmount);
     amountCollateral =
-      (totalDeposited *
-        ((_tokenAmount * PRECISION) / fixedRateToken.totalSupply())) /
+      (totalDeposited * ((_tokenAmount * PRECISION) / totalSyntheticTokens)) /
       PRECISION;
     fixedRateToken.burn(_tokenAmount);
     totalDeposited = totalDeposited - amountCollateral;
+    totalSyntheticTokens = totalSyntheticTokens - _tokenAmount;
     pegCollateralToken.transfer(_recipient, amountCollateral);
     emit Unwrap(amountCollateral, _recipient);
   }
@@ -198,6 +209,10 @@ contract SynthereumFixedRateWrapper is
   function resumeContract() external override onlyMaintainer {
     paused = false;
     emit ContractResumed();
+  }
+
+  function setMaxSupply(uint256 _maxSupply) external override onlyMaintainer {
+    maxSupply = _maxSupply;
   }
 
   /** @notice Checks the address of the peg collateral token registered in the wrapper
@@ -258,10 +273,30 @@ contract SynthereumFixedRateWrapper is
   }
 
   /** @notice Amount of peg collateral stored in the contract
-   * @return Total peg collateral deposited
+   * @return totalDeposited peg collateral deposited
    */
   function totalPegCollateral() external view override returns (uint256) {
     return totalDeposited;
+  }
+
+  /** @notice Amount of synthetic tokens minted through the contract
+   * @return totalSyntheticTokens synthetic tokens minted
+   */
+  function totalSyntheticTokensMinted()
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return totalSyntheticTokens;
+  }
+
+  /** @notice The maximum amount of synthetic tokens that can be minted from the contract
+   * @return maxSupply current limit of supply
+   */
+
+  function checkMaxSupply() external view override returns (uint256) {
+    return maxSupply;
   }
 
   /** @notice Check if wrap can be performed or not
