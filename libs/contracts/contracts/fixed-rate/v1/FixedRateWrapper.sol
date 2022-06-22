@@ -78,9 +78,6 @@ contract SynthereumFixedRateWrapper is
   // When contract is paused minting is revoked
   bool private paused;
 
-  // Max supply of synthetic tokens that can be minted
-  uint256 private maxSupply;
-
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -159,10 +156,6 @@ contract SynthereumFixedRateWrapper is
       (_collateral * (10**(18 - pegCollateralToken.decimals())) * rate) /
       PRECISION;
     totalDeposited = totalDeposited + _collateral;
-    require(
-      totalDeposited <= maxSupply,
-      'Maximum supply of synthetic tokens reached'
-    );
     totalSyntheticTokens = totalSyntheticTokens + amountTokens;
     fixedRateToken.mint(_recipient, amountTokens);
     emit Wrap(amountTokens, _recipient);
@@ -209,10 +202,6 @@ contract SynthereumFixedRateWrapper is
   function resumeContract() external override onlyMaintainer {
     paused = false;
     emit ContractResumed();
-  }
-
-  function setMaxSupply(uint256 _maxSupply) external override onlyMaintainer {
-    maxSupply = _maxSupply;
   }
 
   /** @notice Checks the address of the peg collateral token registered in the wrapper
@@ -289,14 +278,6 @@ contract SynthereumFixedRateWrapper is
     returns (uint256)
   {
     return totalSyntheticTokens;
-  }
-
-  /** @notice The maximum amount of synthetic tokens that can be minted from the contract
-   * @return maxSupply current limit of supply
-   */
-
-  function checkMaxSupply() external view override returns (uint256) {
-    return maxSupply;
   }
 
   /** @notice Check if wrap can be performed or not

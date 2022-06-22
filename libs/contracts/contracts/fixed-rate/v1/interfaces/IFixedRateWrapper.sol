@@ -46,11 +46,6 @@ interface ISynthereumFixedRateWrapper is ITypology, ISynthereumDeployment {
    */
   function resumeContract() external;
 
-  /** @notice A function that allows a maintainer to set a limit of how much synthetic tokens can be minted
-   * @notice This is a control mechanism for synthetic tokens that also have a corresponding SynthereumPool
-   */
-  function setMaxSupply(uint256 _maxSupply) external;
-
   /** @notice Check the conversion rate between peg-collateral and fixed-rate synthetic token
    * @return Coversion rate
    */
@@ -65,11 +60,6 @@ interface ISynthereumFixedRateWrapper is ITypology, ISynthereumDeployment {
    * @return Total synthetic tokens minted so far
    */
   function totalSyntheticTokensMinted() external view returns (uint256);
-
-  /** @notice Current limit on the amount of synthetic tokens that can be minted
-   * @return Limit for minting synthetic tokens
-   */
-  function checkMaxSupply() external view returns (uint256);
 
   /** @notice Check if wrap can be performed or not
    * @return True if minting is paused, otherwise false
