@@ -20,6 +20,7 @@
     "isEnabled": true,
     "FixedRateWrapper": 1,
     "SynthToken": {
+      "cXOF": "0x34A697b570129f5eae101e234e21D3f5b3833894",
       "jEUR": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
     }
   }
