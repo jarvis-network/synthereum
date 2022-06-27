@@ -1054,7 +1054,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
   /**
    * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
-   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust and reverting due to dust splitting
+   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust, reverting due to dust splitting and undercaps
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _collateralAmount Input collateral amount to be exchanged
    * @param _finder Synthereum finder
@@ -1098,7 +1098,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
   /**
    * @notice Returns the collateral amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
-   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust
+   * @notice This function is only trading-informative, it doesn't check edge case conditions like lending manager dust and undercaps
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param  _syntTokensAmount Amount of synthetic tokens to be exchanged
    * @param _finder Synthereum finder
