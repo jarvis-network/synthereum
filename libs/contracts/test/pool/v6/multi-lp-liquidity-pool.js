@@ -1484,7 +1484,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       totalCollateral = web3.utils.toBN('0');
     });
     it('Can add liquidity', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       const collAmount = getRandomInt(1, 1000);
       const collateralToDeposit = web3.utils
         .toBN(collAmount.toString())
@@ -1579,7 +1579,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if not collateral sent for adding', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       await truffleAssert.reverts(
         poolContract.addLiquidity('0', {
           from: lp,
@@ -1640,7 +1640,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       totalCollateral = web3.utils.toBN('0');
     });
     it('Can remove liquidity', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const prevCollDeposited = result[0];
       const maxCapacity = result[3];
@@ -1729,7 +1729,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if no collateral to withdraw passed', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       await truffleAssert.reverts(
         poolContract.removeLiquidity('0', {
           from: lp,
@@ -1738,7 +1738,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if trying to remove more than deposited', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const maxCapacity = result[3];
       const price = await priceFeedContract.getLatestPrice.call(
@@ -1758,7 +1758,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if trying to remove with final position below overcollateralization level', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const price = await priceFeedContract.getLatestPrice.call(
         priceIdenitiferBytes,
@@ -1838,7 +1838,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       totalCollateral = web3.utils.toBN('0');
     });
     it('Can set overcollateralization', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const prevCollDeposited = result[0];
       const prevTokens = result[1];
@@ -1908,7 +1908,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if the new overcollateralization below overcollateral requirement', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       const newOverColl = web3.utils
         .toBN(overCollateralRequirement)
         .sub(web3.utils.toBN('1'));
@@ -1920,7 +1920,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if the new overcollateralization makes the position below its overcollateralization level', async () => {
-      const lp = LPs[getRandomInt(0, lpNumber - 1)];
+      const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const tokens = result[1];
       const price = await priceFeedContract.getLatestPrice.call(
@@ -2330,7 +2330,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       totalCollateral = web3.utils.toBN('0');
     });
     it('Can split interests correctly', async () => {
-      const lpIndex = getRandomInt(0, lpNumber - 1);
+      const lpIndex = getRandomInt(0, lpNumber);
       const lp = LPs[lpIndex];
       const lpsInfo = await poolContract.positionLPInfo.call(lp);
       const prevLpCollateral = lpsInfo[0];
@@ -2338,8 +2338,14 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const utilization = lpsInfo[4];
       let totalCapacity = web3.utils.toBN('0');
       let totalUtilization = web3.utils.toBN('0');
+      let bestLpIndex = 0;
+      let bestNumTokens = web3.utils.toBN('0');
       for (let j = 0; j < LPs.length; j++) {
         const lpPosition = await poolContract.positionLPInfo.call(LPs[j]);
+        const lpTokens = web3.utils.toBN(lpPosition[1]);
+        const isNotBest = bestNumTokens.gt(lpTokens);
+        bestLpIndex = isNotBest ? bestLpIndex : j;
+        bestNumTokens = isNotBest ? bestNumTokens : lpTokens;
         totalCapacity = totalCapacity.add(web3.utils.toBN(lpPosition[3]));
         totalUtilization = totalUtilization.add(web3.utils.toBN(lpPosition[4]));
       }
@@ -2358,11 +2364,21 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const actualLpCollateral = (
         await poolContract.positionLPInfo.call(lp)
       )[0];
-      assert.equal(
-        web3.utils.toBN(actualLpCollateral).toString(),
-        web3.utils.toBN(prevLpCollateral).add(lpInterst).toString(),
-        'Wrong interest splitting',
-      );
+      if (lpIndex != bestLpIndex) {
+        assert.equal(
+          web3.utils.toBN(actualLpCollateral).toString(),
+          web3.utils.toBN(prevLpCollateral).add(lpInterst).toString(),
+          'Wrong interest splitting',
+        );
+      } else {
+        assert.equal(
+          web3.utils
+            .toBN(actualLpCollateral)
+            .gte(web3.utils.toBN(prevLpCollateral).add(lpInterst)),
+          true,
+          'Wrong interest splitting',
+        );
+      }
       const price = await priceFeedContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
@@ -2390,7 +2406,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can split profit between LPs', async () => {
-      const lpIndex = getRandomInt(0, lpNumber - 1);
+      const lpIndex = getRandomInt(0, lpNumber);
       const lp = LPs[lpIndex];
       const lpsInfo = await poolContract.positionLPInfo.call(lp);
       const prevLpCollateral = lpsInfo[0];
@@ -2401,8 +2417,14 @@ contract('MultiLPLiquidityPool', function (accounts) {
       let totalUtilization = web3.utils.toBN('0');
       let totalTokens = web3.utils.toBN('0');
       let totalLPColl = web3.utils.toBN('0');
+      let bestLpIndex = 0;
+      let bestNumTokens = web3.utils.toBN('0');
       for (let j = 0; j < LPs.length; j++) {
         const lpPosition = await poolContract.positionLPInfo.call(LPs[j]);
+        const lpTokens = web3.utils.toBN(lpPosition[1]);
+        const isNotBest = bestNumTokens.gt(lpTokens);
+        bestLpIndex = isNotBest ? bestLpIndex : j;
+        bestNumTokens = isNotBest ? bestNumTokens : lpTokens;
         totalCapacity = totalCapacity.add(web3.utils.toBN(lpPosition[3]));
         totalUtilization = totalUtilization.add(web3.utils.toBN(lpPosition[4]));
         totalTokens = totalTokens.add(web3.utils.toBN(lpPosition[1]));
@@ -2453,31 +2475,41 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const actualLpCollateral = (
         await poolContract.positionLPInfo.call(lp)
       )[0];
-      assert.equal(
-        web3.utils
-          .toBN(actualLpCollateral)
-          .eq(web3.utils.toBN(prevLpCollateral).add(lpInterst).add(lpGain)) ||
+      if (lpIndex != bestLpIndex) {
+        assert.equal(
           web3.utils
             .toBN(actualLpCollateral)
-            .eq(
-              web3.utils
-                .toBN(prevLpCollateral)
-                .add(lpInterst)
-                .add(lpGain)
-                .add(web3.utils.toBN('1')),
-            ) ||
+            .eq(web3.utils.toBN(prevLpCollateral).add(lpInterst).add(lpGain)) ||
+            web3.utils
+              .toBN(actualLpCollateral)
+              .eq(
+                web3.utils
+                  .toBN(prevLpCollateral)
+                  .add(lpInterst)
+                  .add(lpGain)
+                  .add(web3.utils.toBN('1')),
+              ) ||
+            web3.utils
+              .toBN(actualLpCollateral)
+              .eq(
+                web3.utils
+                  .toBN(prevLpCollateral)
+                  .add(lpInterst)
+                  .add(lpGain)
+                  .sub(web3.utils.toBN('1')),
+              ),
+          true,
+          'Wrong P&L splitting',
+        );
+      } else {
+        assert.equal(
           web3.utils
             .toBN(actualLpCollateral)
-            .eq(
-              web3.utils
-                .toBN(prevLpCollateral)
-                .add(lpInterst)
-                .add(lpGain)
-                .sub(web3.utils.toBN('1')),
-            ),
-        true,
-        'Wrong P&L splitting',
-      );
+            .gte(web3.utils.toBN(prevLpCollateral).add(lpInterst).add(lpGain)),
+          true,
+          'Wrong P&L splitting',
+        );
+      }
       await checkGlobalData(
         poolContract,
         LPs,
@@ -2503,7 +2535,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await resetOracle();
     });
     it('Can split loss between LPs', async () => {
-      const lpIndex = getRandomInt(0, lpNumber - 1);
+      const lpIndex = getRandomInt(0, lpNumber);
       const lp = LPs[lpIndex];
       const lpsInfo = await poolContract.positionLPInfo.call(lp);
       const prevLpCollateral = lpsInfo[0];
@@ -2514,8 +2546,14 @@ contract('MultiLPLiquidityPool', function (accounts) {
       let totalUtilization = web3.utils.toBN('0');
       let totalTokens = web3.utils.toBN('0');
       let totalLPColl = web3.utils.toBN('0');
+      let bestLpIndex = 0;
+      let bestNumTokens = web3.utils.toBN('0');
       for (let j = 0; j < LPs.length; j++) {
         const lpPosition = await poolContract.positionLPInfo.call(LPs[j]);
+        const lpTokens = web3.utils.toBN(lpPosition[1]);
+        const isNotBest = bestNumTokens.gt(lpTokens);
+        bestLpIndex = isNotBest ? bestLpIndex : j;
+        bestNumTokens = isNotBest ? bestNumTokens : lpTokens;
         totalCapacity = totalCapacity.add(web3.utils.toBN(lpPosition[3]));
         totalUtilization = totalUtilization.add(web3.utils.toBN(lpPosition[4]));
         totalTokens = totalTokens.add(web3.utils.toBN(lpPosition[1]));
@@ -2566,31 +2604,41 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const actualLpCollateral = (
         await poolContract.positionLPInfo.call(lp)
       )[0];
-      assert.equal(
-        web3.utils
-          .toBN(actualLpCollateral)
-          .eq(web3.utils.toBN(prevLpCollateral).add(lpInterst).sub(lpLoss)) ||
+      if (lpIndex != bestLpIndex) {
+        assert.equal(
           web3.utils
             .toBN(actualLpCollateral)
-            .eq(
-              web3.utils
-                .toBN(prevLpCollateral)
-                .add(lpInterst)
-                .sub(lpLoss)
-                .add(web3.utils.toBN('1')),
-            ) ||
+            .eq(web3.utils.toBN(prevLpCollateral).add(lpInterst).sub(lpLoss)) ||
+            web3.utils
+              .toBN(actualLpCollateral)
+              .eq(
+                web3.utils
+                  .toBN(prevLpCollateral)
+                  .add(lpInterst)
+                  .sub(lpLoss)
+                  .add(web3.utils.toBN('1')),
+              ) ||
+            web3.utils
+              .toBN(actualLpCollateral)
+              .eq(
+                web3.utils
+                  .toBN(prevLpCollateral)
+                  .add(lpInterst)
+                  .sub(lpLoss)
+                  .sub(web3.utils.toBN('1')),
+              ),
+          true,
+          'Wrong P&L splitting',
+        );
+      } else {
+        assert.equal(
           web3.utils
             .toBN(actualLpCollateral)
-            .eq(
-              web3.utils
-                .toBN(prevLpCollateral)
-                .add(lpInterst)
-                .sub(lpLoss)
-                .sub(web3.utils.toBN('1')),
-            ),
-        true,
-        'Wrong P&L splitting',
-      );
+            .lte(web3.utils.toBN(prevLpCollateral).add(lpInterst).sub(lpLoss)),
+          true,
+          'Wrong P&L splitting',
+        );
+      }
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3066,6 +3114,174 @@ contract('MultiLPLiquidityPool', function (accounts) {
         factoryInterface,
         newVersion,
         { from: maintainer },
+      );
+    });
+  });
+
+  describe('Should return trading info in mint operation', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can get mint info', async () => {
+      const mintResult = await poolContract.getMintTradeInfo.call(
+        collateralAmount,
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const mintReturnValues = await calculateFeeAndSynthAssetForMint(
+        feePercentageWei,
+        collateralAmount,
+        price,
+      );
+      assert.equal(
+        web3.utils.toBN(mintResult.synthTokensReceived).toString(),
+        web3.utils.toBN(mintReturnValues.tokensAmount).toString(),
+        'Wrong synthetic tokens',
+      );
+      assert.equal(
+        web3.utils.toBN(mintResult.feePaid).toString(),
+        web3.utils.toBN(mintReturnValues.feeAmount).toString(),
+        'Wrong feeData paid',
+      );
+    });
+    it('Can revert is no collateral amount passed', async () => {
+      await truffleAssert.reverts(
+        poolContract.getMintTradeInfo.call('0'),
+        'No input collateral',
+      );
+    });
+    it('Can revert is no enough liquidity available', async () => {
+      await poolContract.setFee('0', { from: maintainer });
+      const price = '1';
+      await setPoolPrice(price);
+      const exceedingAmount = web3.utils.toBN('100').mul(totalCollateral);
+      await truffleAssert.reverts(
+        poolContract.getMintTradeInfo.call(exceedingAmount),
+        'No enough liquidity',
+      );
+      await poolContract.setFee(feePercentageWei, { from: maintainer });
+      await resetOracle();
+    });
+  });
+
+  describe('Should return trading info in redeem operation', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    let inputTokens;
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+      inputTokens = web3.utils.toWei('15');
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+    });
+    it('Can get redeem info', async () => {
+      const redeemResult = await poolContract.getRedeemTradeInfo.call(
+        inputTokens,
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
+        feePercentageWei,
+        web3.utils.toBN(inputTokens),
+        price,
+      );
+      assert.equal(
+        web3.utils.toBN(redeemResult.collateralAmountReceived).toString(),
+        web3.utils.toBN(redeemReturnValues.netAmount).toString(),
+        'Wrong collateral amount',
+      );
+      assert.equal(
+        web3.utils.toBN(redeemResult.feePaid).toString(),
+        web3.utils.toBN(redeemReturnValues.feeAmount).toString(),
+        'Wrong feeData paid',
+      );
+    });
+    it('Can revert is no tokens  passed', async () => {
+      await truffleAssert.reverts(
+        poolContract.getRedeemTradeInfo.call('0'),
+        'No tokens sent',
+      );
+    });
+    it('Can revert is more tokens than ones in positions are passed', async () => {
+      const exceedingAmount = mintTokens.add(web3.utils.toBN('1'));
+      await truffleAssert.reverts(
+        poolContract.getRedeemTradeInfo.call(exceedingAmount),
+        'No enough synth tokens',
       );
     });
   });
