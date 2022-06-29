@@ -215,6 +215,24 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
 
   /**
+   * @notice Get last chainlink oracle price of a set of price identifiers
+   * @param priceIdentifiers Array of Price feed identifier
+   * @return prices Oracle prices for the ids
+   */
+  function getLatestPrices(bytes32[] calldata priceIdentifiers)
+    public
+    view
+    override
+    onlyPoolsOrSelfMinting
+    returns (uint256[] memory prices)
+  {
+    prices = new uint256[](priceIdentifiers.length);
+    for (uint256 i = 0; i < priceIdentifiers.length; i++) {
+      prices[i] = _getLatestPrice(priceIdentifiers[i]);
+    }
+  }
+
+  /**
    * @notice Returns the address of aggregator if exists, otherwise it reverts
    * @param priceIdentifier Price feed identifier
    * @return aggregator Aggregator associated with price identifier

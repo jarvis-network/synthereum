@@ -724,4 +724,33 @@ contract('Synthereum chainlink price feed', function (accounts) {
       );
     });
   });
+
+  describe('Multi price feeds call', async () => {
+    it('Should correctly retrieve multiple latest prices', async () => {
+      let USDEUR = web3.utils.utf8ToHex('USDEUR');
+      let EURUSDPrice = web3Utils.toWei('140', 'mwei');
+      let expectedUSDEUR = toBN(Math.pow(10, 18))
+        .mul(toBN(Math.pow(10, 8)))
+        .div(toBN(EURUSDPrice));
+
+      let jEURUSD = web3.utils.utf8ToHex('jEURUSD');
+      let expectedjEURUSDPriceUnscaled = web3Utils.toWei('1.10');
+
+      let jEURETH = web3.utils.utf8ToHex('jEURETH');
+      let expectedjEURETH = web3Utils.toWei('0.000366666666666666');
+
+      let actualPrices = await priceFeedInstance.getLatestPrices.call([
+        USDEUR,
+        jEURUSD,
+        jEURETH,
+      ]);
+
+      assert.equal(actualPrices[0].toString(), expectedUSDEUR.toString());
+      assert.equal(
+        actualPrices[1].toString(),
+        expectedjEURUSDPriceUnscaled.toString(),
+      );
+      assert.equal(actualPrices[2].toString(), expectedjEURETH.toString());
+    });
+  });
 });

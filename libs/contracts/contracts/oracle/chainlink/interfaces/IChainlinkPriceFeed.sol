@@ -38,6 +38,15 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
   function removePair(bytes32 priceIdentifier) external;
 
   /**
+   * @notice Get last chainlink oracle price of a set of price identifiers
+   * @param priceIdentifiers Array of Price feed identifier
+   * @return prices Oracle prices for the ids
+   */
+  function getLatestPrices(bytes32[] calldata priceIdentifiers)
+    external
+    returns (uint256[] memory prices);
+
+  /**
    * @notice Returns the address of aggregator if exists, otherwise it reverts
    * @param priceIdentifier Price feed identifier
    * @return aggregator Aggregator associated with price identifier
