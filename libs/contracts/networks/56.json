@@ -50,11 +50,6 @@
     "transactionHash": "0x6b9d1f84ce6f15fe599b837c733435736e5e93779a3035bb68ac0dbe47d31a1e"
   },
   {
-    "contractName": "SynthereumChainlinkPriceFeed",
-    "address": "0xfbF14c09079E1AAc83BE279b6354da710b0cFC5E",
-    "transactionHash": "0x3671ef9e086abb6f973f2eaf9a4f2a1c7fe297cf245224bab8a45096eea64265"
-  },
-  {
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x298259B647D57a8FF6AE82112656B7E30C76601b",
     "transactionHash": "0x7144a5049240d61942b0eb9d9d19c240fbf40ea9d58674e5b14c1cc3471443f6"
@@ -68,5 +63,10 @@
     "contractName": "SynthereumFixedRateFactory",
     "address": "0x1654D963828616f5E127a9Bf654945E11F416069",
     "transactionHash": "0x1c53a293ba8e779f85e731aec40b850706fb89a65d29b3cee9743b83dc679dd3"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0x9f3ecE8F5b493d853272B013f9643eF36152f661",
+    "transactionHash": "0x299b6712f7ccad14ab7b6e5ceaa1886f9ab6498b2e4cc56232585c7307dadaa9"
   }
 ]

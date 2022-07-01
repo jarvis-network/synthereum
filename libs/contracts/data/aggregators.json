@@ -171,6 +171,21 @@
       "type": 0,
       "aggregator": "0x5cb1Cb3eA5FB46de1CE1D0F3BaDB3212e8d8eF48",
       "intermediatePairs": []
+    },
+    "BNBUSD": {
+      "type": 0,
+      "aggregator": "0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE",
+      "intermediatePairs": []
+    },
+    "BUSDUSD": {
+      "type": 0,
+      "aggregator": "0xcBb98864Ef56E9042e7d2efef76141f15731B82f",
+      "intermediatePairs": []
+    },
+    "ETHUSD": {
+      "type": 0,
+      "aggregator": "0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e",
+      "intermediatePairs": []
     }
   },
   "97": {},

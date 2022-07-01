@@ -80,11 +80,6 @@
     "transactionHash": "0x04a7df9280322dd7f993e71ed70f244e4c09ba63a5ffff36cb49f6ba84aa9973"
   },
   {
-    "contractName": "SynthereumChainlinkPriceFeed",
-    "address": "0x94617D159bBe53c2616Da2E49F4d310Ca71538e6",
-    "transactionHash": "0xdaf25718ec092496b2b64e3b9c24e6b8e9a3c578f14e2874025aac234a2773b1"
-  },
-  {
     "contractName": "SelfMintingPerpetualPositionManagerMultiPartyLib",
     "address": "0x625B861DFa2aE976a3d2EcB99760a47f35fBfA2F",
     "transactionHash": "0xebff54a3a77514a591e1da32b97e21121e52eccec186293965eea91575ce5a36"
@@ -133,5 +128,10 @@
     "contractName": "SynthereumFactoryVersioning",
     "address": "0x02e3139041b43a599A41eC8A27b83E5d0B35aE5f",
     "transactionHash": "0xaf2051388fddd00f2091be0c7da3dd9f0251621359efe62b65469e5a388d42e8"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0x4D7e9552C139948A9C97Ed548809547dc2C39e84",
+    "transactionHash": "0x8b8a7ebb3077a1eae7adc652313f6dabd37a6241b74067a3048af95a09ee0dda"
   }
 ]
