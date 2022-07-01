@@ -55,16 +55,6 @@
     "transactionHash": "0x7144a5049240d61942b0eb9d9d19c240fbf40ea9d58674e5b14c1cc3471443f6"
   },
   {
-    "contractName": "SynthereumFixedRateRegistry",
-    "address": "0xaD2aBa16506652150f1763CEC98e39b32F4aC174",
-    "transactionHash": "0xd3de0c22e5c652a6a04e4a063f0cb2c02bf8fa3113845d504a6793538340e577"
-  },
-  {
-    "contractName": "SynthereumFixedRateFactory",
-    "address": "0x1654D963828616f5E127a9Bf654945E11F416069",
-    "transactionHash": "0x1c53a293ba8e779f85e731aec40b850706fb89a65d29b3cee9743b83dc679dd3"
-  },
-  {
     "contractName": "SynthereumChainlinkPriceFeed",
     "address": "0x9f3ecE8F5b493d853272B013f9643eF36152f661",
     "transactionHash": "0x299b6712f7ccad14ab7b6e5ceaa1886f9ab6498b2e4cc56232585c7307dadaa9"
@@ -73,5 +63,15 @@
     "contractName": "JarvisBrrrrr",
     "address": "0xd7FC91baAd9f3E9145bA361E21c4dD256Ae8D588",
     "transactionHash": "0xb2cbde77c257d052da4aac037f93f462ad516f49797c2caa039400507216ab64"
+  },
+  {
+    "contractName": "SynthereumFixedRateRegistry",
+    "address": "0x85BdCAB18061F2360430D3a03a7Fff066F97DDd5",
+    "transactionHash": "0x3e8a6a0f1b8f1f943e288aafa4f27429dd29bd1a9c53b11f7833df62a3e978e0"
+  },
+  {
+    "contractName": "SynthereumFixedRateFactory",
+    "address": "0x0b247cf7d9A170acC7DD5b762c07Cfc02Cae4501",
+    "transactionHash": "0x558f56b3a459bfa3f2040a5cd9a8f33c0c203145f04fcb6df6efcc9f3628cd46"
   }
 ]
