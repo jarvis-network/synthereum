@@ -28,6 +28,8 @@ const LendingManager = artifacts.require('LendingManager');
 const LendingStorageManager = artifacts.require('LendingStorageManager');
 const IUniswapRouter = artifacts.require('IUniswapV2Router02');
 const MockOnChainOracle = artifacts.require('MockOnChainOracle');
+const LendingTestnetERC20 = artifacts.require('LendingTestnetERC20');
+const LendingModulelMock = artifacts.require('LendingModulelMock');
 const {
   encodeMultiLpLiquidityPool,
   encodeMultiLpLiquidityPoolMigration,
@@ -58,6 +60,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
   let LPsCollateral = [];
   let LPsOverCollateral = [];
   let lendingStorageManagerContract;
+  let lendingManagerContract;
+  let lendingManagerAddress;
   let factoryVersioningContract;
   let analyticsMock;
   let sender;
@@ -415,6 +419,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     receiver = accounts[4 + lpNumber];
     lendingStorageManagerContract = await LendingStorageManager.deployed();
     lendingManagerContract = await LendingManager.deployed();
+    lendingManagerAddress = lendingManagerContract.address;
     analyticsMock = await PoolAnalyticsMock.new(syntheFinderAddress);
   });
 
@@ -3010,7 +3015,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
         newVersion,
         '0x',
       );
-      console.log(migrationPayload);
       const newPool = await deployer.migratePool.call(
         poolAddress,
         newVersion,
@@ -3282,6 +3286,219 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await truffleAssert.reverts(
         poolContract.getRedeemTradeInfo.call(exceedingAmount),
         'No enough synth tokens',
+      );
+    });
+  });
+
+  describe('Should switch to a new lending module protocol', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    let lendingToken;
+    let lendingTokenAddress;
+    let newLendingModule;
+    let newLendingModuleAddress;
+    const newLendingModuleName = 'Test Lending';
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      mintTokens = await poolContract.totalSyntheticTokens.call();
+      lendingToken = await LendingTestnetERC20.new(
+        'Lending Test',
+        'LNT',
+        18,
+        collateralAddress,
+        lendingManagerAddress,
+      );
+      lendingTokenAddress = lendingToken.address;
+      newLendingModule = await LendingModulelMock.new();
+      newLendingModuleAddress = newLendingModule.address;
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+      const lendingInfo = {
+        lendingModule: ZERO_ADDRESS,
+        args: '0x',
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+    });
+    it('Can switch to a lending module with bonus on deposit', async () => {
+      const depBonusPrcg = web3.utils.toWei('0.01');
+      const withFeePrcg = web3.utils.toWei('0.015');
+      const econdedLendingArgs = web3.eth.abi.encodeParameters(
+        ['uint256', 'uint256', 'bool'],
+        [depBonusPrcg, withFeePrcg, true],
+      );
+      const lendingInfo = {
+        lendingModule: newLendingModuleAddress,
+        args: econdedLendingArgs,
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      const prevTotColl = await poolContract.totalCollateralAmount.call();
+      const switchTx = await managerContract.switchLendingModule(
+        [poolAddress],
+        [newLendingModuleName],
+        [lendingTokenAddress],
+        { from: maintainer },
+      );
+      const actualTotColl = await poolContract.totalCollateralAmount.call();
+      console.log('TOTAL COLLATERAL:');
+      console.log('prev: ' + prevTotColl[2].toString());
+      console.log('actual: ' + actualTotColl[2].toString());
+      console.log('TOTAL LP COLLATERAL:');
+      console.log('prev: ' + prevTotColl[1].toString());
+      console.log('actual: ' + actualTotColl[1].toString());
+      const addingCollateral = collateralAmount
+        .add(totalCollateral)
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral).add(addingCollateral),
+        totalCollateral.add(addingCollateral),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral).add(addingCollateral),
+        totalCollateral.add(addingCollateral),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can switch to a lending module with fees on deposit', async () => {
+      const depBonusPrcg = web3.utils.toWei('0.01');
+      const withFeePrcg = web3.utils.toWei('0.007');
+      const econdedLendingArgs = web3.eth.abi.encodeParameters(
+        ['uint256', 'uint256', 'bool'],
+        [depBonusPrcg, withFeePrcg, false],
+      );
+      const lendingInfo = {
+        lendingModule: newLendingModuleAddress,
+        args: econdedLendingArgs,
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount.add(totalCollateral),
+        totalCollateral,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      const prevTotColl = await poolContract.totalCollateralAmount.call();
+      const switchTx = await managerContract.switchLendingModule(
+        [poolAddress],
+        [newLendingModuleName],
+        [lendingTokenAddress],
+        { from: maintainer },
+      );
+      const actualTotColl = await poolContract.totalCollateralAmount.call();
+      console.log('TOTAL COLLATERAL:');
+      console.log('prev: ' + prevTotColl[2].toString());
+      console.log('actual: ' + actualTotColl[2].toString());
+      console.log('TOTAL LP COLLATERAL:');
+      console.log('prev: ' + prevTotColl[1].toString());
+      console.log('actual: ' + actualTotColl[1].toString());
+      const newCollateralPrg = web3.utils
+        .toBN(web3.utils.toWei('1'))
+        .sub(web3.utils.toBN(depBonusPrcg));
+      const newColl = collateralAmount
+        .add(totalCollateral)
+        .mul(newCollateralPrg)
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      const removingColl = collateralAmount
+        .add(totalCollateral)
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        newColl,
+        totalCollateral.sub(removingColl),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        newColl,
+        totalCollateral.sub(removingColl),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
       );
     });
   });
