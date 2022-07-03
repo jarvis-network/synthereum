@@ -92,7 +92,14 @@ interface ILendingModule {
     bytes memory extraArgs
   ) external view returns (uint256 totalInterest);
 
-  function getInterestBearingToken(address collateral, bytes memory args)
+  /**
+   * @notice returns bearing token associated to the collateral
+   * @dev does not update state
+   * @param collateral collateral address to check bearing token
+   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @return token bearing token
+   */
+  function getInterestBearingToken(address collateral, bytes memory extraArgs)
     external
     view
     returns (address token);

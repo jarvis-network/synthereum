@@ -103,17 +103,13 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     poolData.daoInterestShare = daoInterestShare;
 
     // set interest bearing token
-    try
-      ILendingModule(lendingModule).getInterestBearingToken(
-        collateral,
-        lendingInfo.args
-      )
-    returns (address interestTokenAddr) {
-      poolData.interestBearingToken = interestTokenAddr;
-    } catch {
-      require(interestBearingToken != address(0), 'No bearing token passed');
-      poolData.interestBearingToken = interestBearingToken;
-    }
+    _setBearingToken(
+      poolData,
+      collateral,
+      lendingModule,
+      lendingInfo,
+      interestBearingToken
+    );
   }
 
   function migratePoolStorage(
@@ -163,17 +159,13 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     poolData.lendingModuleId = id;
 
     // set interest bearing token
-    try
-      ILendingModule(newLendingModule).getInterestBearingToken(
-        poolData.collateral,
-        newLendingInfo.args
-      )
-    returns (address interestTokenAddr) {
-      poolData.interestBearingToken = interestTokenAddr;
-    } catch {
-      require(newInterestBearingToken != address(0), 'No bearing token passed');
-      poolData.interestBearingToken = newInterestBearingToken;
-    }
+    _setBearingToken(
+      poolData,
+      poolData.collateral,
+      newLendingModule,
+      newLendingInfo,
+      newInterestBearingToken
+    );
 
     return (poolStorage[pool], newLendingInfo);
   }
@@ -264,5 +256,25 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     returns (uint256 collateralAmount)
   {
     collateralAmount = poolStorage[pool].collateralDeposited;
+  }
+
+  function _setBearingToken(
+    PoolStorage storage actualPoolData,
+    address collateral,
+    address lendingModule,
+    LendingInfo memory lendingInfo,
+    address interestToken
+  ) internal {
+    try
+      ILendingModule(lendingModule).getInterestBearingToken(
+        collateral,
+        lendingInfo.args
+      )
+    returns (address interestTokenAddr) {
+      actualPoolData.interestBearingToken = interestTokenAddr;
+    } catch {
+      require(interestToken != address(0), 'No bearing token passed');
+      actualPoolData.interestBearingToken = interestToken;
+    }
   }
 }
