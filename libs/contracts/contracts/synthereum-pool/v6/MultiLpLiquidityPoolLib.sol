@@ -567,18 +567,29 @@ library SynthereumMultiLpLiquidityPoolLib {
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _positionsCache Temporary memory cache containing LPs positions
    * @return totalLPsCollateral Sum of all the LP's collaterals
+   * @return mostFundedIndex Index in the positionsCache of the LP collateralizing more money
    */
   function _loadPositions(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     PositionCache[] memory _positionsCache
-  ) internal view returns (uint256 totalLPsCollateral) {
+  )
+    internal
+    view
+    returns (uint256 totalLPsCollateral, uint256 mostFundedIndex)
+  {
     address lp;
+    uint256 maxTokensHeld;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lp = _storageParams.activeLPs.at(j);
       ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition =
         _storageParams.lpPositions[lp];
       _positionsCache[j] = PositionCache(lp, lpPosition);
       totalLPsCollateral += lpPosition.actualCollateralAmount;
+      bool isLessFunded = lpPosition.tokensCollateralized <= maxTokensHeld;
+      mostFundedIndex = isLessFunded ? mostFundedIndex : j;
+      maxTokensHeld = isLessFunded
+        ? maxTokensHeld
+        : lpPosition.tokensCollateralized;
     }
   }
 
@@ -592,6 +603,7 @@ library SynthereumMultiLpLiquidityPoolLib {
    * @param _collateralDecimals Decimals of the collateral token
    * @return positionsCache Temporary memory cache containing LPs positions
    * @return prevTotalLPsCollateral Sum of all the LP's collaterals before interests and P&L are charged
+   * @return mostFundedIndex Index of the LP with biggest amount of synt tokens held in his position
    */
   function _calculateNewPositions(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
@@ -605,11 +617,12 @@ library SynthereumMultiLpLiquidityPoolLib {
     view
     returns (
       PositionCache[] memory positionsCache,
-      uint256 prevTotalLPsCollateral
+      uint256 prevTotalLPsCollateral,
+      uint256 mostFundedIndex
     )
   {
     uint256 lpNumbers = _storageParams.activeLPs.length();
-    uint256 mostFundedIndex;
+
     if (lpNumbers > 0) {
       positionsCache = new PositionCache[](lpNumbers);
 
@@ -756,10 +769,10 @@ library SynthereumMultiLpLiquidityPoolLib {
       totalUtilization += tempInterstSharesArgs.utilizationShare;
       _positionsCache[j] = PositionCache(tempInterstSharesArgs.lp, lpPosition);
       totalLPsCollateral += lpPosition.actualCollateralAmount;
-      tempInterstSharesArgs.bestShare = lpPosition.tokensCollateralized >
+      tempInterstSharesArgs.bestShare = lpPosition.tokensCollateralized <=
         tempInterstSharesArgs.bestShare.share
-        ? BestShare(lpPosition.tokensCollateralized, j)
-        : tempInterstSharesArgs.bestShare;
+        ? tempInterstSharesArgs.bestShare
+        : BestShare(lpPosition.tokensCollateralized, j);
     }
     mostFundedIndex = tempInterstSharesArgs.bestShare.index;
   }
@@ -1110,6 +1123,7 @@ library SynthereumMultiLpLiquidityPoolLib {
    * @param _overCollateralRequirement Percentage of overcollateralization to which a liquidation can triggered
    * @param _price Actual price of the pair
    * @param _collateralDecimals Decimals of the collateral token
+   * @param _mostFundedIndex Index of the LP with biggest amount of synt tokens held in his position
    * @param _positionsCache Temporary memory cache containing LPs positions
    */
   function _calculateSwitchingOrMigratingCollateral(
@@ -1118,6 +1132,7 @@ library SynthereumMultiLpLiquidityPoolLib {
     uint128 _overCollateralRequirement,
     uint256 _price,
     uint8 _collateralDecimals,
+    uint256 _mostFundedIndex,
     PositionCache[] memory _positionsCache
   ) internal pure {
     TempMigrationArgs memory _tempMigrationArgs;
@@ -1141,7 +1156,7 @@ library SynthereumMultiLpLiquidityPoolLib {
     _tempMigrationArgs.remainingAmount = _tempMigrationArgs
       .globalLpsProfitOrLoss;
     _tempMigrationArgs.lpNumbers = _positionsCache.length;
-    for (uint256 j = 0; j < _tempMigrationArgs.lpNumbers - 1; j++) {
+    for (uint256 j = 0; j < _tempMigrationArgs.lpNumbers; j++) {
       lpPosition = _positionsCache[j].lpPosition;
       _tempMigrationArgs.share = lpPosition.actualCollateralAmount.div(
         _tempMigrationArgs.actualLpsCollateral
@@ -1166,7 +1181,7 @@ library SynthereumMultiLpLiquidityPoolLib {
       );
     }
 
-    lpPosition = _positionsCache[_tempMigrationArgs.lpNumbers - 1].lpPosition;
+    lpPosition = _positionsCache[_mostFundedIndex].lpPosition;
     lpPosition.actualCollateralAmount = _tempMigrationArgs.isLpGain
       ? lpPosition.actualCollateralAmount + _tempMigrationArgs.remainingAmount
       : lpPosition.actualCollateralAmount - _tempMigrationArgs.remainingAmount;
@@ -1347,6 +1362,7 @@ library SynthereumMultiLpLiquidityPoolLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(

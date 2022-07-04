@@ -191,6 +191,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -262,6 +263,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -324,6 +326,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -393,6 +396,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -455,6 +459,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -556,6 +561,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -652,6 +658,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -716,6 +723,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -761,6 +769,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
@@ -969,6 +978,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
     positionLPInfoArgs.decimals = _storageParams.collateralDecimals;
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
 
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(

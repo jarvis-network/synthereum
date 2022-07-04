@@ -69,7 +69,8 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
-      uint256 prevTotalLpsCollateral
+      uint256 prevTotalLpsCollateral,
+      uint256 mostFundedIndex
     ) =
       SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
         _storageParams,
@@ -86,6 +87,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
       _storageParams.overCollateralRequirement,
       tempStorage.price,
       tempStorage.decimals,
+      mostFundedIndex,
       positionsCache
     );
 
@@ -185,7 +187,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     if (lpNumbers > 0) {
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache =
         new SynthereumMultiLpLiquidityPoolLib.PositionCache[](lpNumbers);
-      uint256 totalLpsCollateral =
+      (uint256 totalLpsCollateral, uint256 mostFundedIndex) =
         SynthereumMultiLpLiquidityPoolLib._loadPositions(
           _storageParams,
           positionsCache
@@ -201,6 +203,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
         _storageParams.overCollateralRequirement,
         _price,
         _storageParams.collateralDecimals,
+        mostFundedIndex,
         positionsCache
       );
       SynthereumMultiLpLiquidityPoolLib._updateActualLPPositions(
