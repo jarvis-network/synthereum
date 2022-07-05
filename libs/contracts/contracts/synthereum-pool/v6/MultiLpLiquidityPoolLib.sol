@@ -150,13 +150,14 @@ library SynthereumMultiLpLiquidityPoolLib {
    * @param _positionsCache Temporary memory cache containing LPs positions
    * @param _depositingLp Address of the LP depositing collateral
    * @param _increaseCollateral Amount of collateral to increase to the LP
+   * @return newLpCollateralAmount Amount of collateral of the LP after the increase
    */
   function _updateAndIncreaseActualLPCollateral(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     PositionCache[] memory _positionsCache,
     address _depositingLp,
     uint256 _increaseCollateral
-  ) internal {
+  ) internal returns (uint256 newLpCollateralAmount) {
     PositionCache memory lpCache;
     address lp;
     uint256 actualCollateralAmount;
@@ -165,9 +166,9 @@ library SynthereumMultiLpLiquidityPoolLib {
       lp = lpCache.lp;
       actualCollateralAmount = lpCache.lpPosition.actualCollateralAmount;
       if (lp == _depositingLp) {
-        _storageParams.lpPositions[lp].actualCollateralAmount =
-          actualCollateralAmount +
-          _increaseCollateral;
+        newLpCollateralAmount = actualCollateralAmount + _increaseCollateral;
+        _storageParams.lpPositions[lp]
+          .actualCollateralAmount = newLpCollateralAmount;
       } else {
         _storageParams.lpPositions[lp]
           .actualCollateralAmount = actualCollateralAmount;
@@ -179,19 +180,20 @@ library SynthereumMultiLpLiquidityPoolLib {
    * @notice Update collateral amount of every LP and removw withdrawal for one LP
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _positionsCache Temporary memory cache containing LPs positions
-   * @param _depositingLp Address of the LP withdrawing collateral
+   * @param _withdrawingLp Address of the LP withdrawing collateral
    * @param _decreaseCollateral Amount of collateral to decrease from the LP
    * @param _price Actual price of the pair
    * @param _collateralDecimals Decimals of the collateral token
+   * @return newLpCollateralAmount Amount of collateral of the LP after the decrease
    */
   function _updateAndDecreaseActualLPCollateral(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     PositionCache[] memory _positionsCache,
-    address _depositingLp,
+    address _withdrawingLp,
     uint256 _decreaseCollateral,
     uint256 _price,
     uint8 _collateralDecimals
-  ) internal {
+  ) internal returns (uint256 newLpCollateralAmount) {
     PositionCache memory lpCache;
     address lp;
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
@@ -203,10 +205,10 @@ library SynthereumMultiLpLiquidityPoolLib {
       lp = lpCache.lp;
       lpPosition = lpCache.lpPosition;
       actualCollateralAmount = lpPosition.actualCollateralAmount;
-      if (lp == _depositingLp) {
-        newCollateralAmount = actualCollateralAmount - _decreaseCollateral;
+      if (lp == _withdrawingLp) {
+        newLpCollateralAmount = actualCollateralAmount - _decreaseCollateral;
         (isOvercollateralized, ) = _isOvercollateralizedLP(
-          newCollateralAmount,
+          newLpCollateralAmount,
           lpPosition.overCollateralization,
           lpPosition.tokensCollateralized,
           _price,
@@ -217,7 +219,7 @@ library SynthereumMultiLpLiquidityPoolLib {
           'LP below its overcollateralization level'
         );
         _storageParams.lpPositions[lp]
-          .actualCollateralAmount = newCollateralAmount;
+          .actualCollateralAmount = newLpCollateralAmount;
       } else {
         _storageParams.lpPositions[lp]
           .actualCollateralAmount = actualCollateralAmount;

@@ -230,13 +230,17 @@ library SynthereumMultiLpLiquidityPoolMainLib {
    * @param _finder Synthereum finder
    * @param _msgSender Transaction sender
    * @return collateralDeposited Net collateral deposited in the LP position
+   * @return newLpCollateralAmount Amount of collateral of the LP after the increase
    */
   function addLiquidity(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     uint256 _collateralAmount,
     ISynthereumFinder _finder,
     address _msgSender
-  ) external returns (uint256 collateralDeposited) {
+  )
+    external
+    returns (uint256 collateralDeposited, uint256 newLpCollateralAmount)
+  {
     require(
       SynthereumMultiLpLiquidityPoolLib._isActiveLP(_storageParams, _msgSender),
       'Sender must be an active LP'
@@ -276,7 +280,8 @@ library SynthereumMultiLpLiquidityPoolMainLib {
       );
 
     collateralDeposited = lendingValues.tokensOut;
-    SynthereumMultiLpLiquidityPoolLib._updateAndIncreaseActualLPCollateral(
+    newLpCollateralAmount = SynthereumMultiLpLiquidityPoolLib
+      ._updateAndIncreaseActualLPCollateral(
       _storageParams,
       positionsCache,
       _msgSender,
@@ -293,14 +298,23 @@ library SynthereumMultiLpLiquidityPoolMainLib {
    * @param _collateralAmount Collateral amount to withdraw by the LP
    * @param _finder Synthereum finder
    * @param _msgSender Transaction sender
+   * @return collateralRemoved Net collateral decreased form the position
    * @return collateralReceived Collateral received from the withdrawal
+   * @return newLpCollateralAmount Amount of collateral of the LP after the decrease
    */
   function removeLiquidity(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     uint256 _collateralAmount,
     ISynthereumFinder _finder,
     address _msgSender
-  ) external returns (uint256 collateralReceived) {
+  )
+    external
+    returns (
+      uint256 collateralRemoved,
+      uint256 collateralReceived,
+      uint256 newLpCollateralAmount
+    )
+  {
     require(
       SynthereumMultiLpLiquidityPoolLib._isActiveLP(_storageParams, _msgSender),
       'Sender must be an active LP'
@@ -338,21 +352,19 @@ library SynthereumMultiLpLiquidityPoolMainLib {
         tempStorage.decimals
       );
 
-    SynthereumMultiLpLiquidityPoolLib._updateAndDecreaseActualLPCollateral(
+    collateralRemoved = lendingValues.tokensOut;
+    collateralReceived = lendingValues.tokensTransferred;
+    newLpCollateralAmount = SynthereumMultiLpLiquidityPoolLib
+      ._updateAndDecreaseActualLPCollateral(
       _storageParams,
       positionsCache,
       _msgSender,
-      lendingValues.tokensOut,
+      collateralRemoved,
       tempStorage.price,
       tempStorage.decimals
     );
-    collateralReceived = lendingValues.tokensTransferred;
 
-    emit WithdrawnLiquidity(
-      _msgSender,
-      lendingValues.tokensOut,
-      collateralReceived
-    );
+    emit WithdrawnLiquidity(_msgSender, collateralRemoved, collateralReceived);
   }
 
   /**

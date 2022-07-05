@@ -156,12 +156,13 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Only an active LP can call this function to add collateral to his position
    * @param _collateralAmount Collateral amount to deposit by the LP
    * @return collateralDeposited Net collateral deposited in the LP position
+   * @return newLpCollateralAmount Amount of collateral of the LP after the increase
    */
   function addLiquidity(uint256 _collateralAmount)
     external
     override
     nonReentrant
-    returns (uint256 collateralDeposited)
+    returns (uint256 collateralDeposited, uint256 newLpCollateralAmount)
   {
     return storageParams.addLiquidity(_collateralAmount, finder, _msgSender());
   }
@@ -170,13 +171,19 @@ contract SynthereumMultiLpLiquidityPool is
    * @notice Withdraw collateral from an active LP position
    * @notice Only an active LP can call this function to withdraw collateral from his position
    * @param _collateralAmount Collateral amount to withdraw by the LP
+   * @return collateralRemoved Net collateral decreased form the position
    * @return collateralReceived Collateral received from the withdrawal
+   * @return newLpCollateralAmount Amount of collateral of the LP after the decrease
    */
   function removeLiquidity(uint256 _collateralAmount)
     external
     override
     nonReentrant
-    returns (uint256 collateralReceived)
+    returns (
+      uint256 collateralRemoved,
+      uint256 collateralReceived,
+      uint256 newLpCollateralAmount
+    )
   {
     return
       storageParams.removeLiquidity(_collateralAmount, finder, _msgSender());
