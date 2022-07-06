@@ -351,7 +351,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   const allLpsAboveCollateralization = async (pool, lps) => {
     const result = await analyticsMock.getAllPoolData.call(pool.address, lps);
     for (let j = 0; j < result[3].length; j++) {
-      assert.equal(result[3][j][8], true, 'Lp below overCollateral limit');
+      assert.equal(result[3][j][9], true, 'Lp below overCollateral limit');
     }
   };
 

@@ -43,6 +43,8 @@ library SynthereumMultiLpLiquidityPoolMainLib {
     uint256 tokensValue;
     uint256 maxCapacity;
     uint8 decimals;
+    uint256 utilization;
+    uint256 totalUtilization;
   }
 
   // See IMultiLpLiquidityPoolEvents for events description
@@ -1016,18 +1018,18 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
     for (uint256 j = 0; j < positionsCache.length; j++) {
+      lpPosition = positionsCache[j].lpPosition;
+      positionLPInfoArgs.tokensValue = SynthereumMultiLpLiquidityPoolLib
+        ._calculateCollateralAmount(
+        lpPosition.tokensCollateralized,
+        positionLPInfoArgs.price,
+        positionLPInfoArgs.decimals
+      );
       if (positionsCache[j].lp == _lp) {
-        lpPosition = positionsCache[j].lpPosition;
         info.actualCollateralAmount = lpPosition.actualCollateralAmount;
         info.tokensCollateralized = lpPosition.tokensCollateralized;
         info.overCollateralization = lpPosition.overCollateralization;
         info.capacity = positionLPInfoArgs.capacityShares[j];
-        positionLPInfoArgs.tokensValue = SynthereumMultiLpLiquidityPoolLib
-          ._calculateCollateralAmount(
-          lpPosition.tokensCollateralized,
-          positionLPInfoArgs.price,
-          positionLPInfoArgs.decimals
-        );
         info.utilization = lpPosition.actualCollateralAmount != 0
           ? (
             positionLPInfoArgs.tokensValue.mul(lpPosition.overCollateralization)
@@ -1036,6 +1038,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
           : lpPosition.tokensCollateralized > 0
           ? PreciseUnitMath.PRECISE_UNIT
           : 0;
+        positionLPInfoArgs.totalUtilization += info.utilization;
         (
           info.isOvercollateralized,
           positionLPInfoArgs.maxCapacity
@@ -1068,10 +1071,27 @@ library SynthereumMultiLpLiquidityPoolMainLib {
             positionLPInfoArgs.totalSynthTokens
           )
           : 0;
-
-        return info;
+      } else {
+        positionLPInfoArgs.utilization = lpPosition.actualCollateralAmount != 0
+          ? (
+            positionLPInfoArgs.tokensValue.mul(lpPosition.overCollateralization)
+          )
+            .div(lpPosition.actualCollateralAmount)
+          : lpPosition.tokensCollateralized > 0
+          ? PreciseUnitMath.PRECISE_UNIT
+          : 0;
+        positionLPInfoArgs.totalUtilization += positionLPInfoArgs.utilization;
       }
     }
+    info.interestShares =
+      (info.mintShares +
+        (
+          positionLPInfoArgs.totalUtilization != 0
+            ? info.utilization.div(positionLPInfoArgs.totalUtilization)
+            : 0
+        )) /
+      2;
+    return info;
   }
 
   /**

@@ -115,6 +115,8 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
     uint256 mintShares;
     // Redeem shares percentage
     uint256 redeemShares;
+    // Interest shares percentage
+    uint256 interestShares;
     // True if it's overcollateralized, otherwise false
     bool isOvercollateralized;
   }
