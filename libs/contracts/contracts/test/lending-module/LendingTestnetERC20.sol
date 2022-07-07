@@ -45,6 +45,6 @@ contract LendingTestnetERC20 is Ownable, ERC20 {
     uint256 _amountOut
   ) external onlyOwner {
     collateral.safeTransfer(_recipient, _amountOut);
-    _burn(_recipient, _amountIn);
+    _burn(msg.sender, _amountIn);
   }
 }

@@ -3502,4 +3502,854 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should work with lending module with bonus on deposit', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let lendingToken;
+    let lendingTokenAddress;
+    let newLendingModule;
+    let newLendingModuleAddress;
+    let netTotCollatAmount;
+    const newLendingModuleName = 'Test Lending';
+    const depBonusPrcg = web3.utils.toWei('0.011');
+    const withFeePrcg = web3.utils.toWei('0.018');
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      netTotCollatAmount = totalCollateral.add(
+        totalCollateral
+          .mul(web3.utils.toBN(depBonusPrcg))
+          .div(web3.utils.toBN(preciseUnit.toString())),
+      );
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      lendingToken = await LendingTestnetERC20.new(
+        'Lending Test',
+        'LNT',
+        18,
+        collateralAddress,
+        lendingManagerAddress,
+      );
+      lendingTokenAddress = lendingToken.address;
+      newLendingModule = await LendingModulelMock.new();
+      newLendingModuleAddress = newLendingModule.address;
+      const econdedLendingArgs = web3.eth.abi.encodeParameters(
+        ['uint256', 'uint256', 'bool'],
+        [depBonusPrcg, withFeePrcg, true],
+      );
+      const lendingInfo = {
+        lendingModule: newLendingModuleAddress,
+        args: econdedLendingArgs,
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+      await managerContract.switchLendingModule(
+        [poolAddress],
+        [newLendingModuleName],
+        [lendingTokenAddress],
+        { from: maintainer },
+      );
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+      netTotCollatAmount = web3.utils.toBN('0');
+      const lendingInfo = {
+        lendingModule: ZERO_ADDRESS,
+        args: '0x',
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+    });
+    it('Can mint', async () => {
+      const collateralAmount = web3.utils
+        .toBN('300')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      let mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      let mintTx = await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      let tokensMinted;
+      truffleAssert.eventEmitted(mintTx, 'Minted', ev => {
+        tokensMinted = web3.utils.toBN(ev.mintvalues[3].toString());
+        return true;
+      });
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const exceedingAmount = collateralAmount
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        tokensMinted,
+        collateralAmount.add(netTotCollatAmount).add(exceedingAmount),
+        netTotCollatAmount,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        tokensMinted,
+        collateralAmount.add(netTotCollatAmount).add(exceedingAmount),
+        netTotCollatAmount,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can redeem', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
+        feePercentageWei,
+        tokensAmount,
+        price,
+      );
+      const redeemParams = {
+        numTokens: tokensAmount.toString(),
+        minCollateral: '0',
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await syntTokenContract.approve(poolAddress, tokensAmount, {
+        from: sender,
+      });
+      const redeemTx = await poolContract.redeem(redeemParams, {
+        from: sender,
+      });
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(tokensAmount),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(redeemReturnValues.netAmount),
+        netTotCollatAmount,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(tokensAmount),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(redeemReturnValues.netAmount),
+        netTotCollatAmount,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can add liquidity', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const lp = LPs[getRandomInt(0, lpNumber)];
+      const collAmount = getRandomInt(1, 1000);
+      const collateralToDeposit = web3.utils
+        .toBN(collAmount.toString())
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(lp, collateralAddress, collateralToDeposit);
+      await collateralContract.approve(poolAddress, collateralToDeposit, {
+        from: lp,
+      });
+      const addLiquidityTx = await poolContract.addLiquidity(
+        collateralToDeposit,
+        {
+          from: lp,
+        },
+      );
+      let collateralAdded;
+      truffleAssert.eventEmitted(addLiquidityTx, 'DepositedLiquidity', ev => {
+        collateralAdded = ev.collateralDeposited.toString();
+        return true;
+      });
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .add(web3.utils.toBN(collateralAdded)),
+        netTotCollatAmount.add(web3.utils.toBN(collateralAdded)),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .add(web3.utils.toBN(collateralAdded)),
+        netTotCollatAmount.add(web3.utils.toBN(collateralAdded)),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can remove liquidity', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const lp = LPs[getRandomInt(0, lpNumber)];
+      let result = await poolContract.positionLPInfo.call(lp);
+      const prevCollDeposited = result[0];
+      const maxCapacity = result[3];
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const retValues = await calculateFeeAndCollateralForRedeem(
+        '0',
+        web3.utils.toBN(maxCapacity),
+        price,
+      );
+      const collateralToWithdraw = retValues.collAmount
+        .mul(web3.utils.toBN(result[2]))
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(web3.utils.toBN('2'));
+      const removeLiquidityTx = await poolContract.removeLiquidity(
+        collateralToWithdraw,
+        {
+          from: lp,
+        },
+      );
+      let collateralRemoved;
+      truffleAssert.eventEmitted(
+        removeLiquidityTx,
+        'WithdrawnLiquidity',
+        ev => {
+          collateralRemoved = ev.collateralWithdrawn.toString();
+          return true;
+        },
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(collateralRemoved)),
+        netTotCollatAmount.sub(web3.utils.toBN(collateralRemoved)),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(collateralRemoved)),
+        netTotCollatAmount.sub(web3.utils.toBN(collateralRemoved)),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can liquidate', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const exceedCollPcg = lessColl.coverage
+        .mul(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(
+          web3.utils
+            .toBN(overCollateralRequirement)
+            .add(web3.utils.toBN(Math.pow(10, 18).toString())),
+        );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(exceedCollPcg)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('101'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      const liquidationTokens = web3.utils
+        .toBN(lessColl.tokens)
+        .div(web3.utils.toBN('3'));
+      await syntTokenContract.approve(poolContract.address, liquidationTokens, {
+        from: sender,
+      });
+      const coversionResult = await calculateFeeAndCollateralForRedeem(
+        '0',
+        liquidationTokens,
+        newPrice.toString(),
+      );
+      const liquidationTx = await poolContract.liquidate(
+        LPs[lessColl.index],
+        liquidationTokens,
+        {
+          from: sender,
+        },
+      );
+      let bonusAmount;
+      truffleAssert.eventEmitted(liquidationTx, 'Liquidated', ev => {
+        bonusAmount = ev.bonusAmount.toString();
+        return true;
+      });
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(liquidationTokens),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(liquidationTokens),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+    });
+  });
+
+  describe('Should work with lending module with fees on deposit', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let lendingToken;
+    let lendingTokenAddress;
+    let newLendingModule;
+    let newLendingModuleAddress;
+    let netTotCollatAmount;
+    const newLendingModuleName = 'Test Lending';
+    const depBonusPrcg = web3.utils.toWei('0.017');
+    const withFeePrcg = web3.utils.toWei('0.013');
+    beforeEach(async () => {
+      await deployer.deployPool(poolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      poolContract = await SynthereumMultiLpLiquidityPool.at(poolAddress);
+      for (let j = 0; j < lpNumber; j++) {
+        await poolContract.registerLP(LPs[j], {
+          from: maintainer,
+        });
+        await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+        await collateralContract.approve(poolAddress, LPsCollateral[j], {
+          from: LPs[j],
+        });
+        const activateTx = await poolContract.activateLP(
+          LPsCollateral[j],
+          LPsOverCollateral[j],
+          {
+            from: LPs[j],
+          },
+        );
+        totalCollateral = totalCollateral.add(LPsCollateral[j]);
+        await network.provider.send('evm_increaseTime', [3600]);
+      }
+      netTotCollatAmount = totalCollateral.sub(
+        totalCollateral
+          .mul(web3.utils.toBN(depBonusPrcg))
+          .div(web3.utils.toBN(preciseUnit.toString())),
+      );
+      syntTokenAddress = await poolContract.syntheticToken.call();
+      syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+      lendingToken = await LendingTestnetERC20.new(
+        'Lending Test',
+        'LNT',
+        18,
+        collateralAddress,
+        lendingManagerAddress,
+      );
+      lendingTokenAddress = lendingToken.address;
+      newLendingModule = await LendingModulelMock.new();
+      newLendingModuleAddress = newLendingModule.address;
+      const econdedLendingArgs = web3.eth.abi.encodeParameters(
+        ['uint256', 'uint256', 'bool'],
+        [depBonusPrcg, withFeePrcg, false],
+      );
+      const lendingInfo = {
+        lendingModule: newLendingModuleAddress,
+        args: econdedLendingArgs,
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+      await managerContract.switchLendingModule(
+        [poolAddress],
+        [newLendingModuleName],
+        [lendingTokenAddress],
+        { from: maintainer },
+      );
+    });
+    afterEach(async () => {
+      totalCollateral = web3.utils.toBN('0');
+      netTotCollatAmount = web3.utils.toBN('0');
+      const lendingInfo = {
+        lendingModule: ZERO_ADDRESS,
+        args: '0x',
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+    });
+    it('Can mint', async () => {
+      const collateralAmount = web3.utils
+        .toBN('300')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      let mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      let mintTx = await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      let tokensMinted;
+      truffleAssert.eventEmitted(mintTx, 'Minted', ev => {
+        tokensMinted = web3.utils.toBN(ev.mintvalues[3].toString());
+        return true;
+      });
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const exceedingAmount = collateralAmount
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        tokensMinted,
+        collateralAmount.add(netTotCollatAmount).sub(exceedingAmount),
+        netTotCollatAmount,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        tokensMinted,
+        collateralAmount.add(netTotCollatAmount).sub(exceedingAmount),
+        netTotCollatAmount,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can redeem', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
+        feePercentageWei,
+        tokensAmount,
+        price,
+      );
+      const redeemParams = {
+        numTokens: tokensAmount.toString(),
+        minCollateral: '0',
+        expiration: maxTime.toString(),
+        recipient: receiver,
+      };
+      await syntTokenContract.approve(poolAddress, tokensAmount, {
+        from: sender,
+      });
+      const redeemTx = await poolContract.redeem(redeemParams, {
+        from: sender,
+      });
+      const exceedingAmount = collateralAmount
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(tokensAmount),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(exceedingAmount)
+          .sub(web3.utils.toBN(redeemReturnValues.netAmount)),
+        netTotCollatAmount,
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(tokensAmount),
+        collateralAmount
+          .add(netTotCollatAmount)
+          .sub(exceedingAmount)
+          .sub(web3.utils.toBN(redeemReturnValues.netAmount)),
+        netTotCollatAmount,
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can add liquidity', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const lp = LPs[getRandomInt(0, lpNumber)];
+      const collAmount = getRandomInt(1, 1000);
+      const collateralToDeposit = web3.utils
+        .toBN(collAmount.toString())
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(lp, collateralAddress, collateralToDeposit);
+      await collateralContract.approve(poolAddress, collateralToDeposit, {
+        from: lp,
+      });
+      const addLiquidityTx = await poolContract.addLiquidity(
+        collateralToDeposit,
+        {
+          from: lp,
+        },
+      );
+      let collateralAdded;
+      truffleAssert.eventEmitted(addLiquidityTx, 'DepositedLiquidity', ev => {
+        collateralAdded = ev.collateralDeposited.toString();
+        return true;
+      });
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const exceedingAmount = collateralAmount
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .sub(exceedingAmount)
+          .add(netTotCollatAmount)
+          .add(web3.utils.toBN(collateralAdded)),
+        netTotCollatAmount.add(web3.utils.toBN(collateralAdded)),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .sub(exceedingAmount)
+          .add(netTotCollatAmount)
+          .add(web3.utils.toBN(collateralAdded)),
+        netTotCollatAmount.add(web3.utils.toBN(collateralAdded)),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can remove liquidity', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const lp = LPs[getRandomInt(0, lpNumber)];
+      let result = await poolContract.positionLPInfo.call(lp);
+      const prevCollDeposited = result[0];
+      const maxCapacity = result[3];
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const retValues = await calculateFeeAndCollateralForRedeem(
+        '0',
+        web3.utils.toBN(maxCapacity),
+        price,
+      );
+      const collateralToWithdraw = retValues.collAmount
+        .mul(web3.utils.toBN(result[2]))
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(web3.utils.toBN('2'));
+      const removeLiquidityTx = await poolContract.removeLiquidity(
+        collateralToWithdraw,
+        {
+          from: lp,
+        },
+      );
+      let collateralRemoved;
+      truffleAssert.eventEmitted(
+        removeLiquidityTx,
+        'WithdrawnLiquidity',
+        ev => {
+          collateralRemoved = ev.collateralWithdrawn.toString();
+          return true;
+        },
+      );
+      const exceedingAmount = collateralAmount
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .sub(exceedingAmount)
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(collateralRemoved)),
+        netTotCollatAmount.sub(web3.utils.toBN(collateralRemoved)),
+        price,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens),
+        collateralAmount
+          .sub(exceedingAmount)
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(collateralRemoved)),
+        netTotCollatAmount.sub(web3.utils.toBN(collateralRemoved)),
+        price,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can liquidate', async () => {
+      const collateralAmount = web3.utils
+        .toBN('200')
+        .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+      await getCollateralToken(sender, collateralAddress, collateralAmount);
+      await collateralContract.approve(poolAddress, collateralAmount, {
+        from: sender,
+      });
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: collateralAmount.toString(),
+        expiration: maxTime.toString(),
+        recipient: sender,
+      };
+      await poolContract.mint(mintParams, {
+        from: sender,
+      });
+      const mintTokens = await poolContract.totalSyntheticTokens.call();
+      const lessColl = await getLessCollateralizedLP(poolContract, LPs);
+      const exceedCollPcg = lessColl.coverage
+        .mul(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .div(
+          web3.utils
+            .toBN(overCollateralRequirement)
+            .add(web3.utils.toBN(Math.pow(10, 18).toString())),
+        );
+      const price = await priceFeedContract.getLatestPrice.call(
+        priceIdenitiferBytes,
+      );
+      const newPrice = web3.utils
+        .toBN(price)
+        .mul(exceedCollPcg)
+        .div(web3.utils.toBN(Math.pow(10, 18).toString()))
+        .mul(web3.utils.toBN('101'))
+        .div(web3.utils.toBN('100'));
+      await setPoolPrice(web3.utils.fromWei(newPrice));
+      const liquidationTokens = web3.utils
+        .toBN(lessColl.tokens)
+        .div(web3.utils.toBN('3'));
+      await syntTokenContract.approve(poolContract.address, liquidationTokens, {
+        from: sender,
+      });
+      const coversionResult = await calculateFeeAndCollateralForRedeem(
+        '0',
+        liquidationTokens,
+        newPrice.toString(),
+      );
+      const liquidationTx = await poolContract.liquidate(
+        LPs[lessColl.index],
+        liquidationTokens,
+        {
+          from: sender,
+        },
+      );
+      let bonusAmount;
+      truffleAssert.eventEmitted(liquidationTx, 'Liquidated', ev => {
+        bonusAmount = ev.bonusAmount.toString();
+        return true;
+      });
+      const exceedingAmount = collateralAmount
+        .mul(web3.utils.toBN(depBonusPrcg))
+        .div(web3.utils.toBN(preciseUnit.toString()));
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(liquidationTokens),
+        collateralAmount
+          .sub(exceedingAmount)
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        0,
+      );
+      await checkGlobalData(
+        poolContract,
+        LPs,
+        web3.utils.toBN(mintTokens).sub(liquidationTokens),
+        collateralAmount
+          .sub(exceedingAmount)
+          .add(netTotCollatAmount)
+          .sub(web3.utils.toBN(bonusAmount))
+          .sub(web3.utils.toBN(coversionResult.collAmount)),
+        '0',
+        newPrice,
+        getRandomInt(3600, 24 * 7 * 3600),
+      );
+      await resetOracle();
+    });
+  });
 });
