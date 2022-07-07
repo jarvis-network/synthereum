@@ -65,6 +65,24 @@ contract OnChainLiquidityRouterV2 is
     uint256 outputAmount,
     uint256 collateralAmountRefunded
   );
+  event SwapAndMint(
+    address inputToken,
+    address outputToken,
+    address collateralToken,
+    uint256 inputAmount,
+    uint256 outputAmount,
+    uint256 collateralAmountRefunded,
+    address recipient
+  );
+  event RedeemAndSwap(
+    address inputToken,
+    address outputToken,
+    address collateralToken,
+    uint256 inputAmount,
+    uint256 outputAmount,
+    uint256 collateralAmountRefunded,
+    address recipient
+  );
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
@@ -155,13 +173,14 @@ contract OnChainLiquidityRouterV2 is
 
     returnValues = abi.decode(result, (ReturnValues));
 
-    emit Swap(
+    emit SwapAndMint(
       returnValues.inputToken,
       returnValues.outputToken,
       returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
-      returnValues.collateralAmountRefunded
+      returnValues.collateralAmountRefunded,
+      mintParams.recipient
     );
   }
 
@@ -203,13 +222,14 @@ contract OnChainLiquidityRouterV2 is
 
     returnValues = abi.decode(result, (ReturnValues));
 
-    emit Swap(
+    emit RedeemAndSwap(
       returnValues.inputToken,
       returnValues.outputToken,
       returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
-      returnValues.collateralAmountRefunded
+      returnValues.collateralAmountRefunded,
+      recipient
     );
   }
 
