@@ -1,17 +1,17 @@
 [
   {
-    "contractName": "OnChainLiquidityRouterV2",
-    "address": "0x49E88C9036e4F888069a354465F1738B372DF03B",
-    "transactionHash": "0x886d28ba5f66efab0ec8396f345be91c39ae3931ca654f0c75f4a00fce5b813e"
-  },
-  {
     "contractName": "FixedRateSwap",
     "address": "0xDA03443cab512e55D672d725B7Fa98275009DdCc",
     "transactionHash": "0xa6bdcc4c3da7ab149104c9180e0914e41c8afc898d29898cfa6258c3ad65c9de"
   },
   {
+    "contractName": "OnChainLiquidityRouterV2",
+    "address": "0xAF6F4d0Ac41D2b7488726fDc28EBE7A58fa3A442",
+    "transactionHash": "0xbce66390029b49d14661b1973fbbe26ae0933d3a01c278ec4ad32d50ab8a6516"
+  },
+  {
     "contractName": "OCLRV2UniswapV2",
-    "address": "0x6CAd830F1A839761E6ab6Ef4d3b7F10422058B9D",
-    "transactionHash": "0x34147e8e0eb686b33d05e7ddc02414712b6edeffe7db8e49d142b96146e0c8e1"
+    "address": "0xa9A4F9B42bb6cf0DBFc6A8D8C4Ee10f4e2D1D27b",
+    "transactionHash": "0x283da9c7885ab1327a3cb97313d6acb841808b06b76710c1f3104f03383ce432"
   }
 ]
