@@ -668,7 +668,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -676,7 +676,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
 
@@ -754,7 +755,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       let jSynthOut;
       let inputAmount;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
         jSynthOut = ev.outputAmount;
         inputAmount = ev.inputAmount;
         return (
@@ -766,7 +767,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
 
@@ -837,7 +839,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let DAIOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
         DAIOut = ev.outputAmount;
         return (
           ev.outputAmount > web3Utils.toBN(0) &&
@@ -845,7 +847,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
 
@@ -917,7 +920,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let collateralRefunded;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
         collateralRefunded = ev.collateralAmountRefunded;
         return (
           ev.outputAmount.toString() == expectedOutput.toString() &&
@@ -925,7 +928,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
+          ev.recipient == user
         );
       });
 
@@ -1180,7 +1184,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -1189,7 +1193,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.outputToken.toLowerCase() ==
             jEURAddress.toLowerCase().toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
 
@@ -1259,7 +1264,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut, ethInput;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
         jSynthOut = ev.outputAmount;
         ethInput = ev.inputAmount;
         return (
@@ -1271,7 +1276,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
       let EthBalanceAfter = await web3.eth.getBalance(user);
@@ -1334,7 +1340,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const ethFee = await getTxFee(tx);
 
       let EthOutput;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
         EthOutput = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -1342,7 +1348,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
 
@@ -1416,7 +1423,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const ethFee = await getTxFee(tx);
 
       let collateralRefunded;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
         collateralRefunded = ev.collateralAmountRefunded;
         return (
           ev.outputAmount.toString() == expectedOutput.toString() &&
@@ -1424,7 +1431,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
+          ev.recipient == user
         );
       });
 
@@ -1560,7 +1568,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const ethFee = await getTxFee(tx);
 
       let EthOutput;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
         EthOutput = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -1568,7 +1576,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.recipient == user
         );
       });
 
