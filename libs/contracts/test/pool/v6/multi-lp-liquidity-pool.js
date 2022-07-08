@@ -857,6 +857,22 @@ contract('MultiLPLiquidityPool', function (accounts) {
         'LP already active',
       );
     });
+    it('Can revert if get info of a not active LP', async () => {
+      await poolContract.registerLP(LPs[0], {
+        from: maintainer,
+      });
+      await getCollateralToken(LPs[0], collateralAddress, LPsCollateral[0]);
+      await collateralContract.approve(poolAddress, LPsCollateral[0], {
+        from: LPs[0],
+      });
+      await poolContract.activateLP(LPsCollateral[0], LPsOverCollateral[0], {
+        from: LPs[0],
+      });
+      await truffleAssert.reverts(
+        poolContract.positionLPInfo.call(genericSender),
+        'LP not active',
+      );
+    });
   });
 
   describe('Should mint', async () => {
@@ -3120,6 +3136,12 @@ contract('MultiLPLiquidityPool', function (accounts) {
         { from: maintainer },
       );
     });
+    it('Can revert if migrate funds is not called by the lending manager', async () => {
+      await truffleAssert.reverts(
+        poolContract.migrateTotalFunds(receiver, { from: genericSender }),
+        'Sender must be the lending manager',
+      );
+    });
   });
 
   describe('Should return trading info in mint operation', async () => {
@@ -3499,6 +3521,31 @@ contract('MultiLPLiquidityPool', function (accounts) {
         totalCollateral.sub(removingColl),
         price,
         getRandomInt(3600, 24 * 7 * 3600),
+      );
+    });
+    it('Can revert if switch function is not called by the manager', async () => {
+      const depBonusPrcg = web3.utils.toWei('0.01');
+      const withFeePrcg = web3.utils.toWei('0.007');
+      const econdedLendingArgs = web3.eth.abi.encodeParameters(
+        ['uint256', 'uint256', 'bool'],
+        [depBonusPrcg, withFeePrcg, false],
+      );
+      const lendingInfo = {
+        lendingModule: newLendingModuleAddress,
+        args: econdedLendingArgs,
+      };
+      await lendingManagerContract.setLendingModule(
+        newLendingModuleName,
+        lendingInfo,
+        { from: maintainer },
+      );
+      await truffleAssert.reverts(
+        poolContract.switchLendingModule(
+          newLendingModuleName,
+          lendingTokenAddress,
+          { from: maintainer },
+        ),
+        'Sender must be the Synthereum manager',
       );
     });
   });
