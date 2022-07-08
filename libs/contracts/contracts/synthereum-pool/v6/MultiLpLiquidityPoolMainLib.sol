@@ -961,6 +961,7 @@ library SynthereumMultiLpLiquidityPoolMainLib {
 
   /**
    * @notice Returns the LP parametrs info
+   * @notice Mint, redeem and intreest shares are round down (division dust not included)
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _lp Address of the LP
    * @param _finder Synthereum finder

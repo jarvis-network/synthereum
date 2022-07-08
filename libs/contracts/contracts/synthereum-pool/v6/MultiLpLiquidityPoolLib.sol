@@ -1170,17 +1170,19 @@ library SynthereumMultiLpLiquidityPoolLib {
         ? lpPosition.actualCollateralAmount + _tempMigrationArgs.shareAmount
         : lpPosition.actualCollateralAmount - _tempMigrationArgs.shareAmount;
       _tempMigrationArgs.remainingAmount -= _tempMigrationArgs.shareAmount;
-      (_tempMigrationArgs.isOvercollateralized, ) = _isOvercollateralizedLP(
-        lpPosition.actualCollateralAmount,
-        _overCollateralRequirement,
-        lpPosition.tokensCollateralized,
-        _price,
-        _collateralDecimals
-      );
-      require(
-        _tempMigrationArgs.isOvercollateralized,
-        'LP below collateral requirement level'
-      );
+      if (j != _mostFundedIndex) {
+        (_tempMigrationArgs.isOvercollateralized, ) = _isOvercollateralizedLP(
+          lpPosition.actualCollateralAmount,
+          _overCollateralRequirement,
+          lpPosition.tokensCollateralized,
+          _price,
+          _collateralDecimals
+        );
+        require(
+          _tempMigrationArgs.isOvercollateralized,
+          'LP below collateral requirement level'
+        );
+      }
     }
 
     lpPosition = _positionsCache[_mostFundedIndex].lpPosition;

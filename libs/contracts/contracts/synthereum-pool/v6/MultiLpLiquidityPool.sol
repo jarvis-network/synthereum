@@ -514,6 +514,7 @@ contract SynthereumMultiLpLiquidityPool is
 
   /**
    * @notice Returns the LP parametrs info
+   * @notice Mint, redeem and intreest shares are round down (division dust not included)
    * @param _lp Address of the LP
    * @return info Info of the input LP (see LPInfo struct)
    */

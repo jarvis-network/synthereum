@@ -322,7 +322,9 @@ interface ISynthereumMultiLpLiquidityPool is ITypology, ISynthereumDeployment {
 
   /**
    * @notice Returns the LP parametrs info
-   * @return info Info of the input lp (see LPInfo struct)
+   * @notice Mint, redeem and intreest shares are round down (division dust not included)
+   * @param _lp Address of the LP
+   * @return info Info of the input LP (see LPInfo struct)
    */
   function positionLPInfo(address _lp)
     external
