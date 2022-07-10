@@ -29,6 +29,9 @@ const SynthereumIdentifierWhitelist = artifacts.require(
 const SynthereumLiquidityPoolLib = artifacts.require(
   'SynthereumLiquidityPoolLib',
 );
+const SynthereumMultiLpLiquidityPool = artifacts.require(
+  'SynthereumMultiLpLiquidityPool',
+);
 const SynthereumLiquidityPoolFactory = artifacts.require(
   'SynthereumLiquidityPoolFactory',
 );
@@ -46,6 +49,11 @@ const SynthereumSyntheticTokenPermitFactory = artifacts.require(
 const SynthereumTrustedForwarder = artifacts.require(
   'SynthereumTrustedForwarder',
 );
+const {
+  encodeMultiLpLiquidityPool,
+  encodeMultiLpLiquidityPoolMigration,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
+const PoolV6Data = require('../../data/test/poolV6.json');
 
 contract('Deployer', function (accounts) {
   let collateralAddress;
@@ -91,8 +99,8 @@ contract('Deployer', function (accounts) {
   let forwarderInstance;
 
   before(async () => {
-    collateralAddress = (await TestnetERC20.new('Testnet token', 'USDC', 6))
-      .address;
+    const networkId = await web3.eth.net.getId();
+    collateralAddress = PoolV6Data[networkId].collateral;
     mockAggregator = await MockAggregator.new(8, 120000000);
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
     await synthereumChainlinkPriceFeed.setPair(
@@ -341,6 +349,154 @@ contract('Deployer', function (accounts) {
           from: maintainer,
         }),
         'Wrong version in deployment',
+      );
+    });
+  });
+
+  describe('Should migrate pool', () => {
+    let poolDataPayload;
+    const migratePoolVersion = 6;
+    beforeEach(async () => {
+      const multiLpRoles = {
+        admin,
+        maintainer,
+      };
+      const overCollateralRequirement = web3.utils.toWei('0.05');
+      const lendingId = 'AaveV3';
+      const daoInterestShare = web3.utils.toWei('0.1');
+      const jrtBuybackShare = web3.utils.toWei('0.6');
+      poolDataPayload = encodeMultiLpLiquidityPool(
+        migratePoolVersion,
+        collateralAddress,
+        syntheticName,
+        syntheticSymbol,
+        ZERO_ADDRESS,
+        multiLpRoles,
+        feePercentage,
+        priceFeedIdentifier,
+        overCollateralRequirement,
+        liquidationReward,
+        lendingId,
+        ZERO_ADDRESS,
+        daoInterestShare,
+        jrtBuybackShare,
+      );
+    });
+    it('Can migrate pool', async () => {
+      const pool = await deployerInstance.deployPool.call(
+        migratePoolVersion,
+        poolDataPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPool(migratePoolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      const migrationPayload = encodeMultiLpLiquidityPoolMigration(
+        pool,
+        migratePoolVersion,
+        '0x',
+      );
+      const newPool = await deployerInstance.migratePool.call(
+        pool,
+        migratePoolVersion,
+        migrationPayload,
+        {
+          from: maintainer,
+        },
+      );
+      const migrationTx = await deployerInstance.migratePool(
+        pool,
+        migratePoolVersion,
+        migrationPayload,
+        {
+          from: maintainer,
+        },
+      );
+      truffleAssert.eventEmitted(migrationTx, 'PoolMigrated', ev => {
+        return (
+          ev.migratedPool == pool &&
+          ev.poolVersion == migratePoolVersion &&
+          ev.newPool == newPool
+        );
+      });
+      //Check roles of synth token
+      const liquidityPool = await SynthereumMultiLpLiquidityPool.at(pool);
+      const synthTokenAddress = await liquidityPool.syntheticToken.call();
+      const synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      const tokenAdmins = await synthTokenInstance.getAdminMembers.call();
+      assert.equal(
+        tokenAdmins.length,
+        1,
+        'Wrong number of admins for the synthetic token',
+      );
+      assert.equal(tokenAdmins[0], manager, 'Manager is not the token admin');
+      const minters = await synthTokenInstance.getMinterMembers.call();
+      assert.equal(
+        minters.length,
+        1,
+        'Wrong number of minters for the synthetic token',
+      );
+      assert.equal(minters[0], newPool, 'Pool is not the token minter');
+      const burners = await synthTokenInstance.getBurnerMembers.call();
+      assert.equal(
+        burners.length,
+        1,
+        'Wrong number of burners for the synthetic token',
+      );
+      assert.equal(burners[0], newPool, 'Pool is not the token burner');
+    });
+    it('Can revert if the caller of the migration is not the maintainer', async () => {
+      const pool = await deployerInstance.deployPool.call(
+        migratePoolVersion,
+        poolDataPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPool(migratePoolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      const migrationPayload = encodeMultiLpLiquidityPoolMigration(
+        pool,
+        migratePoolVersion,
+        '0x',
+      );
+      await truffleAssert.reverts(
+        deployerInstance.migratePool(
+          pool,
+          migratePoolVersion,
+          migrationPayload,
+          {
+            from: firstWrongAddress,
+          },
+        ),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can revert if the pool migrating from is not correct', async () => {
+      const pool = await deployerInstance.deployPool.call(
+        migratePoolVersion,
+        poolDataPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPool(migratePoolVersion, poolDataPayload, {
+        from: maintainer,
+      });
+      const migrationPayload = encodeMultiLpLiquidityPoolMigration(
+        pool,
+        migratePoolVersion,
+        '0x',
+      );
+      await truffleAssert.reverts(
+        deployerInstance.migratePool(
+          firstWrongAddress,
+          migratePoolVersion,
+          migrationPayload,
+          {
+            from: maintainer,
+          },
+        ),
+        'Wrong migration pool',
       );
     });
   });
