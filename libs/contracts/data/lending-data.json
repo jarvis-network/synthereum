@@ -3,6 +3,11 @@
     "AaveV3": {
       "moneyManager": "0xEce3383269ccE0B2ae66277101996b58c482817B",
       "isEnabled": true
+    },
+    "SwapModules": {
+      "uniV2": true,
+      "balancer": true,
+      "collateral": "0xF61Cffd6071a8DB7cD5E8DF1D3A5450D9903cF1c"
     }
   },
   "137": {
@@ -12,7 +17,8 @@
     },
     "SwapModules": {
       "uniV2": true,
-      "balancer": true
+      "balancer": true,
+      "collateral": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
     }
   }
 }

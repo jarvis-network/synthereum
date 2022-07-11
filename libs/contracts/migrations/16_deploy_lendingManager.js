@@ -137,6 +137,16 @@ async function migrate(deployer, network, accounts) {
       'UniswapV2 Module deployed at:',
       univ2SwapModule.options.address,
     );
+    await lendingManager.methods
+      .addSwapProtocol(univ2SwapModule.options.address)
+      .send({ from: maintainer });
+    await lendingManager.methods
+      .setSwapModule(
+        lendingData[networkId].SwapModules.collateral,
+        univ2SwapModule.options.address,
+      )
+      .send({ from: maintainer });
+    console.log('UniswapV2 swap module added to LendingManager');
   }
   if (lendingData[networkId]?.SwapModules?.balancer ?? false) {
     await deploy(web3, deployer, network, BalancerJRTSwapModule, {
@@ -148,5 +158,15 @@ async function migrate(deployer, network, accounts) {
       '@jarvis-network/synthereum-contracts',
     );
     console.log('Balancer Module deployed at:', balancerModule.options.address);
+    await lendingManager.methods
+      .addSwapProtocol(balancerModule.options.address)
+      .send({ from: maintainer });
+    await lendingManager.methods
+      .setSwapModule(
+        lendingData[networkId].SwapModules.collateral,
+        balancerModule.options.address,
+      )
+      .send({ from: maintainer });
+    console.log('Balancer swap module added to LendingManager');
   }
 }
