@@ -12,6 +12,7 @@ const SynthereumIdentifierWhitelist = artifacts.require(
   'SynthereumIdentifierWhitelist',
 );
 const TestnetSelfMintingERC20 = artifacts.require('MintableBurnableERC20');
+const IUniswapRouter = artifacts.require('IUniswapV2Router02');
 
 const VaultFactory = artifacts.require('SynthereumMultiLPVaultFactory');
 const Vault = artifacts.require('Vault');
@@ -33,9 +34,37 @@ contract('Lending Vault', accounts => {
   let user4 = accounts[5];
   let user5 = accounts[6];
   let mockInterest = accounts[7];
-  let collateralAllocation = toWei('100');
+  let collateralAllocation = toWei('50', 'gwei');
   let priceIdentifier = toHex('jEUR/USDC');
   const maintainer = accounts[1];
+
+  const getUSDC = async (recipient, collateralAmount) => {
+    let NativeWrapperAddr = data[networkId].NativeWrapper;
+
+    let deadline = (await web3.eth.getBlock('latest')).timestamp + 60000;
+
+    const nativeAmount = web3.utils.toWei('100000');
+    const actualBalance = await web3.eth.getBalance(recipient);
+    const newTotal = web3.utils
+      .toBN(nativeAmount)
+      .add(web3.utils.toBN(actualBalance));
+
+    await network.provider.send('hardhat_setBalance', [
+      recipient,
+      web3.utils.toHex(newTotal.toString()),
+    ]);
+
+    let uniswapInstance = await IUniswapRouter.at(
+      data[networkId].JRTSwapRouter,
+    );
+    await uniswapInstance.swapETHForExactTokens(
+      collateralAmount,
+      [NativeWrapperAddr, USDC.address],
+      recipient,
+      deadline,
+      { from: recipient, value: nativeAmount },
+    );
+  };
 
   before(async () => {
     networkId = await web3.eth.net.getId();
@@ -68,12 +97,12 @@ contract('Lending Vault', accounts => {
     factoryVault = await VaultFactory.new(vault.address, finder.address);
 
     // mint collateral to user
-    await USDC.mint(user1, collateralAllocation);
-    await USDC.mint(user2, collateralAllocation);
-    await USDC.mint(user3, collateralAllocation);
-    await USDC.mint(user4, collateralAllocation);
-    await USDC.mint(user5, collateralAllocation);
-    await USDC.mint(mockInterest, collateralAllocation);
+    await getUSDC(user1, collateralAllocation);
+    await getUSDC(user2, collateralAllocation);
+    await getUSDC(user3, collateralAllocation);
+    await getUSDC(user4, collateralAllocation);
+    await getUSDC(user5, collateralAllocation);
+    await getUSDC(mockInterest, collateralAllocation);
   });
 
   describe('Deployment and initialisation', () => {
@@ -253,7 +282,7 @@ contract('Lending Vault', accounts => {
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         // deposit
-        let collateralDeposit = toWei('50');
+        let collateralDeposit = toWei('5', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user1 });
         let tx = await vault.deposit(collateralDeposit, { from: user1 });
 
@@ -308,7 +337,7 @@ contract('Lending Vault', accounts => {
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         // deposit
-        let collateralDeposit = toWei('60');
+        let collateralDeposit = toWei('10', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user2 });
         let tx = await vault.deposit(collateralDeposit, { from: user2 });
 
@@ -359,7 +388,7 @@ contract('Lending Vault', accounts => {
         ).actualCollateralAmount;
 
         // mock addition of interest to vault position
-        let generatedInterest = toWei('10');
+        let generatedInterest = toWei('10', 'gwei');
         await USDC.approve(pool.address, generatedInterest, {
           from: mockInterest,
         });
@@ -387,7 +416,7 @@ contract('Lending Vault', accounts => {
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
-        let collateralDeposit = toWei('60');
+        let collateralDeposit = toWei('10', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user3 });
         let tx = await vault.deposit(collateralDeposit, { from: user3 });
 
@@ -455,7 +484,7 @@ contract('Lending Vault', accounts => {
       });
       after(async () => {
         // at the end of this suite the position is overcollateralised
-        await pool.setPositionOvercollateralised(false);
+        await pool.setPositionOvercollateralised(true);
       });
 
       let mockUtilization;
