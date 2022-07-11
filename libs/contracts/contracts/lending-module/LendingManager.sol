@@ -80,7 +80,7 @@ contract LendingManager is
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
-    ) = onlyPool();
+    ) = _getPoolInfo();
 
     // delegate call implementation
     bytes memory result =
@@ -127,7 +127,7 @@ contract LendingManager is
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
-    ) = onlyPool();
+    ) = _getPoolInfo();
 
     // delegate call implementation
     bytes memory result =
@@ -181,7 +181,7 @@ contract LendingManager is
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
-    ) = onlyPool();
+    ) = _getPoolInfo();
 
     // retrieve accumulated interest
     uint256 totalInterest =
@@ -336,6 +336,26 @@ contract LendingManager is
     poolStorageManager.setLendingModule(id, lendingInfo);
   }
 
+  function addSwapProtocol(address _swapModule)
+    external
+    override
+    nonReentrant
+    onlyMaintainer
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    poolStorageManager.addSwapProtocol(_swapModule);
+  }
+
+  function removeSwapProtocol(address _swapModule)
+    external
+    override
+    nonReentrant
+    onlyMaintainer
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    poolStorageManager.removeSwapProtocol(_swapModule);
+  }
+
   function setSwapModule(address collateral, address swapModule)
     external
     override
@@ -365,7 +385,7 @@ contract LendingManager is
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo,
       ILendingStorageManager poolStorageManager
-    ) = onlyPool();
+    ) = _getPoolInfo();
 
     uint256 prevDepositedCollateral = poolData.collateralDeposited;
 
@@ -633,7 +653,7 @@ contract LendingManager is
     interestSplit.poolInterest = totalInterestGenerated - daoInterest;
   }
 
-  function onlyPool()
+  function _getPoolInfo()
     internal
     view
     returns (
@@ -644,7 +664,6 @@ contract LendingManager is
   {
     poolStorageManager = getStorageManager();
     (poolData, lendingInfo) = poolStorageManager.getPoolData(msg.sender);
-    require(poolData.lendingModuleId != 0x00, 'Not allowed');
   }
 
   function getStorageManager() internal view returns (ILendingStorageManager) {

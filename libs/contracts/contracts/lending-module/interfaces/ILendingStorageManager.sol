@@ -32,6 +32,18 @@ interface ILendingStorageManager {
     external;
 
   /**
+   * @notice Add a swap module to the whitelist
+   * @param _swapModule Swap module to add
+   */
+  function addSwapProtocol(address _swapModule) external;
+
+  /**
+   * @notice Remove a swap module from the whitelist
+   * @param _swapModule Swap module to remove
+   */
+  function removeSwapProtocol(address _swapModule) external;
+
+  /**
    * @notice sets an address as the swap module associated to a specific collateral
    * @dev the swapModule must implement the IJRTSwapModule interface
    * @param collateral collateral address associated to the swap module
@@ -114,6 +126,16 @@ interface ILendingStorageManager {
   ) external;
 
   /**
+   * @notice Returns info about a supported lending module
+   * @param _id Name of the module
+   * @return lendingInfo Address and bytes associated to the lending mdodule
+   */
+  function getLendingModule(string memory _id)
+    external
+    view
+    returns (LendingInfo memory lendingInfo);
+
+  /**
    * @notice reads PoolStorage of a pool
    * @param pool address of the pool to read storage
    * @return poolData pool struct info
@@ -149,14 +171,20 @@ interface ILendingStorageManager {
     );
 
   /**
+   * @notice Return the list containing every swap module supported
+   * @return List of swap modules
+   */
+  function getSwapModules() external view returns (address[] memory);
+
+  /**
    * @notice reads the JRT Buyback module associated to a collateral
    * @param collateral address of the collateral to retrieve module
-   * @return address interface implementer of the IJRTSwapModule
+   * @return swapModule address of interface implementer of the IJRTSwapModule
    */
   function getCollateralSwapModule(address collateral)
     external
     view
-    returns (address);
+    returns (address swapModule);
 
   /**
    * @notice reads the interest beaaring token address associated to a pool

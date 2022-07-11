@@ -11,13 +11,19 @@ import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
 import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
-  mapping(bytes32 => LendingInfo) public idToLendingInfo;
-  mapping(address => address) collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
-  mapping(address => PoolStorage) public poolStorage; // ie jEUR/USDC pooldata
+  using EnumerableSet for EnumerableSet.AddressSet;
+
+  mapping(bytes32 => LendingInfo) internal idToLendingInfo;
+  EnumerableSet.AddressSet internal swapModules;
+  mapping(address => address) internal collateralToSwapModule; // ie USDC -> JRTSwapUniswap address
+  mapping(address => PoolStorage) internal poolStorage; // ie jEUR/USDC pooldata
 
   ISynthereumFinder immutable synthereumFinder;
 
@@ -50,13 +56,37 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     idToLendingInfo[lendingId] = lendingInfo;
   }
 
-  function setSwapModule(address collateral, address swapModule)
+  function addSwapProtocol(address _swapModule)
     external
     override
     nonReentrant
     onlyLendingManager
   {
-    collateralToSwapModule[collateral] = swapModule;
+    require(_swapModule != address(0), 'Swap module can not be 0x');
+    require(swapModules.add(_swapModule), 'Swap module already supported');
+  }
+
+  function removeSwapProtocol(address _swapModule)
+    external
+    override
+    nonReentrant
+    onlyLendingManager
+  {
+    require(_swapModule != address(0), 'Swap module can not be 0x');
+    require(swapModules.remove(_swapModule), 'Swap module not supported');
+  }
+
+  function setSwapModule(address _collateral, address _swapModule)
+    external
+    override
+    nonReentrant
+    onlyLendingManager
+  {
+    require(
+      swapModules.contains(_swapModule) || _swapModule == address(0),
+      'Swap module not supported'
+    );
+    collateralToSwapModule[_collateral] = _swapModule;
   }
 
   function setShares(
@@ -177,6 +207,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     uint256 daoInterest
   ) external override nonReentrant onlyLendingManager {
     PoolStorage storage poolData = poolStorage[pool];
+    require(poolData.lendingModuleId != 0x00, 'Bad pool');
 
     // update collateral deposit amount of the pool
     poolData.collateralDeposited = collateralDeposited;
@@ -186,6 +217,21 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     poolData.unclaimedDaoCommission = daoInterest;
   }
 
+  function getLendingModule(string memory _id)
+    external
+    view
+    override
+    returns (LendingInfo memory lendingInfo)
+  {
+    bytes32 lendingId = keccak256(abi.encode(_id));
+    require(lendingId != 0x00, 'Wrong module identifier');
+    lendingInfo = idToLendingInfo[lendingId];
+    require(
+      lendingInfo.lendingModule != address(0),
+      'Lending module not supported'
+    );
+  }
+
   function getPoolData(address pool)
     external
     view
@@ -193,6 +239,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     returns (PoolStorage memory poolData, LendingInfo memory lendingInfo)
   {
     poolData = poolStorage[pool];
+    require(poolData.lendingModuleId != 0x00, 'Not existing pool');
     lendingInfo = idToLendingInfo[poolData.lendingModuleId];
   }
 
@@ -203,6 +250,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     returns (PoolStorage memory poolData)
   {
     poolData = poolStorage[pool];
+    require(poolData.lendingModuleId != 0x00, 'Not existing pool');
   }
 
   function getLendingData(address pool)
@@ -215,19 +263,33 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     )
   {
     PoolStorage storage poolData = poolStorage[pool];
-
+    require(poolData.lendingModuleId != 0x00, 'Not existing pool');
     lendingStorage.collateralToken = poolData.collateral;
     lendingStorage.interestToken = poolData.interestBearingToken;
     lendingInfo = idToLendingInfo[poolData.lendingModuleId];
+  }
+
+  function getSwapModules() external view override returns (address[] memory) {
+    uint256 numberOfModules = swapModules.length();
+    address[] memory modulesList = new address[](numberOfModules);
+    for (uint256 j = 0; j < numberOfModules; j++) {
+      modulesList[j] = swapModules.at(j);
+    }
+    return modulesList;
   }
 
   function getCollateralSwapModule(address collateral)
     external
     view
     override
-    returns (address)
+    returns (address swapModule)
   {
-    return collateralToSwapModule[collateral];
+    swapModule = collateralToSwapModule[collateral];
+    require(
+      swapModule != address(0),
+      'Swap module not added for this collateral'
+    );
+    require(swapModules.contains(swapModule), 'Swap module not supported');
   }
 
   function getInterestBearingToken(address pool)
@@ -236,6 +298,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     override
     returns (address interestTokenAddr)
   {
+    require(poolStorage[pool].lendingModuleId != 0x00, 'Not existing pool');
     interestTokenAddr = poolStorage[pool].interestBearingToken;
   }
 
@@ -245,6 +308,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     override
     returns (uint256 jrtBuybackShare, uint256 daoInterestShare)
   {
+    require(poolStorage[pool].lendingModuleId != 0x00, 'Not existing pool');
     jrtBuybackShare = poolStorage[pool].jrtBuybackShare;
     daoInterestShare = poolStorage[pool].daoInterestShare;
   }
@@ -255,6 +319,7 @@ contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
     override
     returns (uint256 collateralAmount)
   {
+    require(poolStorage[pool].lendingModuleId != 0x00, 'Not existing pool');
     collateralAmount = poolStorage[pool].collateralDeposited;
   }
 

@@ -100,6 +100,18 @@ interface ILendingManager {
   ) external;
 
   /**
+   * @notice Add a swap module to the whitelist
+   * @param _swapModule Swap module to add
+   */
+  function addSwapProtocol(address _swapModule) external;
+
+  /**
+   * @notice Remove a swap module from the whitelist
+   * @param _swapModule Swap module to remove
+   */
+  function removeSwapProtocol(address _swapModule) external;
+
+  /**
    * @notice sets an address as the swap module associated to a specific collateral
    * @dev the swapModule must implement the IJRTSwapModule interface
    * @param collateral collateral address associated to the swap module
