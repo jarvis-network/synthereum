@@ -24,7 +24,7 @@ contract SynthereumMultiLPVaultCreator {
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
-    uint256 _overCollateralization
+    uint128 _overCollateralization
   ) public virtual returns (IVault vault) {
     require(bytes(_lpTokenName).length != 0, 'Missing LP token name');
     require(bytes(_lpTokenSymbol).length != 0, 'Missing LP token symbol');

@@ -46,7 +46,7 @@ contract SynthereumMultiLPVaultFactory is
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
-    uint256 _overCollateralization
+    uint128 _overCollateralization
   ) public override nonReentrant returns (IVault vault) {
     ISynthereumMultiLpLiquidityPool pool =
       ISynthereumMultiLpLiquidityPool(_pool);

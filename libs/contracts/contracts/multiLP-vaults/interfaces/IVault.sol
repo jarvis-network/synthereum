@@ -15,7 +15,7 @@ interface IVault {
     uint256 rate
   );
 
-  event LPActivated(uint256 collateralAmount, uint256 overCollateralization);
+  event LPActivated(uint256 collateralAmount, uint128 overCollateralization);
 
   /**
    * @notice Initialize vault as per OZ Clones pattern
@@ -27,7 +27,7 @@ interface IVault {
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
-    uint256 _overCollateralization
+    uint128 _overCollateralization
   ) external;
 
   function deposit(uint256 collateralAmount)
@@ -52,5 +52,5 @@ interface IVault {
   function getOvercollateralisation()
     external
     view
-    returns (uint256 overcollateral);
+    returns (uint128 overcollateral);
 }

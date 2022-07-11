@@ -33,14 +33,14 @@ contract Vault is
   ISynthereumMultiLpLiquidityPool internal pool; // reference pool
   IERC20 internal collateralAsset; // reference pool collateral token
 
-  uint256 internal overCollateralization; // overcollateralization of the vault position
+  uint128 internal overCollateralization; // overcollateralization of the vault position
   bool internal isLpActive; // dictates if first deposit on pool or not
 
   function initialize(
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
-    uint256 _overCollateralization
+    uint128 _overCollateralization
   ) external override nonReentrant initializer() {
     // vault initialisation
     pool = ISynthereumMultiLpLiquidityPool(_pool);
@@ -72,7 +72,7 @@ contract Vault is
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
     if (isLpActive) {
-      netCollateralDeposited = pool.addLiquidity(collateralAmount);
+      (netCollateralDeposited, ) = pool.addLiquidity(collateralAmount);
     } else {
       netCollateralDeposited = pool.activateLP(
         collateralAmount,
@@ -129,7 +129,7 @@ contract Vault is
     _burn(msg.sender, lpTokensAmount);
 
     // withdraw collateral from pool
-    collateralOut = pool.removeLiquidity(collateralEquivalent);
+    (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
 
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(msg.sender, collateralOut);
@@ -180,7 +180,7 @@ contract Vault is
     external
     view
     override
-    returns (uint256 overcollateral)
+    returns (uint128 overcollateral)
   {
     overcollateral = overCollateralization;
   }

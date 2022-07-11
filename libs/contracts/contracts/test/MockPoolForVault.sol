@@ -39,7 +39,7 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
 
   function registerLP(address _lp) external override {}
 
-  function activateLP(uint256 _collateralAmount, uint256 _overCollateralization)
+  function activateLP(uint256 _collateralAmount, uint128 _overCollateralization)
     external
     override
     returns (uint256 collateralDeposited)
@@ -57,7 +57,7 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
   function addLiquidity(uint256 _collateralAmount)
     external
     override
-    returns (uint256 collateralDeposited)
+    returns (uint256 collateralDeposited, uint256 newLpCollateralAmount)
   {
     this.collateralToken().transferFrom(
       msg.sender,
@@ -71,11 +71,15 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
   function removeLiquidity(uint256 _collateralAmount)
     external
     override
-    returns (uint256 collateralWithdrawn)
+    returns (
+      uint256 collateralRemoved,
+      uint256 collateralReceived,
+      uint256 newLpCollateralAmount
+    )
   {
     this.collateralToken().transfer(msg.sender, _collateralAmount);
     position.actualCollateralAmount -= _collateralAmount;
-    collateralWithdrawn = _collateralAmount;
+    collateralReceived = _collateralAmount;
   }
 
   function addInterestToPosition(uint256 _interest) public {
@@ -93,7 +97,10 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     position.isOvercollateralized = isCollateralised;
   }
 
-  function setOvercollateralization(uint256 _overCollateralization) external {
+  function setOvercollateralization(uint128 _overCollateralization)
+    external
+    override
+  {
     position.overCollateralization = _overCollateralization;
   }
 
@@ -121,19 +128,14 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
 
   function updatePositions() external override {}
 
-  function transferToLendingManager(uint256 _bearingAmount) external override {}
+  function transferToLendingManager(uint256 _bearingAmount) external {}
 
-  function setLiquidationReward(uint256 _newLiquidationReward)
+  function setLiquidationReward(uint64 _newLiquidationReward)
     external
     override
   {}
 
-  function setFee(uint256 _fee) external override {}
-
-  function switchLendingModule(
-    string calldata _lendingId,
-    address _bearingToken
-  ) external override {}
+  function setFee(uint64 _fee) external {}
 
   function getRegisteredLPs()
     external
@@ -179,13 +181,6 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
       uint256 lpsCollateral,
       uint256 totalCollateral
     )
-  {}
-
-  function totalAvailableLiquidity()
-    external
-    view
-    override
-    returns (uint256 totalLiquidity)
   {}
 
   function positionLPInfo(address _lp)
@@ -261,6 +256,27 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
   {
     return ISynthereumPriceFeed(priceFeed).getLatestPrice(identifier);
   }
+
+  function getMintTradeInfo(uint256 _collateralAmount)
+    external
+    view
+    override
+    returns (uint256 synthTokensReceived, uint256 feePaid)
+  {}
+
+  function getRedeemTradeInfo(uint256 _syntTokensAmount)
+    external
+    view
+    override
+    returns (uint256 collateralAmountReceived, uint256 feePaid)
+  {}
+
+  function maxTokensCapacity()
+    external
+    view
+    override
+    returns (uint256 maxCapacity)
+  {}
 
   function synthereumFinder()
     external
