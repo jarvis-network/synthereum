@@ -22,6 +22,7 @@
     "start:local-fork": "./scripts/local-fork.sh",
     "deploy:synthereum": "yarn workspace @jarvis-network/synthereum-contracts deploy",
     "add-pool": "yarn workspace @jarvis-network/synthereum-contracts add-pool",
+    "migrate-pool": "yarn workspace @jarvis-network/synthereum-contracts migrate-pool",
     "add-selfMinting-derivative": "yarn workspace @jarvis-network/synthereum-contracts add-selfMinting-derivative",
     "add-fixedRateWrapper": "yarn workspace @jarvis-network/synthereum-contracts add-fixedRateWrapper",
     "deploy:atomic-swap": "yarn workspace @jarvis-network/atomic-swap deploy",
