@@ -93,6 +93,19 @@ contract('AaveV3 Lending module', accounts => {
     );
   };
 
+  const assertWeiDifference = (expectedAmount, actualAmount) => {
+    expectedAmount = toBN(expectedAmount);
+    actualAmount = toBN(actualAmount);
+
+    let assertion = expectedAmount.eq(actualAmount);
+    assertion =
+      assertion || expectedAmount.add(toBN(toWei('1', 'wei'))).eq(actualAmount);
+    assertion =
+      assertion || expectedAmount.sub(toBN(toWei('1', 'wei'))).eq(actualAmount);
+
+    assert.equal(assertion, true);
+  };
+
   before(async () => {
     networkId = await web3.eth.net.getId();
     finder = await SynthereumFinder.deployed();
@@ -454,11 +467,11 @@ contract('AaveV3 Lending module', accounts => {
       let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
 
       // check return values to pool
-      assert.equal(
+      assertWeiDifference(
         returnValues.tokensOut.toString(),
         amountFirstDeposit.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         returnValues.tokensTransferred.toString(),
         amountFirstDeposit.toString(),
       );
@@ -466,19 +479,22 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(returnValues.daoInterest.toString(), '0');
 
       // check tokens have moved correctly
-      assert.equal(
+      assertWeiDifference(
         userUSDCAfter.toString(),
         userUSDCBefore.sub(toBN(amountFirstDeposit)).toString(),
       );
-      assert.equal(userAUSDCBefore.toString(), userAUSDCAfter.toString());
-      assert.equal(
+      assertWeiDifference(
+        userAUSDCBefore.toString(),
+        userAUSDCAfter.toString(),
+      );
+      assertWeiDifference(
         poolAUSDCAfter.toString(),
         poolAUSDCBefore.add(toBN(amountFirstDeposit)).toString(),
       );
-      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         amountFirstDeposit.toString(),
       );
@@ -498,7 +514,7 @@ contract('AaveV3 Lending module', accounts => {
       );
 
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
-      assert.equal(
+      assertWeiDifference(
         userUSDCBefore.toString(),
         toBN(amountMint).sub(toBN(amountFirstDeposit)).toString(),
       );
@@ -537,27 +553,33 @@ contract('AaveV3 Lending module', accounts => {
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
       // check return values to pool
-      assert.equal(returnValues.tokensOut.toString(), amountDeposit.toString());
-      assert.equal(
+      assertWeiDifference(
+        returnValues.tokensOut.toString(),
+        amountDeposit.toString(),
+      );
+      assertWeiDifference(
         returnValues.poolInterest.toString(),
         expectedPoolInterest.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         returnValues.daoInterest.toString(),
         expectedDaoInterest.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         generatedInterest.poolInterest.toString(),
         expectedPoolInterest.toString(),
       );
 
       // check tokens have moved correctly
-      assert.equal(
+      assertWeiDifference(
         userUSDCAfter.toString(),
         userUSDCBefore.sub(toBN(amountDeposit)).toString(),
       );
-      assert.equal(userAUSDCBefore.toString(), userAUSDCAfter.toString());
-      assert.equal(
+      assertWeiDifference(
+        userAUSDCBefore.toString(),
+        userAUSDCAfter.toString(),
+      );
+      assertWeiDifference(
         poolAUSDCAfter.toString(),
         poolAUSDCBefore
           .add(toBN(amountDeposit))
@@ -565,14 +587,14 @@ contract('AaveV3 Lending module', accounts => {
           .add(toBN(returnValues.daoInterest))
           .toString(),
       );
-      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(expectedPoolInterest)
         .add(toBN(amountDeposit))
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
@@ -584,7 +606,7 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
       let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
         .add(
@@ -593,7 +615,8 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(
+
+      assertWeiDifference(
         poolStorage.unclaimedDaoCommission.toString(),
         expectedDaoCommisson,
       );
@@ -660,30 +683,33 @@ contract('AaveV3 Lending module', accounts => {
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
       // check return values to pool
-      assert.equal(
+      assertWeiDifference(
         returnValues.tokensOut.toString(),
         amountWithdraw.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         returnValues.tokensTransferred.toString(),
         amountWithdraw.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         returnValues.poolInterest.toString(),
         expectedPoolInterest.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         returnValues.daoInterest.toString(),
         expectedDaoInterest.toString(),
       );
 
       // check tokens have moved correctly
-      assert.equal(
+      assertWeiDifference(
         userUSDCAfter.toString(),
         userUSDCBefore.add(toBN(returnValues.tokensTransferred)).toString(),
       );
-      assert.equal(userAUSDCBefore.toString(), userAUSDCAfter.toString());
-      assert.equal(
+      assertWeiDifference(
+        userAUSDCBefore.toString(),
+        userAUSDCAfter.toString(),
+      );
+      assertWeiDifference(
         poolAUSDCAfter.toString(),
         poolAUSDCBefore
           .sub(toBN(amountWithdraw))
@@ -691,14 +717,14 @@ contract('AaveV3 Lending module', accounts => {
           .add(toBN(returnValues.daoInterest))
           .toString(),
       );
-      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(expectedPoolInterest)
         .sub(toBN(amountWithdraw))
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
@@ -710,7 +736,7 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.unclaimedDaoJRT.toString(),
         expectedUnclaimedJRT,
       );
@@ -722,8 +748,7 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      console.log(expectedDaoCommisson.toString());
-      assert.equal(
+      assertWeiDifference(
         poolStorage.unclaimedDaoCommission.toString(),
         expectedDaoCommisson,
       );
@@ -798,24 +823,24 @@ contract('AaveV3 Lending module', accounts => {
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
       // check tokens have moved correctly
-      assert.equal(
+      assertWeiDifference(
         commissionUSDCAfter.toString(),
         commissionUSDCBefore.add(toBN(amount)).toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         poolAUSDCAfter.toString(),
         poolAUSDCBefore
           .add(toBN(expectedInterest))
           .sub(toBN(amount))
           .toString(),
       );
-      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(toBN(expectedPoolInterest))
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
@@ -827,16 +852,15 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
       let expectedDaoCommisson = toBN(expectedDaoInterest)
         .mul(toBN(commissionShare))
-        .div(toBN(Math.pow(10, 18)))
-        .toString();
+        .div(toBN(Math.pow(10, 18)));
 
-      assert.equal(
-        poolStorage.unclaimedDaoCommission.toString(),
+      assertWeiDifference(
         expectedDaoCommisson,
+        poolStorage.unclaimedDaoCommission,
       );
     });
 
@@ -961,25 +985,25 @@ contract('AaveV3 Lending module', accounts => {
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
       // check tokens have moved correctly
-      assert.equal(
+      assertWeiDifference(
         receiverJRTAfter.toString(),
         receiverJRTBefore.add(toBN(JRTOut)).toString(),
       );
       // interest has been added to pool
-      assert.equal(
+      assertWeiDifference(
         poolAUSDCAfter.toString(),
         poolAUSDCBefore
           .add(toBN(expectedInterest))
           .sub(toBN(amount))
           .toString(),
       );
-      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(toBN(expectedPoolInterest))
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
@@ -988,7 +1012,7 @@ contract('AaveV3 Lending module', accounts => {
         .mul(toBN(jrtShare))
         .div(toBN(Math.pow(10, 18)))
         .toString();
-      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
       let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
         .add(
@@ -998,7 +1022,10 @@ contract('AaveV3 Lending module', accounts => {
         )
         .toString();
 
-      assert.equal(poolStorage.unclaimedDaoCommission, expectedDaoCommisson);
+      assertWeiDifference(
+        poolStorage.unclaimedDaoCommission,
+        expectedDaoCommisson,
+      );
     });
 
     it('Reverts if msg.sender is not maintainer', async () => {
@@ -1086,17 +1113,17 @@ contract('AaveV3 Lending module', accounts => {
 
       // check return values to pool
       assert.equal(returnValues.tokensOut.toString(), '0');
-      assert.equal(
+      assertWeiDifference(
         returnValues.poolInterest.toString(),
         expectedPoolInterest.toString(),
       );
-      assert.equal(
+      assertWeiDifference(
         returnValues.daoInterest.toString(),
         expectedDaoInterest.toString(),
       );
 
       // check tokens have moved correctly
-      assert.equal(
+      assertWeiDifference(
         poolAUSDCAfter.toString(),
         poolAUSDCBefore
           .add(toBN(returnValues.poolInterest))
@@ -1108,7 +1135,7 @@ contract('AaveV3 Lending module', accounts => {
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(expectedPoolInterest)
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
@@ -1120,7 +1147,7 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
       let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
         .add(
@@ -1129,7 +1156,7 @@ contract('AaveV3 Lending module', accounts => {
             .div(toBN(Math.pow(10, 18))),
         )
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.unclaimedDaoCommission.toString(),
         expectedDaoCommisson,
       );
@@ -1203,11 +1230,11 @@ contract('AaveV3 Lending module', accounts => {
         let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
         // check return values to pool
-        assert.equal(
+        assertWeiDifference(
           returnValues.prevTotalCollateral.toString(),
           poolStorageBefore.collateralDeposited.toString(),
         );
-        assert.equal(
+        assertWeiDifference(
           returnValues.actualTotalCollateral.toString(),
           toBN(poolAUSDCAfter)
             .sub(toBN(expectedDaoInterest))
@@ -1215,7 +1242,7 @@ contract('AaveV3 Lending module', accounts => {
             .sub(toBN(poolStorageBefore.unclaimedDaoJRT))
             .toString(),
         );
-        assert.equal(
+        assertWeiDifference(
           returnValues.poolInterest.toString(),
           expectedPoolInterest.toString(),
         );
@@ -1224,7 +1251,7 @@ contract('AaveV3 Lending module', accounts => {
         let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
           .add(toBN(returnValues.poolInterest))
           .toString();
-        assert.equal(
+        assertWeiDifference(
           poolStorage.poolData.collateralDeposited.toString(),
           expectedCollateral,
         );
@@ -1238,7 +1265,7 @@ contract('AaveV3 Lending module', accounts => {
             expectedDaoInterest.mul(toBN(jrtShare)).div(toBN(Math.pow(10, 18))),
           )
           .toString();
-        assert.equal(
+        assertWeiDifference(
           poolStorage.poolData.unclaimedDaoJRT.toString(),
           expectedUnclaimedJRT,
         );
@@ -1252,7 +1279,7 @@ contract('AaveV3 Lending module', accounts => {
               .div(toBN(Math.pow(10, 18))),
           )
           .toString();
-        assert.equal(
+        assertWeiDifference(
           poolStorage.poolData.unclaimedDaoCommission.toString(),
           expectedDaoCommisson,
         );
