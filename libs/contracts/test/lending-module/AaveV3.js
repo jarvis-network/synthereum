@@ -186,6 +186,16 @@ contract('AaveV3 Lending module', accounts => {
         jrtShare.toString(),
       );
 
+      let expectedShare = await storageManager.getShares(poolMock.address);
+      assert.equal(
+        expectedShare.jrtBuybackShare.toString(),
+        jrtShare.toString(),
+      );
+      assert.equal(
+        expectedShare.daoInterestShare.toString(),
+        daoInterestShare.toString(),
+      );
+
       let expectedBearingToken = await storageManager.getInterestBearingToken.call(
         poolMock.address,
       );
@@ -195,6 +205,11 @@ contract('AaveV3 Lending module', accounts => {
       );
       assert.equal(expectedBearingToken, aUSDC.address);
       assert.equal(moduleBearingToken, aUSDC.address);
+
+      let value = toWei('10');
+      let res = await proxy.interestTokenToCollateral(poolMock.address, value);
+      assert.equal(res.collateralAmount.toString(), value.toString());
+      assert.equal(res.interestTokenAddr, aUSDC.address);
 
       // by not specifying the aToken
       await proxy.setLendingModule('aave-2', lendingInfo, {
@@ -394,7 +409,7 @@ contract('AaveV3 Lending module', accounts => {
         'Not allowed',
       );
       await truffleAssert.reverts(
-        storageManager.migratePool(accounts[5], accounts[6], {
+        storageManager.migratePoolStorage(accounts[5], accounts[6], 0, {
           from: accounts[4],
         }),
         'Not allowed',
@@ -586,7 +601,7 @@ contract('AaveV3 Lending module', accounts => {
 
     it('Reverts if msg.sender is not a registered pool', async () => {
       await truffleAssert.reverts(
-        proxy.deposit(10, user, { from: user }),
+        proxy.deposit(10, { from: user }),
         'Not allowed',
       );
     });
@@ -1285,7 +1300,7 @@ contract('AaveV3 Lending module', accounts => {
         );
 
         // call migration from pool
-        await storageManager.migratePool(poolMock.address, newPool.address, {
+        await proxy.migratePool(poolMock.address, newPool.address, {
           from: maintainer,
         });
 

@@ -164,4 +164,14 @@ contract PoolLendingMock is ISynthereumDeployment {
         interestTokenAmount
       );
   }
+
+  function migrateTotalFunds(address _recipient)
+    external
+    returns (uint256 migrationAmount)
+  {
+    IERC20 bearingToken =
+      IERC20(storageManager.getInterestBearingToken(address(this)));
+    migrationAmount = bearingToken.balanceOf(address(this));
+    bearingToken.safeTransfer(_recipient, migrationAmount);
+  }
 }
