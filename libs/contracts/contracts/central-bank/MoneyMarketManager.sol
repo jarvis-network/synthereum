@@ -52,18 +52,8 @@ contract MoneyMarketManager is
   mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
 
   event RegisteredImplementation(string id, address implementation, bytes args);
-  event MintAndDeposit(
-    address token,
-    string moneyMarketId,
-    uint256 amount,
-    uint256 interestTokenAmount
-  );
-  event RedeemAndBurn(
-    address token,
-    string moneyMarketId,
-    uint256 amount,
-    uint256 interestTokenAmount
-  );
+  event MintAndDeposit(address token, string moneyMarketId, uint256 amount);
+  event RedeemAndBurn(address token, string moneyMarketId, uint256 amount);
   event WithdrawRevenues(
     address token,
     string moneyMarketId,
@@ -135,7 +125,7 @@ contract MoneyMarketManager is
       );
     tokensOut = abi.decode(result, (uint256));
 
-    emit MintAndDeposit(address(token), moneyMarketId, amount, tokensOut);
+    emit MintAndDeposit(address(token), moneyMarketId, amount);
   }
 
   function withdraw(
@@ -180,7 +170,7 @@ contract MoneyMarketManager is
     token.safeIncreaseAllowance(jarvisBrr, burningAmount);
     IJarvisBrrrrr(jarvisBrr).redeem(token, burningAmount);
 
-    emit RedeemAndBurn(address(token), moneyMarketId, burningAmount, amount);
+    emit RedeemAndBurn(address(token), moneyMarketId, burningAmount);
   }
 
   function withdrawRevenue(
