@@ -2,11 +2,11 @@
 
 pragma solidity 0.8.9;
 
-import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
+import {IJarvisBrrMoneyMarket} from '../interfaces/IJarvisBrrMoneyMarket.sol';
 import {
   IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
-import {ICErc20} from './interfaces/ICErc20.sol';
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ICErc20} from '../interfaces/ICErc20.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
