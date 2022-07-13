@@ -174,6 +174,7 @@ contract MoneyMarketManager is
 
   function withdrawRevenue(
     IMintableBurnableERC20 jSynthAsset,
+    address recipient,
     string memory moneyMarketId,
     bytes memory implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
@@ -220,20 +221,20 @@ contract MoneyMarketManager is
       moneyMarketBalances[hashId][address(jSynthAsset)] -= burningAmount;
     }
 
-    jSynthAsset.transfer(msg.sender, revenues);
+    jSynthAsset.transfer(recipient, revenues);
 
     emit WithdrawRevenues(
       address(jSynthAsset),
       moneyMarketId,
       revenues,
-      msg.sender
+      recipient
     );
   }
 
   function getMoneyMarketDeposited(
     address jSynthAsset,
     string memory moneyMarketId
-  ) external override returns (uint256 amount) {
+  ) external view override returns (uint256 amount) {
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
     amount = moneyMarketBalances[hashId][jSynthAsset];
   }

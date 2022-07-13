@@ -53,12 +53,14 @@ interface IMoneyMarketManager {
   /**
    * @notice withdraw generated interest from deposits in money market and sends them to dao
    * @param jSynthAsset address of the jSynth token to get revenues of
+   * @param recipient address of recipient of revenues
    * @param moneyMarketId identifier of the money market implementation contract
    * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return jSynthOut amount of jSynth sent to the DAO
    */
   function withdrawRevenue(
     IMintableBurnableERC20 jSynthAsset,
+    address recipient,
     string memory moneyMarketId,
     bytes memory implementationCallArgs
   ) external returns (uint256 jSynthOut);
@@ -72,5 +74,5 @@ interface IMoneyMarketManager {
   function getMoneyMarketDeposited(
     address jSynthAsset,
     string memory moneyMarketId
-  ) external returns (uint256 amount);
+  ) external view returns (uint256 amount);
 }
