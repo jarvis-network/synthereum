@@ -34,7 +34,7 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     address moneyMarket = abi.decode(extraArgs, (address));
 
     jSynthAsset.safeIncreaseAllowance(moneyMarket, amount);
-    IPool(moneyMarket).deposit(
+    IPool(moneyMarket).supply(
       address(jSynthAsset),
       amount,
       address(this),
