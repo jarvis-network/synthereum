@@ -464,6 +464,7 @@ contract('Jarvis Printer', async accounts => {
       );
       await moneyMarketManager.withdrawRevenue(
         jEURPol,
+        roles.maintainer,
         id,
         implementationCallArgs,
         {
@@ -504,6 +505,7 @@ contract('Jarvis Printer', async accounts => {
       await truffleAssert.reverts(
         moneyMarketManager.withdrawRevenue(
           jEURPol,
+          roles.maintainer,
           id,
           implementationCallArgs,
           {
@@ -516,6 +518,7 @@ contract('Jarvis Printer', async accounts => {
       await truffleAssert.reverts(
         moneyMarketManager.withdrawRevenue(
           jEURPol,
+          roles.maintainer,
           id,
           implementationCallArgs,
           {
@@ -802,6 +805,7 @@ contract('Jarvis Printer', async accounts => {
       );
       await moneyMarketManager.withdrawRevenue(
         jEURPol,
+        roles.maintainer,
         id,
         implementationCallArgs,
         {
@@ -842,6 +846,7 @@ contract('Jarvis Printer', async accounts => {
       await truffleAssert.reverts(
         moneyMarketManager.withdrawRevenue(
           jEURPol,
+          roles.maintainer,
           id,
           implementationCallArgs,
           {
@@ -1112,6 +1117,7 @@ contract('Jarvis Printer', async accounts => {
       );
       await moneyMarketManager.withdrawRevenue(
         jBRL,
+        roles.maintainer,
         id,
         implementationCallArgs,
         {
@@ -1150,16 +1156,28 @@ contract('Jarvis Printer', async accounts => {
 
       //revert check
       await truffleAssert.reverts(
-        moneyMarketManager.withdrawRevenue(jBRL, id, implementationCallArgs, {
-          from: accounts[4],
-        }),
+        moneyMarketManager.withdrawRevenue(
+          jBRL,
+          roles.maintainer,
+          id,
+          implementationCallArgs,
+          {
+            from: accounts[4],
+          },
+        ),
         'Sender must be the maintainer',
       );
 
       await truffleAssert.reverts(
-        moneyMarketManager.withdrawRevenue(jBRL, id, implementationCallArgs, {
-          from: roles.admin,
-        }),
+        moneyMarketManager.withdrawRevenue(
+          jBRL,
+          roles.maintainer,
+          id,
+          implementationCallArgs,
+          {
+            from: roles.admin,
+          },
+        ),
         'Sender must be the maintainer',
       );
     });
