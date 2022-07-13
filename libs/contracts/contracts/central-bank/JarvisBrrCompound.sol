@@ -26,11 +26,12 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
     bytes memory extraArgs,
     bytes memory implementationArgs
   ) external override returns (uint256 tokensOut) {
-    require(jSynthAsset.balanceOf(address(this)) == amount, 'Wrong balance');
+    require(jSynthAsset.balanceOf(address(this)) >= amount, 'Wrong balance');
 
     // initialise compound interest token
     address cTokenAddress = abi.decode(implementationArgs, (address));
     ICErc20 cToken = ICErc20(cTokenAddress);
+    uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
 
     // approve and deposit underlying
     jSynthAsset.safeIncreaseAllowance(cTokenAddress, amount);
@@ -38,10 +39,8 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
     require(success == 0, 'Failed mint');
 
     // calculate the cTokens out
-    uint256 jSynthDecimals = jSynthAsset.decimals();
-    uint256 exchangeRate = cToken.exchangeRateCurrent(); // scaled by the difference in decimals between cToken and underlying
-
-    tokensOut = (amount * (10**jSynthDecimals)) / exchangeRate;
+    uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
+    tokensOut = cTokenBalanceAfter - cTokenBalanceBefore;
   }
 
   function withdraw(
