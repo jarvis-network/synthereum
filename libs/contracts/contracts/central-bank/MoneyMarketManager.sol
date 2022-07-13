@@ -206,12 +206,26 @@ contract MoneyMarketManager is
 
     // send them to dao
     jSynthOut = abi.decode(result, (uint256));
-    jSynthAsset.transfer(msg.sender, jSynthOut);
+
+    // burn eventual withdrawn excess
+    if (jSynthOut > revenues) {
+      address jarvisBrr =
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.JarvisBrrrrr
+        );
+      uint256 burningAmount = jSynthOut - revenues;
+
+      jSynthAsset.safeIncreaseAllowance(jarvisBrr, burningAmount);
+      IJarvisBrrrrr(jarvisBrr).redeem(jSynthAsset, burningAmount);
+      moneyMarketBalances[hashId] -= burningAmount;
+    }
+
+    jSynthAsset.transfer(msg.sender, revenues);
 
     emit WithdrawRevenues(
       address(jSynthAsset),
       moneyMarketId,
-      jSynthOut,
+      revenues,
       msg.sender
     );
   }
