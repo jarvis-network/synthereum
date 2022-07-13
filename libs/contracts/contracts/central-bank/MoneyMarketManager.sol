@@ -30,8 +30,7 @@ contract MoneyMarketManager is
   using SafeERC20 for IMintableBurnableERC20;
   using Address for address;
 
-  mapping(bytes32 => address) public idToMoneyMarketImplementation;
-  mapping(address => bytes) public moneyMarketArgs;
+  mapping(bytes32 => Implementation) public idToImplementation;
   mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
 
   string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes,bytes)';
@@ -44,6 +43,11 @@ contract MoneyMarketManager is
   struct Roles {
     address admin;
     address maintainer;
+  }
+
+  struct Implementation {
+    address implementationAddr;
+    bytes moneyMarketArgs;
   }
 
   modifier onlyMaintainer() {
@@ -78,8 +82,13 @@ contract MoneyMarketManager is
     address implementation,
     bytes memory extraArgs
   ) external override onlyMaintainer nonReentrant {
-    idToMoneyMarketImplementation[keccak256(abi.encode(id))] = implementation;
-    moneyMarketArgs[implementation] = extraArgs;
+    bytes32 implementationId = keccak256(abi.encode(id));
+    require(implementationId != 0x00, 'Wrong module identifier');
+
+    idToImplementation[implementationId] = Implementation(
+      implementation,
+      extraArgs
+    );
 
     emit RegisteredImplementation(id, implementation, extraArgs);
   }
@@ -99,17 +108,17 @@ contract MoneyMarketManager is
 
     // deposit into money market through delegate-call
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    address implementation = idToMoneyMarketImplementation[hashId];
+    Implementation implementation = idToImplementation[hashId];
 
     moneyMarketBalances[hashId][address(token)] += amount;
 
     bytes memory result =
-      implementation.functionDelegateCall(
+      implementation.implementationAddr.functionDelegateCall(
         abi.encodeWithSignature(
           DEPOSIT_SIG,
           address(token),
           amount,
-          moneyMarketArgs[implementation],
+          implementation.moneyMarketArgs,
           implementationCallArgs
         )
       );
@@ -132,19 +141,19 @@ contract MoneyMarketManager is
   {
     // withdraw from money market through delegate call
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    address implementation = idToMoneyMarketImplementation[hashId];
+    Implementation implementation = idToImplementation[hashId];
     require(
       amount <= moneyMarketBalances[hashId][address(token)],
       'Max amount limit'
     );
 
     bytes memory result =
-      implementation.functionDelegateCall(
+      implementation.implementationAddr.functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           address(token),
           amount,
-          moneyMarketArgs[implementation],
+          implementation.moneyMarketArgs,
           implementationCallArgs
         )
       );
@@ -169,14 +178,13 @@ contract MoneyMarketManager is
     bytes memory implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    address implementation = idToMoneyMarketImplementation[hashId];
-    bytes memory args = moneyMarketArgs[implementation];
+    Implementation implementation = idToImplementation[hashId];
 
     // get total balance from money market implementation (deposit + interest)
     uint256 totalBalance =
-      IJarvisBrrMoneyMarket(implementation).getTotalBalance(
+      IJarvisBrrMoneyMarket(implementation.implementationAddr).getTotalBalance(
         address(jSynthAsset),
-        args,
+        implementation.moneyMarketArgs,
         implementationCallArgs
       );
 
@@ -186,12 +194,12 @@ contract MoneyMarketManager is
 
     // withdraw revenues
     bytes memory result =
-      implementation.functionDelegateCall(
+      implementation.implementationAddr.functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           address(jSynthAsset),
           revenues,
-          args,
+          implementation.moneyMarketArgs,
           implementationCallArgs
         )
       );
