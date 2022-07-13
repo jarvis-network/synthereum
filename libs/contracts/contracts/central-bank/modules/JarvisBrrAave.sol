@@ -80,7 +80,7 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     address jSynth,
     bytes calldata args,
     bytes calldata implementationArgs
-  ) external override returns (uint256 totalJSynth) {
+  ) external view override returns (uint256 totalJSynth) {
     IERC20 interestToken = IERC20(interestBearingToken(jSynth, args));
     totalJSynth = interestToken.balanceOf(msg.sender);
   }

@@ -57,9 +57,9 @@ contract JarvisBrrrrr is
     _;
   }
 
-  event Minted(address token, address recipient, uint256 amount);
-  event Redeemed(address token, address recipient, uint256 amount);
-  event NewMaxSupply(address token, uint256 newMaxSupply);
+  event Minted(address indexed token, address recipient, uint256 amount);
+  event Redeemed(address indexed token, address recipient, uint256 amount);
+  event NewMaxSupply(address indexed token, uint256 newMaxSupply);
 
   constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;

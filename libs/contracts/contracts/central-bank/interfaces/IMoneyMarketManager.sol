@@ -7,6 +7,12 @@ import {
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 interface IMoneyMarketManager {
+  // implementation variables
+  struct Implementation {
+    address implementationAddr;
+    bytes moneyMarketArgs;
+  }
+
   /**
    * @notice Registers an address implementing the IJarvisBrrMoneyMarket interface
    * @param id Identifier of the implementation
@@ -67,12 +73,22 @@ interface IMoneyMarketManager {
 
   /**
    * @notice reads the amount of jSynth currently minted + deposited into a money market
-   * @param jSynthAsset address of the jSynth token to get amount
    * @param moneyMarketId identifier of the money market implementation contract
+   * @param jSynthAsset address of the jSynth token to get amount
    * @return amount amount of jSynth currently minted + deposited into moneyMarketId
    */
   function getMoneyMarketDeposited(
-    address jSynthAsset,
-    string calldata moneyMarketId
+    string calldata moneyMarketId,
+    address jSynthAsset
   ) external view returns (uint256 amount);
+
+  /**
+   * @notice reads implementation data of a supported money market
+   * @param moneyMarketId identifier of the money market implementation contract
+   * @return implementation Address of the implementation and global data bytes
+   */
+  function getMoneyMarketImplementation(string calldata moneyMarketId)
+    external
+    view
+    returns (Implementation memory implementation);
 }

@@ -36,20 +36,15 @@ contract MoneyMarketManager is
     address maintainer;
   }
 
-  // implementation variables
-  struct Implementation {
-    address implementationAddr;
-    bytes moneyMarketArgs;
-  }
-
-  string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes,bytes)';
-  string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes,bytes)';
+  string private constant DEPOSIT_SIG = 'deposit(address,uint256,bytes,bytes)';
+  string private constant WITHDRAW_SIG =
+    'withdraw(address,uint256,bytes,bytes)';
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   ISynthereumFinder public immutable synthereumFinder;
 
-  mapping(bytes32 => Implementation) public idToImplementation;
-  mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
+  mapping(bytes32 => Implementation) private idToImplementation;
+  mapping(bytes32 => mapping(address => uint256)) private moneyMarketBalances;
 
   event RegisteredImplementation(
     string indexed id,
@@ -245,10 +240,24 @@ contract MoneyMarketManager is
   }
 
   function getMoneyMarketDeposited(
-    address jSynthAsset,
-    string calldata moneyMarketId
+    string calldata moneyMarketId,
+    address jSynthAsset
   ) external view override returns (uint256 amount) {
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
     amount = moneyMarketBalances[hashId][jSynthAsset];
+  }
+
+  function getMoneyMarketImplementation(string calldata moneyMarketId)
+    external
+    view
+    override
+    returns (Implementation memory implementation)
+  {
+    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    implementation = idToImplementation[hashId];
+    require(
+      implementation.implementationAddr != address(0),
+      'Implementation not supported'
+    );
   }
 }
