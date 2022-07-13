@@ -22,22 +22,13 @@ import {
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract MoneyMarketManager is
-  AccessControlEnumerable,
   IMoneyMarketManager,
-  ReentrancyGuard
+  ReentrancyGuard,
+  AccessControlEnumerable
 {
   using SafeERC20 for IERC20;
   using SafeERC20 for IMintableBurnableERC20;
   using Address for address;
-
-  mapping(bytes32 => Implementation) public idToImplementation;
-  mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
-
-  string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes,bytes)';
-  string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes,bytes)';
-  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
-
-  ISynthereumFinder public immutable synthereumFinder;
 
   // Describe role structure
   struct Roles {
@@ -45,10 +36,40 @@ contract MoneyMarketManager is
     address maintainer;
   }
 
+  // implementation variables
   struct Implementation {
     address implementationAddr;
     bytes moneyMarketArgs;
   }
+
+  string public constant DEPOSIT_SIG = 'deposit(address,uint256,bytes,bytes)';
+  string public constant WITHDRAW_SIG = 'withdraw(address,uint256,bytes,bytes)';
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
+
+  ISynthereumFinder public immutable synthereumFinder;
+
+  mapping(bytes32 => Implementation) public idToImplementation;
+  mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
+
+  event RegisteredImplementation(string id, address implementation, bytes args);
+  event MintAndDeposit(
+    address token,
+    string moneyMarketId,
+    uint256 amount,
+    uint256 interestTokenAmount
+  );
+  event RedeemAndBurn(
+    address token,
+    string moneyMarketId,
+    uint256 amount,
+    uint256 interestTokenAmount
+  );
+  event WithdrawRevenues(
+    address token,
+    string moneyMarketId,
+    uint256 amount,
+    address receiver
+  );
 
   modifier onlyMaintainer() {
     require(
@@ -57,16 +78,6 @@ contract MoneyMarketManager is
     );
     _;
   }
-
-  event RegisteredImplementation(string id, address implementation, bytes args);
-  event MintAndDeposit(address token, string moneyMarketId, uint256 amount);
-  event RedeemAndBurn(address token, string moneyMarketId, uint256 amount);
-  event WithdrawRevenues(
-    address token,
-    string moneyMarketId,
-    uint256 amount,
-    address receiver
-  );
 
   constructor(address _synthereumFinder, Roles memory _roles) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
@@ -78,9 +89,9 @@ contract MoneyMarketManager is
   }
 
   function registerMoneyMarketImplementation(
-    string memory id,
+    string calldata id,
     address implementation,
-    bytes memory extraArgs
+    bytes calldata extraArgs
   ) external override onlyMaintainer nonReentrant {
     bytes32 implementationId = keccak256(abi.encode(id));
     require(implementationId != 0x00, 'Wrong module identifier');
@@ -96,8 +107,8 @@ contract MoneyMarketManager is
   function deposit(
     IMintableBurnableERC20 token,
     uint256 amount,
-    string memory moneyMarketId,
-    bytes memory implementationCallArgs
+    string calldata moneyMarketId,
+    bytes calldata implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 tokensOut) {
     // trigger minting of synths from the printer contract
     address jarvisBrr =
@@ -124,14 +135,14 @@ contract MoneyMarketManager is
       );
     tokensOut = abi.decode(result, (uint256));
 
-    emit MintAndDeposit(address(token), moneyMarketId, tokensOut);
+    emit MintAndDeposit(address(token), moneyMarketId, amount, tokensOut);
   }
 
   function withdraw(
     IMintableBurnableERC20 token,
     uint256 amount,
-    string memory moneyMarketId,
-    bytes memory implementationCallArgs
+    string calldata moneyMarketId,
+    bytes calldata implementationCallArgs
   )
     external
     override
@@ -169,7 +180,7 @@ contract MoneyMarketManager is
     token.safeIncreaseAllowance(jarvisBrr, burningAmount);
     IJarvisBrrrrr(jarvisBrr).redeem(token, burningAmount);
 
-    emit RedeemAndBurn(address(token), moneyMarketId, burningAmount);
+    emit RedeemAndBurn(address(token), moneyMarketId, burningAmount, amount);
   }
 
   function withdrawRevenue(
@@ -233,7 +244,7 @@ contract MoneyMarketManager is
 
   function getMoneyMarketDeposited(
     address jSynthAsset,
-    string memory moneyMarketId
+    string calldata moneyMarketId
   ) external view override returns (uint256 amount) {
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
     amount = moneyMarketBalances[hashId][jSynthAsset];

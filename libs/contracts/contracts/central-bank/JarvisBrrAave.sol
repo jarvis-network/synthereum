@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.9;
 
-import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
 import {IPool} from '../lending-module/interfaces/IAaveV3.sol';
 import {
@@ -21,8 +20,8 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
     uint256 amount,
-    bytes memory extraArgs,
-    bytes memory implementationArgs
+    bytes calldata extraArgs,
+    bytes calldata implementationArgs
   ) external override returns (uint256 tokensOut) {
     require(jSynthAsset.balanceOf(address(this)) >= amount, 'Wrong balance');
     IERC20 interestToken =
@@ -49,8 +48,8 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
     uint256 aTokensAmount,
-    bytes memory extraArgs,
-    bytes memory implementationArgs
+    bytes calldata extraArgs,
+    bytes calldata implementationArgs
   ) external override returns (uint256 jSynthOut) {
     IERC20 interestToken =
       IERC20(interestBearingToken(address(jSynthAsset), extraArgs));
@@ -79,8 +78,8 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
 
   function getTotalBalance(
     address jSynth,
-    bytes memory args,
-    bytes memory implementationArgs
+    bytes calldata args,
+    bytes calldata implementationArgs
   ) external override returns (uint256 totalJSynth) {
     IERC20 interestToken = IERC20(interestBearingToken(jSynth, args));
     totalJSynth = interestToken.balanceOf(msg.sender);

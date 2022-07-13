@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.9;
 
-import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
 import {
   IMintableBurnableERC20
@@ -12,19 +11,17 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 
 // storageless contract to be used as delegate call by JarvisBRR to deposit the minted jSynth into a money market
 contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   using SafeERC20 for IMintableBurnableERC20;
   using SafeERC20 for IERC20;
-  using PreciseUnitMath for uint256;
 
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
     uint256 amount,
-    bytes memory extraArgs,
-    bytes memory implementationArgs
+    bytes calldata extraArgs,
+    bytes calldata implementationArgs
   ) external override returns (uint256 tokensOut) {
     require(jSynthAsset.balanceOf(address(this)) >= amount, 'Wrong balance');
 
@@ -46,8 +43,8 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
     uint256 jSynthAmount,
-    bytes memory extraArgs,
-    bytes memory implementationArgs
+    bytes calldata extraArgs,
+    bytes calldata implementationArgs
   ) external override returns (uint256 jSynthOut) {
     address cTokenAddr = abi.decode(implementationArgs, (address));
     // initialise compound interest token
@@ -61,8 +58,8 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
 
   function getTotalBalance(
     address jSynth,
-    bytes memory args,
-    bytes memory implementationArgs
+    bytes calldata args,
+    bytes calldata implementationArgs
   ) external override returns (uint256 totalJSynth) {
     ICErc20 cToken = ICErc20(abi.decode(implementationArgs, (address)));
     totalJSynth = cToken.balanceOfUnderlying(msg.sender);

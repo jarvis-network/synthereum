@@ -18,8 +18,8 @@ interface IJarvisBrrMoneyMarket {
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
     uint256 amount,
-    bytes memory extraArgs,
-    bytes memory implementationCallArgs
+    bytes calldata extraArgs,
+    bytes calldata implementationCallArgs
   ) external returns (uint256 tokensOut);
 
   /**
@@ -34,8 +34,8 @@ interface IJarvisBrrMoneyMarket {
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
     uint256 interestTokenAmount,
-    bytes memory extraArgs,
-    bytes memory implementationCallArgs
+    bytes calldata extraArgs,
+    bytes calldata implementationCallArgs
   ) external returns (uint256 jSynthOut);
 
   /**
@@ -47,7 +47,7 @@ interface IJarvisBrrMoneyMarket {
    */
   function getTotalBalance(
     address jSynthAsset,
-    bytes memory args,
-    bytes memory implementationCallArgs
+    bytes calldata args,
+    bytes calldata implementationCallArgs
   ) external returns (uint256 totalJSynth);
 }

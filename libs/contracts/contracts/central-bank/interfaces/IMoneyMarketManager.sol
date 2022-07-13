@@ -14,9 +14,9 @@ interface IMoneyMarketManager {
    * @param extraArgs bytes Encoded args for the implementation
    */
   function registerMoneyMarketImplementation(
-    string memory id,
+    string calldata id,
     address implementation,
-    bytes memory extraArgs
+    bytes calldata extraArgs
   ) external;
 
   /**
@@ -30,8 +30,8 @@ interface IMoneyMarketManager {
   function deposit(
     IMintableBurnableERC20 jSynthAsset,
     uint256 amount,
-    string memory moneyMarketId,
-    bytes memory implementationCallArgs
+    string calldata moneyMarketId,
+    bytes calldata implementationCallArgs
   ) external returns (uint256 tokensOut);
 
   /**
@@ -46,8 +46,8 @@ interface IMoneyMarketManager {
   function withdraw(
     IMintableBurnableERC20 jSynthAsset,
     uint256 interestTokenAmount,
-    string memory moneyMarketId,
-    bytes memory implementationCallArgs
+    string calldata moneyMarketId,
+    bytes calldata implementationCallArgs
   ) external returns (uint256 jSynthOut);
 
   /**
@@ -73,6 +73,6 @@ interface IMoneyMarketManager {
    */
   function getMoneyMarketDeposited(
     address jSynthAsset,
-    string memory moneyMarketId
+    string calldata moneyMarketId
   ) external view returns (uint256 amount);
 }
