@@ -29,9 +29,13 @@ interface ILendingManager {
     uint256 actualTotalCollateral; // actualCollateralDeposited collateral deposited after the migration
   }
 
-  event BatchBuyback(uint256 collateralIn, uint256 JRTOut, address receiver);
+  event BatchBuyback(
+    uint256 indexed collateralIn,
+    uint256 JRTOut,
+    address receiver
+  );
 
-  event BatchCommissionClaim(uint256 collateralOut, address receiver);
+  event BatchCommissionClaim(uint256 indexed collateralOut, address receiver);
 
   /**
    * @notice deposits collateral into the pool's associated money market
