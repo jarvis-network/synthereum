@@ -24,9 +24,13 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     bytes memory extraArgs,
     bytes memory implementationArgs
   ) external override returns (uint256 tokensOut) {
-    require(jSynthAsset.balanceOf(address(this)) == amount, 'Wrong balance');
+    require(jSynthAsset.balanceOf(address(this)) >= amount, 'Wrong balance');
+    IERC20 interestToken =
+      IERC20(interestBearingToken(address(jSynthAsset), extraArgs));
 
-    // aave deposit - approve
+    uint256 aTokenBalanceBefore = interestToken.balanceOf(address(this));
+
+    // aave deposit
     address moneyMarket = abi.decode(extraArgs, (address));
 
     jSynthAsset.safeIncreaseAllowance(moneyMarket, amount);
@@ -37,7 +41,9 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
       uint16(0)
     );
 
-    tokensOut = amount;
+    uint256 aTokenBalanceAfter = interestToken.balanceOf(address(this));
+
+    tokensOut = aTokenBalanceAfter - aTokenBalanceBefore;
   }
 
   function withdraw(
@@ -54,6 +60,8 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
       'Wrong balance'
     );
 
+    uint256 jSynthBalanceBefore = jSynthAsset.balanceOf(address(this));
+
     // aave withdraw - approve
     address moneyMarket = abi.decode(extraArgs, (address));
 
@@ -64,7 +72,9 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
       address(this)
     );
 
-    jSynthOut = aTokensAmount;
+    uint256 jSynthBalanceAfter = jSynthAsset.balanceOf(address(this));
+
+    jSynthOut = jSynthBalanceAfter - jSynthBalanceBefore;
   }
 
   function getTotalBalance(
