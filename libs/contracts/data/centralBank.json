@@ -1,0 +1,19 @@
+{
+  "80001": {
+    "aave": {
+      "implementation": "Aave",
+      "deploy": true,
+      "extraArgs": "0x0000"
+    },
+    "marketxyz": {
+      "implementation": "Compound",
+      "deploy": true,
+      "extraArgs": "0x0000"
+    },
+    "midas": {
+      "implementation": "Compound",
+      "deploy": true,
+      "extraArgs": "0x0000"
+    }
+  }
+}
