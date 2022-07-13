@@ -108,7 +108,7 @@ contract MoneyMarketManager is
 
     // deposit into money market through delegate-call
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    Implementation implementation = idToImplementation[hashId];
+    Implementation memory implementation = idToImplementation[hashId];
 
     moneyMarketBalances[hashId][address(token)] += amount;
 
@@ -141,7 +141,7 @@ contract MoneyMarketManager is
   {
     // withdraw from money market through delegate call
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    Implementation implementation = idToImplementation[hashId];
+    Implementation memory implementation = idToImplementation[hashId];
     require(
       amount <= moneyMarketBalances[hashId][address(token)],
       'Max amount limit'
@@ -178,7 +178,7 @@ contract MoneyMarketManager is
     bytes memory implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
     bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    Implementation implementation = idToImplementation[hashId];
+    Implementation memory implementation = idToImplementation[hashId];
 
     // get total balance from money market implementation (deposit + interest)
     uint256 totalBalance =
@@ -217,7 +217,7 @@ contract MoneyMarketManager is
 
       jSynthAsset.safeIncreaseAllowance(jarvisBrr, burningAmount);
       IJarvisBrrrrr(jarvisBrr).redeem(jSynthAsset, burningAmount);
-      moneyMarketBalances[hashId] -= burningAmount;
+      moneyMarketBalances[hashId][address(jSynthAsset)] -= burningAmount;
     }
 
     jSynthAsset.transfer(msg.sender, revenues);
