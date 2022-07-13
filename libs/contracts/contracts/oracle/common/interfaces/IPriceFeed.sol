@@ -4,20 +4,20 @@ pragma solidity >=0.8.0;
 interface ISynthereumPriceFeed {
   /**
    * @notice Get last chainlink oracle price for a given price identifier
-   * @param priceIdentifier Price feed identifier
+   * @param _priceIdentifier Price feed identifier
    * @return price Oracle price
    */
-  function getLatestPrice(bytes32 priceIdentifier)
+  function getLatestPrice(bytes32 _priceIdentifier)
     external
     view
     returns (uint256 price);
 
   /**
    * @notice Return if price identifier is supported
-   * @param priceIdentifier Price feed identifier
+   * @param _priceIdentifier Price feed identifier
    * @return isSupported True if price is supported otherwise false
    */
-  function isPriceSupported(bytes32 priceIdentifier)
+  function isPriceSupported(bytes32 _priceIdentifier)
     external
     view
     returns (bool isSupported);

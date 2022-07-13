@@ -25,8 +25,8 @@ import {
 
 contract LendingManager is
   ILendingManager,
-  AccessControlEnumerable,
-  ReentrancyGuard
+  ReentrancyGuard,
+  AccessControlEnumerable
 {
   using Address for address;
   using SafeERC20 for IERC20;
@@ -70,7 +70,7 @@ contract LendingManager is
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
-  function deposit(uint256 amount)
+  function deposit(uint256 _amount)
     external
     override
     nonReentrant
@@ -85,7 +85,12 @@ contract LendingManager is
     // delegate call implementation
     bytes memory result =
       address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(DEPOSIT_SIG, poolData, lendingInfo.args, amount)
+        abi.encodeWithSignature(
+          DEPOSIT_SIG,
+          poolData,
+          lendingInfo.args,
+          _amount
+        )
       );
 
     ILendingModule.ReturnValues memory res =
@@ -117,7 +122,7 @@ contract LendingManager is
     returnValues.prevTotalCollateral = poolData.collateralDeposited;
   }
 
-  function withdraw(uint256 interestTokenAmount, address recipient)
+  function withdraw(uint256 _interestTokenAmount, address _recipient)
     external
     override
     nonReentrant
@@ -137,8 +142,8 @@ contract LendingManager is
           poolData,
           msg.sender,
           lendingInfo.args,
-          interestTokenAmount,
-          recipient
+          _interestTokenAmount,
+          _recipient
         )
       );
 
@@ -216,18 +221,18 @@ contract LendingManager is
   }
 
   function batchClaimCommission(
-    address[] memory pools,
-    uint256[] memory amounts
-  ) external override nonReentrant onlyMaintainer {
-    require(pools.length == amounts.length, 'Invalid call');
+    address[] calldata _pools,
+    uint256[] calldata _amounts
+  ) external override onlyMaintainer nonReentrant {
+    require(_pools.length == _amounts.length, 'Invalid call');
     address recipient =
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.CommissionReceiver
       );
     uint256 totalAmount;
-    for (uint8 i = 0; i < pools.length; i++) {
-      claimCommission(pools[i], amounts[i], recipient);
-      totalAmount += amounts[i];
+    for (uint8 i = 0; i < _pools.length; i++) {
+      claimCommission(_pools[i], _amounts[i], recipient);
+      totalAmount += _amounts[i];
     }
 
     // todo emit event
@@ -235,12 +240,12 @@ contract LendingManager is
   }
 
   function batchBuyback(
-    address[] memory pools,
-    uint256[] memory amounts,
-    address collateralAddress,
-    bytes memory swapParams
-  ) external override nonReentrant onlyMaintainer {
-    require(pools.length == amounts.length, 'Invalid call');
+    address[] calldata _pools,
+    uint256[] calldata _amounts,
+    address _collateralAddress,
+    bytes calldata _swapParams
+  ) external override onlyMaintainer nonReentrant {
+    require(_pools.length == _amounts.length, 'Invalid call');
     ILendingStorageManager poolStorageManager = getStorageManager();
 
     // withdraw collateral and update all pools
@@ -249,9 +254,9 @@ contract LendingManager is
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.BuybackProgramReceiver
       );
-    for (uint8 i = 0; i < pools.length; i++) {
-      address pool = pools[i];
-      uint256 collateralAmount = amounts[i];
+    for (uint8 i = 0; i < _pools.length; i++) {
+      address pool = _pools[i];
+      uint256 _collateralAmount = _amounts[i];
 
       (
         ILendingStorageManager.PoolStorage memory poolData,
@@ -259,10 +264,10 @@ contract LendingManager is
       ) = poolStorageManager.getPoolData(pool);
 
       // all pools need to have the same collateral
-      require(poolData.collateral == collateralAddress, 'Collateral mismatch');
+      require(poolData.collateral == _collateralAddress, 'Collateral mismatch');
 
       (uint256 interestTokenAmount, ) =
-        collateralToInterestToken(pool, collateralAmount);
+        collateralToInterestToken(pool, _collateralAmount);
 
       // trigger transfer of interest token from the pool
       interestTokenAmount = ISynthereumLendingTransfer(pool)
@@ -309,15 +314,15 @@ contract LendingManager is
         SynthereumInterfaces.JarvisToken
       );
     bytes memory result =
-      address(poolStorageManager.getCollateralSwapModule(collateralAddress))
+      address(poolStorageManager.getCollateralSwapModule(_collateralAddress))
         .functionDelegateCall(
         abi.encodeWithSignature(
           JRTSWAP_SIG,
           recipient,
-          collateralAddress,
+          _collateralAddress,
           JARVIS,
           aggregatedCollateral,
-          swapParams
+          _swapParams
         )
       );
 
@@ -329,18 +334,18 @@ contract LendingManager is
   }
 
   function setLendingModule(
-    string memory id,
-    ILendingStorageManager.LendingInfo memory lendingInfo
-  ) external override nonReentrant onlyMaintainer {
+    string calldata _id,
+    ILendingStorageManager.LendingInfo calldata _lendingInfo
+  ) external override onlyMaintainer nonReentrant {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setLendingModule(id, lendingInfo);
+    poolStorageManager.setLendingModule(_id, _lendingInfo);
   }
 
   function addSwapProtocol(address _swapModule)
     external
     override
-    nonReentrant
     onlyMaintainer
+    nonReentrant
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.addSwapProtocol(_swapModule);
@@ -349,37 +354,37 @@ contract LendingManager is
   function removeSwapProtocol(address _swapModule)
     external
     override
-    nonReentrant
     onlyMaintainer
+    nonReentrant
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
     poolStorageManager.removeSwapProtocol(_swapModule);
   }
 
-  function setSwapModule(address collateral, address swapModule)
+  function setSwapModule(address _collateral, address _swapModule)
     external
     override
-    nonReentrant
     onlyMaintainer
+    nonReentrant
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setSwapModule(collateral, swapModule);
+    poolStorageManager.setSwapModule(_collateral, _swapModule);
   }
 
   function setShares(
-    address pool,
-    uint64 daoInterestShare,
-    uint64 jrtBuybackShare
-  ) external override nonReentrant onlyMaintainer {
+    address _pool,
+    uint64 _daoInterestShare,
+    uint64 _jrtBuybackShare
+  ) external override onlyMaintainer nonReentrant {
     ILendingStorageManager poolStorageManager = getStorageManager();
-    poolStorageManager.setShares(pool, daoInterestShare, jrtBuybackShare);
+    poolStorageManager.setShares(_pool, _daoInterestShare, _jrtBuybackShare);
   }
 
   // to migrate liquidity to another lending module
   function migrateLendingModule(
-    string memory newLendingID,
-    address newInterestBearingToken,
-    uint256 interestTokenAmount
+    string memory _newLendingID,
+    address _newInterestBearingToken,
+    uint256 _interestTokenAmount
   ) external override nonReentrant returns (MigrateReturnValues memory) {
     (
       ILendingStorageManager.PoolStorage memory poolData,
@@ -399,7 +404,7 @@ contract LendingManager is
             poolData,
             msg.sender,
             lendingInfo.args,
-            interestTokenAmount,
+            _interestTokenAmount,
             address(this)
           )
         );
@@ -425,9 +430,9 @@ contract LendingManager is
     // set new lending module and obtain new pool data
     ILendingStorageManager.LendingInfo memory newLendingInfo;
     (poolData, newLendingInfo) = poolStorageManager.migrateLendingModule(
-      newLendingID,
+      _newLendingID,
       msg.sender,
-      newInterestBearingToken
+      _newInterestBearingToken
     );
 
     // delegate call deposit into new module
@@ -464,26 +469,26 @@ contract LendingManager is
     );
   }
 
-  function migratePool(address migrationPool, address newPool)
+  function migratePool(address _migrationPool, address _newPool)
     external
     override
-    nonReentrant
     onlyPoolFactory
+    nonReentrant
     returns (uint256 sourceCollateralAmount, uint256 actualCollateralAmount)
   {
     ILendingStorageManager poolStorageManager = getStorageManager();
     (
       ILendingStorageManager.PoolLendingStorage memory lendingStorage,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getLendingData(migrationPool);
+    ) = poolStorageManager.getLendingData(_migrationPool);
 
     // delegate call deposit into new module
     bytes memory result =
       address(lendingInfo.lendingModule).functionDelegateCall(
         abi.encodeWithSignature(
           TOTAL_TRANSFER_SIG,
-          migrationPool,
-          newPool,
+          _migrationPool,
+          _newPool,
           lendingStorage.collateralToken,
           lendingStorage.interestToken,
           lendingInfo.args
@@ -494,7 +499,7 @@ contract LendingManager is
       abi.decode(result, (uint256, uint256));
 
     sourceCollateralAmount = poolStorageManager.getCollateralDeposited(
-      migrationPool
+      _migrationPool
     );
 
     actualCollateralAmount =
@@ -503,13 +508,16 @@ contract LendingManager is
       prevTotalAmount;
 
     poolStorageManager.migratePoolStorage(
-      migrationPool,
-      newPool,
+      _migrationPool,
+      _newPool,
       actualCollateralAmount
     );
   }
 
-  function interestTokenToCollateral(address pool, uint256 interestTokenAmount)
+  function interestTokenToCollateral(
+    address _pool,
+    uint256 _interestTokenAmount
+  )
     external
     view
     override
@@ -519,11 +527,11 @@ contract LendingManager is
     (
       ILendingStorageManager.PoolLendingStorage memory lendingStorage,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getLendingData(pool);
+    ) = poolStorageManager.getLendingData(_pool);
 
     collateralAmount = ILendingModule(lendingInfo.lendingModule)
       .interestTokenToCollateral(
-      interestTokenAmount,
+      _interestTokenAmount,
       lendingStorage.collateralToken,
       lendingStorage.interestToken,
       lendingInfo.args
@@ -531,7 +539,7 @@ contract LendingManager is
     interestTokenAddr = lendingStorage.interestToken;
   }
 
-  function getAccumulatedInterest(address pool)
+  function getAccumulatedInterest(address _pool)
     external
     view
     override
@@ -546,11 +554,11 @@ contract LendingManager is
     (
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getPoolData(pool);
+    ) = poolStorageManager.getPoolData(_pool);
 
     uint256 totalInterest =
       ILendingModule(lendingInfo.lendingModule).getAccumulatedInterest(
-        pool,
+        _pool,
         poolData,
         lendingInfo.args
       );
@@ -567,7 +575,7 @@ contract LendingManager is
     collateralDeposited = poolData.collateralDeposited;
   }
 
-  function collateralToInterestToken(address pool, uint256 collateralAmount)
+  function collateralToInterestToken(address _pool, uint256 _collateralAmount)
     public
     view
     override
@@ -577,11 +585,11 @@ contract LendingManager is
     (
       ILendingStorageManager.PoolLendingStorage memory lendingStorage,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getLendingData(pool);
+    ) = poolStorageManager.getLendingData(_pool);
 
     interestTokenAmount = ILendingModule(lendingInfo.lendingModule)
       .collateralToInterestToken(
-      collateralAmount,
+      _collateralAmount,
       lendingStorage.collateralToken,
       lendingStorage.interestToken,
       lendingInfo.args
@@ -590,20 +598,20 @@ contract LendingManager is
   }
 
   function claimCommission(
-    address pool,
-    uint256 collateralAmount,
-    address recipient
+    address _pool,
+    uint256 _collateralAmount,
+    address _recipient
   ) internal {
     ILendingStorageManager poolStorageManager = getStorageManager();
     (
       ILendingStorageManager.PoolStorage memory poolData,
       ILendingStorageManager.LendingInfo memory lendingInfo
-    ) = poolStorageManager.getPoolData(pool);
+    ) = poolStorageManager.getPoolData(_pool);
 
-    // trigger transfer of funds from pool
+    // trigger transfer of funds from _pool
     (uint256 interestTokenAmount, ) =
-      collateralToInterestToken(pool, collateralAmount);
-    interestTokenAmount = ISynthereumLendingTransfer(pool)
+      collateralToInterestToken(_pool, _collateralAmount);
+    interestTokenAmount = ISynthereumLendingTransfer(_pool)
       .transferToLendingManager(interestTokenAmount);
 
     // delegate call withdraw
@@ -612,10 +620,10 @@ contract LendingManager is
         abi.encodeWithSignature(
           WITHDRAW_SIG,
           poolData,
-          pool,
+          _pool,
           lendingInfo.args,
           interestTokenAmount,
-          recipient
+          _recipient
         )
       );
     ILendingModule.ReturnValues memory res =
@@ -631,26 +639,13 @@ contract LendingManager is
 
     //update pool storage
     poolStorageManager.updateValues(
-      pool,
+      _pool,
       poolData.collateralDeposited + interestSplit.poolInterest,
       poolData.unclaimedDaoJRT + interestSplit.jrtInterest,
       poolData.unclaimedDaoCommission +
         interestSplit.commissionInterest -
         res.tokensOut
     );
-  }
-
-  function splitGeneratedInterest(
-    uint256 totalInterestGenerated,
-    uint64 daoRatio,
-    uint64 jrtRatio
-  ) internal pure returns (InterestSplit memory interestSplit) {
-    if (totalInterestGenerated == 0) return interestSplit;
-
-    uint256 daoInterest = totalInterestGenerated.mul(daoRatio);
-    interestSplit.jrtInterest = daoInterest.mul(jrtRatio);
-    interestSplit.commissionInterest = daoInterest - interestSplit.jrtInterest;
-    interestSplit.poolInterest = totalInterestGenerated - daoInterest;
   }
 
   function _getPoolInfo()
@@ -673,5 +668,18 @@ contract LendingManager is
           SynthereumInterfaces.LendingStorageManager
         )
       );
+  }
+
+  function splitGeneratedInterest(
+    uint256 _totalInterestGenerated,
+    uint64 _daoRatio,
+    uint64 _jrtRatio
+  ) internal pure returns (InterestSplit memory interestSplit) {
+    if (_totalInterestGenerated == 0) return interestSplit;
+
+    uint256 daoInterest = _totalInterestGenerated.mul(_daoRatio);
+    interestSplit.jrtInterest = daoInterest.mul(_jrtRatio);
+    interestSplit.commissionInterest = daoInterest - interestSplit.jrtInterest;
+    interestSplit.poolInterest = _totalInterestGenerated - daoInterest;
   }
 }

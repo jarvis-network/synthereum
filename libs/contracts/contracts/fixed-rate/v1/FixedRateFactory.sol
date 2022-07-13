@@ -7,6 +7,7 @@ import {
 } from '../../core/interfaces/IDeploymentSignature.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumFixedRateCreator} from './FixedRateCreator.sol';
+import {FactoryConditions} from '../../common/FactoryConditions.sol';
 import {SynthereumFixedRateWrapper} from './FixedRateWrapper.sol';
 import {
   ReentrancyGuard
@@ -15,6 +16,7 @@ import {
 contract SynthereumFixedRateFactory is
   IDeploymentSignature,
   ReentrancyGuard,
+  FactoryConditions,
   SynthereumFixedRateCreator
 {
   //----------------------------------------
@@ -29,10 +31,10 @@ contract SynthereumFixedRateFactory is
 
   /**
    * @notice Set synthereum finder
-   * @param synthereumFinder Synthereum finder contract
+   * @param _synthereumFinder Synthereum finder contract
    */
-  constructor(address synthereumFinder)
-    SynthereumFixedRateCreator(synthereumFinder)
+  constructor(address _synthereumFinder)
+    SynthereumFixedRateCreator(_synthereumFinder)
   {
     deploymentSignature = this.createFixedRate.selector;
   }
@@ -43,18 +45,16 @@ contract SynthereumFixedRateFactory is
 
   /**
    * @notice Check if the sender is the deployer and deploy a fixed rate
-   * @param params input parameters of the fixed rate
+   * @param _params input parameters of the fixed rate
    * @return fixedRate Deployed fixed rate
    */
-  function createFixedRate(Params calldata params)
+  function createFixedRate(Params calldata _params)
     public
     override
+    onlyDeployer(synthereumFinder)
     nonReentrant
     returns (SynthereumFixedRateWrapper fixedRate)
   {
-    address deployer =
-      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
-    require(msg.sender == deployer, 'Sender must be Synthereum deployer');
-    fixedRate = super.createFixedRate(params);
+    fixedRate = super.createFixedRate(_params);
   }
 }

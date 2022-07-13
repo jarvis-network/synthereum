@@ -12,10 +12,17 @@ import {
 } from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 import {SynthereumInterfaces} from './Constants.sol';
 import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
+contract SynthereumManager is
+  ISynthereumManager,
+  ReentrancyGuard,
+  AccessControlEnumerable
+{
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //Describe role structure
@@ -85,7 +92,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     address[] calldata contracts,
     bytes32[] calldata roles,
     address[] calldata accounts
-  ) external override onlyMaintainerOrDeployer {
+  ) external override onlyMaintainerOrDeployer nonReentrant {
     uint256 rolesCount = roles.length;
     require(rolesCount > 0, 'No roles passed');
     require(
@@ -111,7 +118,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     address[] calldata contracts,
     bytes32[] calldata roles,
     address[] calldata accounts
-  ) external override onlyMaintainerOrDeployer {
+  ) external override onlyMaintainerOrDeployer nonReentrant {
     uint256 rolesCount = roles.length;
     require(rolesCount > 0, 'No roles passed');
     require(
@@ -135,7 +142,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
   function renounceSynthereumRole(
     address[] calldata contracts,
     bytes32[] calldata roles
-  ) external override onlyMaintainerOrDeployer {
+  ) external override onlyMaintainerOrDeployer nonReentrant {
     uint256 rolesCount = roles.length;
     require(rolesCount > 0, 'No roles passed');
     require(
@@ -158,6 +165,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     external
     override
     onlyMaintainer
+    nonReentrant
   {
     require(contracts.length > 0, 'No Derivative passed');
     for (uint256 i; i < contracts.length; i++) {
@@ -174,7 +182,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
     ISynthereumLendingSwitch[] calldata pools,
     string[] calldata lendingIds,
     address[] calldata bearingTokens
-  ) external override onlyMaintainer {
+  ) external override onlyMaintainer nonReentrant {
     uint256 numberOfPools = pools.length;
     require(numberOfPools > 0, 'No pools');
     require(

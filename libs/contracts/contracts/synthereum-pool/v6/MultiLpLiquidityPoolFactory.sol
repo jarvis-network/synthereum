@@ -66,8 +66,8 @@ contract SynthereumMultiLpLiquidityPoolFactory is
   function createPool(Params calldata params)
     public
     override
-    nonReentrant
     onlyDeployer(synthereumFinder)
+    nonReentrant
     returns (SynthereumMultiLpLiquidityPool pool)
   {
     checkDeploymentConditions(

@@ -29,8 +29,8 @@ import {
 
 contract SynthereumDeployer is
   ISynthereumDeployer,
-  AccessControlEnumerable,
-  ReentrancyGuard
+  ReentrancyGuard,
+  AccessControlEnumerable
 {
   using Address for address;
 

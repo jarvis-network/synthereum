@@ -31,15 +31,6 @@ contract SynthereumFixedRateCreator {
   ISynthereumFinder public immutable synthereumFinder;
 
   //----------------------------------------
-  // Events
-  //----------------------------------------
-  event CreatedFixedRate(
-    address indexed fixedRateAddress,
-    uint8 indexed version,
-    address indexed deployerAddress
-  );
-
-  //----------------------------------------
   // Constructor
   //----------------------------------------
 
@@ -57,21 +48,21 @@ contract SynthereumFixedRateCreator {
 
   /**
    * @notice Creates an instance of the fixed rate
-   * @param params is a `ConstructorParams` object from FixedRateWrapper.
+   * @param _params is a `ConstructorParams` object from FixedRateWrapper.
    * @return fixedRate Address of the deployed fixedRate contract.
    */
-  function createFixedRate(Params calldata params)
+  function createFixedRate(Params calldata _params)
     public
     virtual
     returns (SynthereumFixedRateWrapper fixedRate)
   {
-    require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
+    require(bytes(_params.syntheticName).length != 0, 'Missing synthetic name');
     require(
-      bytes(params.syntheticSymbol).length != 0,
+      bytes(_params.syntheticSymbol).length != 0,
       'Missing synthetic symbol'
     );
 
-    if (params.syntheticToken == address(0)) {
+    if (_params.syntheticToken == address(0)) {
       IMintableBurnableTokenFactory tokenFactory =
         IMintableBurnableTokenFactory(
           ISynthereumFinder(synthereumFinder).getImplementationAddress(
@@ -80,12 +71,12 @@ contract SynthereumFixedRateCreator {
         );
       BaseControlledMintableBurnableERC20 tokenCurrency =
         tokenFactory.createToken(
-          params.syntheticName,
-          params.syntheticSymbol,
+          _params.syntheticName,
+          _params.syntheticSymbol,
           18
         );
       fixedRate = new SynthereumFixedRateWrapper(
-        _convertParams(params, tokenCurrency)
+        _convertParams(_params, tokenCurrency)
       );
       // Give permissions to new pool contract and then hand over ownership.
       tokenCurrency.addMinter(address(fixedRate));
@@ -96,29 +87,28 @@ contract SynthereumFixedRateCreator {
       tokenCurrency.renounceAdmin();
     } else {
       BaseControlledMintableBurnableERC20 tokenCurrency =
-        BaseControlledMintableBurnableERC20(params.syntheticToken);
+        BaseControlledMintableBurnableERC20(_params.syntheticToken);
       require(
         keccak256(abi.encodePacked(tokenCurrency.name())) ==
-          keccak256(abi.encodePacked(params.syntheticName)),
+          keccak256(abi.encodePacked(_params.syntheticName)),
         'Wrong synthetic token name'
       );
       require(
         keccak256(abi.encodePacked(tokenCurrency.symbol())) ==
-          keccak256(abi.encodePacked(params.syntheticSymbol)),
+          keccak256(abi.encodePacked(_params.syntheticSymbol)),
         'Wrong synthetic token symbol'
       );
       fixedRate = new SynthereumFixedRateWrapper(
-        _convertParams(params, tokenCurrency)
+        _convertParams(_params, tokenCurrency)
       );
     }
-    emit CreatedFixedRate(address(fixedRate), params.version, msg.sender);
     return fixedRate;
   }
 
   // Converts createFixedRate params to constructor params.
   function _convertParams(
-    Params memory params,
-    BaseControlledMintableBurnableERC20 tokenCurrency
+    Params memory _params,
+    BaseControlledMintableBurnableERC20 _tokenCurrency
   )
     internal
     view
@@ -126,14 +116,14 @@ contract SynthereumFixedRateCreator {
       SynthereumFixedRateWrapper.ConstructorParams memory constructorParams
     )
   {
-    require(params.roles.admin != address(0), 'Admin cannot be 0x00');
+    require(_params.roles.admin != address(0), 'Admin cannot be 0x00');
     constructorParams.finder = synthereumFinder;
-    constructorParams.version = params.version;
-    constructorParams.pegCollateralToken = params.collateralToken;
+    constructorParams.version = _params.version;
+    constructorParams.pegCollateralToken = _params.collateralToken;
     constructorParams.fixedRateToken = IMintableBurnableERC20(
-      address(tokenCurrency)
+      address(_tokenCurrency)
     );
-    constructorParams.roles = params.roles;
-    constructorParams.rate = params.rate;
+    constructorParams.roles = _params.roles;
+    constructorParams.rate = _params.rate;
   }
 }

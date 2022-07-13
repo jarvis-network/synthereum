@@ -12,8 +12,8 @@ import {
  * @title ERC20 token contract
  */
 contract MintableBurnableERC20 is
-  BaseControlledMintableBurnableERC20,
-  AccessControlEnumerable
+  AccessControlEnumerable,
+  BaseControlledMintableBurnableERC20
 {
   bytes32 public constant MINTER_ROLE = keccak256('Minter');
 

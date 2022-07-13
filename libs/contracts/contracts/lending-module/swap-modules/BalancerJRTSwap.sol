@@ -21,23 +21,23 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
   }
 
   function swapToJRT(
-    address recipient,
-    address collateral,
-    address jarvisToken,
-    uint256 amountIn,
-    bytes memory params
+    address _recipient,
+    address _collateral,
+    address _jarvisToken,
+    uint256 _amountIn,
+    bytes calldata _params
   ) external override returns (uint256 amountOut) {
     // decode swapInfo
-    SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
+    SwapInfo memory swapInfo = abi.decode(_params, (SwapInfo));
 
     // build params
     IBalancerVault.SingleSwap memory singleSwap =
       IBalancerVault.SingleSwap(
         swapInfo.poolId,
         IBalancerVault.SwapKind.GIVEN_IN,
-        collateral,
-        jarvisToken,
-        amountIn,
+        _collateral,
+        _jarvisToken,
+        _amountIn,
         '0x00'
       );
 
@@ -45,14 +45,14 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
       IBalancerVault.FundManagement(
         address(this),
         false,
-        payable(recipient),
+        payable(_recipient),
         false
       );
 
     // swap to JRT to final recipient
     IBalancerVault router = IBalancerVault(swapInfo.routerAddress);
 
-    IERC20(collateral).safeIncreaseAllowance(address(router), amountIn);
+    IERC20(_collateral).safeIncreaseAllowance(address(router), _amountIn);
     amountOut = router.swap(
       singleSwap,
       funds,

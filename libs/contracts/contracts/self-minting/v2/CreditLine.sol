@@ -159,6 +159,7 @@ contract CreditLine is
     external
     override
     notEmergencyShutdown
+    nonReentrant
   {
     PositionData storage positionData = _getPositionData(_msgSender());
 

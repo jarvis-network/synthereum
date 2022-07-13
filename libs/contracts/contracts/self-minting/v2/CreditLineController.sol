@@ -19,6 +19,9 @@ import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
@@ -29,6 +32,7 @@ import {
 
 contract CreditLineController is
   ICreditLineController,
+  ReentrancyGuard,
   AccessControlEnumerable
 {
   using FixedPoint for FixedPoint.Unsigned;

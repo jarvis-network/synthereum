@@ -19,9 +19,9 @@ import {
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract JarvisBrrrrr is
-  AccessControlEnumerable,
   IJarvisBrrrrr,
-  ReentrancyGuard
+  ReentrancyGuard,
+  AccessControlEnumerable
 {
   using SafeERC20 for IERC20;
 
@@ -79,8 +79,8 @@ contract JarvisBrrrrr is
   function mint(IMintableBurnableERC20 token, uint256 amount)
     external
     override
-    onlyMoneyMarketManager()
-    nonReentrant()
+    onlyMoneyMarketManager
+    nonReentrant
     returns (uint256 newCirculatingSupply)
   {
     newCirculatingSupply = amount + circulatingSupply[token];
@@ -102,8 +102,8 @@ contract JarvisBrrrrr is
   function redeem(IMintableBurnableERC20 token, uint256 amount)
     external
     override
-    onlyMoneyMarketManager()
-    nonReentrant()
+    onlyMoneyMarketManager
+    nonReentrant
     returns (uint256 newCirculatingSupply)
   {
     uint256 actualSupply = circulatingSupply[token];
@@ -122,8 +122,8 @@ contract JarvisBrrrrr is
   function setMaxSupply(IMintableBurnableERC20 token, uint256 newMaxSupply)
     external
     override
-    onlyMaintainer()
-    nonReentrant()
+    onlyMaintainer
+    nonReentrant
   {
     maxCirculatingSupply[token] = newMaxSupply;
     emit NewMaxSupply(address(token), newMaxSupply);

@@ -22,29 +22,29 @@ contract UniV2JRTSwapModule is IJRTSwapModule {
   }
 
   function swapToJRT(
-    address recipient,
-    address collateral,
-    address jarvisToken,
-    uint256 amountIn,
-    bytes memory params
+    address _recipient,
+    address _collateral,
+    address _jarvisToken,
+    uint256 _amountIn,
+    bytes calldata _params
   ) external override returns (uint256 amountOut) {
     // decode swapInfo
-    SwapInfo memory swapInfo = abi.decode(params, (SwapInfo));
+    SwapInfo memory swapInfo = abi.decode(_params, (SwapInfo));
     uint256 pathLength = swapInfo.tokenSwapPath.length;
     require(
-      swapInfo.tokenSwapPath[pathLength - 1] == jarvisToken,
+      swapInfo.tokenSwapPath[pathLength - 1] == _jarvisToken,
       'Wrong token swap path'
     );
 
     // swap to JRT to final recipient
     IUniswapV2Router02 router = IUniswapV2Router02(swapInfo.routerAddress);
 
-    IERC20(collateral).safeIncreaseAllowance(address(router), amountIn);
+    IERC20(_collateral).safeIncreaseAllowance(address(router), _amountIn);
     amountOut = router.swapExactTokensForTokens(
-      amountIn,
+      _amountIn,
       swapInfo.minTokensOut,
       swapInfo.tokenSwapPath,
-      recipient,
+      _recipient,
       swapInfo.expiration
     )[pathLength - 1];
   }

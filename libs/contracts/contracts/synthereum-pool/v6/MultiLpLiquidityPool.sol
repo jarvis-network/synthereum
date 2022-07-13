@@ -679,8 +679,7 @@ contract SynthereumMultiLpLiquidityPool is
     storageParams.updateMigrationStorage(
       _sourceCollateralAmount,
       _actualCollateralAmount,
-      _price,
-      finder
+      _price
     );
   }
 

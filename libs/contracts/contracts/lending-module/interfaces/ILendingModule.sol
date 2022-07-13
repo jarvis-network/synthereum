@@ -13,17 +13,17 @@ interface ILendingModule {
   /**
    * @notice deposits collateral into the money market
    * @dev calculates and return the generated interest since last state-changing operation
-   * @param poolData pool storage information
-   * @param lendingArgs encoded args needed by the specific implementation
-   * @param amount of collateral to deposit
+   * @param _poolData pool storage information
+   * @param _lendingArgs encoded args needed by the specific implementation
+   * @param _amount of collateral to deposit
    * @return totalInterest check ReturnValues struct
    * @return tokensOut check ReturnValues struct
    * @return tokensTransferred check ReturnValues struct
    */
   function deposit(
-    ILendingStorageManager.PoolStorage calldata poolData,
-    bytes memory lendingArgs,
-    uint256 amount
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _lendingArgs,
+    uint256 _amount
   )
     external
     returns (
@@ -35,21 +35,21 @@ interface ILendingModule {
   /**
    * @notice withdraw collateral from the money market
    * @dev calculates and return the generated interest since last state-changing operation
-   * @param poolData pool storage information
-   * @param pool pool address to calculate interest on
-   * @param lendingArgs encoded args needed by the specific implementation
-   * @param amount of interest tokens to redeem
-   * @param recipient address receiving the collateral from money market
+   * @param _poolData pool storage information
+   * @param _pool pool address to calculate interest on
+   * @param _lendingArgs encoded args needed by the specific implementation
+   * @param _amount of interest tokens to redeem
+   * @param _recipient address receiving the collateral from money market
    * @return totalInterest check ReturnValues struct
    * @return tokensOut check ReturnValues struct
    * @return tokensTransferred check ReturnValues struct
    */
   function withdraw(
-    ILendingStorageManager.PoolStorage calldata poolData,
-    address pool,
-    bytes memory lendingArgs,
-    uint256 amount,
-    address recipient
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    address _pool,
+    bytes calldata _lendingArgs,
+    uint256 _amount,
+    address _recipient
   )
     external
     returns (
@@ -60,20 +60,20 @@ interface ILendingModule {
 
   /**
    * @notice transfer all interest token balance from an old pool to a new one
-   * @param oldPool Address of the old pool
-   * @param newPool Address of the new pool
-   * @param collateral address of collateral token
-   * @param interestToken address of interest token
-   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @param _oldPool Address of the old pool
+   * @param _newPool Address of the new pool
+   * @param _collateral address of collateral token
+   * @param _interestToken address of interest token
+   * @param _extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
    * @return prevTotalCollateral Total collateral in the old pool
    * @return actualTotalCollateral Total collateral in the new pool
    */
   function totalTransfer(
-    address oldPool,
-    address newPool,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    address _oldPool,
+    address _newPool,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
   )
     external
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral);
@@ -81,56 +81,56 @@ interface ILendingModule {
   /**
    * @notice returns accumulated interest of a pool since state-changing last operation
    * @dev does not update state
-   * @param poolAddress reference pool to check accumulated interest
-   * @param poolData pool storage information
-   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @param _poolAddress reference pool to check accumulated interest
+   * @param _poolData pool storage information
+   * @param _extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
    * @return totalInterest total amount of interest accumulated
    */
   function getAccumulatedInterest(
-    address poolAddress,
-    ILendingStorageManager.PoolStorage calldata poolData,
-    bytes memory extraArgs
+    address _poolAddress,
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _extraArgs
   ) external view returns (uint256 totalInterest);
 
   /**
    * @notice returns bearing token associated to the collateral
    * @dev does not update state
-   * @param collateral collateral address to check bearing token
-   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @param _collateral collateral address to check bearing token
+   * @param _extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
    * @return token bearing token
    */
-  function getInterestBearingToken(address collateral, bytes memory extraArgs)
-    external
-    view
-    returns (address token);
+  function getInterestBearingToken(
+    address _collateral,
+    bytes calldata _extraArgs
+  ) external view returns (address token);
 
   /**
    * @notice returns the conversion between collateral and interest token of a specific money market
-   * @param collateralAmount amount of collateral to calculate conversion on
-   * @param collateral address of collateral token
-   * @param interestToken address of interest token
-   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @param _collateralAmount amount of collateral to calculate conversion on
+   * @param _collateral address of collateral token
+   * @param _interestToken address of interest token
+   * @param _extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
    * @return interestTokenAmount amount of interest token after conversion
    */
   function collateralToInterestToken(
-    uint256 collateralAmount,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    uint256 _collateralAmount,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
   ) external view returns (uint256 interestTokenAmount);
 
   /**
    * @notice returns the conversion between interest token and collateral of a specific money market
-   * @param interestTokenAmount amount of interest token to calculate conversion on
-   * @param collateral address of collateral token
-   * @param interestToken address of interest token
-   * @param extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @param _interestTokenAmount amount of interest token to calculate conversion on
+   * @param _collateral address of collateral token
+   * @param _interestToken address of interest token
+   * @param _extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
    * @return collateralAmount amount of collateral token after conversion
    */
   function interestTokenToCollateral(
-    uint256 interestTokenAmount,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    uint256 _interestTokenAmount,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
   ) external view returns (uint256 collateralAmount);
 }

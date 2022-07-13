@@ -37,15 +37,6 @@ contract SynthereumLiquidityPoolCreator {
   ISynthereumFinder public immutable synthereumFinder;
 
   //----------------------------------------
-  // Events
-  //----------------------------------------
-  event CreatedPool(
-    address indexed poolAddress,
-    uint8 indexed version,
-    address indexed deployerAddress
-  );
-
-  //----------------------------------------
   // Constructor
   //----------------------------------------
 
@@ -113,7 +104,6 @@ contract SynthereumLiquidityPoolCreator {
       );
       pool = new SynthereumLiquidityPool(_convertParams(params, tokenCurrency));
     }
-    emit CreatedPool(address(pool), params.version, msg.sender);
     return pool;
   }
 

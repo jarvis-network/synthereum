@@ -8,8 +8,8 @@ import {IMintableBurnableERC20} from './interfaces/IMintableBurnableERC20.sol';
  * @title ERC20 interface that includes burn mint and roles methods.
  */
 abstract contract BaseControlledMintableBurnableERC20 is
-  ERC20,
-  IMintableBurnableERC20
+  IMintableBurnableERC20,
+  ERC20
 {
   uint8 private _decimals;
 

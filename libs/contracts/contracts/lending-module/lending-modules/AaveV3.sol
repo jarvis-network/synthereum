@@ -18,9 +18,9 @@ contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
 
   function deposit(
-    ILendingStorageManager.PoolStorage calldata poolData,
-    bytes memory lendingArgs,
-    uint256 amount
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _lendingArgs,
+    uint256 _amount
   )
     external
     override
@@ -32,26 +32,27 @@ contract AaveV3Module is ILendingModule {
   {
     // calculate accrued interest since last operation
     (uint256 interest, uint256 poolBalance) =
-      calculateGeneratedInterest(msg.sender, poolData, amount, true);
+      calculateGeneratedInterest(msg.sender, _poolData, _amount, true);
 
     // proxy should have received collateral from the pool
-    IERC20 collateral = IERC20(poolData.collateral);
-    require(collateral.balanceOf(address(this)) >= amount, 'Wrong balance');
+    IERC20 collateral = IERC20(_poolData.collateral);
+    require(collateral.balanceOf(address(this)) >= _amount, 'Wrong balance');
 
     // aave deposit - approve
-    address moneyMarket = abi.decode(lendingArgs, (address));
+    address moneyMarket = abi.decode(_lendingArgs, (address));
 
-    collateral.safeIncreaseAllowance(moneyMarket, amount);
+    collateral.safeIncreaseAllowance(moneyMarket, _amount);
     IPool(moneyMarket).supply(
       address(collateral),
-      amount,
+      _amount,
       msg.sender,
       uint16(0)
     );
 
     // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
     uint256 netDeposit =
-      IERC20(poolData.interestBearingToken).balanceOf(msg.sender) - poolBalance;
+      IERC20(_poolData.interestBearingToken).balanceOf(msg.sender) -
+        poolBalance;
 
     totalInterest = interest;
     tokensOut = netDeposit;
@@ -59,11 +60,11 @@ contract AaveV3Module is ILendingModule {
   }
 
   function withdraw(
-    ILendingStorageManager.PoolStorage calldata poolData,
-    address pool,
-    bytes memory lendingArgs,
-    uint256 aTokensAmount,
-    address recipient
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    address _pool,
+    bytes calldata _lendingArgs,
+    uint256 _aTokensAmount,
+    address _recipient
   )
     external
     override
@@ -74,120 +75,124 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // proxy should have received interest tokens from the pool
-    IERC20 interestToken = IERC20(poolData.interestBearingToken);
+    IERC20 interestToken = IERC20(_poolData.interestBearingToken);
 
     uint256 withdrawAmount =
       PreciseUnitMath.min(
         interestToken.balanceOf(address(this)),
-        aTokensAmount + 1
+        _aTokensAmount + 1
       );
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
-      pool,
-      poolData,
-      aTokensAmount,
+      _pool,
+      _poolData,
+      _aTokensAmount,
       false
     );
 
-    uint256 initialBalance = IERC20(poolData.collateral).balanceOf(recipient);
+    uint256 initialBalance = IERC20(_poolData.collateral).balanceOf(_recipient);
 
     // aave withdraw - approve
-    address moneyMarket = abi.decode(lendingArgs, (address));
+    address moneyMarket = abi.decode(_lendingArgs, (address));
 
     interestToken.safeIncreaseAllowance(moneyMarket, withdrawAmount);
-    IPool(moneyMarket).withdraw(poolData.collateral, withdrawAmount, recipient);
+    IPool(moneyMarket).withdraw(
+      _poolData.collateral,
+      withdrawAmount,
+      _recipient
+    );
 
     // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
     uint256 netWithdrawal =
-      IERC20(poolData.collateral).balanceOf(recipient) - initialBalance;
+      IERC20(_poolData.collateral).balanceOf(_recipient) - initialBalance;
 
-    tokensOut = aTokensAmount;
+    tokensOut = _aTokensAmount;
     tokensTransferred = netWithdrawal;
   }
 
   function totalTransfer(
-    address oldPool,
-    address newPool,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    address _oldPool,
+    address _newPool,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
   )
     external
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
   {
-    prevTotalCollateral = SynthereumPoolMigrationFrom(oldPool)
-      .migrateTotalFunds(newPool);
-    actualTotalCollateral = IERC20(interestToken).balanceOf(newPool);
+    prevTotalCollateral = SynthereumPoolMigrationFrom(_oldPool)
+      .migrateTotalFunds(_newPool);
+    actualTotalCollateral = IERC20(_interestToken).balanceOf(_newPool);
   }
 
   function getAccumulatedInterest(
-    address poolAddress,
-    ILendingStorageManager.PoolStorage calldata poolData,
-    bytes memory extraArgs
+    address _poolAddress,
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _extraArgs
   ) external view override returns (uint256 totalInterest) {
     (totalInterest, ) = calculateGeneratedInterest(
-      poolAddress,
-      poolData,
+      _poolAddress,
+      _poolData,
       0,
       true
     );
   }
 
-  function getInterestBearingToken(address collateral, bytes memory args)
+  function getInterestBearingToken(address _collateral, bytes calldata _args)
     external
     view
     override
     returns (address token)
   {
-    address moneyMarket = abi.decode(args, (address));
-    token = IPool(moneyMarket).getReserveData(collateral).aTokenAddress;
+    address moneyMarket = abi.decode(_args, (address));
+    token = IPool(moneyMarket).getReserveData(_collateral).aTokenAddress;
     require(token != address(0), 'Interest token not found');
   }
 
   function collateralToInterestToken(
-    uint256 collateralAmount,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    uint256 _collateralAmount,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
   ) external pure override returns (uint256 interestTokenAmount) {
-    interestTokenAmount = collateralAmount;
+    interestTokenAmount = _collateralAmount;
   }
 
   function interestTokenToCollateral(
-    uint256 interestTokenAmount,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    uint256 _interestTokenAmount,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
   ) external pure override returns (uint256 collateralAmount) {
-    collateralAmount = interestTokenAmount;
+    collateralAmount = _interestTokenAmount;
   }
 
   function calculateGeneratedInterest(
-    address poolAddress,
-    ILendingStorageManager.PoolStorage calldata pool,
-    uint256 amount,
-    bool isDeposit
+    address _poolAddress,
+    ILendingStorageManager.PoolStorage calldata _pool,
+    uint256 _amount,
+    bool _isDeposit
   )
     internal
     view
     returns (uint256 totalInterestGenerated, uint256 poolBalance)
   {
-    if (pool.collateralDeposited == 0) return (0, 0);
+    if (_pool.collateralDeposited == 0) return (0, 0);
 
     // get current pool total amount of collateral
-    poolBalance = IERC20(pool.interestBearingToken).balanceOf(poolAddress);
+    poolBalance = IERC20(_pool.interestBearingToken).balanceOf(_poolAddress);
 
     // the total interest is delta between current balance and lastBalance
-    totalInterestGenerated = isDeposit
+    totalInterestGenerated = _isDeposit
       ? poolBalance -
-        pool.collateralDeposited -
-        pool.unclaimedDaoCommission -
-        pool.unclaimedDaoJRT
+        _pool.collateralDeposited -
+        _pool.unclaimedDaoCommission -
+        _pool.unclaimedDaoJRT
       : poolBalance +
-        amount -
-        pool.collateralDeposited -
-        pool.unclaimedDaoCommission -
-        pool.unclaimedDaoJRT;
+        _amount -
+        _pool.collateralDeposited -
+        _pool.unclaimedDaoCommission -
+        _pool.unclaimedDaoJRT;
   }
 }

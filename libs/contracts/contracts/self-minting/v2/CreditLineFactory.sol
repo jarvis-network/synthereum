@@ -53,8 +53,8 @@ contract CreditLineFactory is
   function createSelfMintingDerivative(Params calldata params)
     public
     override
-    nonReentrant
     onlyDeployer(synthereumFinder)
+    nonReentrant
     returns (CreditLine creditLine)
   {
     checkDeploymentConditions(

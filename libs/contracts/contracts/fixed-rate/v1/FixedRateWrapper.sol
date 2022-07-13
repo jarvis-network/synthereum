@@ -8,6 +8,8 @@ import {
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFixedRateWrapper} from './interfaces/IFixedRateWrapper.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -16,14 +18,15 @@ import {
   AccessControlEnumerable,
   Context
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {SynthereumInterfaces} from '../../core/Constants.sol';
 
 contract SynthereumFixedRateWrapper is
   ISynthereumFixedRateWrapper,
-  AccessControlEnumerable,
+  ReentrancyGuard,
   ERC2771Context,
-  ReentrancyGuard
+  AccessControlEnumerable
 {
+  using PreciseUnitMath for uint256;
+
   struct ConstructorParams {
     // Synthereum finder
     ISynthereumFinder finder;
@@ -110,28 +113,28 @@ contract SynthereumFixedRateWrapper is
 
   /**
    * @notice Constructs the fixed rate wrapper contract
-   * @param params The parameters passed from deployer to construct the fixed rate wrapper contract
+   * @param _params The parameters passed from deployer to construct the fixed rate wrapper contract
    */
-  constructor(ConstructorParams memory params) nonReentrant {
+  constructor(ConstructorParams memory _params) nonReentrant {
     require(
-      params.pegCollateralToken.decimals() <= 18,
+      _params.pegCollateralToken.decimals() <= 18,
       'Collateral has more than 18 decimals'
     );
 
     require(
-      params.fixedRateToken.decimals() == 18,
+      _params.fixedRateToken.decimals() == 18,
       'FixedRate token has more or less than 18 decimals'
     );
 
-    rate = params.rate;
-    pegCollateralToken = params.pegCollateralToken;
-    fixedRateToken = params.fixedRateToken;
-    fixedRateVersion = params.version;
-    finder = params.finder;
+    rate = _params.rate;
+    pegCollateralToken = _params.pegCollateralToken;
+    fixedRateToken = _params.fixedRateToken;
+    fixedRateVersion = _params.version;
+    finder = _params.finder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, params.roles.admin);
-    _setupRole(MAINTAINER_ROLE, params.roles.maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, _params.roles.admin);
+    _setupRole(MAINTAINER_ROLE, _params.roles.maintainer);
   }
 
   //----------------------------------------
@@ -152,9 +155,8 @@ contract SynthereumFixedRateWrapper is
     returns (uint256 amountTokens)
   {
     pegCollateralToken.transferFrom(_msgSender(), address(this), _collateral);
-    amountTokens =
-      (_collateral * (10**(18 - pegCollateralToken.decimals())) * rate) /
-      PRECISION;
+    amountTokens = (_collateral * (10**(18 - pegCollateralToken.decimals())))
+      .mul(rate);
     totalDeposited = totalDeposited + _collateral;
     totalSyntheticTokens += amountTokens;
     fixedRateToken.mint(_recipient, amountTokens);
@@ -178,9 +180,9 @@ contract SynthereumFixedRateWrapper is
       'Not enought tokens to unwrap'
     );
     fixedRateToken.transferFrom(_msgSender(), address(this), _tokenAmount);
-    amountCollateral =
-      (totalDeposited * ((_tokenAmount * PRECISION) / totalSyntheticTokens)) /
-      PRECISION;
+    amountCollateral = totalDeposited.mul(
+      _tokenAmount.div(totalSyntheticTokens)
+    );
     fixedRateToken.burn(_tokenAmount);
     totalDeposited = totalDeposited - amountCollateral;
     totalSyntheticTokens -= _tokenAmount;

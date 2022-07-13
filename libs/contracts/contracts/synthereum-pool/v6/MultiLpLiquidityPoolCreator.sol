@@ -205,22 +205,6 @@ contract SynthereumMultiLpLiquidityPoolCreator {
       .lendingId;
   }
 
-  // Set lending module params of the pool in the LendingStorageManager
-  function _setPoolParams(
-    address _pool,
-    address _collateral,
-    LendingManagerParams calldata _lendingManagerParams
-  ) internal {
-    _getLendingStorageManager().setPoolStorage(
-      _lendingManagerParams.lendingId,
-      _pool,
-      _collateral,
-      _lendingManagerParams.interestBearingToken,
-      _lendingManagerParams.daoInterestShare,
-      _lendingManagerParams.jrtBuybackShare
-    );
-  }
-
   function _getLendingManager() internal view returns (ILendingManager) {
     return
       ILendingManager(
@@ -241,5 +225,21 @@ contract SynthereumMultiLpLiquidityPoolCreator {
           SynthereumInterfaces.LendingStorageManager
         )
       );
+  }
+
+  // Set lending module params of the pool in the LendingStorageManager
+  function _setPoolParams(
+    address _pool,
+    address _collateral,
+    LendingManagerParams calldata _lendingManagerParams
+  ) internal {
+    _getLendingStorageManager().setPoolStorage(
+      _lendingManagerParams.lendingId,
+      _pool,
+      _collateral,
+      _lendingManagerParams.interestBearingToken,
+      _lendingManagerParams.daoInterestShare,
+      _lendingManagerParams.jrtBuybackShare
+    );
   }
 }

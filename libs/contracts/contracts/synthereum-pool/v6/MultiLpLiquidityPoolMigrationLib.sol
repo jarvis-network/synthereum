@@ -169,19 +169,17 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   }
 
   /**
-   * @notice Update storage after the migration splitting fee/bonus of the migration between the LPs
+   * @notice Update storage after the migration, splitting fee/bonus of the migration between the LPs
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
    * @param _sourceCollateralAmount Collateral amount from the source pool
    * @param _actualCollateralAmount Collateral amount of the new pool
    * @param _price Actual price of the pair
-   * @param _finder Synthereum finder
    */
   function updateMigrationStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
     uint256 _sourceCollateralAmount,
     uint256 _actualCollateralAmount,
-    uint256 _price,
-    ISynthereumFinder _finder
+    uint256 _price
   ) external {
     uint256 lpNumbers = _storageParams.activeLPs.length();
     if (lpNumbers > 0) {

@@ -198,7 +198,6 @@ library SynthereumMultiLpLiquidityPoolLib {
     address lp;
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
     uint256 actualCollateralAmount;
-    uint256 newCollateralAmount;
     bool isOvercollateralized;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lpCache = _positionsCache[j];
@@ -945,6 +944,52 @@ library SynthereumMultiLpLiquidityPoolLib {
   }
 
   /**
+   * @notice Calculate and return the max capacity in synth tokens of the pool
+   * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
+   * @param _price Actual price of the pair
+   * @param _collateralDecimals Decimals of the collateral token
+   * @param _finder Synthereum finder
+   * @return maxCapacity Max capacity of the pool
+   */
+  function _calculateMaxCapacity(
+    ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
+    uint256 _price,
+    uint8 _collateralDecimals,
+    ISynthereumFinder _finder
+  ) internal view returns (uint256 maxCapacity) {
+    (uint256 poolInterest, uint256 collateralDeposited) =
+      SynthereumMultiLpLiquidityPoolLib._getLendingInterest(
+        SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder)
+      );
+
+    (
+      SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
+      ,
+
+    ) =
+      SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
+        _storageParams,
+        poolInterest,
+        _price,
+        _storageParams.totalSyntheticAsset,
+        collateralDeposited,
+        _collateralDecimals
+      );
+
+    ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
+    uint256 lpCapacity;
+    for (uint256 j = 0; j < positionsCache.length; j++) {
+      lpPosition = positionsCache[j].lpPosition;
+      lpCapacity = SynthereumMultiLpLiquidityPoolLib._calculateCapacity(
+        lpPosition,
+        _price,
+        _collateralDecimals
+      );
+      maxCapacity += lpCapacity;
+    }
+  }
+
+  /**
    * @notice Calculate profit or loss of each Lp
    * @param _price Actual price of the pair
    * @param _totalSynthTokens Amount of synthetic asset collateralized by the pool
@@ -1343,51 +1388,5 @@ library SynthereumMultiLpLiquidityPoolLib {
       _collateralDecimals
     );
     isOvercollateralized = maxCapacity >= _tokens;
-  }
-
-  /**
-   * @notice Calculate and return the max capacity in synth tokens of the pool
-   * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
-   * @param _price Actual price of the pair
-   * @param _collateralDecimals Decimals of the collateral token
-   * @param _finder Synthereum finder
-   * @return maxCapacity Max capacity of the pool
-   */
-  function _calculateMaxCapacity(
-    ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
-    uint256 _price,
-    uint8 _collateralDecimals,
-    ISynthereumFinder _finder
-  ) internal view returns (uint256 maxCapacity) {
-    (uint256 poolInterest, uint256 collateralDeposited) =
-      SynthereumMultiLpLiquidityPoolLib._getLendingInterest(
-        SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder)
-      );
-
-    (
-      SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
-      ,
-
-    ) =
-      SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
-        _storageParams,
-        poolInterest,
-        _price,
-        _storageParams.totalSyntheticAsset,
-        collateralDeposited,
-        _collateralDecimals
-      );
-
-    ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
-    uint256 lpCapacity;
-    for (uint256 j = 0; j < positionsCache.length; j++) {
-      lpPosition = positionsCache[j].lpPosition;
-      lpCapacity = SynthereumMultiLpLiquidityPoolLib._calculateCapacity(
-        lpPosition,
-        _price,
-        _collateralDecimals
-      );
-      maxCapacity += lpCapacity;
-    }
   }
 }

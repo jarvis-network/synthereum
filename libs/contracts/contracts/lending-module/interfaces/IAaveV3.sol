@@ -42,44 +42,44 @@ interface IPool {
   /**
    * @notice Supplies an `amount` of underlying asset into the reserve, receiving in return overlying aTokens.
    * - E.g. User supplies 100 USDC and gets in return 100 aUSDC
-   * @param asset The address of the underlying asset to supply
-   * @param amount The amount to be supplied
-   * @param onBehalfOf The address that will receive the aTokens, same as msg.sender if the user
+   * @param _asset The address of the underlying asset to supply
+   * @param _amount The amount to be supplied
+   * @param _onBehalfOf The address that will receive the aTokens, same as msg.sender if the user
    *   wants to receive them on his own wallet, or a different address if the beneficiary of aTokens
    *   is a different wallet
-   * @param referralCode Code used to register the integrator originating the operation, for potential rewards.
+   * @param _referralCode Code used to register the integrator originating the operation, for potential rewards.
    *   0 if the action is executed directly by the user, without any middle-man
    **/
   function supply(
-    address asset,
-    uint256 amount,
-    address onBehalfOf,
-    uint16 referralCode
+    address _asset,
+    uint256 _amount,
+    address _onBehalfOf,
+    uint16 _referralCode
   ) external;
 
   /**
    * @notice Withdraws an `amount` of underlying asset from the reserve, burning the equivalent aTokens owned
    * E.g. User has 100 aUSDC, calls withdraw() and receives 100 USDC, burning the 100 aUSDC
-   * @param asset The address of the underlying asset to withdraw
-   * @param amount The underlying amount to be withdrawn
+   * @param _asset The address of the underlying asset to withdraw
+   * @param _amount The underlying amount to be withdrawn
    *   - Send the value type(uint256).max in order to withdraw the whole aToken balance
-   * @param to The address that will receive the underlying, same as msg.sender if the user
+   * @param _to The address that will receive the underlying, same as msg.sender if the user
    *   wants to receive it on his own wallet, or a different address if the beneficiary is a
    *   different wallet
    * @return The final amount withdrawn
    **/
   function withdraw(
-    address asset,
-    uint256 amount,
-    address to
+    address _asset,
+    uint256 _amount,
+    address _to
   ) external returns (uint256);
 
   /**
    * @notice Returns the state and configuration of the reserve
-   * @param asset The address of the underlying asset of the reserve
+   * @param _asset The address of the underlying asset of the reserve
    * @return The state and configuration data of the reserve
    **/
-  function getReserveData(address asset)
+  function getReserveData(address _asset)
     external
     view
     returns (ReserveData memory);

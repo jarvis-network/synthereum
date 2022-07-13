@@ -35,9 +35,9 @@ import {
 contract SynthereumLiquidityPool is
   ISynthereumLiquidityPoolStorage,
   ISynthereumLiquidityPool,
-  AccessControlEnumerable,
+  ReentrancyGuard,
   ERC2771Context,
-  ReentrancyGuard
+  AccessControlEnumerable
 {
   using SynthereumLiquidityPoolLib for Storage;
   using SynthereumLiquidityPoolLib for Liquidation;

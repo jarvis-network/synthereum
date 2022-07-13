@@ -44,15 +44,6 @@ contract CreditLineCreator {
   ISynthereumFinder public immutable synthereumFinder;
 
   //----------------------------------------
-  // Events
-  //----------------------------------------
-  event CreatedSelfMintingDerivative(
-    address indexed selfMintingAddress,
-    uint8 indexed version,
-    address indexed deployerAddress
-  );
-
-  //----------------------------------------
   // Constructor
   //----------------------------------------
 
@@ -110,12 +101,6 @@ contract CreditLineCreator {
       params.liquidationPercentage,
       params.capMintAmount,
       params.collateralRequirement
-    );
-
-    emit CreatedSelfMintingDerivative(
-      address(creditLine),
-      params.version,
-      msg.sender
     );
   }
 
