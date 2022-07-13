@@ -51,12 +51,24 @@ contract MoneyMarketManager is
   mapping(bytes32 => Implementation) public idToImplementation;
   mapping(bytes32 => mapping(address => uint256)) public moneyMarketBalances;
 
-  event RegisteredImplementation(string id, address implementation, bytes args);
-  event MintAndDeposit(address token, string moneyMarketId, uint256 amount);
-  event RedeemAndBurn(address token, string moneyMarketId, uint256 amount);
+  event RegisteredImplementation(
+    string indexed id,
+    address implementation,
+    bytes args
+  );
+  event MintAndDeposit(
+    address indexed token,
+    string indexed moneyMarketId,
+    uint256 amount
+  );
+  event RedeemAndBurn(
+    address indexed token,
+    string indexed moneyMarketId,
+    uint256 amount
+  );
   event WithdrawRevenues(
-    address token,
-    string moneyMarketId,
+    address indexed token,
+    string indexed moneyMarketId,
     uint256 amount,
     address receiver
   );
