@@ -73,5 +73,15 @@
     "contractName": "SynthereumFixedRateFactory",
     "address": "0x0b247cf7d9A170acC7DD5b762c07Cfc02Cae4501",
     "transactionHash": "0x558f56b3a459bfa3f2040a5cd9a8f33c0c203145f04fcb6df6efcc9f3628cd46"
+  },
+  {
+    "contractName": "MoneyMarketManager",
+    "address": "0x2ee8dB7F1f64dd590a35AC3C64B3C18aC11b0a8D",
+    "transactionHash": "0xbf7207a6a43ae97b7f47db1a0dffecf2167fe23e8f7ef1c343e47466d1789579"
+  },
+  {
+    "contractName": "JarvisBrrCompound",
+    "address": "0x0e19A471cB537F88F9E4973c22B8b4Dfda72Ce9E",
+    "transactionHash": "0xbc9e2f6d4b0fc6aa9092c744f2b1214e4866bc712c2392cfce7b404a61b2d9a9"
   }
 ]
