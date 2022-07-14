@@ -1,19 +1,12 @@
 {
   "80001": {
-    "aave": {
-      "implementation": "Aave",
+    "AaveV3": {
       "deploy": true,
-      "extraArgs": "0x0000"
+      "moneyManager": "0x8FEceC5629EED60D18Fd3438aae4a8E69723D190"
     },
-    "marketxyz": {
-      "implementation": "Compound",
+    "Compound": {
       "deploy": true,
-      "extraArgs": "0x0000"
-    },
-    "midas": {
-      "implementation": "Compound",
-      "deploy": true,
-      "extraArgs": "0x0000"
+      "ids": ["MarketXyz", "Midas"]
     }
   }
 }
