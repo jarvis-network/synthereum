@@ -65,8 +65,8 @@
       "liquidationReward": "700000000000000000",
       "lendingId": "AaveV3",
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "100000000000000000",
-      "jrtBuybackShare": "500000000000000000"
+      "daoInterestShare": "600000000000000000",
+      "jrtBuybackShare": "800000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
@@ -79,8 +79,8 @@
       "liquidationReward": "700000000000000000",
       "lendingId": "AaveV3",
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "100000000000000000",
-      "jrtBuybackShare": "500000000000000000"
+      "daoInterestShare": "600000000000000000",
+      "jrtBuybackShare": "800000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
@@ -93,8 +93,8 @@
       "liquidationReward": "700000000000000000",
       "lendingId": "AaveV3",
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "100000000000000000",
-      "jrtBuybackShare": "500000000000000000"
+      "daoInterestShare": "600000000000000000",
+      "jrtBuybackShare": "800000000000000000"
     }
   ],
   "137": [
