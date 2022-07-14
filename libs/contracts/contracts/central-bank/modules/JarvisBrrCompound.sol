@@ -18,21 +18,21 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   using SafeERC20 for IERC20;
 
   function deposit(
-    IMintableBurnableERC20 jSynthAsset,
-    uint256 amount,
-    bytes calldata extraArgs,
-    bytes calldata implementationArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    uint256 _amount,
+    bytes calldata _extraArgs,
+    bytes calldata _implementationArgs
   ) external override returns (uint256 tokensOut) {
-    require(jSynthAsset.balanceOf(address(this)) >= amount, 'Wrong balance');
+    require(_jSynthAsset.balanceOf(address(this)) >= _amount, 'Wrong balance');
 
     // initialise compound interest token
-    address cTokenAddress = abi.decode(implementationArgs, (address));
+    address cTokenAddress = abi.decode(_implementationArgs, (address));
     ICErc20 cToken = ICErc20(cTokenAddress);
     uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
 
     // approve and deposit underlying
-    jSynthAsset.safeIncreaseAllowance(cTokenAddress, amount);
-    uint256 success = cToken.mint(amount);
+    _jSynthAsset.safeIncreaseAllowance(cTokenAddress, _amount);
+    uint256 success = cToken.mint(_amount);
     require(success == 0, 'Failed mint');
 
     // calculate the cTokens out
@@ -41,27 +41,27 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   }
 
   function withdraw(
-    IMintableBurnableERC20 jSynthAsset,
-    uint256 jSynthAmount,
-    bytes calldata extraArgs,
-    bytes calldata implementationArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    uint256 _jSynthAmount,
+    bytes calldata _extraArgs,
+    bytes calldata _implementationArgs
   ) external override returns (uint256 jSynthOut) {
-    address cTokenAddr = abi.decode(implementationArgs, (address));
+    address cTokenAddr = abi.decode(_implementationArgs, (address));
     // initialise compound interest token
     ICErc20 cToken = ICErc20(cTokenAddr);
 
     // redeem underlying - internally fails with an invalid amount
-    cToken.redeemUnderlying(jSynthAmount);
+    cToken.redeemUnderlying(_jSynthAmount);
 
-    jSynthOut = jSynthAmount;
+    jSynthOut = _jSynthAmount;
   }
 
   function getTotalBalance(
-    address jSynth,
-    bytes calldata args,
-    bytes calldata implementationArgs
+    address _jSynth,
+    bytes calldata _args,
+    bytes calldata _implementationArgs
   ) external override returns (uint256 totalJSynth) {
-    ICErc20 cToken = ICErc20(abi.decode(implementationArgs, (address)));
+    ICErc20 cToken = ICErc20(abi.decode(_implementationArgs, (address)));
     totalJSynth = cToken.balanceOfUnderlying(msg.sender);
   }
 }

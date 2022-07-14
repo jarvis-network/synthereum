@@ -86,60 +86,60 @@ contract MoneyMarketManager is
   }
 
   function registerMoneyMarketImplementation(
-    string calldata id,
-    address implementation,
-    bytes calldata extraArgs
+    string calldata _id,
+    address _implementation,
+    bytes calldata _extraArgs
   ) external override onlyMaintainer nonReentrant {
-    bytes32 implementationId = keccak256(abi.encode(id));
+    bytes32 implementationId = keccak256(abi.encode(_id));
     require(implementationId != 0x00, 'Wrong module identifier');
 
     idToImplementation[implementationId] = Implementation(
-      implementation,
-      extraArgs
+      _implementation,
+      _extraArgs
     );
 
-    emit RegisteredImplementation(id, implementation, extraArgs);
+    emit RegisteredImplementation(_id, _implementation, _extraArgs);
   }
 
   function deposit(
-    IMintableBurnableERC20 token,
-    uint256 amount,
-    string calldata moneyMarketId,
-    bytes calldata implementationCallArgs
+    IMintableBurnableERC20 _token,
+    uint256 _amount,
+    string calldata _moneyMarketId,
+    bytes calldata _implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 tokensOut) {
     // trigger minting of synths from the printer contract
     address jarvisBrr =
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.JarvisBrrrrr
       );
-    IJarvisBrrrrr(jarvisBrr).mint(token, amount);
+    IJarvisBrrrrr(jarvisBrr).mint(_token, _amount);
 
     // deposit into money market through delegate-call
-    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    bytes32 hashId = keccak256(abi.encode(_moneyMarketId));
     Implementation memory implementation = idToImplementation[hashId];
 
-    moneyMarketBalances[hashId][address(token)] += amount;
+    moneyMarketBalances[hashId][address(_token)] += _amount;
 
     bytes memory result =
       implementation.implementationAddr.functionDelegateCall(
         abi.encodeWithSignature(
           DEPOSIT_SIG,
-          address(token),
-          amount,
+          address(_token),
+          _amount,
           implementation.moneyMarketArgs,
-          implementationCallArgs
+          _implementationCallArgs
         )
       );
     tokensOut = abi.decode(result, (uint256));
 
-    emit MintAndDeposit(address(token), moneyMarketId, amount);
+    emit MintAndDeposit(address(_token), _moneyMarketId, _amount);
   }
 
   function withdraw(
-    IMintableBurnableERC20 token,
-    uint256 amount,
-    string calldata moneyMarketId,
-    bytes calldata implementationCallArgs
+    IMintableBurnableERC20 _token,
+    uint256 _amount,
+    string calldata _moneyMarketId,
+    bytes calldata _implementationCallArgs
   )
     external
     override
@@ -148,10 +148,10 @@ contract MoneyMarketManager is
     returns (uint256 burningAmount)
   {
     // withdraw from money market through delegate call
-    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    bytes32 hashId = keccak256(abi.encode(_moneyMarketId));
     Implementation memory implementation = idToImplementation[hashId];
     require(
-      amount <= moneyMarketBalances[hashId][address(token)],
+      _amount <= moneyMarketBalances[hashId][address(_token)],
       'Max amount limit'
     );
 
@@ -159,46 +159,46 @@ contract MoneyMarketManager is
       implementation.implementationAddr.functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
-          address(token),
-          amount,
+          address(_token),
+          _amount,
           implementation.moneyMarketArgs,
-          implementationCallArgs
+          _implementationCallArgs
         )
       );
 
     burningAmount = abi.decode(result, (uint256));
-    moneyMarketBalances[hashId][address(token)] -= burningAmount;
+    moneyMarketBalances[hashId][address(_token)] -= burningAmount;
 
     // trigger burning of tokens on the printer contract
     address jarvisBrr =
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.JarvisBrrrrr
       );
-    token.safeIncreaseAllowance(jarvisBrr, burningAmount);
-    IJarvisBrrrrr(jarvisBrr).redeem(token, burningAmount);
+    _token.safeIncreaseAllowance(jarvisBrr, burningAmount);
+    IJarvisBrrrrr(jarvisBrr).redeem(_token, burningAmount);
 
-    emit RedeemAndBurn(address(token), moneyMarketId, burningAmount);
+    emit RedeemAndBurn(address(_token), _moneyMarketId, burningAmount);
   }
 
   function withdrawRevenue(
-    IMintableBurnableERC20 jSynthAsset,
-    address recipient,
-    string memory moneyMarketId,
-    bytes memory implementationCallArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    address _recipient,
+    string memory _moneyMarketId,
+    bytes memory _implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 jSynthOut) {
-    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    bytes32 hashId = keccak256(abi.encode(_moneyMarketId));
     Implementation memory implementation = idToImplementation[hashId];
 
     // get total balance from money market implementation (deposit + interest)
     uint256 totalBalance =
       IJarvisBrrMoneyMarket(implementation.implementationAddr).getTotalBalance(
-        address(jSynthAsset),
+        address(_jSynthAsset),
         implementation.moneyMarketArgs,
-        implementationCallArgs
+        _implementationCallArgs
       );
 
     uint256 revenues =
-      totalBalance - moneyMarketBalances[hashId][address(jSynthAsset)];
+      totalBalance - moneyMarketBalances[hashId][address(_jSynthAsset)];
     require(revenues > 0, 'No revenues');
 
     // withdraw revenues
@@ -206,10 +206,10 @@ contract MoneyMarketManager is
       implementation.implementationAddr.functionDelegateCall(
         abi.encodeWithSignature(
           WITHDRAW_SIG,
-          address(jSynthAsset),
+          address(_jSynthAsset),
           revenues,
           implementation.moneyMarketArgs,
-          implementationCallArgs
+          _implementationCallArgs
         )
       );
 
@@ -224,36 +224,36 @@ contract MoneyMarketManager is
         );
       uint256 burningAmount = jSynthOut - revenues;
 
-      jSynthAsset.safeIncreaseAllowance(jarvisBrr, burningAmount);
-      IJarvisBrrrrr(jarvisBrr).redeem(jSynthAsset, burningAmount);
-      moneyMarketBalances[hashId][address(jSynthAsset)] -= burningAmount;
+      _jSynthAsset.safeIncreaseAllowance(jarvisBrr, burningAmount);
+      IJarvisBrrrrr(jarvisBrr).redeem(_jSynthAsset, burningAmount);
+      moneyMarketBalances[hashId][address(_jSynthAsset)] -= burningAmount;
     }
 
-    jSynthAsset.transfer(recipient, revenues);
+    _jSynthAsset.transfer(_recipient, revenues);
 
     emit WithdrawRevenues(
-      address(jSynthAsset),
-      moneyMarketId,
+      address(_jSynthAsset),
+      _moneyMarketId,
       revenues,
-      recipient
+      _recipient
     );
   }
 
   function getMoneyMarketDeposited(
-    string calldata moneyMarketId,
-    address jSynthAsset
+    string calldata _moneyMarketId,
+    address _jSynthAsset
   ) external view override returns (uint256 amount) {
-    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
-    amount = moneyMarketBalances[hashId][jSynthAsset];
+    bytes32 hashId = keccak256(abi.encode(_moneyMarketId));
+    amount = moneyMarketBalances[hashId][_jSynthAsset];
   }
 
-  function getMoneyMarketImplementation(string calldata moneyMarketId)
+  function getMoneyMarketImplementation(string calldata _moneyMarketId)
     external
     view
     override
     returns (Implementation memory implementation)
   {
-    bytes32 hashId = keccak256(abi.encode(moneyMarketId));
+    bytes32 hashId = keccak256(abi.encode(_moneyMarketId));
     implementation = idToImplementation[hashId];
     require(
       implementation.implementationAddr != address(0),

@@ -7,48 +7,48 @@ import {
 interface IJarvisBrrrrr {
   /**
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
-   * @param token Synthetic token address to mint
-   * @param amount Amount of tokens to mint
+   * @param _token Synthetic token address to mint
+   * @param _amount Amount of tokens to mint
    * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function mint(IMintableBurnableERC20 token, uint256 amount)
+  function mint(IMintableBurnableERC20 _token, uint256 _amount)
     external
     returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Burns synthetic token without releasing collateral from the pre-defined address (SynthereumMoneyMarketManager)
-   * @param token Synthetic token address to burn
-   * @param amount Amount of tokens to burn
+   * @param _token Synthetic token address to burn
+   * @param _amount Amount of tokens to burn
    * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function redeem(IMintableBurnableERC20 token, uint256 amount)
+  function redeem(IMintableBurnableERC20 _token, uint256 _amount)
     external
     returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Sets the max circulating supply that can be minted for a specific token - only manager can set this
-   * @param token Synthetic token address to set
-   * @param newMaxSupply New Max supply value of the token
+   * @param _token Synthetic token address to set
+   * @param _newMaxSupply New Max supply value of the token
    */
-  function setMaxSupply(IMintableBurnableERC20 token, uint256 newMaxSupply)
+  function setMaxSupply(IMintableBurnableERC20 _token, uint256 _newMaxSupply)
     external;
 
   /**
    * @notice Returns the max circulating supply of a synthetic token
-   * @param token Synthetic token address
+   * @param _token Synthetic token address
    * @return maxCircSupply Max supply of the token
    */
-  function maxSupply(IMintableBurnableERC20 token)
+  function maxSupply(IMintableBurnableERC20 _token)
     external
     view
     returns (uint256 maxCircSupply);
 
   /**
    * @notice Returns the circulating supply of a synthetic token
-   * @param token Synthetic token address
+   * @param _token Synthetic token address
    * @return circSupply Circulating supply of the token
    */
-  function supply(IMintableBurnableERC20 token)
+  function supply(IMintableBurnableERC20 _token)
     external
     view
     returns (uint256 circSupply);

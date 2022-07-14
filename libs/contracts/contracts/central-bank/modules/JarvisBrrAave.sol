@@ -18,24 +18,21 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   using SafeERC20 for IERC20;
 
   function deposit(
-    IMintableBurnableERC20 jSynthAsset,
-    uint256 amount,
-    bytes calldata extraArgs,
-    bytes calldata implementationArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    uint256 _amount,
+    bytes calldata _extraArgs,
+    bytes calldata _implementationArgs
   ) external override returns (uint256 tokensOut) {
-    require(jSynthAsset.balanceOf(address(this)) >= amount, 'Wrong balance');
-    IERC20 interestToken =
-      IERC20(interestBearingToken(address(jSynthAsset), extraArgs));
+    require(_jSynthAsset.balanceOf(address(this)) >= _amount, 'Wrong balance');
+    (address moneyMarket, IERC20 interestToken) =
+      interestBearingToken(address(_jSynthAsset), _extraArgs);
 
     uint256 aTokenBalanceBefore = interestToken.balanceOf(address(this));
 
-    // aave deposit
-    address moneyMarket = abi.decode(extraArgs, (address));
-
-    jSynthAsset.safeIncreaseAllowance(moneyMarket, amount);
+    _jSynthAsset.safeIncreaseAllowance(moneyMarket, _amount);
     IPool(moneyMarket).supply(
-      address(jSynthAsset),
-      amount,
+      address(_jSynthAsset),
+      _amount,
       address(this),
       uint16(0)
     );
@@ -46,51 +43,48 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   }
 
   function withdraw(
-    IMintableBurnableERC20 jSynthAsset,
-    uint256 aTokensAmount,
-    bytes calldata extraArgs,
-    bytes calldata implementationArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    uint256 _aTokensAmount,
+    bytes calldata _extraArgs,
+    bytes calldata _implementationArgs
   ) external override returns (uint256 jSynthOut) {
-    IERC20 interestToken =
-      IERC20(interestBearingToken(address(jSynthAsset), extraArgs));
+    (address moneyMarket, IERC20 interestToken) =
+      interestBearingToken(address(_jSynthAsset), _extraArgs);
 
     require(
-      interestToken.balanceOf(address(this)) >= aTokensAmount,
+      interestToken.balanceOf(address(this)) >= _aTokensAmount,
       'Wrong balance'
     );
 
-    uint256 jSynthBalanceBefore = jSynthAsset.balanceOf(address(this));
+    uint256 jSynthBalanceBefore = _jSynthAsset.balanceOf(address(this));
 
-    // aave withdraw - approve
-    address moneyMarket = abi.decode(extraArgs, (address));
-
-    interestToken.safeIncreaseAllowance(moneyMarket, aTokensAmount);
+    interestToken.safeIncreaseAllowance(moneyMarket, _aTokensAmount);
     IPool(moneyMarket).withdraw(
-      address(jSynthAsset),
-      aTokensAmount,
+      address(_jSynthAsset),
+      _aTokensAmount,
       address(this)
     );
 
-    uint256 jSynthBalanceAfter = jSynthAsset.balanceOf(address(this));
+    uint256 jSynthBalanceAfter = _jSynthAsset.balanceOf(address(this));
 
     jSynthOut = jSynthBalanceAfter - jSynthBalanceBefore;
   }
 
   function getTotalBalance(
-    address jSynth,
-    bytes calldata args,
-    bytes calldata implementationArgs
+    address _jSynth,
+    bytes calldata _args,
+    bytes calldata _implementationArgs
   ) external view override returns (uint256 totalJSynth) {
-    IERC20 interestToken = IERC20(interestBearingToken(jSynth, args));
+    (, IERC20 interestToken) = interestBearingToken(_jSynth, _args);
     totalJSynth = interestToken.balanceOf(msg.sender);
   }
 
-  function interestBearingToken(address jSynth, bytes memory args)
+  function interestBearingToken(address _jSynth, bytes memory _args)
     internal
     view
-    returns (address token)
+    returns (address moneyMarket, IERC20 token)
   {
-    address moneyMarket = abi.decode(args, (address));
-    token = IPool(moneyMarket).getReserveData(jSynth).aTokenAddress;
+    moneyMarket = abi.decode(_args, (address));
+    token = IERC20(IPool(moneyMarket).getReserveData(_jSynth).aTokenAddress);
   }
 }

@@ -15,79 +15,79 @@ interface IMoneyMarketManager {
 
   /**
    * @notice Registers an address implementing the IJarvisBrrMoneyMarket interface
-   * @param id Identifier of the implementation
-   * @param implementation Address of the implementation
-   * @param extraArgs bytes Encoded args for the implementation
+   * @param _id Identifier of the implementation
+   * @param _implementation Address of the implementation
+   * @param _extraArgs bytes Encoded args for the implementation
    */
   function registerMoneyMarketImplementation(
-    string calldata id,
-    address implementation,
-    bytes calldata extraArgs
+    string calldata _id,
+    address _implementation,
+    bytes calldata _extraArgs
   ) external;
 
   /**
    * @notice deposits printed jSynth into the money market
-   * @param jSynthAsset address of the jSynth token to deposit
-   * @param amount of jSynth to deposit
-   * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
-   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
+   * @param _jSynthAsset address of the jSynth token to deposit
+   * @param _amount of jSynth to deposit
+   * @param _moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
+   * @param _implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return tokensOut amount of eventual tokens received from money market
    */
   function deposit(
-    IMintableBurnableERC20 jSynthAsset,
-    uint256 amount,
-    string calldata moneyMarketId,
-    bytes calldata implementationCallArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    uint256 _amount,
+    string calldata _moneyMarketId,
+    bytes calldata _implementationCallArgs
   ) external returns (uint256 tokensOut);
 
   /**
    * @notice withdraw jSynth from the money market
    * @dev the same amount must be burned in the same tx
-   * @param interestTokenAmount of interest tokens to withdraw
-   * @param jSynthAsset address of the jSynth token to withdraw
-   * @param moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
-   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
+   * @param _jSynthAsset address of the jSynth token to withdraw
+   * @param _interestTokenAmount of interest tokens to withdraw
+   * @param _moneyMarketId identifier of the money market implementation contract to withdraw the tokens from money market
+   * @param _implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return jSynthOut amount of j Synth in output
    */
   function withdraw(
-    IMintableBurnableERC20 jSynthAsset,
-    uint256 interestTokenAmount,
-    string calldata moneyMarketId,
-    bytes calldata implementationCallArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    uint256 _interestTokenAmount,
+    string calldata _moneyMarketId,
+    bytes calldata _implementationCallArgs
   ) external returns (uint256 jSynthOut);
 
   /**
    * @notice withdraw generated interest from deposits in money market and sends them to dao
-   * @param jSynthAsset address of the jSynth token to get revenues of
-   * @param recipient address of recipient of revenues
-   * @param moneyMarketId identifier of the money market implementation contract
-   * @param implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
+   * @param _jSynthAsset address of the jSynth token to get revenues of
+   * @param _recipient address of recipient of revenues
+   * @param _moneyMarketId identifier of the money market implementation contract
+   * @param _implementationCallArgs bytes encoded arguments necessary for this specific implementation call (ie cToken)
    * @return jSynthOut amount of jSynth sent to the DAO
    */
   function withdrawRevenue(
-    IMintableBurnableERC20 jSynthAsset,
-    address recipient,
-    string memory moneyMarketId,
-    bytes memory implementationCallArgs
+    IMintableBurnableERC20 _jSynthAsset,
+    address _recipient,
+    string memory _moneyMarketId,
+    bytes memory _implementationCallArgs
   ) external returns (uint256 jSynthOut);
 
   /**
    * @notice reads the amount of jSynth currently minted + deposited into a money market
-   * @param moneyMarketId identifier of the money market implementation contract
-   * @param jSynthAsset address of the jSynth token to get amount
+   * @param _moneyMarketId identifier of the money market implementation contract
+   * @param _jSynthAsset address of the jSynth token to get amount
    * @return amount amount of jSynth currently minted + deposited into moneyMarketId
    */
   function getMoneyMarketDeposited(
-    string calldata moneyMarketId,
-    address jSynthAsset
+    string calldata _moneyMarketId,
+    address _jSynthAsset
   ) external view returns (uint256 amount);
 
   /**
    * @notice reads implementation data of a supported money market
-   * @param moneyMarketId identifier of the money market implementation contract
+   * @param _moneyMarketId identifier of the money market implementation contract
    * @return implementation Address of the implementation and global data bytes
    */
-  function getMoneyMarketImplementation(string calldata moneyMarketId)
+  function getMoneyMarketImplementation(string calldata _moneyMarketId)
     external
     view
     returns (Implementation memory implementation);
