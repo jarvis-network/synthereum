@@ -90,11 +90,11 @@ addPublicNetwork(config, 43113);
 addPublicNetwork(config, 43114);
 
 // set hardat forking for public testnets
-if (process.env.FORKCHAINID !== undefined && process.env.BLOCK !== undefined) {
+if (process.env.FORKCHAINID) {
   setForkingUrl(
     config,
     parseInt(process.env.FORKCHAINID, 10),
-    parseInt(process.env.BLOCK, 10),
+    process.env.BLOCK ? parseInt(process.env.BLOCK, 10) : undefined,
   );
 }
 
