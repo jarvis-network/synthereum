@@ -1,15 +1,15 @@
 {
   "80001": {
     "EURUSD": {
-      "initialPrice": "1.1773",
+      "initialPrice": "1.0000",
       "maxSpread": "0.00000003472"
     },
     "CHFUSD": {
-      "initialPrice": "1.0875",
+      "initialPrice": "1.0175",
       "maxSpread": "0.00000003472"
     },
     "GBPUSD": {
-      "initialPrice": "1.3747",
+      "initialPrice": "1.1828",
       "maxSpread": "0.00000003472"
     }
   },
