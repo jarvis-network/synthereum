@@ -1032,10 +1032,15 @@ library SynthereumMultiLpLiquidityPoolMainLib {
         info.overCollateralization = lpPosition.overCollateralization;
         info.capacity = positionLPInfoArgs.capacityShares[j];
         info.utilization = lpPosition.actualCollateralAmount != 0
-          ? (
-            positionLPInfoArgs.tokensValue.mul(lpPosition.overCollateralization)
+          ? PreciseUnitMath.min(
+            (
+              positionLPInfoArgs.tokensValue.mul(
+                lpPosition.overCollateralization
+              )
+            )
+              .div(lpPosition.actualCollateralAmount),
+            PreciseUnitMath.PRECISE_UNIT
           )
-            .div(lpPosition.actualCollateralAmount)
           : lpPosition.tokensCollateralized > 0
           ? PreciseUnitMath.PRECISE_UNIT
           : 0;
@@ -1074,24 +1079,28 @@ library SynthereumMultiLpLiquidityPoolMainLib {
           : 0;
       } else {
         positionLPInfoArgs.utilization = lpPosition.actualCollateralAmount != 0
-          ? (
-            positionLPInfoArgs.tokensValue.mul(lpPosition.overCollateralization)
+          ? PreciseUnitMath.min(
+            (
+              positionLPInfoArgs.tokensValue.mul(
+                lpPosition.overCollateralization
+              )
+            )
+              .div(lpPosition.actualCollateralAmount),
+            PreciseUnitMath.PRECISE_UNIT
           )
-            .div(lpPosition.actualCollateralAmount)
           : lpPosition.tokensCollateralized > 0
           ? PreciseUnitMath.PRECISE_UNIT
           : 0;
         positionLPInfoArgs.totalUtilization += positionLPInfoArgs.utilization;
       }
     }
-    info.interestShares =
-      (info.mintShares +
-        (
-          positionLPInfoArgs.totalUtilization != 0
-            ? info.utilization.div(positionLPInfoArgs.totalUtilization)
-            : 0
-        )) /
-      2;
+    info.interestShares = (positionLPInfoArgs.totalCapacity > 0 &&
+      positionLPInfoArgs.totalUtilization > 0)
+      ? ((info.mintShares +
+        (info.utilization.div(positionLPInfoArgs.totalUtilization))) / 2)
+      : positionLPInfoArgs.totalUtilization == 0
+      ? info.mintShares
+      : info.utilization.div(positionLPInfoArgs.totalUtilization);
     return info;
   }
 

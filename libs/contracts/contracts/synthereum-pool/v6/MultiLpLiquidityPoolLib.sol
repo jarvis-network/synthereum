@@ -697,22 +697,49 @@ library SynthereumMultiLpLiquidityPoolLib {
     );
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
     tempInterstArguments.remainingInterest = _totalInterests;
-    for (uint256 j = 0; j < lpNumbers; j++) {
-      tempInterstArguments.capacityShare = tempInterstArguments
-        .isTotCapacityNotZero
-        ? capacityShares[j].div(tempInterstArguments.totalCapacity)
-        : 0;
-      tempInterstArguments.utilizationShare = tempInterstArguments
-        .isTotUtilizationNotZero
-        ? utilizationShares[j].div(tempInterstArguments.totalUtilization)
-        : 0;
-      tempInterstArguments.interest = _totalInterests.mul(
-        (tempInterstArguments.capacityShare +
-          tempInterstArguments.utilizationShare) / 2
-      );
-      lpPosition = _positionsCache[j].lpPosition;
-      lpPosition.actualCollateralAmount += tempInterstArguments.interest;
-      tempInterstArguments.remainingInterest -= tempInterstArguments.interest;
+    if (
+      tempInterstArguments.isTotCapacityNotZero &&
+      tempInterstArguments.isTotUtilizationNotZero
+    ) {
+      for (uint256 j = 0; j < lpNumbers; j++) {
+        tempInterstArguments.capacityShare = capacityShares[j].div(
+          tempInterstArguments.totalCapacity
+        );
+        tempInterstArguments.utilizationShare = utilizationShares[j].div(
+          tempInterstArguments.totalUtilization
+        );
+        tempInterstArguments.interest = _totalInterests.mul(
+          (tempInterstArguments.capacityShare +
+            tempInterstArguments.utilizationShare) / 2
+        );
+        lpPosition = _positionsCache[j].lpPosition;
+        lpPosition.actualCollateralAmount += tempInterstArguments.interest;
+        tempInterstArguments.remainingInterest -= tempInterstArguments.interest;
+      }
+    } else if (!tempInterstArguments.isTotUtilizationNotZero) {
+      for (uint256 j = 0; j < lpNumbers; j++) {
+        tempInterstArguments.capacityShare = capacityShares[j].div(
+          tempInterstArguments.totalCapacity
+        );
+        tempInterstArguments.interest = _totalInterests.mul(
+          tempInterstArguments.capacityShare
+        );
+        lpPosition = _positionsCache[j].lpPosition;
+        lpPosition.actualCollateralAmount += tempInterstArguments.interest;
+        tempInterstArguments.remainingInterest -= tempInterstArguments.interest;
+      }
+    } else {
+      for (uint256 j = 0; j < lpNumbers; j++) {
+        tempInterstArguments.utilizationShare = utilizationShares[j].div(
+          tempInterstArguments.totalUtilization
+        );
+        tempInterstArguments.interest = _totalInterests.mul(
+          tempInterstArguments.utilizationShare
+        );
+        lpPosition = _positionsCache[j].lpPosition;
+        lpPosition.actualCollateralAmount += tempInterstArguments.interest;
+        tempInterstArguments.remainingInterest -= tempInterstArguments.interest;
+      }
     }
 
     lpPosition = _positionsCache[mostFundedIndex].lpPosition;
