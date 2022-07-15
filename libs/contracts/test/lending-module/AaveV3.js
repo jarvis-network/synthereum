@@ -368,6 +368,7 @@ contract('AaveV3 Lending module', accounts => {
     it('Allows maintainer to set new swap module', async () => {
       let newSwapModule = accounts[10];
 
+      await proxy.addSwapProtocol(newSwapModule, { from: maintainer });
       await proxy.setSwapModule(USDC, newSwapModule, { from: maintainer });
 
       let expectedModule = await storageManager.getCollateralSwapModule.call(
@@ -376,6 +377,7 @@ contract('AaveV3 Lending module', accounts => {
       assert.equal(expectedModule, newSwapModule);
 
       // reset to original
+      await proxy.removeSwapProtocol(newSwapModule, { from: maintainer });
       await proxy.setSwapModule(USDC, ZERO_ADDRESS, { from: maintainer });
     });
 
@@ -625,7 +627,7 @@ contract('AaveV3 Lending module', accounts => {
     it('Reverts if msg.sender is not a registered pool', async () => {
       await truffleAssert.reverts(
         proxy.deposit(10, { from: user }),
-        'Not allowed',
+        'Not existing pool',
       );
     });
 
@@ -757,7 +759,7 @@ contract('AaveV3 Lending module', accounts => {
     it('Reverts if msg.sender is not a registered pool', async () => {
       await truffleAssert.reverts(
         proxy.withdraw(10, user, { from: user }),
-        'Not allowed',
+        'Not existing pool',
       );
     });
 
@@ -902,6 +904,7 @@ contract('AaveV3 Lending module', accounts => {
 
     it('Correctly claim and swap to JRT', async () => {
       let jrtSwap = await JRTSWAP.new();
+      await proxy.addSwapProtocol(jrtSwap.address, { from: maintainer });
       await proxy.setSwapModule(USDC, jrtSwap.address, { from: maintainer });
 
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
@@ -1167,7 +1170,7 @@ contract('AaveV3 Lending module', accounts => {
         proxy.updateAccumulatedInterest({
           from: user,
         }),
-        'Not allowed',
+        'Not existing pool',
       );
     });
 
@@ -1294,7 +1297,7 @@ contract('AaveV3 Lending module', accounts => {
           proxy.migrateLendingModule('aave', accounts[5], 10, {
             from: user,
           }),
-          'Not allowed',
+          'Not existing pool',
         );
       });
 
@@ -1331,9 +1334,11 @@ contract('AaveV3 Lending module', accounts => {
           from: maintainer,
         });
 
-        let poolStorageAft = await storageManager.getPoolData.call(
-          poolMock.address,
+        await truffleAssert.reverts(
+          storageManager.getPoolData.call(poolMock.address),
+          'Not existing pool',
         );
+
         let newPoolStorageAft = await storageManager.getPoolData.call(
           newPool.address,
         );
@@ -1370,22 +1375,6 @@ contract('AaveV3 Lending module', accounts => {
         assert.equal(
           poolStorageBefore.poolData.unclaimedDaoCommission,
           newPoolStorageAft.poolData.unclaimedDaoCommission,
-        );
-
-        // check old pool data is reset
-        assert.equal(poolStorageAft.lendingInfo.lendingModule, ZERO_ADDRESS);
-        assert.equal(poolStorageAft.poolData.collateral, ZERO_ADDRESS);
-        assert.equal(
-          poolStorageAft.poolData.interestBearingToken,
-          ZERO_ADDRESS,
-        );
-        assert.equal(poolStorageAft.poolData.jrtBuybackShare, toWei('0'));
-        assert.equal(poolStorageAft.poolData.daoInterestShare, toWei('0'));
-        assert.equal(poolStorageAft.poolData.collateralDeposited, toWei('0'));
-        assert.equal(poolStorageAft.poolData.unclaimedDaoJRT, toWei('0'));
-        assert.equal(
-          poolStorageAft.poolData.unclaimedDaoCommission,
-          toWei('0'),
         );
       });
     });
