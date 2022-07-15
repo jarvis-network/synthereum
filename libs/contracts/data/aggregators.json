@@ -94,7 +94,7 @@
       "intermediatePairs": []
     }
   },
-  "31337": {
+  "137": {
     "EURUSD": {
       "type": 0,
       "aggregator": "0x73366Fe0AA0Ded304479862808e02506FE556a98",
