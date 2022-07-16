@@ -104,8 +104,8 @@ contract SynthereumMultiLpLiquidityPool is
   function initialize(InitializationParams calldata _params)
     external
     override
-    nonReentrant
     isNotInitialized
+    nonReentrant
   {
     finder = _params.finder;
     storageParams.initialize(_params);
@@ -650,12 +650,22 @@ contract SynthereumMultiLpLiquidityPool is
     uint8 _newVersion,
     bytes calldata _extraInputParams
   ) internal override isNotInitialized {
-    storageParams.setStorage(
-      _oldVersion,
-      _storageBytes,
-      _newVersion,
-      _extraInputParams
-    );
+    (address[] memory admins, address[] memory maintainers) =
+      storageParams.setStorage(
+        _oldVersion,
+        _storageBytes,
+        _newVersion,
+        _extraInputParams
+      );
+
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    for (uint256 j = 0; j < admins.length; j++) {
+      _setupRole(DEFAULT_ADMIN_ROLE, admins[j]);
+    }
+    for (uint256 j = 0; j < maintainers.length; j++) {
+      _setupRole(MAINTAINER_ROLE, maintainers[j]);
+    }
   }
 
   /**
@@ -699,13 +709,30 @@ contract SynthereumMultiLpLiquidityPool is
       bytes memory storageBytes
     )
   {
+    uint256 numberOfRoles = getRoleMemberCount(DEFAULT_ADMIN_ROLE);
+    address[] memory admins = new address[](numberOfRoles);
+    for (uint256 j = 0; j < numberOfRoles; j++) {
+      address newMember = getRoleMember(DEFAULT_ADMIN_ROLE, j);
+      admins[j] = newMember;
+    }
+    numberOfRoles = getRoleMemberCount(MAINTAINER_ROLE);
+    address[] memory maintainers = new address[](numberOfRoles);
+    for (uint256 j = 0; j < numberOfRoles; j++) {
+      address newMember = getRoleMember(MAINTAINER_ROLE, j);
+      maintainers[j] = newMember;
+    }
+
     address[] memory registeredLPsList = storageParams.getRegisteredLPs();
 
     address[] memory activeLPsList = storageParams.getActiveLPs();
 
     (poolVersion, price, storageBytes) = storageParams.encodeStorage(
-      registeredLPsList,
-      activeLPsList,
+      SynthereumMultiLpLiquidityPoolMigrationLib.TempListArgs(
+        admins,
+        maintainers,
+        registeredLPsList,
+        activeLPsList
+      ),
       finder
     );
   }

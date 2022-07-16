@@ -26,5 +26,7 @@ interface ISynthereumPoolMigrationStorage {
     address[] registeredLPsList;
     address[] activeLPsList;
     ISynthereumMultiLpLiquidityPool.LPPosition[] positions;
+    address[] admins;
+    address[] maintainers;
   }
 }

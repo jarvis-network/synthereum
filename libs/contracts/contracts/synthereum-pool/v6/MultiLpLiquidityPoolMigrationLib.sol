@@ -29,6 +29,13 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   using EnumerableSet for EnumerableSet.AddressSet;
   using SafeERC20 for IERC20;
 
+  struct TempListArgs {
+    address[] admins;
+    address[] maintainers;
+    address[] registeredLps;
+    address[] activeLps;
+  }
+
   /**
    * @notice Set new lending protocol for this pool
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
@@ -132,6 +139,8 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
    * @param _storageBytes Pool storage encoded in bytes
    * @param _newVersion Version of the new deployed pool
    * @param _extraInputParams Additive input pool params encoded for the new pool, that are not part of the migrationPool
+   * @return admins List of pool admins
+   * @return maintainers List of pool maintainers
    */
   function setStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
@@ -139,7 +148,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     bytes calldata _storageBytes,
     uint8 _newVersion,
     bytes calldata _extraInputParams
-  ) external {
+  ) external returns (address[] memory admins, address[] memory maintainers) {
     _storageParams.poolVersion = _newVersion;
 
     ISynthereumPoolMigrationStorage.MigrationV6 memory migrationStorage =
@@ -166,6 +175,9 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     for (uint256 j = 0; j < migrationStorage.registeredLPsList.length; j++) {
       _storageParams.registeredLPs.add(migrationStorage.registeredLPsList[j]);
     }
+
+    admins = migrationStorage.admins;
+    maintainers = migrationStorage.maintainers;
   }
 
   /**
@@ -214,8 +226,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   /**
    * @notice Encode storage of the pool in bytes for migration
    * @param _storageParams Struct containing all storage variables of a pool (See Storage struct)
-   * @param _registeredLPsList List of every registered LP
-   * @param _activeLPsList List of every active LP
+   * @param _lists Lists of admins, maintainers, registered and active LPs
    * @param _finder Synthereum finder
    * @return poolVersion Version of the pool
    * @return price Actual price of the pair
@@ -223,8 +234,7 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
    */
   function encodeStorage(
     ISynthereumMultiLpLiquidityPool.Storage storage _storageParams,
-    address[] calldata _registeredLPsList,
-    address[] calldata _activeLPsList,
+    TempListArgs calldata _lists,
     ISynthereumFinder _finder
   )
     external
@@ -241,11 +251,11 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
       _finder,
       priceIdentifier
     );
-    uint256 numberOfLps = _activeLPsList.length;
+    uint256 numberOfLps = _lists.activeLps.length;
     ISynthereumMultiLpLiquidityPool.LPPosition[] memory positions =
       new ISynthereumMultiLpLiquidityPool.LPPosition[](numberOfLps);
     for (uint256 j = 0; j < numberOfLps; j++) {
-      positions[j] = _storageParams.lpPositions[_activeLPsList[j]];
+      positions[j] = _storageParams.lpPositions[_lists.activeLps[j]];
     }
     storageBytes = abi.encode(
       ISynthereumPoolMigrationStorage.MigrationV6(
@@ -258,9 +268,11 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
         _storageParams.overCollateralRequirement,
         _storageParams.liquidationBonus,
         _storageParams.syntheticAsset,
-        _registeredLPsList,
-        _activeLPsList,
-        positions
+        _lists.registeredLps,
+        _lists.activeLps,
+        positions,
+        _lists.admins,
+        _lists.maintainers
       )
     );
   }
