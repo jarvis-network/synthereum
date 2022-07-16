@@ -68,27 +68,4 @@ abstract contract MintableBurnableTokenFactory {
     token.addAdmin(msg.sender);
     token.renounceAdmin();
   }
-
-  function _checkSenderIsFactory(
-    ISynthereumFactoryVersioning factoryVersioning,
-    uint8 numberOfFactories,
-    bytes32 factoryKind
-  ) internal view returns (bool isFactory) {
-    uint8 counterFactory;
-    for (uint8 i = 0; counterFactory < numberOfFactories; i++) {
-      try factoryVersioning.getFactoryVersion(factoryKind, i) returns (
-        address factory
-      ) {
-        if (msg.sender == factory) {
-          isFactory = true;
-          break;
-        } else {
-          counterFactory++;
-          if (counterFactory == numberOfFactories) {
-            isFactory = false;
-          }
-        }
-      } catch {}
-    }
-  }
 }
