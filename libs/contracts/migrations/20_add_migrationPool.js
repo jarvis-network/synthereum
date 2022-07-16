@@ -5,7 +5,9 @@ const {
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const migration = require('../data/deployment/migrations.json');
-
+const {
+  encodeMultiLpLiquidityPoolMigration,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const {
   logTransactionOutput,
 } = require('@jarvis-network/core-utils/dist/eth/contracts/print-tx');
@@ -36,12 +38,31 @@ module.exports = async function (deployer, network, accounts) {
     if (migration[networkId].version === 6) {
       for (let j = 0; j < migrationPool.length; j++) {
         log(`   Migrating '${migrationPool[j]}' pool`);
+
+        const migrationPayload = encodeMultiLpLiquidityPoolMigration(
+          migrationPool[j],
+          migration[networkId].version,
+          '0x',
+        );
+        console.log(
+          migrationPool[j],
+          migration[networkId].version,
+          migrationPayload,
+        );
         const gasEstimation = await synthereumDeployer.methods
-          .migratePool(migrationPool[j], migration[networkId].version, '0x')
+          .migratePool(
+            migrationPool[j],
+            migration[networkId].version,
+            migrationPayload,
+          )
           .estimateGas({ from: maintainer });
         if (gasEstimation != undefined) {
           const tx = await synthereumDeployer.methods
-            .migratePool(migrationPool[j], migration[networkId].version, '0x')
+            .migratePool(
+              migrationPool[j],
+              migration[networkId].version,
+              migrationPayload,
+            )
             .send({ from: maintainer });
           const { transactionHash } = tx;
           await logTransactionOutput({
