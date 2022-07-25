@@ -27,6 +27,16 @@
       "isEnabled": true
     }
   },
+  "137": {
+    "LiquidityPoolFactory": {
+      "version": 5,
+      "isEnabled": false
+    },
+    "MultiLpLiquidityPoolFactory": {
+      "version": 6,
+      "isEnabled": true
+    }
+  },
   "97": {
     "LiquidityPoolFactory": {
       "version": 5,

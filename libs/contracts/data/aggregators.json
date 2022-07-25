@@ -144,6 +144,36 @@
       "type": 0,
       "aggregator": "0xDe6302Dfa0ac45B2B1b1a23304469DA630b2F59B",
       "intermediatePairs": []
+    },
+    "CNYUSD": {
+      "type": 0,
+      "aggregator": "0x04bB437Aa63E098236FA47365f0268547f6EAB32",
+      "intermediatePairs": []
+    },
+    "NZDUSD": {
+      "type": 0,
+      "aggregator": "0xa302a0B8a499fD0f00449df0a490DedE21105955",
+      "intermediatePairs": []
+    },
+    "PLNUSD": {
+      "type": 0,
+      "aggregator": "0xB34BCE11040702f71c11529D00179B2959BcE6C0",
+      "intermediatePairs": []
+    },
+    "MXNUSD": {
+      "type": 0,
+      "aggregator": "0x171b16562EA3476F5C61d1b8dad031DbA0768545",
+      "intermediatePairs": []
+    },
+    "KRWUSD": {
+      "type": 0,
+      "aggregator": "0x24B820870F726dA9B0D83B0B28a93885061dbF50",
+      "intermediatePairs": []
+    },
+    "NGNUSD": {
+      "type": 0,
+      "aggregator": "0x0df812C4D675d155815B1216cE1da9e68f1b7050",
+      "intermediatePairs": []
     }
   },
   "56": {
