@@ -321,6 +321,20 @@
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
       "daoInterestShare": "600000000000000000",
       "jrtBuybackShare": "700000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Gold",
+      "syntheticSymbol": "jGOLD",
+      "priceFeedIdentifier": "XAUUSD",
+      "collateralRequirement": "1050000000000000000",
+      "overCollateralRequirement": "50000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "1000000000000000000000000",
+      "liquidationReward": "1000000000000000000",
+      "lendingId": "AaveV3",
+      "interestBearingToken": "0x0000000000000000000000000000000000000000",
+      "daoInterestShare": "600000000000000000",
+      "jrtBuybackShare": "700000000000000000"
     }
   ],
   "97": [
