@@ -10,12 +10,26 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 interface ISynthereumRegistry {
   /**
    * @notice Allow the deployer to register an element
-   * @param syntheticTokenSymbol Symbol of the syntheticToken
-   * @param collateralToken Collateral ERC20 token of the element deployed
-   * @param version Version of the element deployed
-   * @param element Address of the element deployed
+   * @param syntheticTokenSymbol Symbol of the syntheticToken of the element to register
+   * @param collateralToken Collateral ERC20 token of the element to register
+   * @param version Version of the element to register
+   * @param element Address of the element to register
    */
   function register(
+    string calldata syntheticTokenSymbol,
+    IERC20 collateralToken,
+    uint8 version,
+    address element
+  ) external;
+
+  /**
+   * @notice Allow the deployer to unregister an element
+   * @param syntheticTokenSymbol Symbol of the syntheticToken of the element to unregister
+   * @param collateralToken Collateral ERC20 token of the element to unregister
+   * @param version Version of the element  to unregister
+   * @param element Address of the element  to unregister
+   */
+  function unregister(
     string calldata syntheticTokenSymbol,
     IERC20 collateralToken,
     uint8 version,
