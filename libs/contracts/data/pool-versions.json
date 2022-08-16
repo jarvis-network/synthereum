@@ -30,7 +30,7 @@
   "137": {
     "LiquidityPoolFactory": {
       "version": 5,
-      "isEnabled": false
+      "isEnabled": true
     },
     "MultiLpLiquidityPoolFactory": {
       "version": 6,
