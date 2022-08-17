@@ -86,49 +86,13 @@ contract SynthereumChainlinkPriceFeed is
     _;
   }
 
-  modifier onlyPoolsOrSelfMinting() {
-    address oracleRouter =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.OracleRouter
-      );
-    if (msg.sender != oracleRouter && msg.sender != tx.origin) {
-      ISynthereumRegistry registry;
-      try ITypology(msg.sender).typology() returns (
-        string memory typologyString
-      ) {
-        bytes32 typology = keccak256(abi.encodePacked(typologyString));
-        if (typology == keccak256(abi.encodePacked('POOL'))) {
-          registry = ISynthereumRegistry(
-            synthereumFinder.getImplementationAddress(
-              SynthereumInterfaces.PoolRegistry
-            )
-          );
-        } else if (typology == keccak256(abi.encodePacked('SELF-MINTING'))) {
-          registry = ISynthereumRegistry(
-            synthereumFinder.getImplementationAddress(
-              SynthereumInterfaces.SelfMintingRegistry
-            )
-          );
-        } else {
-          revert('Typology not supported');
-        }
-      } catch {
-        registry = ISynthereumRegistry(
-          synthereumFinder.getImplementationAddress(
-            SynthereumInterfaces.PoolRegistry
-          )
+  modifier onlyRouter() {
+    if (msg.sender != tx.origin) {
+      address router =
+        _synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.OracleRouter
         );
-      }
-      ISynthereumDeployment callingContract = ISynthereumDeployment(msg.sender);
-      require(
-        registry.isDeployed(
-          callingContract.syntheticTokenSymbol(),
-          callingContract.collateralToken(),
-          callingContract.version(),
-          msg.sender
-        ),
-        'Calling contract not registered'
-      );
+      require(msg.sender == router, 'Only router');
     }
     _;
   }
@@ -185,7 +149,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPoolsOrSelfMinting
+    onlyRouter
     returns (uint256 price)
   {
     price = _getLatestPrice(_priceIdentifier);
@@ -200,7 +164,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPoolsOrSelfMinting
+    onlyRouter
     returns (uint256[] memory prices)
   {
     prices = new uint256[](_priceIdentifiers.length);
@@ -219,7 +183,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPoolsOrSelfMinting
+    onlyRouter
     returns (uint256 price)
   {
     Type priceType = pairs[_priceIdentifier].priceType;

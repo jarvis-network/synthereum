@@ -8,7 +8,6 @@ import {
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 // TODO DECIMALS
-// TODO access modifier
 contract DataFeedReaderExample is
   ISynthereumApi3PriceFeed,
   AccessControlEnumerable
@@ -45,6 +44,17 @@ contract DataFeedReaderExample is
     _;
   }
 
+  modifier onlyRouter() {
+    if (msg.sender != tx.origin) {
+      address router =
+        _synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.OracleRouter
+        );
+      require(msg.sender == router, 'Only router');
+    }
+    _;
+  }
+
   function setServer(bytes32 _priceIdentifier, address _server)
     external
     onlyMaintainer
@@ -69,7 +79,8 @@ contract DataFeedReaderExample is
     external
     view
     override
-    returns (int224 value, uint256 timestamp)
+    onlyRouter
+    returns (uint256 value)
   {
     require(
       isPriceSupported(_priceIdentifier),
@@ -77,24 +88,9 @@ contract DataFeedReaderExample is
     );
 
     address dapiServer = servers[_priceIdentifier];
-    (value, timestamp) = IDapiServer(dapiServer).readDataFeedWithDapiName(
-      _priceIdentifier
-    );
-  }
-
-  function readDataFeedValueWithDapiName(bytes32 _priceIdentifier)
-    external
-    view
-    returns (int224 value)
-  {
-    require(
-      isPriceSupported(_priceIdentifier),
-      'Price identifier not supported'
-    );
-    address dapiServer = servers[_priceIdentifier];
-    value = IDapiServer(dapiServer).readDataFeedValueWithDapiName(
-      _priceIdentifier
-    );
+    int224 retValue =
+      IDapiServer(dapiServer).readDataFeedValueWithDapiName(_priceIdentifier);
+    value = uint256(retValue);
   }
 
   function isPriceSupported(bytes32 _priceIdentifier)

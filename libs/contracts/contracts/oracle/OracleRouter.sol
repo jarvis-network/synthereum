@@ -26,6 +26,49 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     _;
   }
 
+  modifier onlyPoolsOrSelfMinting() {
+    if (msg.sender != tx.origin) {
+      ISynthereumRegistry registry;
+      try ITypology(msg.sender).typology() returns (
+        string memory typologyString
+      ) {
+        bytes32 typology = keccak256(abi.encodePacked(typologyString));
+        if (typology == keccak256(abi.encodePacked('POOL'))) {
+          registry = ISynthereumRegistry(
+            synthereumFinder.getImplementationAddress(
+              SynthereumInterfaces.PoolRegistry
+            )
+          );
+        } else if (typology == keccak256(abi.encodePacked('SELF-MINTING'))) {
+          registry = ISynthereumRegistry(
+            synthereumFinder.getImplementationAddress(
+              SynthereumInterfaces.SelfMintingRegistry
+            )
+          );
+        } else {
+          revert('Typology not supported');
+        }
+      } catch {
+        registry = ISynthereumRegistry(
+          synthereumFinder.getImplementationAddress(
+            SynthereumInterfaces.PoolRegistry
+          )
+        );
+      }
+      ISynthereumDeployment callingContract = ISynthereumDeployment(msg.sender);
+      require(
+        registry.isDeployed(
+          callingContract.syntheticTokenSymbol(),
+          callingContract.collateralToken(),
+          callingContract.version(),
+          msg.sender
+        ),
+        'Calling contract not registered'
+      );
+    }
+    _;
+  }
+
   constructor(Roles memory _roles) {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -51,6 +94,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     external
     view
     override
+    onlyPoolOrSelfMinting
     returns (uint256 price)
   {
     address oracle = idToOracle[_priceIdentifier];
@@ -61,6 +105,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     external
     view
     override
+    onlyPoolOrSelfMinting
     returns (bool isSupported)
   {
     address oracle = idToOracle[_priceIdentifier];
