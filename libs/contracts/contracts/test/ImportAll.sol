@@ -36,6 +36,7 @@ import '../test/ISwapRouter02.sol';
 import '../oracle/common/interfaces/IPriceFeed.sol';
 import '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
 import '../oracle/chainlink/ChainlinkPriceFeed.sol';
+import '../oracle/OracleRouter.sol';
 import '../synthereum-pool/common/migration/PoolMigration.sol';
 import '../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 import '../synthereum-pool/common/migration/PoolMigrationTo.sol';

@@ -87,7 +87,11 @@ contract SynthereumChainlinkPriceFeed is
   }
 
   modifier onlyPoolsOrSelfMinting() {
-    if (msg.sender != tx.origin) {
+    address oracleRouter =
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.OracleRouter
+      );
+    if (msg.sender != oracleRouter && msg.sender != tx.origin) {
       ISynthereumRegistry registry;
       try ITypology(msg.sender).typology() returns (
         string memory typologyString
