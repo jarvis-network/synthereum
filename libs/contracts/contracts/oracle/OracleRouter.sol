@@ -2,6 +2,11 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumPriceFeed} from './common/interfaces/IPriceFeed.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
+import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
+import {ITypology} from '../common/interfaces/ITypology.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -10,6 +15,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   // maps a price identifier to the oracle contract
+  ISynthereumFinder public immutable synthereumFinder;
   mapping(bytes32 => address) public idToOracle;
 
   //Describe role structure
@@ -69,7 +75,8 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     _;
   }
 
-  constructor(Roles memory _roles) {
+  constructor(ISynthereumFinder _finder, Roles memory _roles) {
+    synthereumFinder = _finder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
@@ -94,7 +101,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     external
     view
     override
-    onlyPoolOrSelfMinting
+    onlyPoolsOrSelfMinting
     returns (uint256 price)
   {
     address oracle = idToOracle[_priceIdentifier];
@@ -105,7 +112,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     external
     view
     override
-    onlyPoolOrSelfMinting
+    onlyPoolsOrSelfMinting
     returns (bool isSupported)
   {
     address oracle = idToOracle[_priceIdentifier];

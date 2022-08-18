@@ -6,9 +6,12 @@ import {ISynthereumApi3PriceFeed} from './interfaces/IApi3PriceFeed.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 
-// TODO DECIMALS
-contract DataFeedReaderExample is
+// API3 scales all return values to 18 decimals
+contract SynthereumApi3PriceFeed is
   ISynthereumApi3PriceFeed,
   AccessControlEnumerable
 {
@@ -47,7 +50,7 @@ contract DataFeedReaderExample is
   modifier onlyRouter() {
     if (msg.sender != tx.origin) {
       address router =
-        _synthereumFinder.getImplementationAddress(
+        synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.OracleRouter
         );
       require(msg.sender == router, 'Only router');
@@ -60,14 +63,14 @@ contract DataFeedReaderExample is
     onlyMaintainer
   {
     require(_server != address(0), 'No server set');
-    servers[_priceIdentifier] = _server;
+    servers[_priceIdentifier] = IDapiServer(_server);
 
     emit SetServer(_priceIdentifier, _server);
   }
 
   function removeServer(bytes32 _priceIdentifier) external onlyMaintainer {
     require(
-      servers[_priceIdentifier] != address(0),
+      address(servers[_priceIdentifier]) != address(0),
       'This identifier does not exist'
     );
     delete servers[_priceIdentifier];
@@ -83,14 +86,13 @@ contract DataFeedReaderExample is
     returns (uint256 value)
   {
     require(
-      isPriceSupported(_priceIdentifier),
+      this.isPriceSupported(_priceIdentifier),
       'Price identifier not supported'
     );
 
-    address dapiServer = servers[_priceIdentifier];
-    int224 retValue =
-      IDapiServer(dapiServer).readDataFeedValueWithDapiName(_priceIdentifier);
-    value = uint256(retValue);
+    IDapiServer dapiServer = servers[_priceIdentifier];
+    int224 retValue = dapiServer.readDataFeedValueWithId(_priceIdentifier);
+    value = uint256(int256(retValue));
   }
 
   function isPriceSupported(bytes32 _priceIdentifier)
@@ -99,6 +101,6 @@ contract DataFeedReaderExample is
     override
     returns (bool isSupported)
   {
-    isSupported = servers[_priceIdentifier] != address(0);
+    isSupported = address(servers[_priceIdentifier]) != address(0);
   }
 }

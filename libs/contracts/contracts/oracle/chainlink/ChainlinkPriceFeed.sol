@@ -89,7 +89,7 @@ contract SynthereumChainlinkPriceFeed is
   modifier onlyRouter() {
     if (msg.sender != tx.origin) {
       address router =
-        _synthereumFinder.getImplementationAddress(
+        synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.OracleRouter
         );
       require(msg.sender == router, 'Only router');
