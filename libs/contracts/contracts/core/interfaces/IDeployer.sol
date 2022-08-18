@@ -13,46 +13,66 @@ import {
 interface ISynthereumDeployer {
   /**
    * @notice Deploy a new pool
-   * @param poolVersion Version of the pool contract
-   * @param poolParamsData Input params of pool constructor
+   * @param _poolVersion Version of the pool contract
+   * @param _poolParamsData Input params of pool constructor
    * @return pool Pool contract deployed
    */
-  function deployPool(uint8 poolVersion, bytes calldata poolParamsData)
+  function deployPool(uint8 _poolVersion, bytes calldata _poolParamsData)
     external
     returns (ISynthereumDeployment pool);
 
   /**
    * @notice Migrate storage of an existing pool to e new deployed one
-   * @param migrationPool Pool from which migrate storage
-   * @param poolVersion Version of the pool contract to create
-   * @param migrationParamsData Input params of migration (if needed)
+   * @param _migrationPool Pool from which migrate storage
+   * @param _poolVersion Version of the pool contract to create
+   * @param _migrationParamsData Input params of migration (if needed)
    * @return pool Pool contract deployed
    */
   function migratePool(
-    SynthereumPoolMigrationFrom migrationPool,
-    uint8 poolVersion,
-    bytes calldata migrationParamsData
+    SynthereumPoolMigrationFrom _migrationPool,
+    uint8 _poolVersion,
+    bytes calldata _migrationParamsData
   ) external returns (ISynthereumDeployment pool);
 
   /**
+   * @notice Remove from the registry an existing pool
+   * @param _pool Pool to remove
+   */
+  function removePool(ISynthereumDeployment _pool) external;
+
+  /**
    * @notice Deploy a new self minting derivative contract
-   * @param selfMintingDerVersion Version of the self minting derivative contract
-   * @param selfMintingDerParamsData Input params of self minting derivative constructor
+   * @param _selfMintingDerVersion Version of the self minting derivative contract
+   * @param _selfMintingDerParamsData Input params of self minting derivative constructor
    * @return selfMintingDerivative Self minting derivative contract deployed
    */
   function deploySelfMintingDerivative(
-    uint8 selfMintingDerVersion,
-    bytes calldata selfMintingDerParamsData
+    uint8 _selfMintingDerVersion,
+    bytes calldata _selfMintingDerParamsData
   ) external returns (ISynthereumDeployment selfMintingDerivative);
 
   /**
+   * @notice Remove from the registry an existing self-minting derivativ contract
+   * @param _selfMintingDerivative Self-minting derivative to remove
+   */
+  function removeSelfMintingDerivative(
+    ISynthereumDeployment _selfMintingDerivative
+  ) external;
+
+  /**
    * @notice Deploy a new fixed rate wrapper contract
-   * @param fixedRateVersion Version of the fixed rate wrapper contract
-   * @param fixedRateParamsData Input params of fixed rate wrapper constructor
+   * @param _fixedRateVersion Version of the fixed rate wrapper contract
+   * @param _fixedRateParamsData Input params of fixed rate wrapper constructor
    * @return fixedRate Fixed rate wrapper contract deployed
    */
   function deployFixedRate(
-    uint8 fixedRateVersion,
-    bytes calldata fixedRateParamsData
+    uint8 _fixedRateVersion,
+    bytes calldata _fixedRateParamsData
   ) external returns (ISynthereumDeployment fixedRate);
+
+  /**
+   * @notice Remove from the registry a fixed rate wrapper
+   * @param _fixedRate Fixed-rate to remove
+   */
+  function removeFixedRate(ISynthereumDeployment _fixedRate) external;
 }

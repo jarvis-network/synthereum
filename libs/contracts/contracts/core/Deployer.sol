@@ -8,7 +8,6 @@ import {
 } from './interfaces/IFactoryVersioning.sol';
 import {ISynthereumRegistry} from './registries/interfaces/IRegistry.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
 import {IMigrationSignature} from './interfaces/IMigrationSignature.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
@@ -76,6 +75,12 @@ contract SynthereumDeployer is
     address indexed fixedRate
   );
 
+  event PoolRemoved(address pool);
+
+  event SelfMintingDerivativeRemoved(address selfMintingDerivative);
+
+  event FixedRateRemoved(address fixedRate);
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -95,14 +100,14 @@ contract SynthereumDeployer is
   /**
    * @notice Constructs the SynthereumDeployer contract
    * @param _synthereumFinder Synthereum finder contract
-   * @param roles Admin and Maintainer roles
+   * @param _roles Admin and Maintainer roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory roles) {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
-    _setupRole(MAINTAINER_ROLE, roles.maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
   //----------------------------------------
@@ -111,41 +116,41 @@ contract SynthereumDeployer is
 
   /**
    * @notice Deploy a new pool
-   * @param poolVersion Version of the pool contract to create
-   * @param poolParamsData Input params of pool constructor
+   * @param _poolVersion Version of the pool contract to create
+   * @param _poolParamsData Input params of pool constructor
    * @return pool Pool contract deployed
    */
-  function deployPool(uint8 poolVersion, bytes calldata poolParamsData)
+  function deployPool(uint8 _poolVersion, bytes calldata _poolParamsData)
     external
     override
     onlyMaintainer
     nonReentrant
     returns (ISynthereumDeployment pool)
   {
-    pool = _deployPool(getFactoryVersioning(), poolVersion, poolParamsData);
-    checkDeployment(pool, poolVersion);
+    pool = _deployPool(getFactoryVersioning(), _poolVersion, _poolParamsData);
+    checkDeployment(pool, _poolVersion);
     setSyntheticTokenRoles(pool);
     ISynthereumRegistry poolRegistry = getPoolRegistry();
     poolRegistry.register(
       pool.syntheticTokenSymbol(),
       pool.collateralToken(),
-      poolVersion,
+      _poolVersion,
       address(pool)
     );
-    emit PoolDeployed(poolVersion, address(pool));
+    emit PoolDeployed(_poolVersion, address(pool));
   }
 
   /**
    * @notice Migrate storage of an existing pool to e new deployed one
-   * @param migrationPool Pool from which migrate storage
-   * @param poolVersion Version of the pool contract to create
-   * @param migrationParamsData Input params of migration (if needed)
+   * @param _migrationPool Pool from which migrate storage
+   * @param _poolVersion Version of the pool contract to create
+   * @param _migrationParamsData Input params of migration (if needed)
    * @return pool Pool contract created with the storage of the migrated one
    */
   function migratePool(
-    SynthereumPoolMigrationFrom migrationPool,
-    uint8 poolVersion,
-    bytes calldata migrationParamsData
+    SynthereumPoolMigrationFrom _migrationPool,
+    uint8 _poolVersion,
+    bytes calldata _migrationParamsData
   )
     external
     override
@@ -156,32 +161,57 @@ contract SynthereumDeployer is
     ISynthereumDeployment oldPool;
     (oldPool, pool) = _migratePool(
       getFactoryVersioning(),
-      poolVersion,
-      migrationParamsData
+      _poolVersion,
+      _migrationParamsData
     );
-    require(address(migrationPool) == address(oldPool), 'Wrong migration pool');
-    checkDeployment(pool, poolVersion);
+    require(
+      address(_migrationPool) == address(oldPool),
+      'Wrong migration pool'
+    );
+    checkDeployment(pool, _poolVersion);
     removeSyntheticTokenRoles(oldPool);
     setSyntheticTokenRoles(pool);
     ISynthereumRegistry poolRegistry = getPoolRegistry();
     poolRegistry.register(
       pool.syntheticTokenSymbol(),
       pool.collateralToken(),
-      poolVersion,
+      _poolVersion,
       address(pool)
     );
-    emit PoolMigrated(address(migrationPool), poolVersion, address(pool));
+    emit PoolMigrated(address(_migrationPool), _poolVersion, address(pool));
+  }
+
+  /**
+   * @notice Remove from the registry an existing pool
+   * @param _pool Pool to remove
+   */
+  function removePool(ISynthereumDeployment _pool)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    _checkMissingRoles(_pool);
+    ISynthereumRegistry poolRegistry = getPoolRegistry();
+    address pool = address(_pool);
+    poolRegistry.unregister(
+      _pool.syntheticTokenSymbol(),
+      _pool.collateralToken(),
+      _pool.version(),
+      pool
+    );
+    emit PoolRemoved(pool);
   }
 
   /**
    * @notice Deploy a new self minting derivative contract
-   * @param selfMintingDerVersion Version of the self minting derivative contract
-   * @param selfMintingDerParamsData Input params of self minting derivative constructor
+   * @param _selfMintingDerVersion Version of the self minting derivative contract
+   * @param _selfMintingDerParamsData Input params of self minting derivative constructor
    * @return selfMintingDerivative Self minting derivative contract deployed
    */
   function deploySelfMintingDerivative(
-    uint8 selfMintingDerVersion,
-    bytes calldata selfMintingDerParamsData
+    uint8 _selfMintingDerVersion,
+    bytes calldata _selfMintingDerParamsData
   )
     external
     override
@@ -192,10 +222,10 @@ contract SynthereumDeployer is
     ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
     selfMintingDerivative = _deploySelfMintingDerivative(
       factoryVersioning,
-      selfMintingDerVersion,
-      selfMintingDerParamsData
+      _selfMintingDerVersion,
+      _selfMintingDerParamsData
     );
-    checkDeployment(selfMintingDerivative, selfMintingDerVersion);
+    checkDeployment(selfMintingDerivative, _selfMintingDerVersion);
     address tokenCurrency = address(selfMintingDerivative.syntheticToken());
     modifySyntheticTokenRoles(
       tokenCurrency,
@@ -206,25 +236,44 @@ contract SynthereumDeployer is
     selfMintingRegistry.register(
       selfMintingDerivative.syntheticTokenSymbol(),
       selfMintingDerivative.collateralToken(),
-      selfMintingDerVersion,
+      _selfMintingDerVersion,
       address(selfMintingDerivative)
     );
     emit SelfMintingDerivativeDeployed(
-      selfMintingDerVersion,
+      _selfMintingDerVersion,
       address(selfMintingDerivative)
     );
   }
 
   /**
+   * @notice Remove from the registry an existing self-minting derivativ contract
+   * @param _selfMintingDerivative Self-minting derivative to remove
+   */
+  function removeSelfMintingDerivative(
+    ISynthereumDeployment _selfMintingDerivative
+  ) external override onlyMaintainer nonReentrant {
+    _checkMissingRoles(_selfMintingDerivative);
+    ISynthereumRegistry selfMintingRegistry = getSelfMintingRegistry();
+    address selfMintingDerivative = address(_selfMintingDerivative);
+    selfMintingRegistry.unregister(
+      _selfMintingDerivative.syntheticTokenSymbol(),
+      _selfMintingDerivative.collateralToken(),
+      _selfMintingDerivative.version(),
+      selfMintingDerivative
+    );
+    emit SelfMintingDerivativeRemoved(selfMintingDerivative);
+  }
+
+  /**
    * @notice Deploy a fixed rate wrapper
-   * @param fixedRateVersion Version of the fixed rate wrapper contract
-   * @param fixedRateParamsData Input params of the fixed rate wrapper constructor
+   * @param _fixedRateVersion Version of the fixed rate wrapper contract
+   * @param _fixedRateParamsData Input params of the fixed rate wrapper constructor
    * @return fixedRate FixedRate wrapper deployed
    */
 
   function deployFixedRate(
-    uint8 fixedRateVersion,
-    bytes calldata fixedRateParamsData
+    uint8 _fixedRateVersion,
+    bytes calldata _fixedRateParamsData
   )
     external
     override
@@ -234,19 +283,41 @@ contract SynthereumDeployer is
   {
     fixedRate = _deployFixedRate(
       getFactoryVersioning(),
-      fixedRateVersion,
-      fixedRateParamsData
+      _fixedRateVersion,
+      _fixedRateParamsData
     );
-    checkDeployment(fixedRate, fixedRateVersion);
+    checkDeployment(fixedRate, _fixedRateVersion);
     setSyntheticTokenRoles(fixedRate);
     ISynthereumRegistry fixedRateRegistry = getFixedRateRegistry();
     fixedRateRegistry.register(
       fixedRate.syntheticTokenSymbol(),
       fixedRate.collateralToken(),
-      fixedRateVersion,
+      _fixedRateVersion,
       address(fixedRate)
     );
-    emit FixedRateDeployed(fixedRateVersion, address(fixedRate));
+    emit FixedRateDeployed(_fixedRateVersion, address(fixedRate));
+  }
+
+  /**
+   * @notice Remove from the registry a fixed rate wrapper
+   * @param _fixedRate Fixed-rate to remove
+   */
+  function removeFixedRate(ISynthereumDeployment _fixedRate)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    _checkMissingRoles(_fixedRate);
+    ISynthereumRegistry fixedRateRegistry = getFixedRateRegistry();
+    address fixedRate = address(_fixedRate);
+    fixedRateRegistry.unregister(
+      _fixedRate.syntheticTokenSymbol(),
+      _fixedRate.collateralToken(),
+      _fixedRate.version(),
+      fixedRate
+    );
+    emit FixedRateRemoved(fixedRate);
   }
 
   //----------------------------------------
@@ -255,24 +326,24 @@ contract SynthereumDeployer is
 
   /**
    * @notice Deploys a pool contract of a particular version
-   * @param factoryVersioning factory versioning contract
-   * @param poolVersion Version of pool contract to deploy
-   * @param poolParamsData Input parameters of constructor of the pool
+   * @param _factoryVersioning factory versioning contract
+   * @param _poolVersion Version of pool contract to deploy
+   * @param _poolParamsData Input parameters of constructor of the pool
    * @return pool Pool deployed
    */
   function _deployPool(
-    ISynthereumFactoryVersioning factoryVersioning,
-    uint8 poolVersion,
-    bytes memory poolParamsData
+    ISynthereumFactoryVersioning _factoryVersioning,
+    uint8 _poolVersion,
+    bytes memory _poolParamsData
   ) internal returns (ISynthereumDeployment pool) {
     address poolFactory =
-      factoryVersioning.getFactoryVersion(
+      _factoryVersioning.getFactoryVersion(
         FactoryInterfaces.PoolFactory,
-        poolVersion
+        _poolVersion
       );
     bytes memory poolDeploymentResult =
       poolFactory.functionCall(
-        abi.encodePacked(getDeploymentSignature(poolFactory), poolParamsData),
+        abi.encodePacked(getDeploymentSignature(poolFactory), _poolParamsData),
         'Wrong pool deployment'
       );
     pool = ISynthereumDeployment(abi.decode(poolDeploymentResult, (address)));
@@ -280,30 +351,30 @@ contract SynthereumDeployer is
 
   /**
    * @notice Migrate a pool contract of a particular version
-   * @param factoryVersioning factory versioning contract
-   * @param poolVersion Version of pool contract to create
-   * @param migrationParamsData Input params of migration (if needed)
+   * @param _factoryVersioning factory versioning contract
+   * @param _poolVersion Version of pool contract to create
+   * @param _migrationParamsData Input params of migration (if needed)
    * @return oldPool Pool from which the storage is migrated
    * @return newPool New pool created
    */
   function _migratePool(
-    ISynthereumFactoryVersioning factoryVersioning,
-    uint8 poolVersion,
-    bytes memory migrationParamsData
+    ISynthereumFactoryVersioning _factoryVersioning,
+    uint8 _poolVersion,
+    bytes memory _migrationParamsData
   )
     internal
     returns (ISynthereumDeployment oldPool, ISynthereumDeployment newPool)
   {
     address poolFactory =
-      factoryVersioning.getFactoryVersion(
+      _factoryVersioning.getFactoryVersion(
         FactoryInterfaces.PoolFactory,
-        poolVersion
+        _poolVersion
       );
     bytes memory poolDeploymentResult =
       poolFactory.functionCall(
         abi.encodePacked(
           getMigrationSignature(poolFactory),
-          migrationParamsData
+          _migrationParamsData
         ),
         'Wrong pool migration'
       );
@@ -315,26 +386,26 @@ contract SynthereumDeployer is
 
   /**
    * @notice Deploys a self minting derivative contract of a particular version
-   * @param factoryVersioning factory versioning contract
-   * @param selfMintingDerVersion Version of self minting derivate contract to deploy
-   * @param selfMintingDerParamsData Input parameters of constructor of self minting derivative
+   * @param _factoryVersioning factory versioning contract
+   * @param _selfMintingDerVersion Version of self minting derivate contract to deploy
+   * @param _selfMintingDerParamsData Input parameters of constructor of self minting derivative
    * @return selfMintingDerivative Self minting derivative deployed
    */
   function _deploySelfMintingDerivative(
-    ISynthereumFactoryVersioning factoryVersioning,
-    uint8 selfMintingDerVersion,
-    bytes calldata selfMintingDerParamsData
+    ISynthereumFactoryVersioning _factoryVersioning,
+    uint8 _selfMintingDerVersion,
+    bytes calldata _selfMintingDerParamsData
   ) internal returns (ISynthereumDeployment selfMintingDerivative) {
     address selfMintingDerFactory =
-      factoryVersioning.getFactoryVersion(
+      _factoryVersioning.getFactoryVersion(
         FactoryInterfaces.SelfMintingFactory,
-        selfMintingDerVersion
+        _selfMintingDerVersion
       );
     bytes memory selfMintingDerDeploymentResult =
       selfMintingDerFactory.functionCall(
         abi.encodePacked(
           getDeploymentSignature(selfMintingDerFactory),
-          selfMintingDerParamsData
+          _selfMintingDerParamsData
         ),
         'Wrong self-minting derivative deployment'
       );
@@ -345,27 +416,27 @@ contract SynthereumDeployer is
 
   /**
    * @notice Deploys a fixed rate wrapper contract of a particular version
-   * @param factoryVersioning factory versioning contract
-   * @param fixedRateVersion Version of the fixed rate wrapper contract to deploy
-   * @param fixedRateParamsData Input parameters of constructor of the fixed rate wrapper
+   * @param _factoryVersioning factory versioning contract
+   * @param _fixedRateVersion Version of the fixed rate wrapper contract to deploy
+   * @param _fixedRateParamsData Input parameters of constructor of the fixed rate wrapper
    * @return fixedRate Fixed rate wrapper deployed
    */
 
   function _deployFixedRate(
-    ISynthereumFactoryVersioning factoryVersioning,
-    uint8 fixedRateVersion,
-    bytes memory fixedRateParamsData
+    ISynthereumFactoryVersioning _factoryVersioning,
+    uint8 _fixedRateVersion,
+    bytes memory _fixedRateParamsData
   ) internal returns (ISynthereumDeployment fixedRate) {
     address fixedRateFactory =
-      factoryVersioning.getFactoryVersion(
+      _factoryVersioning.getFactoryVersion(
         FactoryInterfaces.FixedRateFactory,
-        fixedRateVersion
+        _fixedRateVersion
       );
     bytes memory fixedRateDeploymentResult =
       fixedRateFactory.functionCall(
         abi.encodePacked(
           getDeploymentSignature(fixedRateFactory),
-          fixedRateParamsData
+          _fixedRateParamsData
         ),
         'Wrong fixed rate deployment'
       );
@@ -376,21 +447,21 @@ contract SynthereumDeployer is
 
   /**
    * @notice Sets roles of the synthetic token contract to a pool or a fixed rate wrapper
-   * @param financialContract Pool or fixed rate wrapper contract
+   * @param _financialContract Pool or fixed rate wrapper contract
    */
-  function setSyntheticTokenRoles(ISynthereumDeployment financialContract)
+  function setSyntheticTokenRoles(ISynthereumDeployment _financialContract)
     internal
   {
-    address _financialContract = address(financialContract);
+    address financialContract = address(_financialContract);
     IAccessControlEnumerable tokenCurrency =
-      IAccessControlEnumerable(address(financialContract.syntheticToken()));
+      IAccessControlEnumerable(address(_financialContract.syntheticToken()));
     if (
-      !tokenCurrency.hasRole(MINTER_ROLE, _financialContract) ||
-      !tokenCurrency.hasRole(BURNER_ROLE, _financialContract)
+      !tokenCurrency.hasRole(MINTER_ROLE, financialContract) ||
+      !tokenCurrency.hasRole(BURNER_ROLE, financialContract)
     ) {
       modifySyntheticTokenRoles(
         address(tokenCurrency),
-        _financialContract,
+        financialContract,
         true
       );
     }
@@ -398,43 +469,42 @@ contract SynthereumDeployer is
 
   /**
    * @notice Remove roles of the synthetic token contract from a pool
-   * @param financialContract Pool contract
+   * @param _financialContract Pool contract
    */
-  function removeSyntheticTokenRoles(ISynthereumDeployment financialContract)
+  function removeSyntheticTokenRoles(ISynthereumDeployment _financialContract)
     internal
   {
-    address _financialContract = address(financialContract);
     IAccessControlEnumerable tokenCurrency =
-      IAccessControlEnumerable(address(financialContract.syntheticToken()));
+      IAccessControlEnumerable(address(_financialContract.syntheticToken()));
     modifySyntheticTokenRoles(
       address(tokenCurrency),
-      _financialContract,
+      address(_financialContract),
       false
     );
   }
 
   /**
    * @notice Grants minter and burner role of syntehtic token to derivative
-   * @param tokenCurrency Address of the token contract
-   * @param contractAddr Address of the pool or self-minting derivative
-   * @param isAdd True if adding roles, false if removing
+   * @param _tokenCurrency Address of the token contract
+   * @param _contractAddr Address of the pool or self-minting derivative
+   * @param _isAdd True if adding roles, false if removing
    */
   function modifySyntheticTokenRoles(
-    address tokenCurrency,
-    address contractAddr,
-    bool isAdd
+    address _tokenCurrency,
+    address _contractAddr,
+    bool _isAdd
   ) internal {
     ISynthereumManager manager = getManager();
     address[] memory contracts = new address[](2);
     bytes32[] memory roles = new bytes32[](2);
     address[] memory accounts = new address[](2);
-    contracts[0] = tokenCurrency;
-    contracts[1] = tokenCurrency;
+    contracts[0] = _tokenCurrency;
+    contracts[1] = _tokenCurrency;
     roles[0] = MINTER_ROLE;
     roles[1] = BURNER_ROLE;
-    accounts[0] = contractAddr;
-    accounts[1] = contractAddr;
-    isAdd
+    accounts[0] = _contractAddr;
+    accounts[1] = _contractAddr;
+    _isAdd
       ? manager.grantSynthereumRole(contracts, roles, accounts)
       : manager.revokeSynthereumRole(contracts, roles, accounts);
   }
@@ -519,46 +589,67 @@ contract SynthereumDeployer is
 
   /**
    * @notice Get signature of function to deploy a contract
-   * @param factory Factory contract
+   * @param _factory Factory contract
    * @return signature Signature of deployment function of the factory
    */
-  function getDeploymentSignature(address factory)
+  function getDeploymentSignature(address _factory)
     internal
     view
     returns (bytes4 signature)
   {
-    signature = IDeploymentSignature(factory).deploymentSignature();
+    signature = IDeploymentSignature(_factory).deploymentSignature();
   }
 
   /**
    * @notice Get signature of function to migrate a pool
-   * @param factory Factory contract
+   * @param _factory Factory contract
    * @return signature Signature of migration function of the factory
    */
-  function getMigrationSignature(address factory)
+  function getMigrationSignature(address _factory)
     internal
     view
     returns (bytes4 signature)
   {
-    signature = IMigrationSignature(factory).migrationSignature();
+    signature = IMigrationSignature(_factory).migrationSignature();
   }
 
   /**
    * @notice Check correct finder and version of the deployed pool or self-minting derivative
-   * @param poolOrDerivative Contract pool or self-minting derivative to check
-   * @param version Pool or self-minting derivative version to check
+   * @param _financialContract Contract pool or self-minting derivative or fixed-rate to check
+   * @param _version Pool or self-minting derivative version to check
    */
   function checkDeployment(
-    ISynthereumDeployment poolOrDerivative,
-    uint8 version
+    ISynthereumDeployment _financialContract,
+    uint8 _version
   ) internal view {
     require(
-      poolOrDerivative.synthereumFinder() == synthereumFinder,
+      _financialContract.synthereumFinder() == synthereumFinder,
       'Wrong finder in deployment'
     );
     require(
-      poolOrDerivative.version() == version,
+      _financialContract.version() == _version,
       'Wrong version in deployment'
+    );
+  }
+
+  /**
+   * @notice Check removing contract has not minter and burner roles of the synth tokens
+   * @param _financialContract Contract pool or self-minting derivative or fixed-rate to check
+   */
+  function _checkMissingRoles(ISynthereumDeployment _financialContract)
+    internal
+    view
+  {
+    address financialContract = address(_financialContract);
+    IAccessControlEnumerable tokenCurrency =
+      IAccessControlEnumerable(address(_financialContract.syntheticToken()));
+    require(
+      !tokenCurrency.hasRole(MINTER_ROLE, financialContract),
+      'Contract has minter role'
+    );
+    require(
+      !tokenCurrency.hasRole(BURNER_ROLE, financialContract),
+      'Contract has burner role'
     );
   }
 }
