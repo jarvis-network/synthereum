@@ -159,7 +159,7 @@ contract CreditLineController is
   function setCollateralRequirement(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata collateralRequirements
-  ) external override onlyMaintainerOrSelfMintingFactory {
+  ) external override onlyMaintainerOrSelfMintingFactory nonReentrant {
     require(
       selfMintingDerivatives.length > 0,
       'No self-minting derivatives passed'
@@ -186,7 +186,7 @@ contract CreditLineController is
   function setCapMintAmount(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capMintAmounts
-  ) external override onlyMaintainerOrSelfMintingFactory {
+  ) external override onlyMaintainerOrSelfMintingFactory nonReentrant {
     require(
       selfMintingDerivatives.length > 0,
       'No self-minting derivatives passed'
@@ -210,7 +210,7 @@ contract CreditLineController is
   function setFeePercentage(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata feePercentages
-  ) external override onlyMaintainerOrSelfMintingFactory {
+  ) external override onlyMaintainerOrSelfMintingFactory nonReentrant {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -233,7 +233,7 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     address[][] calldata feeRecipients,
     uint32[][] calldata feeProportions
-  ) external override onlyMaintainerOrSelfMintingFactory {
+  ) external override onlyMaintainerOrSelfMintingFactory nonReentrant {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -264,7 +264,7 @@ contract CreditLineController is
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata _liquidationRewards
-  ) external override onlyMaintainerOrSelfMintingFactory {
+  ) external override onlyMaintainerOrSelfMintingFactory nonReentrant {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
