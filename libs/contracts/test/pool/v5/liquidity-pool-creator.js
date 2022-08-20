@@ -124,13 +124,6 @@ contract('LiquidityPoolCreator', function (accounts) {
         params,
         { from: sender },
       );
-      truffleAssert.eventEmitted(poolCreationTx, 'CreatedPool', ev => {
-        return (
-          ev.poolAddress == poolAddress &&
-          ev.version == version &&
-          ev.deployerAddress == sender
-        );
-      });
     });
     it('Can deploy a new liquidity pool with existing synthetic token', async () => {
       const params = {

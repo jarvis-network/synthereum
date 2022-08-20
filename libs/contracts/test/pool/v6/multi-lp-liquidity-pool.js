@@ -612,7 +612,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const aggregator = await priceFeedContract.getAggregator.call(
         priceIdenitiferBytes,
       );
-      await priceFeedContract.removeAggregator(priceIdenitiferBytes, {
+      await priceFeedContract.removePair(priceIdenitiferBytes, {
         from: maintainer,
       });
       await truffleAssert.reverts(
@@ -621,7 +621,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         }),
         'Price identifier not supported',
       );
-      await priceFeedContract.setAggregator(priceIdenitiferBytes, aggregator, {
+      await priceFeedContract.setPair(0, priceIdenitiferBytes, aggregator, [], {
         from: maintainer,
       });
     });

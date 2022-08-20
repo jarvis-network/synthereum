@@ -66,6 +66,8 @@ contract('Self-minting controller', function (accounts) {
   let creditLineAddress;
   let creditLineControllerInstance;
   let synthereumFinderInstance;
+  let minterRole;
+  let burnerRole;
 
   before(async () => {
     // set roles
@@ -149,6 +151,8 @@ contract('Self-minting controller', function (accounts) {
     );
     creditLine = await CreditLine.at(creditLineAddress);
     creditLineControllerInstance = await CreditLineController.deployed();
+    minterRole = web3Utils.soliditySha3('Minter');
+    burnerRole = web3Utils.soliditySha3('Burner');
   });
 
   context('CreditLineController', async () => {
@@ -579,6 +583,17 @@ contract('Self-minting controller', function (accounts) {
           { from: maintainer },
         );
         const notRegistredDerivative = creditLine.address;
+        const synthTokenAddress = await creditLine.syntheticToken.call();
+        await synthereumManagerInstance.revokeSynthereumRole(
+          [synthTokenAddress, synthTokenAddress],
+          [minterRole, burnerRole],
+          [notRegistredDerivative, notRegistredDerivative],
+          { from: maintainer },
+        );
+        await deployerInstance.removeSelfMintingDerivative(
+          notRegistredDerivative,
+          { from: maintainer },
+        );
         await truffleAssert.reverts(
           creditLineControllerInstance.setCapMintAmount(
             [notRegistredDerivative],
@@ -622,6 +637,12 @@ contract('Self-minting controller', function (accounts) {
             { from: maintainer },
           ),
           'Self-minting derivative not registred',
+        );
+        const selfMintingRegistry = await SelfMintingRegistry.deployed();
+        await synthereumFinderInstance.changeImplementationAddress(
+          web3Utils.stringToHex('SelfMintingRegistry'),
+          selfMintingRegistry.address,
+          { from: maintainer },
         );
       });
     });
