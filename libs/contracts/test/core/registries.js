@@ -7,6 +7,7 @@ const web3Utils = require('web3-utils');
 const {
   encodeLiquidityPool,
   encodeCreditLineDerivative,
+  encodeFixedRate,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const { artifacts } = require('hardhat');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
@@ -39,6 +40,9 @@ const CreditLineLib = artifacts.require('CreditLineLib');
 const CreditLineFactory = artifacts.require('CreditLineFactory');
 const CreditLineController = artifacts.require('CreditLineController');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
+const SynthereumFixedRateWrapper = artifacts.require(
+  'SynthereumFixedRateWrapper',
+);
 const MockAggregator = artifacts.require('MockAggregator');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
@@ -48,6 +52,9 @@ const SynthereumSyntheticTokenPermitFactory = artifacts.require(
 );
 const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
 const SelfMintingRegistry = artifacts.require('SelfMintingRegistry');
+const SynthereumFixedRateRegistry = artifacts.require(
+  'SynthereumFixedRateRegistry',
+);
 
 contract('Registries', function (accounts) {
   let collateralAddress;
@@ -58,9 +65,12 @@ contract('Registries', function (accounts) {
   let collateralRequirement = web3Utils.toWei('1.1');
   let minSponsorTokens = web3Utils.toWei('1');
   let excessBeneficiary = accounts[4];
+  let finder;
   let synthereumFinderAddress;
   let manager;
   let poolVersion;
+  let selfMintingVersion;
+  let fixedRateVersion;
   let admin = accounts[0];
   let maintainer = accounts[1];
   let liquidityProvider = accounts[2];
@@ -94,6 +104,8 @@ contract('Registries', function (accounts) {
   let poolFactoryInstance;
   let selfMintingFactoryInstance;
   let poolRegistryInstance;
+  let minterRole;
+  let burnerRole;
 
   before(async () => {
     collateralAddress = (await TestnetERC20.new('Testnet token', 'USDC', 6))
@@ -123,12 +135,17 @@ contract('Registries', function (accounts) {
     poolFactoryInstance = await SynthereumLiquidityPoolFactory.deployed();
     selfMintingFactoryInstance = await CreditLineFactory.deployed();
     poolRegistryInstance = await SynthereumPoolRegistry.deployed();
+    minterRole = web3Utils.soliditySha3('Minter');
+    burnerRole = web3Utils.soliditySha3('Burner');
   });
   beforeEach(async () => {
     deployerInstance = await SynthereumDeployer.deployed();
     poolVersion = 5;
-    synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
-    manager = (await SynthereumManager.deployed()).address;
+    selfMintingVersion = 2;
+    fixedRateVersion = 1;
+    finder = await SynthereumFinder.deployed();
+    synthereumFinderAddress = finder.address;
+    manager = await SynthereumManager.deployed();
     poolPayload = encodeLiquidityPool(
       collateralAddress,
       syntheticName,
@@ -144,7 +161,7 @@ contract('Registries', function (accounts) {
     );
   });
 
-  describe('Pool registry', async () => {
+  describe('Should register pool', async () => {
     it('Can write in the registry', async () => {
       let pools = await poolRegistryInstance.getElements.call(
         syntheticSymbol,
@@ -192,9 +209,9 @@ contract('Registries', function (accounts) {
       assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
       versions = await poolRegistryInstance.getVersions.call();
       assert.equal(versions.length, 1, 'Wrong versions number');
-      assert.equal(versions[0], 5, 'Wrong version');
+      assert.equal(versions[0], poolVersion, 'Wrong version');
     });
-    it('Revert if an address different from deployer write', async () => {
+    it('Can revert if writing by an address different from deployer', async () => {
       await truffleAssert.reverts(
         poolRegistryInstance.register(
           syntheticSymbol,
@@ -206,14 +223,183 @@ contract('Registries', function (accounts) {
         'Sender must be Synthereum deployer',
       );
     });
+    it('Can migrate pools in the new deployed registry', async () => {
+      const actualPools = await poolRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        poolVersion,
+      );
+      const newRegistry = await SynthereumPoolRegistry.new(
+        synthereumFinderAddress,
+      );
+      pools = await newRegistry.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        poolVersion,
+      );
+      assert.equal(pools.length, actualPools.length, 'Pools number wrong');
+      assert.deepEqual(pools, actualPools, 'Wrong pool addresses');
+      collaterals = await newRegistry.getCollaterals.call();
+      assert.equal(collaterals.length, 1, 'Collateral number wrong');
+      assert.equal(
+        collaterals[0],
+        collateralAddress,
+        'Collateral address wrong',
+      );
+      synthTokens = await newRegistry.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 1, 'Wrong synthetic tokens number');
+      assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
+      versions = await newRegistry.getVersions.call();
+      assert.equal(versions.length, 1, 'Wrong versions number');
+      assert.equal(versions[0], poolVersion, 'Wrong version');
+    });
+    it('Can revert if adding an already registered pool', async () => {
+      const pool = await deployerInstance.deployPool.call(
+        poolVersion,
+        poolPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        maintainer,
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        poolRegistryInstance.register(
+          syntheticSymbol,
+          collateralAddress,
+          poolVersion,
+          pool,
+          { from: maintainer },
+        ),
+        'Element already supported',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        {
+          from: maintainer,
+        },
+      );
+    });
   });
 
-  describe('Self-minting registry', async () => {
+  describe('Should unregister pool', async () => {
+    let pool;
+    let synthTokenAddress;
+
+    beforeEach(async () => {
+      pool = await deployerInstance.deployPool.call(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      const poolContract = await SynthereumLiquidityPool.at(pool);
+      synthTokenAddress = await poolContract.syntheticToken.call();
+    });
+    it('Can unregister in the registry', async () => {
+      let isDeployed = await poolRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        poolVersion,
+        pool,
+      );
+      assert.equal(isDeployed, true, 'Wrong deployment status');
+      pools = await poolRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        poolVersion,
+      );
+      await manager.revokeSynthereumRole(
+        [synthTokenAddress, synthTokenAddress],
+        [minterRole, burnerRole],
+        [pool, pool],
+        { from: maintainer },
+      );
+      await deployerInstance.removePool(pool, {
+        from: maintainer,
+      });
+      const newPools = await poolRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        poolVersion,
+      );
+      assert.equal(
+        parseInt(newPools.length) + 1,
+        parseInt(pools.length),
+        'Wrong pools number',
+      );
+      isDeployed = await poolRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        poolVersion,
+        pool,
+      );
+      assert.equal(isDeployed, false, 'Wrong deployment status');
+    });
+    it('Can revert if unregistering by an address different from deployer', async () => {
+      const pool = await deployerInstance.deployPool.call(
+        poolVersion,
+        poolPayload,
+        {
+          from: maintainer,
+        },
+      );
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      await truffleAssert.reverts(
+        poolRegistryInstance.unregister(
+          syntheticSymbol,
+          collateralAddress,
+          poolVersion,
+          pool,
+          { from: sender },
+        ),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Can revert if removing a not registered pool', async () => {
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        maintainer,
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        poolRegistryInstance.unregister(
+          syntheticSymbol,
+          collateralAddress,
+          poolVersion,
+          wrongAddressPool,
+          { from: maintainer },
+        ),
+        'Element not supported',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        {
+          from: maintainer,
+        },
+      );
+    });
+  });
+
+  describe('Should register self-minting', async () => {
     let selfMintingPayload;
     let selfMintingRegistryInstance;
-    let selfMintingVersion = 2;
     let selfMintingFee;
     let selfMintingDerivatives;
+    let synthTokenAddress;
+    let synthTokenInstance;
     beforeEach(async () => {
       const pool = await deployerInstance.deployPool.call(
         poolVersion,
@@ -224,8 +410,8 @@ contract('Registries', function (accounts) {
         from: maintainer,
       });
       const liquidityPool = await SynthereumLiquidityPool.at(pool);
-      const synthTokenAddress = await liquidityPool.syntheticToken.call();
-      const synthTokenInstance = await MintableBurnableSyntheticToken.at(
+      synthTokenAddress = await liquidityPool.syntheticToken.call();
+      synthTokenInstance = await MintableBurnableSyntheticToken.at(
         synthTokenAddress,
       );
       selfMintingFee = {
@@ -316,7 +502,7 @@ contract('Registries', function (accounts) {
       assert.equal(versions.length, 1, 'Wrong versions number');
       assert.equal(versions[0], selfMintingVersion, 'Wrong version');
     });
-    it('Revert if an address different from deployer write', async () => {
+    it('Can revert if an address different from deployer write', async () => {
       await truffleAssert.reverts(
         selfMintingRegistryInstance.register(
           syntheticSymbol,
@@ -326,6 +512,486 @@ contract('Registries', function (accounts) {
           { from: sender },
         ),
         'Sender must be Synthereum deployer',
+      );
+    });
+    it('Can migrate selfMinting in the new deployed registry', async () => {
+      const actualDerivatives = await selfMintingRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        selfMintingVersion,
+      );
+      const newRegistry = await SelfMintingRegistry.new(
+        synthereumFinderAddress,
+      );
+      derivatives = await newRegistry.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        selfMintingVersion,
+      );
+      assert.equal(
+        derivatives.length,
+        actualDerivatives.length,
+        'Derivatives number wrong',
+      );
+      assert.deepEqual(
+        derivatives,
+        actualDerivatives,
+        'Wrong derivative addresses',
+      );
+      collaterals = await newRegistry.getCollaterals.call();
+      assert.equal(collaterals.length, 1, 'Collateral number wrong');
+      assert.equal(
+        collaterals[0],
+        collateralAddress,
+        'Collateral address wrong',
+      );
+      synthTokens = await newRegistry.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 1, 'Wrong synthetic tokens number');
+      assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
+      versions = await newRegistry.getVersions.call();
+      assert.equal(versions.length, 1, 'Wrong versions number');
+      assert.equal(versions[0], selfMintingVersion, 'Wrong version');
+    });
+    it('Can revert if adding an already registered selfMinting', async () => {
+      const derivative = await deployerInstance.deploySelfMintingDerivative.call(
+        selfMintingVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deploySelfMintingDerivative(
+        selfMintingVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        maintainer,
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        selfMintingRegistryInstance.register(
+          syntheticSymbol,
+          collateralAddress,
+          selfMintingVersion,
+          derivative,
+          { from: maintainer },
+        ),
+        'Element already supported',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        {
+          from: maintainer,
+        },
+      );
+    });
+  });
+
+  describe('Should unregister self-minting', async () => {
+    let derivative;
+    beforeEach(async () => {
+      const pool = await deployerInstance.deployPool.call(
+        poolVersion,
+        poolPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      const liquidityPool = await SynthereumLiquidityPool.at(pool);
+      synthTokenAddress = await liquidityPool.syntheticToken.call();
+      synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      selfMintingFee = {
+        feePercentage,
+        feeRecipients,
+        feeProportions,
+      };
+      selfMintingPayload = encodeCreditLineDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        synthTokenAddress,
+        collateralRequirement,
+        minSponsorTokens,
+        excessBeneficiary,
+        selfMintingVersion,
+        selfMintingFee,
+        liquidationReward,
+        capMintAmount,
+      );
+      selfMintingRegistryInstance = await SelfMintingRegistry.deployed();
+      derivative = await deployerInstance.deploySelfMintingDerivative.call(
+        selfMintingVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deploySelfMintingDerivative(
+        selfMintingVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+    });
+    it('Can unregister in the registry', async () => {
+      let isDeployed = await selfMintingRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        selfMintingVersion,
+        derivative,
+      );
+      assert.equal(isDeployed, true, 'Wrong deployment status');
+      derivatives = await selfMintingRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        selfMintingVersion,
+      );
+      await manager.revokeSynthereumRole(
+        [synthTokenAddress, synthTokenAddress],
+        [minterRole, burnerRole],
+        [derivative, derivative],
+        { from: maintainer },
+      );
+      await deployerInstance.removeSelfMintingDerivative(derivative, {
+        from: maintainer,
+      });
+      const newDerivatives = await selfMintingRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        selfMintingVersion,
+      );
+      assert.equal(
+        parseInt(newDerivatives.length) + 1,
+        parseInt(derivatives.length),
+        'Wrong derivatives number',
+      );
+      isDeployed = await selfMintingRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        selfMintingVersion,
+        derivative,
+      );
+      assert.equal(isDeployed, false, 'Wrong deployment status');
+    });
+    it('Can revert if unregistering by an address different from deployer', async () => {
+      const derivative = await deployerInstance.deploySelfMintingDerivative.call(
+        selfMintingVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deploySelfMintingDerivative(
+        selfMintingVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      await truffleAssert.reverts(
+        selfMintingRegistryInstance.unregister(
+          syntheticSymbol,
+          collateralAddress,
+          selfMintingVersion,
+          derivative,
+          { from: sender },
+        ),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Can revert if removing a not registered derivative', async () => {
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        maintainer,
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        selfMintingRegistryInstance.unregister(
+          syntheticSymbol,
+          collateralAddress,
+          selfMintingVersion,
+          wrongAddressPool,
+          { from: maintainer },
+        ),
+        'Element not supported',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        {
+          from: maintainer,
+        },
+      );
+    });
+  });
+
+  describe('Should register fixed-rate', async () => {
+    let synthTokenAddress;
+    let fixedRate = web3.utils.toWei('1');
+    let fixedRatePayload;
+    beforeEach(async () => {
+      fixedRateRegistryInstance = await SynthereumFixedRateRegistry.deployed();
+      fixedRatePayload = encodeFixedRate(
+        collateralAddress,
+        syntheticName,
+        syntheticSymbol,
+        ZERO_ADDRESS,
+        {
+          admin: admin,
+          maintainer: maintainer,
+        },
+        fixedRateVersion,
+        fixedRate,
+      );
+    });
+    it('Can write in the registry', async () => {
+      let wrappers = await fixedRateRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+      );
+      assert.equal(wrappers.length, 0, 'Pools not void');
+      let collaterals = await fixedRateRegistryInstance.getCollaterals.call();
+      assert.equal(collaterals.length, 0, 'Collaterals not void');
+      let synthTokens = await fixedRateRegistryInstance.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 0, 'Synthetic tokens not void');
+      let versions = await fixedRateRegistryInstance.getVersions.call();
+      assert.equal(versions.length, 0, 'Versions not void');
+      const fixedRateWrapper = await deployerInstance.deployFixedRate.call(
+        fixedRateVersion,
+        fixedRatePayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployFixedRate(
+        fixedRateVersion,
+        fixedRatePayload,
+        { from: maintainer },
+      );
+      const isDeployed = await fixedRateRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+        fixedRateWrapper,
+      );
+      assert.equal(isDeployed, true, 'Wrong deployment status');
+      wrappers = await fixedRateRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+      );
+      assert.equal(wrappers.length, 1, 'Wrappers number wrong');
+      assert.equal(wrappers[0], fixedRateWrapper, 'Wrong wrappers address');
+      collaterals = await fixedRateRegistryInstance.getCollaterals.call();
+      assert.equal(collaterals.length, 1, 'Collateral number wrong');
+      assert.equal(
+        collaterals[0],
+        collateralAddress,
+        'Collateral address wrong',
+      );
+      synthTokens = await fixedRateRegistryInstance.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 1, 'Wrong synthetic tokens number');
+      assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
+      versions = await fixedRateRegistryInstance.getVersions.call();
+      assert.equal(versions.length, 1, 'Wrong versions number');
+      assert.equal(versions[0], fixedRateVersion, 'Wrong version');
+    });
+    it('Can revert if writing by an address different from deployer', async () => {
+      await truffleAssert.reverts(
+        fixedRateRegistryInstance.register(
+          syntheticSymbol,
+          collateralAddress,
+          fixedRateVersion,
+          wrongAddressPool,
+          { from: sender },
+        ),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Can migrate fixed-rate in the new deployed registry', async () => {
+      const actualWrappers = await fixedRateRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+      );
+      const newRegistry = await SynthereumFixedRateRegistry.new(
+        synthereumFinderAddress,
+      );
+      const wrappers = await newRegistry.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+      );
+      assert.equal(
+        wrappers.length,
+        actualWrappers.length,
+        'Pools number wrong',
+      );
+      assert.deepEqual(wrappers, actualWrappers, 'Wrong fixed-rate addresses');
+      collaterals = await newRegistry.getCollaterals.call();
+      assert.equal(collaterals.length, 1, 'Collateral number wrong');
+      assert.equal(
+        collaterals[0],
+        collateralAddress,
+        'Collateral address wrong',
+      );
+      synthTokens = await newRegistry.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 1, 'Wrong synthetic tokens number');
+      assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
+      versions = await newRegistry.getVersions.call();
+      assert.equal(versions.length, 1, 'Wrong versions number');
+      assert.equal(versions[0], fixedRateVersion, 'Wrong version');
+    });
+    it('Can revert if adding an already registered fixed-rate', async () => {
+      const fixedRateWrapper = await deployerInstance.deployFixedRate.call(
+        fixedRateVersion,
+        fixedRatePayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployFixedRate(
+        fixedRateVersion,
+        fixedRatePayload,
+        { from: maintainer },
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        maintainer,
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        fixedRateRegistryInstance.register(
+          syntheticSymbol,
+          collateralAddress,
+          fixedRateVersion,
+          fixedRateWrapper,
+          { from: maintainer },
+        ),
+        'Element already supported',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        {
+          from: maintainer,
+        },
+      );
+    });
+  });
+
+  describe('Should unregister fixed-rate', async () => {
+    let wrapper;
+    let fixedRatePayload;
+    let fixedRate = web3.utils.toWei('1');
+    beforeEach(async () => {
+      fixedRateRegistryInstance = await SynthereumFixedRateRegistry.deployed();
+      fixedRatePayload = encodeFixedRate(
+        collateralAddress,
+        syntheticName,
+        syntheticSymbol,
+        ZERO_ADDRESS,
+        {
+          admin: admin,
+          maintainer: maintainer,
+        },
+        fixedRateVersion,
+        fixedRate,
+      );
+      wrapper = await deployerInstance.deployFixedRate.call(
+        fixedRateVersion,
+        fixedRatePayload,
+        {
+          from: maintainer,
+        },
+      );
+      await deployerInstance.deployFixedRate(
+        fixedRateVersion,
+        fixedRatePayload,
+        {
+          from: maintainer,
+        },
+      );
+      const wrapperContract = await SynthereumFixedRateWrapper.at(wrapper);
+      synthTokenAddress = await wrapperContract.syntheticToken.call();
+    });
+    it('Can unregister in the registry', async () => {
+      let isDeployed = await fixedRateRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+        wrapper,
+      );
+      assert.equal(isDeployed, true, 'Wrong deployment status');
+      const wrappers = await fixedRateRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+      );
+      await manager.revokeSynthereumRole(
+        [synthTokenAddress, synthTokenAddress],
+        [minterRole, burnerRole],
+        [wrapper, wrapper],
+        { from: maintainer },
+      );
+      await deployerInstance.removeFixedRate(wrapper, {
+        from: maintainer,
+      });
+      const newWrappers = await fixedRateRegistryInstance.getElements.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+      );
+      assert.equal(
+        parseInt(newWrappers.length) + 1,
+        parseInt(wrappers.length),
+        'Wrong wrappers number',
+      );
+      isDeployed = await fixedRateRegistryInstance.isDeployed.call(
+        syntheticSymbol,
+        collateralAddress,
+        fixedRateVersion,
+        wrapper,
+      );
+      assert.equal(isDeployed, false, 'Wrong deployment status');
+    });
+    it('Can revert if unregistering by an address different from deployer', async () => {
+      await truffleAssert.reverts(
+        fixedRateRegistryInstance.unregister(
+          syntheticSymbol,
+          collateralAddress,
+          fixedRateVersion,
+          wrapper,
+          { from: sender },
+        ),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Can revert if removing a not registered fixed-rate', async () => {
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        maintainer,
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        fixedRateRegistryInstance.unregister(
+          syntheticSymbol,
+          collateralAddress,
+          fixedRateVersion,
+          wrongAddressPool,
+          { from: maintainer },
+        ),
+        'Element not supported',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        {
+          from: maintainer,
+        },
       );
     });
   });
