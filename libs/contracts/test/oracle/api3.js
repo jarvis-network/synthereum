@@ -18,10 +18,7 @@ contract('Synthereum API3 price feed', accounts => {
 
   before(async () => {
     finderInstance = await SynthereumFinder.deployed();
-    router = await OracleRouter.new(finderInstance.address, {
-      admin: accounts[0],
-      maintainer: accounts[1],
-    });
+    router = await OracleRouter.deployed();
     await finderInstance.changeImplementationAddress(
       web3Utils.stringToHex('OracleRouter'),
       router.address,
@@ -36,10 +33,7 @@ contract('Synthereum API3 price feed', accounts => {
     let time;
 
     before(async () => {
-      api3instance = await Api3PriceFeed.new(finderInstance.address, {
-        admin,
-        maintainer,
-      });
+      api3instance = await Api3PriceFeed.deployed();
       server = await MockServer.new();
       serverAddress = server.address;
       time = (await web3.eth.getBlock('latest')).timestamp;
@@ -71,6 +65,13 @@ contract('Synthereum API3 price feed', accounts => {
     it('Correctly retrieve price from server', async () => {
       let res = await api3instance.getLatestPrice.call(priceIdentifier);
       assert.equal(res.toString(), value.toString());
+    });
+
+    it('Reverts if price is not registered', async () => {
+      await truffleAssert.reverts(
+        api3instance.getLatestPrice.call(toHex('LOL/USD')),
+        'Price identifier not supported',
+      );
     });
   });
 });

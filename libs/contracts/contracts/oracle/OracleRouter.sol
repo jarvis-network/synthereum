@@ -24,6 +24,9 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     address maintainer;
   }
 
+  event SetOracle(bytes32 priceId, address oracleContract);
+  event RemoveOracle(bytes32 priceId);
+
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
@@ -88,6 +91,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     onlyMaintainer
   {
     idToOracle[_id] = _oracleContract;
+    emit SetOracle(_id, _oracleContract);
   }
 
   function removeIdentifier(bytes32 _id, address _oracleContract)
@@ -95,6 +99,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     onlyMaintainer
   {
     delete idToOracle[_id];
+    emit RemoveOracle(_id);
   }
 
   function getLatestPrice(bytes32 _priceIdentifier)
@@ -105,6 +110,7 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     returns (uint256 price)
   {
     address oracle = idToOracle[_priceIdentifier];
+    require(oracle != address(0), 'Price identifier not registered');
     price = ISynthereumPriceFeed(oracle).getLatestPrice(_priceIdentifier);
   }
 
@@ -116,8 +122,6 @@ contract OracleRouter is ISynthereumPriceFeed, AccessControlEnumerable {
     returns (bool isSupported)
   {
     address oracle = idToOracle[_priceIdentifier];
-    isSupported = ISynthereumPriceFeed(oracle).isPriceSupported(
-      _priceIdentifier
-    );
+    isSupported = oracle != address(0);
   }
 }

@@ -3,6 +3,9 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumChainlinkPriceFeed',
   'MockAggregator',
   'MockRandomAggregator',
+  'OracleRouter',
+  'SynthereumApi3PriceFeed',
+  'MockDapiServer',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -17,6 +20,9 @@ async function migrate(deployer, network, accounts) {
     SynthereumChainlinkPriceFeed,
     MockAggregator,
     MockRandomAggregator,
+    SynthereumApi3PriceFeed,
+    MockDapiServer,
+    OracleRouter,
   } = migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
@@ -43,6 +49,21 @@ async function migrate(deployer, network, accounts) {
     : rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
+
+  // deploy oracle router
+  await deploy(
+    web3,
+    deployer,
+    network,
+    OracleRouter,
+    synthereumFinder.options.address,
+    roles,
+    {
+      from: keys.deployer,
+    },
+  );
+
+  // deploy chainlink module
   await deploy(
     web3,
     deployer,
@@ -54,19 +75,44 @@ async function migrate(deployer, network, accounts) {
       from: keys.deployer,
     },
   );
+
+  // deploy api3 module
+  await deploy(
+    web3,
+    deployer,
+    network,
+    SynthereumApi3PriceFeed,
+    synthereumFinder.options.address,
+    roles,
+    {
+      from: keys.deployer,
+    },
+  );
+
   const priceFeedInterface = await web3.utils.stringToHex('PriceFeed');
+  const routerInstance = await getExistingInstance(
+    web3,
+    OracleRouter,
+    '@jarvis-network/synthereum-contracts',
+  );
   const synthereumChainlinkPriceFeed = await getExistingInstance(
     web3,
     SynthereumChainlinkPriceFeed,
     '@jarvis-network/synthereum-contracts',
   );
+  const synthereumApi3PriceFeed = await getExistingInstance(
+    web3,
+    SynthereumApi3PriceFeed,
+    '@jarvis-network/synthereum-contracts',
+  );
   await synthereumFinder.methods
     .changeImplementationAddress(
       priceFeedInterface,
-      synthereumChainlinkPriceFeed.options.address,
+      routerInstance.options.address,
     )
     .send({ from: maintainer });
-  console.log('SynthereumChainlinkPriceFeed added to SynthereumFinder');
+  console.log('Oracle Router added to SynthereumFinder');
+
   var aggregatorsData = [];
   if (!isPublicNetwork(network) && !process.env.FORKCHAINID) {
     return;
@@ -122,5 +168,13 @@ async function migrate(deployer, network, accounts) {
       )
       .send({ from: maintainer });
     console.log(`   Add '${aggregatorsData[j].asset}' aggregator`);
+
+    // register in router
+    await routerInstance.methods
+      .addIdentifier(
+        aggregatorsData[j].pair,
+        synthereumChainlinkPriceFeed.options.address,
+      )
+      .send({ from: maintainer });
   }
 }
