@@ -12,6 +12,10 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {StringUtils} from '../base/utils/StringUtils.sol';
+import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {
@@ -24,19 +28,30 @@ contract JarvisBrrrrr is
   AccessControlEnumerable
 {
   using SafeERC20 for IERC20;
-
-  mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
-  mapping(IMintableBurnableERC20 => uint256) private circulatingSupply;
+  using EnumerableSet for EnumerableSet.Bytes32Set;
+  using StringUtils for string;
+  using StringUtils for bytes32;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   ISynthereumFinder public immutable synthereumFinder;
+
+  EnumerableSet.Bytes32Set private accessWhitelist;
+
+  mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
+  mapping(IMintableBurnableERC20 => uint256) private circulatingSupply;
 
   // Describe role structure
   struct Roles {
     address admin;
     address maintainer;
   }
+
+  event Minted(address indexed token, address recipient, uint256 amount);
+  event Redeemed(address indexed token, address recipient, uint256 amount);
+  event NewMaxSupply(address indexed token, uint256 newMaxSupply);
+  event AccessContractAdded(string contractName);
+  event AccessContractRemoved(string contractName);
 
   modifier onlyMaintainer() {
     require(
@@ -46,20 +61,18 @@ contract JarvisBrrrrr is
     _;
   }
 
-  modifier onlyMoneyMarketManager() {
-    require(
-      msg.sender ==
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.MoneyMarketManager
-        ),
-      'Only mm manager can perform this operation'
-    );
-    _;
+  modifier onlyAccessWhitelist() {
+    for (uint256 j = 0; j < accessWhitelist.length(); j++) {
+      if (
+        msg.sender ==
+        synthereumFinder.getImplementationAddress(accessWhitelist.at(j))
+      ) {
+        _;
+        return;
+      }
+    }
+    revert('Only withelisted contracts can perform this operation');
   }
-
-  event Minted(address indexed token, address recipient, uint256 amount);
-  event Redeemed(address indexed token, address recipient, uint256 amount);
-  event NewMaxSupply(address indexed token, uint256 newMaxSupply);
 
   constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
@@ -71,6 +84,64 @@ contract JarvisBrrrrr is
   }
 
   /**
+   * @notice Add a contract to the withelist containing names of the contracts that have access to this contract
+   * @notice Only maintainer can call this function
+   * @param _contractName Name of the contract to add
+   */
+  function addAccessContract(string calldata _contractName)
+    external
+    override
+    onlyMaintainer
+  {
+    bytes32 contractNameHex = _contractName.stringToBytes32();
+    require(contractNameHex != 0x00, 'No name passed');
+    try synthereumFinder.getImplementationAddress(contractNameHex) returns (
+      address contractAddress
+    ) {
+      require(
+        accessWhitelist.add(contractNameHex),
+        'Contract already whitelisted'
+      );
+      emit AccessContractAdded(_contractName);
+    } catch {
+      revert('Contract not supported by the finder');
+    }
+  }
+
+  /**
+   * @notice Remove a contract from the withelist containing names of the contracts that have access to this contract
+   * @notice Only maintainer can call this function
+   * @param _contractName Name of the contract to remove
+   */
+  function removeAccessContract(string calldata _contractName)
+    external
+    override
+    onlyMaintainer
+  {
+    require(
+      accessWhitelist.remove(_contractName.stringToBytes32()),
+      'Contract not whitelisted'
+    );
+    emit AccessContractRemoved(_contractName);
+  }
+
+  /**
+   * @notice Sets the max circulating supply that can be minted for a specific token
+   * @notice Only maintainer can call this function
+   * @param _token Synthetic token address to set
+   * @param _newMaxSupply New Max supply value of the token
+   */
+  function setMaxSupply(IMintableBurnableERC20 _token, uint256 _newMaxSupply)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    maxCirculatingSupply[_token] = _newMaxSupply;
+    emit NewMaxSupply(address(_token), _newMaxSupply);
+  }
+
+  /**
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
    * @param _token Synthetic token address to mint
    * @param _amount Amount of tokens to mint
@@ -79,7 +150,7 @@ contract JarvisBrrrrr is
   function mint(IMintableBurnableERC20 _token, uint256 _amount)
     external
     override
-    onlyMoneyMarketManager
+    onlyAccessWhitelist
     nonReentrant
     returns (uint256 newCirculatingSupply)
   {
@@ -102,7 +173,7 @@ contract JarvisBrrrrr is
   function redeem(IMintableBurnableERC20 _token, uint256 _amount)
     external
     override
-    onlyMoneyMarketManager
+    onlyAccessWhitelist
     nonReentrant
     returns (uint256 newCirculatingSupply)
   {
@@ -112,21 +183,6 @@ contract JarvisBrrrrr is
     circulatingSupply[_token] = newCirculatingSupply;
     _token.burn(_amount);
     emit Redeemed(address(_token), msg.sender, _amount);
-  }
-
-  /**
-   * @notice Sets the max circulating supply that can be minted for a specific token - only manager can set this
-   * @param _token Synthetic token address to set
-   * @param _newMaxSupply New Max supply value of the token
-   */
-  function setMaxSupply(IMintableBurnableERC20 _token, uint256 _newMaxSupply)
-    external
-    override
-    onlyMaintainer
-    nonReentrant
-  {
-    maxCirculatingSupply[_token] = _newMaxSupply;
-    emit NewMaxSupply(address(_token), _newMaxSupply);
   }
 
   /**
@@ -155,5 +211,40 @@ contract JarvisBrrrrr is
     returns (uint256 circSupply)
   {
     circSupply = circulatingSupply[_token];
+  }
+
+  /**
+   * @notice Returns the list of contracts that has access to this contract
+   * @return List of contracts (name and address from the finder)
+   */
+  function accessContractWhitelist()
+    external
+    view
+    override
+    returns (AccessContract[] memory)
+  {
+    uint256 contractsNumber = accessWhitelist.length();
+    AccessContract[] memory withelist = new AccessContract[](contractsNumber);
+    for (uint256 j = 0; j < contractsNumber; j++) {
+      bytes32 contractHex = accessWhitelist.at(j);
+      withelist[j] = AccessContract(
+        contractHex.bytes32ToString(),
+        synthereumFinder.getImplementationAddress(contractHex)
+      );
+    }
+    return withelist;
+  }
+
+  /**
+   * @notice Returns if a contract name has access to this contract
+   * @return hasAccess True if has access otherwise false
+   */
+  function hasContractAccess(string calldata _contractName)
+    external
+    view
+    override
+    returns (bool hasAccess)
+  {
+    hasAccess = accessWhitelist.contains(_contractName.stringToBytes32());
   }
 }
