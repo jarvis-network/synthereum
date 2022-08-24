@@ -97,6 +97,11 @@ async function migrate(deployer, network, accounts) {
     .send({ from: maintainer });
   console.log('MoneyMarketManager added to SynthereumFinder');
 
+  await jarvisBrrrrr.methods
+    .addAccessContract('MoneyMarketManager')
+    .send({ from: maintainer });
+  console.log('MoneyMarketManager added to JarvisBrrrrr');
+
   // deploy modules according to json file
   if (deployData[networkId]?.AaveV3?.deploy ?? false) {
     await deploy(web3, deployer, network, JarvisBrrAave, {
