@@ -130,6 +130,11 @@
     "transactionHash": "0x1720926d43a3c2901487b01d2ad8dfcf1c55394aa5f582fc0a017143b3fa37c4"
   },
   {
+    "contractName": "JarvisBrrrrr",
+    "address": "0xFbF78347c53D09271cbC2B251CafADC160AE1899",
+    "transactionHash": "0xef4b2c263c4b5c2ffa1a52df05a03390eb5a517b70e5525a5ab9290b070190dc"
+  },
+  {
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x2e45a0a633472E5879b15bF3aF78F156909103cC",
     "transactionHash": "0xfbfd458a9531e3dc3901932cadaf58e5553b0c852c09954656395a28a10e7b6f"
