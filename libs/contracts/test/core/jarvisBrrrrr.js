@@ -26,6 +26,7 @@ contract('Jarvis Printer', async accounts => {
     networkId,
     finder,
     DAOAddress,
+    TestAddress,
     moneyMarketManager,
     aaveImpl;
   let roles = {
@@ -34,6 +35,7 @@ contract('Jarvis Printer', async accounts => {
   };
   before(async () => {
     DAOAddress = accounts[2];
+    TestAddress = accounts[3];
     networkId = await web3.eth.net.getId();
 
     jEurInstance = await MintableBurnableSyntheticToken.new(
@@ -47,6 +49,16 @@ contract('Jarvis Printer', async accounts => {
 
     finder = await SynthereumFinder.deployed();
     jarvisBrrrrr = await JarvisBrrrrr.deployed();
+
+    // set Dao has access contract to the printer
+    await finder.changeImplementationAddress(
+      web3.utils.toHex('Dao'),
+      DAOAddress,
+      {
+        from: roles.maintainer,
+      },
+    );
+    await jarvisBrrrrr.addAccessContract('Dao', { from: roles.maintainer });
 
     // set minting capacity
     await jarvisBrrrrr.setMaxSupply(jEURAddress, toWei('1000'), {
@@ -63,6 +75,146 @@ contract('Jarvis Printer', async accounts => {
   });
 
   describe('JarvisBrrr', () => {
+    it('Correctly add access contract', async () => {
+      const moneyMarketAddress = (await MoneyMarketManager.deployed()).address;
+      const testContractName = 'TestAdd';
+      let hasAccess = await jarvisBrrrrr.hasContractAccess.call(
+        testContractName,
+      );
+      assert.equal(hasAccess, false, 'Wrong access result');
+      let whitelist = await jarvisBrrrrr.accessContractWhitelist.call();
+      assert.deepEqual(
+        whitelist.map(elem => elem[0]),
+        ['MoneyMarketManager', 'Dao'],
+        'Wrong list name result',
+      );
+      assert.deepEqual(
+        whitelist.map(elem => elem[1]),
+        [moneyMarketAddress, DAOAddress],
+        'Wrong list address result',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.toHex(testContractName),
+        TestAddress,
+        {
+          from: roles.maintainer,
+        },
+      );
+      const addTx = await jarvisBrrrrr.addAccessContract(testContractName, {
+        from: roles.maintainer,
+      });
+      truffleAssert.eventEmitted(addTx, 'AccessContractAdded', ev => {
+        return ev.contractName == testContractName;
+      });
+      hasAccess = await jarvisBrrrrr.hasContractAccess.call(testContractName);
+      assert.equal(hasAccess, true, 'Wrong access result');
+      whitelist = await jarvisBrrrrr.accessContractWhitelist.call();
+      assert.deepEqual(
+        whitelist.map(elem => elem[0]),
+        ['MoneyMarketManager', 'Dao', testContractName],
+        'Wrong list name result',
+      );
+      assert.deepEqual(
+        whitelist.map(elem => elem[1]),
+        [moneyMarketAddress, DAOAddress, TestAddress],
+        'Wrong list address result',
+      );
+    });
+
+    it('Correctly remove access contract', async () => {
+      const moneyMarketAddress = (await MoneyMarketManager.deployed()).address;
+      const testContractName = 'TestAdd';
+      let hasAccess = await jarvisBrrrrr.hasContractAccess.call(
+        testContractName,
+      );
+      assert.equal(hasAccess, true, 'Wrong access result');
+      let whitelist = await jarvisBrrrrr.accessContractWhitelist.call();
+      assert.deepEqual(
+        whitelist.map(elem => elem[0]),
+        ['MoneyMarketManager', 'Dao', testContractName],
+        'Wrong list name result',
+      );
+      assert.deepEqual(
+        whitelist.map(elem => elem[1]),
+        [moneyMarketAddress, DAOAddress, TestAddress],
+        'Wrong list address result',
+      );
+      const removeTx = await jarvisBrrrrr.removeAccessContract(
+        testContractName,
+        {
+          from: roles.maintainer,
+        },
+      );
+      truffleAssert.eventEmitted(removeTx, 'AccessContractRemoved', ev => {
+        return ev.contractName == testContractName;
+      });
+      hasAccess = await jarvisBrrrrr.hasContractAccess.call(testContractName);
+      assert.equal(hasAccess, false, 'Wrong access result');
+      whitelist = await jarvisBrrrrr.accessContractWhitelist.call();
+      assert.deepEqual(
+        whitelist.map(elem => elem[0]),
+        ['MoneyMarketManager', 'Dao'],
+        'Wrong list name result',
+      );
+      assert.deepEqual(
+        whitelist.map(elem => elem[1]),
+        [moneyMarketAddress, DAOAddress],
+        'Wrong list address result',
+      );
+      await finder.changeImplementationAddress(
+        web3.utils.toHex(testContractName),
+        ZERO_ADDRESS,
+        {
+          from: roles.maintainer,
+        },
+      );
+    });
+
+    it('Reverts if name passed missing when access contract is added', async () => {
+      await truffleAssert.reverts(
+        jarvisBrrrrr.addAccessContract('', {
+          from: roles.maintainer,
+        }),
+        'No name passed',
+      );
+    });
+
+    it('Reverts if name passed missing when access contract is added', async () => {
+      await truffleAssert.reverts(
+        jarvisBrrrrr.addAccessContract('', {
+          from: roles.maintainer,
+        }),
+        'No name passed',
+      );
+    });
+
+    it('Reverts if access contract already supported when access contract is added', async () => {
+      await truffleAssert.reverts(
+        jarvisBrrrrr.addAccessContract('Dao', {
+          from: roles.maintainer,
+        }),
+        'Contract already whitelisted',
+      );
+    });
+
+    it('Reverts if access contract not supported by the finder when access contract is added', async () => {
+      await truffleAssert.reverts(
+        jarvisBrrrrr.addAccessContract('Wrong name', {
+          from: roles.maintainer,
+        }),
+        'Contract not supported by the finder',
+      );
+    });
+
+    it('Reverts if access contract not supported when access contract is removed', async () => {
+      await truffleAssert.reverts(
+        jarvisBrrrrr.removeAccessContract('Wrong name', {
+          from: roles.maintainer,
+        }),
+        'Contract not whitelisted',
+      );
+    });
+
     it('Correctly mints and burns to DAO address', async () => {
       // mint
       let balanceBefore = await jEurInstance.balanceOf.call(DAOAddress);
@@ -143,23 +295,14 @@ contract('Jarvis Printer', async accounts => {
       );
     });
 
-    it('Reverts if minting amount overcomes maxLimit', async () => {
-      await truffleAssert.reverts(
-        jarvisBrrrrr.mint(jEURAddress, toWei('100000'), {
-          from: DAOAddress,
-        }),
-        'Minting over max limit',
-      );
-    });
-
     it('Only registred address can mint and redeem', async () => {
       await truffleAssert.reverts(
         jarvisBrrrrr.mint(jEURAddress, toWei('10'), { from: accounts[3] }),
-        'Only mm manager can perform this operation',
+        'Only withelisted contracts can perform this operation',
       );
       await truffleAssert.reverts(
         jarvisBrrrrr.redeem(jEURAddress, toWei('1'), { from: accounts[3] }),
-        'Only mm manager can perform this operation',
+        'Only withelisted contracts can perform this operation',
       );
     });
 
@@ -176,6 +319,16 @@ contract('Jarvis Printer', async accounts => {
       await truffleAssert.reverts(
         jarvisBrrrrr.setMaxSupply(jEURAddress, 10, { from: accounts[3] }),
         'Sender must be the maintainer',
+      );
+    });
+
+    it('Reverts if mint more than max supply', async () => {
+      const amount = toWei('1000.1');
+      await truffleAssert.reverts(
+        jarvisBrrrrr.mint(jEURAddress, amount, {
+          from: DAOAddress,
+        }),
+        'Minting over max limit',
       );
     });
   });
