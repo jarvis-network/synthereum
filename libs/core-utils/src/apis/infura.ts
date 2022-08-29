@@ -23,16 +23,15 @@ export function getInfuraEndpoint<Net extends Network>(
   }/v3/${projectId}` as ValueOnNetwork<string, Net>;
 }
 
-export function getMoralisEndpoint<Net extends Network>(
+export function getBscEndpoint<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
-  projectId = env.moralisId,
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
   const endpoint =
     networkName === 'bsc'
-      ? `speedy-nodes-nyc.moralis.io/${projectId}/bsc/mainnet`
-      : `speedy-nodes-nyc.moralis.io/${projectId}/bsc/testnet`;
+      ? `bsc-dataseed1.binance.org`
+      : `data-seed-prebsc-1-s1.binance.org:8545`;
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 

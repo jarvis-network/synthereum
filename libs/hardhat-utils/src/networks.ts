@@ -12,7 +12,7 @@ import { throwError } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   getInfuraEndpoint,
   getXDAIEndpoint,
-  getMoralisEndpoint,
+  getBscEndpoint,
   getFantomTestnetEndpoint,
   getFantomOperaEndpoint,
   getAvalancheEndpoint,
@@ -31,7 +31,7 @@ export function addPublicNetwork(
       process.env.RPC_URL ?? (chainId === 77 || chainId === 100)
         ? getXDAIEndpoint(chainId, 'https')
         : chainId === 56 || chainId === 97
-        ? getMoralisEndpoint(chainId, 'https', projectId)
+        ? getBscEndpoint(chainId, 'https')
         : chainId === 250
         ? getFantomOperaEndpoint(chainId, 'https')
         : chainId === 4002
