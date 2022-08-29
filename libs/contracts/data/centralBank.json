@@ -8,5 +8,25 @@
       "deploy": true,
       "ids": ["MarketXyz", "Midas"]
     }
+  },
+  "137": {
+    "AaveV3": {
+      "deploy": true,
+      "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+    },
+    "Compound": {
+      "deploy": true,
+      "ids": ["MarketXyz", "Midas"]
+    }
+  },
+  "56": {
+    "AaveV3": {
+      "deploy": false,
+      "moneyManager": ""
+    },
+    "Compound": {
+      "deploy": false,
+      "ids": ["MarketXyz", "Midas"]
+    }
   }
 }

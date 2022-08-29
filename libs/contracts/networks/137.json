@@ -45,11 +45,6 @@
     "transactionHash": "0x1bd0dce423b879f7dc1e2a8cca80c6991a946d8a3b91db15de7ac5344fed78e8"
   },
   {
-    "contractName": "JarvisBrrrrr",
-    "address": "0xb51c6fDbf82eA5C1c2f39e7e6a3f82586C29c81e",
-    "transactionHash": "0x6f150cc9f8464d43c28e0391a42aa3eb6c179d140b02fffd158526a2fea707d8"
-  },
-  {
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x711d663256358ECA83840541bd3A59a1d8105F86",
     "transactionHash": "0xedb14262db17fcc985810b533aac96697aeee7190fdaad8acbc57e630cbed65b"
@@ -138,5 +133,25 @@
     "contractName": "UniV2JRTSwapModule",
     "address": "0x81f1E35b3e05E9e8BB3eeB31D44d0ae399651E52",
     "transactionHash": "0x2879f5fa51f4764364e3cc80442c48107ca4e7a2832b33dd82698ae29cc0e18a"
+  },
+  {
+    "contractName": "JarvisBrrrrr",
+    "address": "0x460256aF9D8a4Ec19152530cd6017c4C399560f1",
+    "transactionHash": "0x107ee171df728c4ab8396966f4fd67f228255b44790912470dcba7a3e1a85231"
+  },
+  {
+    "contractName": "MoneyMarketManager",
+    "address": "0x9fB2fbaeCbC0DB28ac5dDE618D6bA2806F71167B",
+    "transactionHash": "0xb6a7fb39d61b23fd452e75499aaf19a5be1c9d01fda04c0dc0b8f56b55c042dc"
+  },
+  {
+    "contractName": "JarvisBrrAave",
+    "address": "0xCAf178876bfb70805C2842ae7a7D5aa1C45D8ee8",
+    "transactionHash": "0x70b3e5104d8f858faf22af1cc27e02c70b88964efe1391e78da31d78ffee6b95"
+  },
+  {
+    "contractName": "JarvisBrrCompound",
+    "address": "0x1b425b5B296544Cf1BbBd278fC284E007258D109",
+    "transactionHash": "0x6bc5ddd37d460e98cbd16747f9c746fb561fcf281c02e9698b11b769622e1b98"
   }
 ]
