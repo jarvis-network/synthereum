@@ -9,6 +9,9 @@ import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   ISynthereumLendingTransfer
 } from '../synthereum-pool/common/interfaces/ILendingTransfer.sol';
+import {
+  ISynthereumLendingRewards
+} from '../synthereum-pool/common/interfaces/ILendingRewards.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -512,6 +515,31 @@ contract LendingManager is
       _newPool,
       actualCollateralAmount
     );
+  }
+
+  function claimLendingRewards(address[] calldata _pools)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    ILendingStorageManager poolStorageManager = getStorageManager();
+    ILendingStorageManager.PoolLendingStorage memory poolLendingStorage;
+    ILendingStorageManager.LendingInfo memory lendingInfo;
+    address recipient =
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.LendingRewardsReceiver
+      );
+    for (uint8 i = 0; i < _pools.length; i++) {
+      (poolLendingStorage, lendingInfo) = poolStorageManager.getLendingData(
+        _pools[i]
+      );
+      ISynthereumLendingRewards(_pools[i]).claimLendingRewards(
+        lendingInfo,
+        poolLendingStorage,
+        recipient
+      );
+    }
   }
 
   function interestTokenToCollateral(

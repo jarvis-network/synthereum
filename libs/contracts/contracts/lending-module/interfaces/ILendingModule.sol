@@ -79,6 +79,20 @@ interface ILendingModule {
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral);
 
   /**
+   * @notice Claim the rewards associated to the bearing tokens of the caller(pool)
+   * @param _lendingArgs encoded args needed by the specific implementation
+   * @param _collateral Address of the collateral of the pool
+   * @param _bearingToken Address of the bearing token of the pool
+   * @param _recipient address to which send rewards
+   */
+  function claimRewards(
+    bytes calldata _lendingArgs,
+    address _collateral,
+    address _bearingToken,
+    address _recipient
+  ) external;
+
+  /**
    * @notice returns accumulated interest of a pool since state-changing last operation
    * @dev does not update state
    * @param _poolAddress reference pool to check accumulated interest

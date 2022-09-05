@@ -162,6 +162,12 @@ interface ILendingManager {
     returns (uint256 sourceCollateralAmount, uint256 actualCollateralAmount);
 
   /**
+   * @notice Claim leinding protocol rewards of a list of pools
+   * @notice _pools List of pools from which claim rewards
+   */
+  function claimLendingRewards(address[] calldata _pools) external;
+
+  /**
    * @notice returns the conversion between interest token and collateral of a specific money market
    * @param _pool reference pool to check conversion
    * @param _interestTokenAmount amount of interest token to calculate conversion on

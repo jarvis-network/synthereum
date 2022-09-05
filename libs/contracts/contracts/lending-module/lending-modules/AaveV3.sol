@@ -5,6 +5,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ILendingModule} from '../interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
 import {IPool} from '../interfaces/IAaveV3.sol';
+import {IRewardsController} from '../interfaces/IRewardsController.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {
   SafeERC20
@@ -39,7 +40,7 @@ contract AaveV3Module is ILendingModule {
     require(collateral.balanceOf(address(this)) >= _amount, 'Wrong balance');
 
     // aave deposit - approve
-    address moneyMarket = abi.decode(_lendingArgs, (address));
+    (address moneyMarket, ) = abi.decode(_lendingArgs, (address, address));
 
     collateral.safeIncreaseAllowance(moneyMarket, _amount);
     IPool(moneyMarket).supply(
@@ -94,7 +95,7 @@ contract AaveV3Module is ILendingModule {
     uint256 initialBalance = IERC20(_poolData.collateral).balanceOf(_recipient);
 
     // aave withdraw - approve
-    address moneyMarket = abi.decode(_lendingArgs, (address));
+    (address moneyMarket, ) = abi.decode(_lendingArgs, (address, address));
 
     interestToken.safeIncreaseAllowance(moneyMarket, withdrawAmount);
     IPool(moneyMarket).withdraw(
@@ -126,6 +127,26 @@ contract AaveV3Module is ILendingModule {
     actualTotalCollateral = IERC20(_interestToken).balanceOf(_newPool);
   }
 
+  /**
+   * @notice Claim the rewards associated to the bearing tokens of the caller(pool)
+   * @param _lendingArgs encoded args needed by the specific implementation
+   * @param _collateral Address of the collateral of the pool
+   * @param _bearingToken Address of the bearing token of the pool
+   * @param _recipient address to which send rewards
+   */
+  function claimRewards(
+    bytes calldata _lendingArgs,
+    address _collateral,
+    address _bearingToken,
+    address _recipient
+  ) external {
+    (, address rewardsController) =
+      abi.decode(_lendingArgs, (address, address));
+    address[] memory assets = new address[](1);
+    assets[0] = _bearingToken;
+    IRewardsController(rewardsController).claimAllRewards(assets, _recipient);
+  }
+
   function getAccumulatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
@@ -145,7 +166,7 @@ contract AaveV3Module is ILendingModule {
     override
     returns (address token)
   {
-    address moneyMarket = abi.decode(_args, (address));
+    (address moneyMarket, ) = abi.decode(_args, (address, address));
     token = IPool(moneyMarket).getReserveData(_collateral).aTokenAddress;
     require(token != address(0), 'Interest token not found');
   }

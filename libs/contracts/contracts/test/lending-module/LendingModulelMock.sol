@@ -101,6 +101,13 @@ contract LendingModulelMock is ILendingModule {
     actualTotalCollateral = IERC20(interestToken).balanceOf(newPool);
   }
 
+  function claimRewards(
+    bytes calldata _lendingArgs,
+    address _collateral,
+    address _bearingToken,
+    address _recipient
+  ) external override {}
+
   function getAccumulatedInterest(
     address poolAddress,
     ILendingStorageManager.PoolStorage calldata poolData,

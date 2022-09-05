@@ -24,6 +24,7 @@ library SynthereumInterfaces {
   bytes32 public constant LendingStorageManager = 'LendingStorageManager';
   bytes32 public constant CommissionReceiver = 'CommissionReceiver';
   bytes32 public constant BuybackProgramReceiver = 'BuybackProgramReceiver';
+  bytes32 public constant LendingRewardsReceiver = 'LendingRewardsReceiver';
   bytes32 public constant JarvisToken = 'JarvisToken';
 }
 
