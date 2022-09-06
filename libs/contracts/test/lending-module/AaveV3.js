@@ -164,8 +164,8 @@ contract('AaveV3 Lending module', accounts => {
   describe('Pool storage manager', async () => {
     it('Allows pool factory to set a pool and lending module', async () => {
       let args = web3.eth.abi.encodeParameters(
-        ['address'],
-        [data[networkId].AaveV3],
+        ['address', 'address'],
+        [data[networkId].AaveV3, ZERO_ADDRESS],
       );
       let lendingInfo = {
         lendingModule: module.address,
@@ -265,8 +265,8 @@ contract('AaveV3 Lending module', accounts => {
 
     it('Reverts if bearing token is not set and lending module reverts', async () => {
       let args = web3.eth.abi.encodeParameters(
-        ['address'],
-        [data[networkId].AaveV3],
+        ['address', 'address'],
+        [data[networkId].AaveV3, ZERO_ADDRESS],
       );
       let lendingInfo = {
         lendingModule: poolMock.address,
@@ -1189,8 +1189,8 @@ contract('AaveV3 Lending module', accounts => {
 
         // set new module args and id
         let args = web3.eth.abi.encodeParameters(
-          ['address'],
-          [data[networkId].AaveV3],
+          ['address', 'address'],
+          [data[networkId].AaveV3, ZERO_ADDRESS],
         );
         let newLendingInfo = {
           lendingModule: newModule.address,
