@@ -28,5 +28,7 @@
   "77": ["EURUSD", "GBPUSD"],
   "100": ["CHFUSD", "EURUSD"],
   "250": ["EURUSD"],
-  "43114": ["CHFUSD"]
+  "43114": ["CHFUSD"],
+  "420": ["EURUSD"],
+  "10": ["EURUSD"]
 }

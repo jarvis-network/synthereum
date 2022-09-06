@@ -43,5 +43,11 @@
   },
   "43114": {
     "collateralAddress": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"
+  },
+  "420": {
+    "collateralAddress": "0xf1485Aa729DF94083ab61B2C65EeA99894Aabdb3"
+  },
+  "10": {
+    "collateralAddress": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"
   }
 }

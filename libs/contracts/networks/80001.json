@@ -138,5 +138,20 @@
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x2e45a0a633472E5879b15bF3aF78F156909103cC",
     "transactionHash": "0xfbfd458a9531e3dc3901932cadaf58e5553b0c852c09954656395a28a10e7b6f"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0x94BAFfd964c8De1e0D41D73f233215Cd5ee96385",
+    "transactionHash": "0x1230ab2a0c286c36822c2ba3677954f2063daac2ab2a2af39c3a7e09e1a3681b"
+  },
+  {
+    "contractName": "MockRandomAggregator",
+    "address": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
+    "transactionHash": "0xe76fdfdd0a0da34880a71cc021b681baaebaf4cb308db4558c9a7169a91673e5"
+  },
+  {
+    "contractName": "MockRandomAggregator",
+    "address": "0x038491a489e720D2dF8841D23651ed9DFAe21c71",
+    "transactionHash": "0xd4feafe911566238ff86ff5baadc43ae490ab4e621cec9dc443c21947c5c672e"
   }
 ]

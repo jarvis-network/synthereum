@@ -63,7 +63,7 @@
   "80001": {
     "EURUSD": {
       "type": 0,
-      "aggregator": "",
+      "aggregator": "0x7d7356bF6Ee5CDeC22B216581E48eCC700D0497A",
       "intermediatePairs": []
     },
     "CHFUSD": {
@@ -242,6 +242,20 @@
     "CHFUSD": {
       "type": 0,
       "aggregator": "0x3B37950485b450edF90cBB85d0cD27308Af4AB9A",
+      "intermediatePairs": []
+    }
+  },
+  "420": {
+    "EURUSD": {
+      "type": 0,
+      "aggregator": "",
+      "intermediatePairs": []
+    }
+  },
+  "10": {
+    "EURUSD": {
+      "type": 0,
+      "aggregator": "0x3626369857A10CcC6cc3A6e4f5C2f5984a519F20",
       "intermediatePairs": []
     }
   }

@@ -78,5 +78,21 @@
       "version": 5,
       "isEnabled": true
     }
+  },
+  "420": {
+    "MultiLpLiquidityPoolFactory": {
+      "version": 6,
+      "isEnabled": true
+    }
+  },
+  "10": {
+    "LiquidityPoolFactory": {
+      "version": 5,
+      "isEnabled": false
+    },
+    "MultiLpLiquidityPoolFactory": {
+      "version": 6,
+      "isEnabled": true
+    }
   }
 }

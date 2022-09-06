@@ -124,22 +124,24 @@ module.exports = async function (deployer, network, accounts) {
         log(`   Deploying '${txData[j].asset}'`);
         log('   ------------------------------------- ');
       }
+      /*
       const gasEstimation = await synthereumDeployer.methods
         .deployPool(txData[j].poolVersion, txData[j].poolPayload)
         .estimateGas({ from: maintainer });
-      if (gasEstimation != undefined) {
-        const tx = await synthereumDeployer.methods
-          .deployPool(txData[j].poolVersion, txData[j].poolPayload)
-          .send({ from: maintainer });
-        const { transactionHash } = tx;
-        await logTransactionOutput({
-          log,
-          web3,
-          txhash: transactionHash,
-          contractName: txData[j].asset,
-          txSummaryText: 'deployPool',
-        });
-      }
+        */
+      // if (gasEstimation != undefined) {
+      const tx = await synthereumDeployer.methods
+        .deployPool(txData[j].poolVersion, txData[j].poolPayload)
+        .send({ from: maintainer });
+      const { transactionHash } = tx;
+      await logTransactionOutput({
+        log,
+        web3,
+        txhash: transactionHash,
+        contractName: txData[j].asset,
+        txSummaryText: 'deployPool',
+      });
+      // }
     }
   }
 };

@@ -78,5 +78,15 @@
       "jKRW": "0xa22f6bc96f13bcC84dF36109c973d3c0505a067E",
       "jPHP": "0x486880FB16408b47f928F472f57beC55AC6089d1"
     }
+  },
+  "420": {
+    "isEnabled": true,
+    "Pool": 6,
+    "SynthToken": {}
+  },
+  "10": {
+    "isEnabled": true,
+    "Pool": 6,
+    "SynthToken": {}
   }
 }

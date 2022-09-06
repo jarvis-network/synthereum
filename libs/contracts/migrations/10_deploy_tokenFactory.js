@@ -50,7 +50,8 @@ async function migrate(deployer, network, accounts) {
     networkId == 4002 ||
     networkId == 80001 ||
     networkId == 43113 ||
-    networkId == 43114
+    networkId == 43114 ||
+    networkId === 420
   ) {
     await deploy(
       web3,

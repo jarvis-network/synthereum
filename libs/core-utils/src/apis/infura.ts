@@ -17,6 +17,8 @@ export function getInfuraEndpoint<Net extends Network>(
       ? 'polygon-mainnet'
       : networkName === 'mumbai'
       ? 'polygon-mumbai'
+      : networkName === 'optimismGoerli'
+      ? 'optimism-goerli'
       : networkName;
   return `${protocol}://${infuraNetworkName}.infura.io${
     protocol === 'wss' ? '/ws' : ''
