@@ -1,0 +1,97 @@
+[
+  {
+    "contractName": "SynthereumFinder",
+    "address": "0x586cCe2D7CE78e9C9Fd5c062ec6Ee59880eAc78f",
+    "transactionHash": "0xa2df914fa413c4481bdc6edc3a3d88e349d04399a0c9c863042ec1d83813d1bf"
+  },
+  {
+    "contractName": "SynthereumDeployer",
+    "address": "0x930A54D8Af945F6D1BED5AAF63b63fAb50a8197f",
+    "transactionHash": "0xa02923f0cb35c88fa75fc878d11c8a81ff216d8bf1b13ae9484a9c0ad5746f62"
+  },
+  {
+    "contractName": "SynthereumPoolRegistry",
+    "address": "0x811F78b7d6bCF1C0E94493C2eC727B50eE32B974",
+    "transactionHash": "0x0c454841c59c3266d56a3074ca6f49c6c0ec94edd201e81ca8cc97a38a25e14c"
+  },
+  {
+    "contractName": "SynthereumFactoryVersioning",
+    "address": "0x03BC653285f8527e1C877b18dF285E66898864b3",
+    "transactionHash": "0x8ac0422d3216ad5a30f46dc69ca0cc27b31f199811de970b9b01d15a6e0b69ee"
+  },
+  {
+    "contractName": "SynthereumManager",
+    "address": "0xa513A13Db767d4609eCe1c705dBeeFB0f5822224",
+    "transactionHash": "0xcef836cc94b240612495c4fc67d42b24abe500ef67bb9808103a3b54462eccfa"
+  },
+  {
+    "contractName": "SynthereumCollateralWhitelist",
+    "address": "0xAeed612285F9e519F76F1d5cf1dfd84D3A398BA7",
+    "transactionHash": "0xf736fb3f87b0091d12f0e88f1b96001dafe21afff682beb1236d7edc209b76cb"
+  },
+  {
+    "contractName": "SynthereumIdentifierWhitelist",
+    "address": "0xAc84C7795157b9410d184D50d1a672607dE2894A",
+    "transactionHash": "0x8e41c905b462a7e82dbf151b6f545f3353c9bb77758d2b503dc4e896c128b34b"
+  },
+  {
+    "contractName": "SynthereumSyntheticTokenPermitFactory",
+    "address": "0xa747dCeB7d77250378f7858036b97c4CD5804ECC",
+    "transactionHash": "0x803b61fe40c49de71a2ecb8bdb2f93f3285e435326d122111b17f1ec207588f3"
+  },
+  {
+    "contractName": "SynthereumLiquidityPoolLib",
+    "address": "0x89B3A08d6F73BB44b1FF182bD7bf0590dbfDB21a",
+    "transactionHash": "0x063473b71498be5d15189809e6fbc169d0a80261049ebac538bb01c8bacbe70e"
+  },
+  {
+    "contractName": "SynthereumLiquidityPoolFactory",
+    "address": "0xCbFCbcB93C133478DA38a77E7A2fc01479ac79a2",
+    "transactionHash": "0x199d0363c4216e888d2d3dff0983c3a658f79fdbd3329b9b4d956a025786c7e1"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolMainLib",
+    "address": "0xD43509074b41824bc51c50B71D7694ab8d2568aB",
+    "transactionHash": "0x8f1ffdae6d51970e49f9f0bb17015ab6d03e0af39b5d5e82386a966c70409563"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolMigrationLib",
+    "address": "0x35274E47010354173686958162369c61FB677E69",
+    "transactionHash": "0x51cecfe0bf0ad42316f07ec3a7209d605e2c5bd1d01de56c1251cd27cec9bec9"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPool",
+    "address": "0xAF9132b3AfA36b36f6DdFFf63fd40b9dF43c0928",
+    "transactionHash": "0xf768e4b0f5cf3afcacee97733f1139ec98a286de766ea93ed508a3723691b5d7"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolFactory",
+    "address": "0x72e13642F18046D409d2a3D33ED939c78E5d9a58",
+    "transactionHash": "0xe4fce46bd8b467e77fda2e7a09929449c643a45c064b8668be3391fb903bfebb"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0xd8D32702c398528904e1367999f1563Eb4DF731a",
+    "transactionHash": "0xdb0240e54ddac5bc8d409e64a042e8688ca7499cca322c59c169854abd78d365"
+  },
+  {
+    "contractName": "LendingManager",
+    "address": "0xA3061f06274dBe75006B47F84f6ac24213a69DF6",
+    "transactionHash": "0xe8d6838fcc11489c858e2f7ab40a14984bee0d823bdd26691918c9a33afc864a"
+  },
+  {
+    "contractName": "LendingStorageManager",
+    "address": "0xa6CDc0e62f1e001efcd033515e7cD78A30353b55",
+    "transactionHash": "0x6e209c5f0246b617ac8b1f5b13e90f128a0c530ed012dd53bf5e9b99c6b9fcbe"
+  },
+  {
+    "contractName": "AaveV3Module",
+    "address": "0x38aED1b3d54843538b2489fCA7BDc5fd838D879A",
+    "transactionHash": "0x82f465a5996a6584553ebe479bb15a2d62e3a9d8c476398894dbf6d72d4a1439"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0x94b58178D4F4fd2CA7C00Dc226d091A0F9AfBcA7",
+    "transactionHash": "0x6e970cedf83da97df2fb31901818078eec68e0e05b6b373a38c1668b8e1f3afd"
+  }
+]
