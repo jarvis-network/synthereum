@@ -109,10 +109,11 @@ async function migrate(deployer, network, accounts) {
     );
     const AaveveInfo = {
       moneyManager: lendingData[networkId].AaveV3.moneyManager,
+      rewardsController: lendingData[networkId].AaveV3.rewardsController,
     };
     const encodedInfo = web3.eth.abi.encodeParameters(
-      ['address'],
-      [AaveveInfo.moneyManager],
+      ['address', 'address'],
+      [AaveveInfo.moneyManager, AaveveInfo.rewardsController],
     );
     await lendingManager.methods
       .setLendingModule('AaveV3', {

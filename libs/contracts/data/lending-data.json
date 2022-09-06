@@ -2,6 +2,7 @@
   "80001": {
     "AaveV3": {
       "moneyManager": "0xEce3383269ccE0B2ae66277101996b58c482817B",
+      "rewardsController": "0x0000000000000000000000000000000000000000",
       "isEnabled": true
     },
     "SwapModules": {
@@ -13,6 +14,7 @@
   "137": {
     "AaveV3": {
       "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+      "rewardsController": "0x0000000000000000000000000000000000000000",
       "isEnabled": true
     },
     "SwapModules": {

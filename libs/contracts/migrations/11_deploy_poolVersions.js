@@ -4,6 +4,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumLiquidityPoolLib',
   'SynthereumLiquidityPoolFactory',
   'SynthereumMultiLpLiquidityPool',
+  'SynthereumMultiLpLiquidityPoolWithRewards',
   'SynthereumMultiLpLiquidityPoolMainLib',
   'SynthereumMultiLpLiquidityPoolMigrationLib',
   'SynthereumMultiLpLiquidityPoolFactory',
@@ -20,6 +21,7 @@ async function migrate(deployer, network, accounts) {
     SynthereumLiquidityPoolLib,
     SynthereumLiquidityPoolFactory,
     SynthereumMultiLpLiquidityPool,
+    SynthereumMultiLpLiquidityPoolWithRewards,
     SynthereumMultiLpLiquidityPoolMainLib,
     SynthereumMultiLpLiquidityPoolMigrationLib,
     SynthereumMultiLpLiquidityPoolFactory,
@@ -101,9 +103,6 @@ async function migrate(deployer, network, accounts) {
         from: keys.deployer,
       },
     );
-    await SynthereumMultiLpLiquidityPool.link(
-      synthereumMultiLiquidityPoolMainLib,
-    );
     const { contract: synthereumMultiLiquidityPoolMigrationLib } = await deploy(
       web3,
       deployer,
@@ -113,17 +112,47 @@ async function migrate(deployer, network, accounts) {
         from: keys.deployer,
       },
     );
-    await SynthereumMultiLpLiquidityPool.link(
-      synthereumMultiLiquidityPoolMigrationLib,
-    );
-    await deploy(web3, deployer, network, SynthereumMultiLpLiquidityPool, {
-      from: keys.deployer,
-    });
-    const multiLpLiquidityPoolInstance = await getExistingInstance(
-      web3,
-      SynthereumMultiLpLiquidityPool,
-      '@jarvis-network/synthereum-contracts',
-    );
+    let multiLpLiquidityPoolInstance;
+    if (
+      !poolVersions[networkId]?.MultiLpLiquidityPoolFactory?.isRewarded ??
+      true
+    ) {
+      await SynthereumMultiLpLiquidityPool.link(
+        synthereumMultiLiquidityPoolMainLib,
+      );
+      await SynthereumMultiLpLiquidityPool.link(
+        synthereumMultiLiquidityPoolMigrationLib,
+      );
+      await deploy(web3, deployer, network, SynthereumMultiLpLiquidityPool, {
+        from: keys.deployer,
+      });
+      multiLpLiquidityPoolInstance = await getExistingInstance(
+        web3,
+        SynthereumMultiLpLiquidityPool,
+        '@jarvis-network/synthereum-contracts',
+      );
+    } else {
+      await SynthereumMultiLpLiquidityPoolWithRewards.link(
+        synthereumMultiLiquidityPoolMainLib,
+      );
+      await SynthereumMultiLpLiquidityPoolWithRewards.link(
+        synthereumMultiLiquidityPoolMigrationLib,
+      );
+      await deploy(
+        web3,
+        deployer,
+        network,
+        SynthereumMultiLpLiquidityPoolWithRewards,
+        {
+          from: keys.deployer,
+        },
+      );
+      multiLpLiquidityPoolInstance = await getExistingInstance(
+        web3,
+        SynthereumMultiLpLiquidityPoolWithRewards,
+        '@jarvis-network/synthereum-contracts',
+      );
+    }
     await deploy(
       web3,
       deployer,
@@ -133,21 +162,21 @@ async function migrate(deployer, network, accounts) {
       multiLpLiquidityPoolInstance.options.address,
       { from: keys.deployer },
     );
-    const synthereumMultiLpLiquidityPoolFactory = await getExistingInstance(
-      web3,
-      SynthereumMultiLpLiquidityPoolFactory,
-      '@jarvis-network/synthereum-contracts',
-    );
-    const factoryInterface = await web3.utils.stringToHex('PoolFactory');
-    await synthereumFactoryVersioning.methods
-      .setFactory(
-        factoryInterface,
-        poolVersions[networkId]?.MultiLpLiquidityPoolFactory?.version ?? 6,
-        synthereumMultiLpLiquidityPoolFactory.options.address,
-      )
-      .send({ from: maintainer });
-    console.log(
-      'MultiLpLiquidityPoolFactory added to SynthereumFactoryVersioning',
-    );
   }
+  const synthereumMultiLpLiquidityPoolFactory = await getExistingInstance(
+    web3,
+    SynthereumMultiLpLiquidityPoolFactory,
+    '@jarvis-network/synthereum-contracts',
+  );
+  const factoryInterface = await web3.utils.stringToHex('PoolFactory');
+  await synthereumFactoryVersioning.methods
+    .setFactory(
+      factoryInterface,
+      poolVersions[networkId]?.MultiLpLiquidityPoolFactory?.version ?? 6,
+      synthereumMultiLpLiquidityPoolFactory.options.address,
+    )
+    .send({ from: maintainer });
+  console.log(
+    'MultiLpLiquidityPoolFactory added to SynthereumFactoryVersioning',
+  );
 }

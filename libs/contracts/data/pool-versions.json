@@ -24,7 +24,8 @@
     },
     "MultiLpLiquidityPoolFactory": {
       "version": 6,
-      "isEnabled": true
+      "isEnabled": true,
+      "isRewarded": false
     }
   },
   "137": {
@@ -34,7 +35,8 @@
     },
     "MultiLpLiquidityPoolFactory": {
       "version": 6,
-      "isEnabled": true
+      "isEnabled": true,
+      "isRewarded": false
     }
   },
   "97": {
