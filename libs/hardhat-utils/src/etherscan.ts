@@ -18,6 +18,7 @@ export function addEtherscanApiKeys(config: HardhatUserConfig) {
       sokol: process.env.BLOCKSCOUT_XDAI_API_KEY,
       avalancheFujiTestnet: process.env.ETHERSCAN_AVALANCHE_API_KEY,
       avalanche: process.env.ETHERSCAN_AVALANCHE_API_KEY,
+      optimisticEthereum: process.env.OPTIMISM_API_KEY,
     },
   };
 }

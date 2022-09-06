@@ -25,6 +25,7 @@ export const networkIdToName = {
   43113: 'avalancheFujiTestnet',
   43114: 'avalanche',
   420: 'optimismGoerli',
+  10: 'optimism',
   31337: 'hardhat',
 } as const;
 
@@ -45,6 +46,7 @@ export const networkNameToId: InverseOf<typeof networkIdToName> = {
   avalancheFujiTestnet: 43113,
   avalanche: 43114,
   optimismGoerli: 420,
+  optimism: 10,
   hardhat: 31337,
 } as const;
 
@@ -77,6 +79,7 @@ const networkIdToId: KeysToKeys<typeof networkIdToName> = {
   43114: 43114,
   31337: 31337,
   420: 420,
+  10: 10,
 };
 
 const networkNameToName: KeysToKeys<typeof networkNameToId> = {
@@ -96,6 +99,7 @@ const networkNameToName: KeysToKeys<typeof networkNameToId> = {
   avalancheFujiTestnet: 'avalancheFujiTestnet',
   avalanche: 'avalanche',
   optimismGoerli: 'optimismGoerli',
+  optimism: 'optimism',
   hardhat: 'hardhat',
 };
 
