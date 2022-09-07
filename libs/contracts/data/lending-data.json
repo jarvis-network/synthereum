@@ -26,7 +26,8 @@
   "420": {
     "AaveV3": {
       "moneyManager": "0x4b529A5d8268d74B687aC3dbb00e1b85bF4BF0d4",
-      "isEnabled": true
+      "rewardsController": "0x0000000000000000000000000000000000000000",
+      "isEnabled": false
     },
     "SwapModules": {
       "uniV2": false,
@@ -37,6 +38,7 @@
   "10": {
     "AaveV3": {
       "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+      "rewardsController": "0xaad324f7e4Dd50C6b105820f8a877eE2DCBFA789",
       "isEnabled": true
     },
     "SwapModules": {

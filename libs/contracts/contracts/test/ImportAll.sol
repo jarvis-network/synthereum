@@ -30,6 +30,7 @@ import '../test/MockCreditLineContext.sol';
 import '../test/PoolAnalyticsMock.sol';
 import '../test/lending-module/LendingModulelMock.sol';
 import '../test/lending-module/LendingTestnetERC20.sol';
+import '../test/ISwapRouter02.sol';
 import '../oracle/common/interfaces/IPriceFeed.sol';
 import '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
 import '../oracle/chainlink/ChainlinkPriceFeed.sol';

@@ -26,7 +26,7 @@ const SynthereumManager = artifacts.require('SynthereumManager');
 const PoolAnalyticsMock = artifacts.require('PoolAnalyticsMock');
 const LendingManager = artifacts.require('LendingManager');
 const LendingStorageManager = artifacts.require('LendingStorageManager');
-const IUniswapRouter = artifacts.require('IUniswapV2Router02');
+const IUniswapRouter = artifacts.require('ISwapRouter02');
 const MockOnChainOracle = artifacts.require('MockOnChainOracle');
 const LendingTestnetERC20 = artifacts.require('LendingTestnetERC20');
 const LendingModulelMock = artifacts.require('LendingModulelMock');
@@ -111,16 +111,23 @@ contract('MultiLPLiquidityPool', function (accounts) {
       user,
       web3.utils.toHex(newTotal.toString()),
     ]);
-    await uniswapInstance.swapETHForExactTokens(
-      collateralAmount,
-      [PoolV6Data[networkId].nativeWrapper, collateral],
-      user,
-      deadline,
-      {
-        value: nativeAmount,
-        from: user,
-      },
+    const nativeWrapperContract = await ERC20.at(
+      PoolV6Data[networkId].nativeWrapper,
     );
+    const inputSwap = {
+      tokenIn: nativeWrapperContract.address,
+      tokenOut: collateral,
+      fee: 3000,
+      recipient: user,
+      deadline: deadline,
+      amountOut: collateralAmount.toString(),
+      amountInMaximum: nativeAmount.toString(),
+      sqrtPriceLimitX96: 0,
+    };
+    await uniswapInstance.exactOutputSingle(inputSwap, {
+      from: user,
+      value: nativeAmount,
+    });
   };
 
   const setPoolPrice = async price => {
