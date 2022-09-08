@@ -22,6 +22,9 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumMultiLpLiquidityPool = artifacts.require(
   'SynthereumMultiLpLiquidityPool',
 );
+const SynthereumMultiLpLiquidityPoolWithRewards = artifacts.require(
+  'SynthereumMultiLpLiquidityPoolWithRewards',
+);
 const SynthereumManager = artifacts.require('SynthereumManager');
 const PoolAnalyticsMock = artifacts.require('PoolAnalyticsMock');
 const LendingManager = artifacts.require('LendingManager');
@@ -4404,6 +4407,191 @@ contract('MultiLPLiquidityPool', function (accounts) {
         getRandomInt(3600, 24 * 7 * 3600),
       );
       await resetOracle();
+    });
+  });
+
+  describe('Should claim lending rewards', async () => {
+    let totalCollateral = web3.utils.toBN('0');
+    let collateralAmount;
+    let mintTokens;
+    let hasRewards;
+    let rewardsToken;
+    beforeEach(async () => {
+      hasRewards = networkId == 10 ? true : false;
+      if (hasRewards) {
+        rewardsToken = await ERC20.at(PoolV6Data[networkId].rewardsToken);
+        await synthFinder.changeImplementationAddress(
+          web3.utils.stringToHex('LendingRewardsReceiver'),
+          receiver,
+          { from: maintainer },
+        );
+        await deployer.deployPool(poolVersion, poolDataPayload, {
+          from: maintainer,
+        });
+        poolContract = await SynthereumMultiLpLiquidityPoolWithRewards.at(
+          poolAddress,
+        );
+        for (let j = 0; j < lpNumber; j++) {
+          await poolContract.registerLP(LPs[j], {
+            from: maintainer,
+          });
+          await getCollateralToken(LPs[j], collateralAddress, LPsCollateral[j]);
+          await collateralContract.approve(poolAddress, LPsCollateral[j], {
+            from: LPs[j],
+          });
+          const activateTx = await poolContract.activateLP(
+            LPsCollateral[j],
+            LPsOverCollateral[j],
+            {
+              from: LPs[j],
+            },
+          );
+          totalCollateral = totalCollateral.add(LPsCollateral[j]);
+          await network.provider.send('evm_increaseTime', [86400]);
+        }
+        syntTokenAddress = await poolContract.syntheticToken.call();
+        syntTokenContract = await MintableBurnableERC20.at(syntTokenAddress);
+        collateralAmount = web3.utils
+          .toBN('200')
+          .mul(web3.utils.toBN(Math.pow(10, collateralDecimals).toString()));
+        await getCollateralToken(sender, collateralAddress, collateralAmount);
+        await collateralContract.approve(poolAddress, collateralAmount, {
+          from: sender,
+        });
+        const mintParams = {
+          minNumTokens: 0,
+          collateralAmount: collateralAmount.toString(),
+          expiration: maxTime.toString(),
+          recipient: sender,
+        };
+        await poolContract.mint(mintParams, {
+          from: sender,
+        });
+        mintTokens = await poolContract.totalSyntheticTokens.call();
+      }
+    });
+    afterEach(async () => {
+      if (hasRewards) {
+        totalCollateral = web3.utils.toBN('0');
+      }
+    });
+
+    it('Can claim rewards', async function () {
+      if (hasRewards) {
+        const previousBalance = await rewardsToken.balanceOf.call(receiver);
+        console.log('balance before claim: ' + previousBalance.toString());
+        await lendingManagerContract.claimLendingRewards([poolAddress], {
+          from: maintainer,
+        });
+        const actualBalance = await rewardsToken.balanceOf.call(receiver);
+        console.log('balance after claim: ' + actualBalance.toString());
+      } else {
+        console.log('No test supported');
+      }
+    });
+    it('Can revert if sender is not the maintainer', async function () {
+      if (hasRewards) {
+        await truffleAssert.reverts(
+          lendingManagerContract.claimLendingRewards([poolAddress], {
+            from: genericSender,
+          }),
+          'Sender must be the maintainer',
+        );
+      } else {
+        console.log('No test supported');
+      }
+    });
+    it('Can revert if wrong colletaral passed', async function () {
+      if (hasRewards) {
+        const poolData = await lendingStorageManagerContract.getLendingData.call(
+          poolAddress,
+        );
+        await synthFinder.changeImplementationAddress(
+          web3.utils.stringToHex('LendingManager'),
+          genericSender,
+          { from: maintainer },
+        );
+        const wrongData = {
+          collateralToken: admin,
+          interestToken: poolData[0][1],
+        };
+        await truffleAssert.reverts(
+          poolContract.claimLendingRewards(
+            poolData[1],
+            wrongData,
+            genericSender,
+            {
+              from: genericSender,
+            },
+          ),
+          'Wrong collateral passed',
+        );
+        await synthFinder.changeImplementationAddress(
+          web3.utils.stringToHex('LendingManager'),
+          lendingManagerAddress,
+          { from: maintainer },
+        );
+      } else {
+        console.log('No test supported');
+      }
+    });
+    it('Can revert if wrong bearing token passed', async function () {
+      if (hasRewards) {
+        const poolData = await lendingStorageManagerContract.getLendingData.call(
+          poolAddress,
+        );
+        await synthFinder.changeImplementationAddress(
+          web3.utils.stringToHex('LendingManager'),
+          genericSender,
+          { from: maintainer },
+        );
+        const wrongData = {
+          collateralToken: poolData[0][0],
+          interestToken: admin,
+        };
+        await truffleAssert.reverts(
+          poolContract.claimLendingRewards(
+            poolData[1],
+            wrongData,
+            genericSender,
+            {
+              from: genericSender,
+            },
+          ),
+          'Wrong bearing token passed',
+        );
+        await synthFinder.changeImplementationAddress(
+          web3.utils.stringToHex('LendingManager'),
+          lendingManagerAddress,
+          { from: maintainer },
+        );
+      } else {
+        console.log('No test supported');
+      }
+    });
+    it('Can revert if caller is not the lending manager', async function () {
+      if (hasRewards) {
+        const poolData = await lendingStorageManagerContract.getLendingData.call(
+          poolAddress,
+        );
+        const wrongData = {
+          collateralToken: admin,
+          interestToken: poolData[0][1],
+        };
+        await truffleAssert.reverts(
+          poolContract.claimLendingRewards(
+            poolData[1],
+            poolData[0],
+            genericSender,
+            {
+              from: genericSender,
+            },
+          ),
+          'Sender must be the lending manager',
+        );
+      } else {
+        console.log('No test supported');
+      }
     });
   });
 });

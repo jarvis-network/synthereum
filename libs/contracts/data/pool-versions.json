@@ -94,7 +94,8 @@
     },
     "MultiLpLiquidityPoolFactory": {
       "version": 6,
-      "isEnabled": true
+      "isEnabled": true,
+      "isRewarded": true
     }
   }
 }
