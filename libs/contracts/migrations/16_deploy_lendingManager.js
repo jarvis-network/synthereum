@@ -97,7 +97,6 @@ async function migrate(deployer, network, accounts) {
     )
     .send({ from: maintainer });
   console.log('LendingStoargeManager added to SynthereumFinder');
-
   if (lendingData[networkId]?.AaveV3?.isEnabled ?? true) {
     await deploy(web3, deployer, network, AaveV3Module, {
       from: keys.deployer,
@@ -170,4 +169,32 @@ async function migrate(deployer, network, accounts) {
       .send({ from: maintainer });
     console.log('Balancer swap module added to LendingManager');
   }
+  const commissionReceiver = await web3.utils.stringToHex('CommissionReceiver');
+  await synthereumFinder.methods
+    .changeImplementationAddress(
+      commissionReceiver,
+      lendingData[networkId].commissionReceiver,
+    )
+    .send({ from: maintainer });
+  console.log('CommissionReceiver added to SynthereumFinder');
+  const buybackProgramReceiver = await web3.utils.stringToHex(
+    'BuybackProgramReceiver',
+  );
+  await synthereumFinder.methods
+    .changeImplementationAddress(
+      buybackProgramReceiver,
+      lendingData[networkId].buybackProgramReceiver,
+    )
+    .send({ from: maintainer });
+  console.log('BuybackProgramReceiver added to SynthereumFinder');
+  const lendingRewardsReceiver = await web3.utils.stringToHex(
+    'LendingRewardsReceiver',
+  );
+  await synthereumFinder.methods
+    .changeImplementationAddress(
+      lendingRewardsReceiver,
+      lendingData[networkId].lendingRewardsReceiver,
+    )
+    .send({ from: maintainer });
+  console.log('LendingRewardsReceiver added to SynthereumFinder');
 }
