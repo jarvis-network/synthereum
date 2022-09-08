@@ -27,7 +27,7 @@
     "AaveV3": {
       "moneyManager": "0x4b529A5d8268d74B687aC3dbb00e1b85bF4BF0d4",
       "rewardsController": "0x0000000000000000000000000000000000000000",
-      "isEnabled": false
+      "isEnabled": true
     },
     "SwapModules": {
       "uniV2": false,
@@ -45,6 +45,9 @@
       "uniV2": false,
       "balancer": false,
       "collateral": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"
-    }
+    },
+    "commissionReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
+    "buybackProgramReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
+    "lendingRewardsReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c"
   }
 }

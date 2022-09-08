@@ -5,16 +5,6 @@
     "transactionHash": "0x11f1948e0c72d6b1bb9ed1504679a274021322474c967b329df5212edf17109e"
   },
   {
-    "contractName": "SynthereumDeployer",
-    "address": "0x02c72Fc6C231eE0f0e313c966e2da5cb7a52B503",
-    "transactionHash": "0x48dc05e3e225b9fb0cf7b8f8f7f1997b85841ffd1bfe3dc32ff60f27c0dbd418"
-  },
-  {
-    "contractName": "SynthereumPoolRegistry",
-    "address": "0x43a98e5C4A7F3B7f11080fc9D58b0B8A80cA954e",
-    "transactionHash": "0x5e923dcb49402d4bc05dbffe4dda86aff90a9bc767f212955f5aa2e36094db90"
-  },
-  {
     "contractName": "SynthereumFactoryVersioning",
     "address": "0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2",
     "transactionHash": "0x82939384c0372948977b9444a3ddd503dfbcef59c6625b27b82ed0a381e797c6"
@@ -70,11 +60,6 @@
     "transactionHash": "0x8986069ec230279efa80f065c9418eff93cbd989b40d68e38183406e92fab68d"
   },
   {
-    "contractName": "LendingManager",
-    "address": "0x71fF31b0f0974585438483F65778732cf1Ac277A",
-    "transactionHash": "0xf719f2b0abcda7e3578bafa28a85f8bfa38b4014e92f6b3edee727c5c5dcbe05"
-  },
-  {
     "contractName": "LendingStorageManager",
     "address": "0xc46a51D277689D82F7E93590811Ce90d16f76207",
     "transactionHash": "0x9fe251ed984031b45748b72b8971fb1aaf839da23e2aa20dc289af84c95ce9b8"
@@ -85,8 +70,23 @@
     "transactionHash": "0x3574eb01e6ae48cb7a09ffd2df71243c0cfb64acaf528420ffbdbc2849a51da6"
   },
   {
+    "contractName": "SynthereumPoolRegistry",
+    "address": "0x798e3b7A4d03f6003f80a77592971a5041a51ebC",
+    "transactionHash": "0xea730bba5bd1e5c126a77a1cad1a867704c73e7ebb6f5861ffbcc4c90cbc0a90"
+  },
+  {
+    "contractName": "SynthereumDeployer",
+    "address": "0x45A9103aCF09657B2bE1E532B79A2A3581c99fDD",
+    "transactionHash": "0xe29931bb5824e03654ed6f1ee726926d14d0df8b2b599bd33489930f21fd2493"
+  },
+  {
+    "contractName": "LendingManager",
+    "address": "0x5F47f67B73634030833E1d80908138CE537B8177",
+    "transactionHash": "0xc928ab94c8ff994ccb167bd498051230f7367f2bd490f5547ae0d11e613141a8"
+  },
+  {
     "contractName": "AaveV3Module",
-    "address": "0x66e9BF1104d726A131E7062f4f104ceC4bC50a46",
-    "transactionHash": "0xe77ea729964a488764eb780cd4795f04af9d39c1c2b250d3b51900e4043d2613"
+    "address": "0x4dd2D079BfE96ea6436150a92e2f950CB201A702",
+    "transactionHash": "0x9342351d12137e7e408c71936d5eb493b0b89e31d6782f1248dfe7f9e350937b"
   }
 ]

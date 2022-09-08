@@ -5,11 +5,6 @@
     "transactionHash": "0xa2df914fa413c4481bdc6edc3a3d88e349d04399a0c9c863042ec1d83813d1bf"
   },
   {
-    "contractName": "SynthereumDeployer",
-    "address": "0x930A54D8Af945F6D1BED5AAF63b63fAb50a8197f",
-    "transactionHash": "0xa02923f0cb35c88fa75fc878d11c8a81ff216d8bf1b13ae9484a9c0ad5746f62"
-  },
-  {
     "contractName": "SynthereumPoolRegistry",
     "address": "0x811F78b7d6bCF1C0E94493C2eC727B50eE32B974",
     "transactionHash": "0x0c454841c59c3266d56a3074ca6f49c6c0ec94edd201e81ca8cc97a38a25e14c"
@@ -50,34 +45,9 @@
     "transactionHash": "0x199d0363c4216e888d2d3dff0983c3a658f79fdbd3329b9b4d956a025786c7e1"
   },
   {
-    "contractName": "SynthereumMultiLpLiquidityPoolMainLib",
-    "address": "0xD43509074b41824bc51c50B71D7694ab8d2568aB",
-    "transactionHash": "0x8f1ffdae6d51970e49f9f0bb17015ab6d03e0af39b5d5e82386a966c70409563"
-  },
-  {
-    "contractName": "SynthereumMultiLpLiquidityPoolMigrationLib",
-    "address": "0x35274E47010354173686958162369c61FB677E69",
-    "transactionHash": "0x51cecfe0bf0ad42316f07ec3a7209d605e2c5bd1d01de56c1251cd27cec9bec9"
-  },
-  {
-    "contractName": "SynthereumMultiLpLiquidityPool",
-    "address": "0xAF9132b3AfA36b36f6DdFFf63fd40b9dF43c0928",
-    "transactionHash": "0xf768e4b0f5cf3afcacee97733f1139ec98a286de766ea93ed508a3723691b5d7"
-  },
-  {
-    "contractName": "SynthereumMultiLpLiquidityPoolFactory",
-    "address": "0x72e13642F18046D409d2a3D33ED939c78E5d9a58",
-    "transactionHash": "0xe4fce46bd8b467e77fda2e7a09929449c643a45c064b8668be3391fb903bfebb"
-  },
-  {
     "contractName": "SynthereumChainlinkPriceFeed",
     "address": "0xd8D32702c398528904e1367999f1563Eb4DF731a",
     "transactionHash": "0xdb0240e54ddac5bc8d409e64a042e8688ca7499cca322c59c169854abd78d365"
-  },
-  {
-    "contractName": "LendingManager",
-    "address": "0xA3061f06274dBe75006B47F84f6ac24213a69DF6",
-    "transactionHash": "0xe8d6838fcc11489c858e2f7ab40a14984bee0d823bdd26691918c9a33afc864a"
   },
   {
     "contractName": "LendingStorageManager",
@@ -85,13 +55,43 @@
     "transactionHash": "0x6e209c5f0246b617ac8b1f5b13e90f128a0c530ed012dd53bf5e9b99c6b9fcbe"
   },
   {
-    "contractName": "AaveV3Module",
-    "address": "0x38aED1b3d54843538b2489fCA7BDc5fd838D879A",
-    "transactionHash": "0x82f465a5996a6584553ebe479bb15a2d62e3a9d8c476398894dbf6d72d4a1439"
-  },
-  {
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x94b58178D4F4fd2CA7C00Dc226d091A0F9AfBcA7",
     "transactionHash": "0x6e970cedf83da97df2fb31901818078eec68e0e05b6b373a38c1668b8e1f3afd"
+  },
+  {
+    "contractName": "SynthereumDeployer",
+    "address": "0x818dCB8B72f83f3824Df9E7d83b38e5f7A96515E",
+    "transactionHash": "0x62569930455de55b55aebc05566d0da6fd45080432bd19313837cf5fd474ab01"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolMainLib",
+    "address": "0xb56DDB0EDFE1265bd8d7f25E45B759aB82BB06DA",
+    "transactionHash": "0xe842a0ca11d101eafe7b2eed9372f7016d2eee5b20a142418252bbd450b8cab1"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolMigrationLib",
+    "address": "0x2a49451637f0c8Dd063a76Fb868d600b2C144361",
+    "transactionHash": "0xefd70f3e043e8639f61845c170bf5ba4cab17709089a0fc072afd48d0c046f3b"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolWithRewards",
+    "address": "0x2d0e006Bb94409A4edfc3348a6703801E770BDB1",
+    "transactionHash": "0x76fe493bd80e582462a4b3464cde222192c6846675250352fdc1dd428d2b083a"
+  },
+  {
+    "contractName": "SynthereumMultiLpLiquidityPoolFactory",
+    "address": "0x9A27329Fc40E32C796E08D98De73C23eD7C0910e",
+    "transactionHash": "0x8074f3573ec9c5d48db91f316a2e7aa626199023e796a46c4389d50b8028a042"
+  },
+  {
+    "contractName": "LendingManager",
+    "address": "0x98fAb5d1366DE24f152ea683A1f23338351C47EA",
+    "transactionHash": "0x32ff5b1a95d3a3748496ce08802a32b8d7dad05375db726a0ed1f70bd6d6a877"
+  },
+  {
+    "contractName": "AaveV3Module",
+    "address": "0xf82fEBA4fD33F88Cd5f2455B5e4D0De2611647eE",
+    "transactionHash": "0x9f7878a4d7972d59c8338e87cb3846266feeb17b01c8748216bf311f4433979e"
   }
 ]

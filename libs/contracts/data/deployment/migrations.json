@@ -3,5 +3,10 @@
     "isEnabled": true,
     "version": 6,
     "pools": []
+  },
+  "10": {
+    "isEnabled": true,
+    "version": 6,
+    "pools": ["0xECFc0ED8Ed6b2F16E3035d6f4F9C8F864B7a2110"]
   }
 }
