@@ -178,7 +178,14 @@ contract SynthereumDeployer is
       _poolVersion,
       address(pool)
     );
+    poolRegistry.unregister(
+      oldPool.syntheticTokenSymbol(),
+      oldPool.collateralToken(),
+      oldPool.version(),
+      address(oldPool)
+    );
     emit PoolMigrated(address(_migrationPool), _poolVersion, address(pool));
+    emit PoolRemoved(address(oldPool));
   }
 
   /**
