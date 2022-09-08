@@ -25,11 +25,6 @@ module.exports = async function (deployer, network, accounts) {
     SynthereumDeployer,
     '@jarvis-network/synthereum-contracts',
   );
-  const synthereumFinder = await getExistingInstance(
-    web3,
-    SynthereumFinder,
-    '@jarvis-network/synthereum-contracts',
-  );
   const maintainer = process.env.FORKCHAINID
     ? accounts[1]
     : rolesConfig[networkId]?.maintainer ?? accounts[1];
