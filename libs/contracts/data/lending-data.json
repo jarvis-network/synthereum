@@ -18,10 +18,13 @@
       "isEnabled": true
     },
     "SwapModules": {
-      "uniV2": true,
+      "uniV2": false,
       "balancer": false,
       "collateral": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
-    }
+    },
+    "commissionReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
+    "buybackProgramReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
+    "lendingRewardsReceiver": "0x0000000000000000000000000000000000000000"
   },
   "420": {
     "AaveV3": {

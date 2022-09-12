@@ -5,11 +5,6 @@
     "transactionHash": "0xb2280068d9eedfda1c36d8730ac948c10f46413cef2afbdf6536dfc4fd88f6f9"
   },
   {
-    "contractName": "SynthereumPoolRegistry",
-    "address": "0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2",
-    "transactionHash": "0xd51a97ef28264bce30d7fa28370c5768f44aa4c560cc8a0480e91161a42fd618"
-  },
-  {
     "contractName": "SynthereumPoolOnChainPriceFeedLib",
     "address": "0x586cCe2D7CE78e9C9Fd5c062ec6Ee59880eAc78f",
     "transactionHash": "0x11be597e3a47e57412c48103c67eb02a5c2ed69fce1bb8f5c4d188b0f47f1256"
@@ -50,19 +45,9 @@
     "transactionHash": "0xedb14262db17fcc985810b533aac96697aeee7190fdaad8acbc57e630cbed65b"
   },
   {
-    "contractName": "SynthereumFixedRateRegistry",
-    "address": "0x8282d1dC8b0887A167cD255b38eAFD25B0e7D478",
-    "transactionHash": "0x27a9f269907de1a5bd2f45817f2b01d35990bf8455982cb961fc40f3cfd5f750"
-  },
-  {
     "contractName": "SynthereumFixedRateFactory",
     "address": "0x3d06C601826FB3bCc71baAbF1AE217C89b8CC3F8",
     "transactionHash": "0x63b4d067d5ba57845aaeababfd71420e2ded82109e0630a46c3cdce42559c0d0"
-  },
-  {
-    "contractName": "SynthereumDeployer",
-    "address": "0x2E6a629a66E77ed92c33cbD0E3dc3E3e09380cE3",
-    "transactionHash": "0xb34fed60d973b1b93e7b57b81e165e436b10d2396c181a6c7cdc200bff947e1e"
   },
   {
     "contractName": "SynthereumFactoryVersioning",
@@ -115,19 +100,9 @@
     "transactionHash": "0xae7cca8d99fdc846ba18c40e593ddb73ab6c9a88bf41bc472899ed55c560680e"
   },
   {
-    "contractName": "LendingManager",
-    "address": "0x49a87A3F93e883A221f6375335efc41DB631C3Dc",
-    "transactionHash": "0x006f87cf47fbde1503e2a526ca47ee9dc5b564fac4871377d75394ed8b80e008"
-  },
-  {
     "contractName": "LendingStorageManager",
     "address": "0x04d6206CCd424f2E82901EE1CD3982b0b9C409e9",
     "transactionHash": "0x4f27e931ca0e94123920fa3e9dae425d4ad2df53ed396932d8a34325a8b54aa3"
-  },
-  {
-    "contractName": "AaveV3Module",
-    "address": "0xA0E0019B235117e1215506192D927739b4b4938F",
-    "transactionHash": "0x07b11cf24cf1e67ff8e435797088c61f84f16d1f59c9fb8a4d1954823c4b1724"
   },
   {
     "contractName": "UniV2JRTSwapModule",
@@ -153,5 +128,30 @@
     "contractName": "JarvisBrrCompound",
     "address": "0x1b425b5B296544Cf1BbBd278fC284E007258D109",
     "transactionHash": "0x6bc5ddd37d460e98cbd16747f9c746fb561fcf281c02e9698b11b769622e1b98"
+  },
+  {
+    "contractName": "SynthereumDeployer",
+    "address": "0x2CfdBeA1d21A30d627e87D946c5E3e0587Cf7Ec9",
+    "transactionHash": "0xf4ad1ed81982100fb0e203fbb997ac5810b8b54019e763341d58774400d3d6d1"
+  },
+  {
+    "contractName": "SynthereumPoolRegistry",
+    "address": "0xA5BB18ca30fB27045ec0aA4d7039Fc37a7A03BD1",
+    "transactionHash": "0x0a40cb950006f48ca34b1d10c1575781a8ad700de274fd92ce56ff84498d060d"
+  },
+  {
+    "contractName": "SynthereumFixedRateRegistry",
+    "address": "0xBdE9c05FeA7a7fB1173024eac529a9c46bD0307f",
+    "transactionHash": "0x48ba70cde022136fb7ffb79b65c1bcc06e5fe97491a39e16a6c328c5d4f438d3"
+  },
+  {
+    "contractName": "LendingManager",
+    "address": "0xD3cDF94A0ee626071dF1d2C7068B48550319c49B",
+    "transactionHash": "0xa384fd4145adc970de9d2b16195c6665022dec76e5207ca1f0e62afaebbb7c90"
+  },
+  {
+    "contractName": "AaveV3Module",
+    "address": "0x6Ba0E5E0D3930b814549d7FCd0656EBf24F6761A",
+    "transactionHash": "0x4d69204892586e67ba902edf7acbe4efe7b1a6c0caa12dcb6cc5010610af1a01"
   }
 ]
