@@ -38,6 +38,7 @@ contract SynthereumChainlinkPriceFeed is
     Type priceType;
     AggregatorV3Interface aggregator;
     bytes32[] intermediatePairs;
+    uint256 convertionMetricUnit;
   }
 
   //----------------------------------------
@@ -54,7 +55,8 @@ contract SynthereumChainlinkPriceFeed is
     bytes32 indexed priceIdentifier,
     Type kind,
     address aggregator,
-    bytes32[] intermediatePairs
+    bytes32[] intermediatePairs,
+    uint256 convertionMetricUnit
   );
 
   event RemovePair(bytes32 indexed priceIdentifier);
@@ -106,6 +108,7 @@ contract SynthereumChainlinkPriceFeed is
     bytes32 _priceIdentifier,
     address _aggregator,
     bytes32[] memory _intermediatePairs
+    uint256 _convertionMetricUnit
   ) external override onlyMaintainer {
     if (_kind == Type.INVERSE || _kind == Type.STANDARD) {
       require(_aggregator != address(0), 'No aggregator set');
@@ -122,9 +125,10 @@ contract SynthereumChainlinkPriceFeed is
       true,
       _kind,
       AggregatorV3Interface(_aggregator),
-      _intermediatePairs
+      _intermediatePairs,
+      _convertionMetricUnit
     );
-    emit SetPair(_priceIdentifier, _kind, _aggregator, _intermediatePairs);
+    emit SetPair(_priceIdentifier, _kind, _aggregator, _intermediatePairs, _convertionMetricUnit);
   }
 
   function removePair(bytes32 _priceIdentifier)
@@ -269,7 +273,13 @@ contract SynthereumChainlinkPriceFeed is
     returns (uint256 price)
   {
     OracleData memory oracleData = _getOracleLatestRoundData(_priceId);
-    price = 10**36 / _getScaledValue(oracleData.answer, oracleData.decimals);
+    price =
+      10**36 /
+      _getScaledValue(
+        oracleData.answer,
+        oracleData.decimals,
+        pairs[_priceId].convertionMetricUnit
+      );
   }
 
   /**
@@ -283,7 +293,11 @@ contract SynthereumChainlinkPriceFeed is
     returns (uint256 price)
   {
     OracleData memory oracleData = _getOracleLatestRoundData(_priceId);
-    price = _getScaledValue(oracleData.answer, oracleData.decimals);
+    price = _getScaledValue(
+      oracleData.answer,
+      oracleData.decimals,
+      pairs[_priceId].convertionMetricUnit
+    );
   }
 
   /**
@@ -386,11 +400,27 @@ contract SynthereumChainlinkPriceFeed is
    * @return price Price after conversion
    */
 
-  function _getScaledValue(uint256 _unscaledPrice, uint8 _decimals)
-    internal
-    pure
-    returns (uint256 price)
-  {
+  function _getScaledValue(
+    uint256 _unscaledPrice,
+    uint8 _decimals,
+    uint256 _convertionUnit
+  ) internal pure returns (uint256 price) {
     price = _unscaledPrice * (10**(18 - _decimals));
+    if (_convertionUnit != 0) {
+      price = _convertUnitPrice(price, _convertionUnit);
+    }
+  }
+
+  /**
+   * @notice Covert the price to a different metric unit - example troyounce to grams
+   * @param _price Scaled price before convertion
+   * @param _convertionMetricUnit The metric unit convertion rate
+   * @return convertedPrice Price after conversion
+   */
+  function _convertMetricUnitPrice(
+    uint256 _price,
+    uint256 _convertionMetricUnit
+  ) internal pure returns (uint256 convertedPrice) {
+    convertedPrice = _price.div(_convertionMetricUnit);
   }
 }
