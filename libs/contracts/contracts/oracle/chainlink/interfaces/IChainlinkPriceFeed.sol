@@ -28,7 +28,8 @@ interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {
     Type _kind,
     bytes32 _priceIdentifier,
     address _aggregator,
-    bytes32[] memory _intermediatePairs
+    bytes32[] memory _intermediatePairs,
+    uint256 _convertionMetricUnit
   ) external;
 
   /**

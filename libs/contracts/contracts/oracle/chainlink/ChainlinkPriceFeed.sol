@@ -107,7 +107,7 @@ contract SynthereumChainlinkPriceFeed is
     Type _kind,
     bytes32 _priceIdentifier,
     address _aggregator,
-    bytes32[] memory _intermediatePairs
+    bytes32[] memory _intermediatePairs,
     uint256 _convertionMetricUnit
   ) external override onlyMaintainer {
     if (_kind == Type.INVERSE || _kind == Type.STANDARD) {
@@ -128,7 +128,13 @@ contract SynthereumChainlinkPriceFeed is
       _intermediatePairs,
       _convertionMetricUnit
     );
-    emit SetPair(_priceIdentifier, _kind, _aggregator, _intermediatePairs, _convertionMetricUnit);
+    emit SetPair(
+      _priceIdentifier,
+      _kind,
+      _aggregator,
+      _intermediatePairs,
+      _convertionMetricUnit
+    );
   }
 
   function removePair(bytes32 _priceIdentifier)
@@ -195,7 +201,11 @@ contract SynthereumChainlinkPriceFeed is
 
     OracleData memory oracleData =
       _getOracleRoundData(_priceIdentifier, _roundId);
-    price = _getScaledValue(oracleData.answer, oracleData.decimals);
+    price = _getScaledValue(
+      oracleData.answer,
+      oracleData.decimals,
+      pairs[_priceIdentifier].convertionMetricUnit
+    );
 
     if (priceType == Type.INVERSE) {
       price = PreciseUnitMath.PRECISE_UNIT.div(price);
@@ -407,7 +417,7 @@ contract SynthereumChainlinkPriceFeed is
   ) internal pure returns (uint256 price) {
     price = _unscaledPrice * (10**(18 - _decimals));
     if (_convertionUnit != 0) {
-      price = _convertUnitPrice(price, _convertionUnit);
+      price = _convertMetricUnitPrice(price, _convertionUnit);
     }
   }
 
