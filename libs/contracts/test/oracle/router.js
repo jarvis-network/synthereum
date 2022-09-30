@@ -61,6 +61,7 @@ contract('Synthereum API3 price feed', accounts => {
         chainlinkIdentifier,
         aggregator.address,
         [],
+        0,
         { from: maintainer },
       );
       await aggregator.updateAnswer(chainlinkValue);

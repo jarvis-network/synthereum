@@ -96,6 +96,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
       web3.utils.utf8ToHex(priceFeedIdentifier),
       aggregator.address,
       [],
+      0,
       { from: maintainer },
     );
     const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
@@ -119,6 +120,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       truffleAssert.eventEmitted(addAggregatortTx, 'SetPair', ev => {
@@ -149,6 +151,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       const updateAggregatortTx = await priceFeedInstance.setPair(
@@ -156,6 +159,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         newAggregatorIdentifier,
         secondNewAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       truffleAssert.eventEmitted(updateAggregatortTx, 'SetPair', ev => {
@@ -177,6 +181,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
           newAggregatorIdentifier,
           newAggregatorAddress,
           [],
+          0,
           { from: sender },
         ),
         'Sender must be the maintainer',
@@ -188,6 +193,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       const removePairTx = await priceFeedInstance.removePair(
@@ -214,6 +220,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       await truffleAssert.reverts(
@@ -232,6 +239,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         newAggregatorIdentifier,
         newAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       const aggregator = await priceFeedInstance.getAggregator.call(
@@ -565,6 +573,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         inverseId,
         aggregator.address,
         [],
+        0,
         { from: maintainer },
       );
 
@@ -583,21 +592,21 @@ contract('Synthereum chainlink price feed', function (accounts) {
       // assert.equal(actualStorage.intermediatePairs.length, 0);
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(1, inverseId, aggregator.address, [], {
+        priceFeedInstance.setPair(1, inverseId, aggregator.address, [], 0, {
           from: accounts[0],
         }),
         'Sender must be the maintainer',
       );
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(1, inverseId, ZERO_ADDRESS, [], {
+        priceFeedInstance.setPair(1, inverseId, ZERO_ADDRESS, [], 0, {
           from: maintainer,
         }),
         'No aggregator set',
       );
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(0, inverseId, ZERO_ADDRESS, [], {
+        priceFeedInstance.setPair(0, inverseId, ZERO_ADDRESS, [], 0, {
           from: maintainer,
         }),
         'No aggregator set',
@@ -609,6 +618,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
           inverseId,
           aggregator.address,
           [ZERO_ADDRESS],
+          0,
           { from: maintainer },
         ),
         'No intermediate pairs should be specified',
@@ -620,20 +630,21 @@ contract('Synthereum chainlink price feed', function (accounts) {
           inverseId,
           aggregator.address,
           [ZERO_ADDRESS],
+          0,
           { from: maintainer },
         ),
         'No intermediate pairs should be specified',
       );
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(2, inverseId, aggregator.address, [], {
+        priceFeedInstance.setPair(2, inverseId, aggregator.address, [], 0, {
           from: maintainer,
         }),
         'Aggregator should not be set',
       );
 
       await truffleAssert.reverts(
-        priceFeedInstance.setPair(2, inverseId, ZERO_ADDRESS, [], {
+        priceFeedInstance.setPair(2, inverseId, ZERO_ADDRESS, [], 0, {
           from: maintainer,
         }),
         'No intermediate pairs set',
@@ -703,16 +714,31 @@ contract('Synthereum chainlink price feed', function (accounts) {
         jEURUSD,
         jEURUSDAggregator.address,
         [],
+        0,
         { from: maintainer },
       );
 
-      await priceFeedInstance.setPair(0, ETHUSD, ETHUSDAggregator.address, [], {
-        from: maintainer,
-      });
+      await priceFeedInstance.setPair(
+        0,
+        ETHUSD,
+        ETHUSDAggregator.address,
+        [],
+        0,
+        {
+          from: maintainer,
+        },
+      );
 
-      await priceFeedInstance.setPair(1, USDETH, ETHUSDAggregator.address, [], {
-        from: maintainer,
-      });
+      await priceFeedInstance.setPair(
+        1,
+        USDETH,
+        ETHUSDAggregator.address,
+        [],
+        0,
+        {
+          from: maintainer,
+        },
+      );
 
       // update prices
       await ETHUSDAggregator.updateAnswer(ETHUSDPrice);
@@ -724,6 +750,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         jEURETH,
         ZERO_ADDRESS,
         [jEURUSD, USDETH],
+        0,
         {
           from: maintainer,
         },

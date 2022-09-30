@@ -115,6 +115,7 @@ contract('Self-minting controller', function (accounts) {
       utf8ToHex(priceFeedIdentifier),
       mockAggregator.address,
       [],
+      0,
       { from: roles.maintainer },
     );
 

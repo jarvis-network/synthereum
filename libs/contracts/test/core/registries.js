@@ -117,6 +117,7 @@ contract('Registries', function (accounts) {
       web3.utils.utf8ToHex(priceFeedIdentifier),
       mockAggregator.address,
       [],
+      0,
       { from: maintainer },
     );
     collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();

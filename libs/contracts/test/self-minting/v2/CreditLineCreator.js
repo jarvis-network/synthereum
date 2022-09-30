@@ -101,6 +101,7 @@ contract('Self-minting creator', function (accounts) {
       priceFeedIdentifier,
       mockAggregator.address,
       [],
+      0,
       { from: roles.maintainer },
     );
   });

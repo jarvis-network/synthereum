@@ -95,6 +95,7 @@ contract('LiquidityPoolCreator', function (accounts) {
         web3.utils.utf8ToHex(identifier),
         mockAggregator.address,
         [],
+        0,
         { from: maintainer },
       );
     });

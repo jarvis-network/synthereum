@@ -203,6 +203,7 @@ contract('LiquidityPool', function (accounts) {
       priceIdentifier,
       aggregatorInstanceAddress,
       [],
+      0,
       { from: maintainer },
     );
     params = {
@@ -907,6 +908,7 @@ contract('LiquidityPool', function (accounts) {
         destPriceFeedIdentifier,
         destAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       const destParams = {
@@ -3805,6 +3807,7 @@ contract('LiquidityPool', function (accounts) {
         destPriceFeedIdentifier,
         destAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       const wrongParams = {
@@ -4196,6 +4199,7 @@ contract('LiquidityPool', function (accounts) {
         destPriceFeedIdentifier,
         destAggregatorAddress,
         [],
+        0,
         { from: maintainer },
       );
       const destParams = {

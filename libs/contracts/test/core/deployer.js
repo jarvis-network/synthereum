@@ -121,6 +121,7 @@ contract('Deployer', function (accounts) {
       web3.utils.utf8ToHex(priceIdentifier),
       mockAggregator.address,
       [],
+      0,
       { from: maintainer },
     );
     collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
@@ -641,6 +642,7 @@ contract('Deployer', function (accounts) {
         web3.utils.utf8ToHex(selfMintingPriceFeedIdentifier),
         mockAggregator.address,
         [],
+        0,
         { from: maintainer },
       );
       await collateralWhitelistInstance.addToWhitelist(
