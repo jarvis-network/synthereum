@@ -19,7 +19,6 @@ library SynthereumInterfaces {
   bytes32 public constant TrustedForwarder = 'TrustedForwarder';
   bytes32 public constant MoneyMarketManager = 'MoneyMarketManager';
   bytes32 public constant JarvisBrrrrr = 'JarvisBrrrrr';
-  bytes32 public constant PrinterProxy = 'PrinterProxy';
   bytes32 public constant LendingManager = 'LendingManager';
   bytes32 public constant LendingStorageManager = 'LendingStorageManager';
   bytes32 public constant CommissionReceiver = 'CommissionReceiver';
