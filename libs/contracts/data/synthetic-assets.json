@@ -335,6 +335,34 @@
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
       "daoInterestShare": "600000000000000000",
       "jrtBuybackShare": "700000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Turkish Lira",
+      "syntheticSymbol": "jTRY",
+      "priceFeedIdentifier": "TRYUSD",
+      "collateralRequirement": "1100000000000000000",
+      "overCollateralRequirement": "100000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "1000000000000000000000000",
+      "liquidationReward": "1000000000000000000",
+      "lendingId": "AaveV3",
+      "interestBearingToken": "0x0000000000000000000000000000000000000000",
+      "daoInterestShare": "600000000000000000",
+      "jrtBuybackShare": "700000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLUSD",
+      "collateralRequirement": "1050000000000000000",
+      "overCollateralRequirement": "50000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "1000000000000000000000000",
+      "liquidationReward": "1000000000000000000",
+      "lendingId": "AaveV3",
+      "interestBearingToken": "0x0000000000000000000000000000000000000000",
+      "daoInterestShare": "600000000000000000",
+      "jrtBuybackShare": "700000000000000000"
     }
   ],
   "97": [
@@ -443,6 +471,16 @@
       "capMintAmount": "",
       "overCollateralization": "250000000000000000",
       "liquidationReward": "700000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Mexican Peso",
+      "syntheticSymbol": "jMXN",
+      "priceFeedIdentifier": "MXNUSD",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "",
+      "capMintAmount": "",
+      "overCollateralization": "250000000000000000",
+      "liquidationReward": "1000000000000000000"
     }
   ],
   "100": [
