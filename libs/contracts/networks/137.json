@@ -153,5 +153,30 @@
     "contractName": "AaveV3Module",
     "address": "0x6Ba0E5E0D3930b814549d7FCd0656EBf24F6761A",
     "transactionHash": "0x4d69204892586e67ba902edf7acbe4efe7b1a6c0caa12dcb6cc5010610af1a01"
+  },
+  {
+    "contractName": "SelfMintingRegistry",
+    "address": "0x1eA5022a81bd0dF1Bb85085083cDDd1e6A4cf61C",
+    "transactionHash": "0x3323506adc7357e3bf46bdbb498d6698d51c4d964d5d91591f07e91c87fcf5b9"
+  },
+  {
+    "contractName": "CreditLineLib",
+    "address": "0x58a98967eDFb2A350c4669a4Df0F6Bb4cE179a47",
+    "transactionHash": "0xffb01f1605522332cdf340bcd3325b8b8cba1c1b1f90e5eb2a67d7b569ac2080"
+  },
+  {
+    "contractName": "CreditLineFactory",
+    "address": "0xFD3c30D35319D6ba1969928341ABD70887aEb6e3",
+    "transactionHash": "0x962a6a2662af648cb404b0169642ed8827043ec5a9b36f0948c664de0beb863a"
+  },
+  {
+    "contractName": "CreditLineController",
+    "address": "0xA8Ee63DE17cd81626dB464485D2fcFC74615756c",
+    "transactionHash": "0xecd22976fcdcc827ad145c2d602b850ad85922b218aef83bbab3d57dc9f391cb"
+  },
+  {
+    "contractName": "SynthereumManager",
+    "address": "0x80A221c6dBb3c5113918452166F8779eA84A3eb7",
+    "transactionHash": "0x215221ca8c63368e2bae49f9aa478c9ac67bedbff316337f7b83c5798f978867"
   }
 ]
