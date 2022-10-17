@@ -173,10 +173,5 @@
     "contractName": "CreditLineController",
     "address": "0xA8Ee63DE17cd81626dB464485D2fcFC74615756c",
     "transactionHash": "0xecd22976fcdcc827ad145c2d602b850ad85922b218aef83bbab3d57dc9f391cb"
-  },
-  {
-    "contractName": "SynthereumManager",
-    "address": "0x80A221c6dBb3c5113918452166F8779eA84A3eb7",
-    "transactionHash": "0x215221ca8c63368e2bae49f9aa478c9ac67bedbff316337f7b83c5798f978867"
   }
 ]
