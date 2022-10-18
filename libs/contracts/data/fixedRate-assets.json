@@ -11,6 +11,18 @@
       "syntheticSymbol": "jEUR",
       "rate": "1000000000000000000",
       "collateralAddress": "0x18ec0A6E18E5bc3784fDd3a3634b31245ab704F6"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Canadian Dollar",
+      "syntheticSymbol": "jCAD",
+      "rate": "1000000000000000000",
+      "collateralAddress": "0x5d146d8B1dACb1EBBA5cb005ae1059DA8a1FbF57"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Singapore Dollar",
+      "syntheticSymbol": "jSGD",
+      "rate": "1000000000000000000",
+      "collateralAddress": "0x769434dcA303597C8fc4997Bf3DAB233e961Eda2"
     }
   ],
   "80001": [
