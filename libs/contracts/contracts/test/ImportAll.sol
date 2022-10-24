@@ -108,6 +108,7 @@ import '../fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
 import '../lending-module/LendingManager.sol';
 import '../lending-module/LendingStorageManager.sol';
 import '../lending-module/lending-modules/AaveV3.sol';
+import '../lending-module/lending-modules/Compound.sol';
 import '../lending-module/swap-modules/Univ2JRTSwap.sol';
 import '../lending-module/swap-modules/BalancerJRTSwap.sol';
 import '../lending-module/interfaces/IAaveV3.sol';
