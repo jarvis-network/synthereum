@@ -38,8 +38,13 @@ contract CompoundModule is ILendingModule {
     uint256 cTokenBalanceBefore = cToken.balanceOf((msg.sender));
 
     // calculate accrued interest since last operation
-    (uint256 interest, uint256 poolBalance) =
-      calculateGeneratedInterest(msg.sender, _poolData, _amount, cToken, true);
+    (totalInterest, ) = calculateGeneratedInterest(
+      msg.sender,
+      _poolData,
+      _amount,
+      cToken,
+      true
+    );
 
     // approve and deposit underlying
     collateral.safeIncreaseAllowance(address(cToken), _amount);
@@ -50,7 +55,6 @@ contract CompoundModule is ILendingModule {
     uint256 cTokenBalanceAfter = cToken.balanceOf((msg.sender));
 
     // set return values
-    totalInterest = interest;
     tokensOut = cTokenBalanceAfter - cTokenBalanceBefore;
     tokensTransferred = tokensOut;
   }
@@ -59,7 +63,7 @@ contract CompoundModule is ILendingModule {
     ILendingStorageManager.PoolStorage calldata _poolData,
     address _pool,
     bytes calldata _lendingArgs,
-    uint256 _amount,
+    uint256 _cTokenAmount,
     address _recipient
   )
     external
@@ -68,7 +72,36 @@ contract CompoundModule is ILendingModule {
       uint256 tokensOut,
       uint256 tokensTransferred
     )
-  {}
+  {
+    // initialise compound interest token
+    ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
+
+    // get balance of collateral before redeeming
+    IERC20 collateralToken = IERC20(_poolData.collateral);
+    uint256 balanceBefore = collateralToken.balanceOf(address(this));
+
+    // calculate accrued interest since last operation
+    (totalInterest, ) = calculateGeneratedInterest(
+      _pool,
+      _poolData,
+      _cTokenAmount,
+      cToken,
+      false
+    );
+
+    uint256 success = cToken.redeem(_cTokenAmount);
+    require(success == 0, 'Failed withdraw');
+
+    // get balance of collateral after redeeming
+    uint256 balanceAfter = collateralToken.balanceOf(address(this));
+
+    // set return values
+    tokensTransferred = tokensOut;
+    tokensOut = balanceAfter - balanceBefore;
+
+    // transfer underlying
+    IERC20(address(cToken)).safeTransfer(_pool, tokensOut);
+  }
 
   function totalTransfer(
     address _oldPool,
