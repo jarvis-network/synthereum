@@ -2,6 +2,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ILendingModule} from '../interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
 import {ICompoundToken} from '../interfaces/ICToken.sol';
+import {ExponentialNoError} from '../libs/ExponentialNoError.sol';
 import {IRewardsController} from '../interfaces/IRewardsController.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {
@@ -12,7 +13,7 @@ import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 
-contract CompoundModule is ILendingModule {
+contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
 
   function deposit(
@@ -112,7 +113,11 @@ contract CompoundModule is ILendingModule {
   )
     external
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
-  {}
+  {
+    prevTotalCollateral = SynthereumPoolMigrationFrom(_oldPool)
+      .migrateTotalFunds(_newPool);
+    actualTotalCollateral = IERC20(_interestToken).balanceOf(_newPool);
+  }
 
   function claimRewards(
     bytes calldata _lendingArgs,
@@ -125,7 +130,17 @@ contract CompoundModule is ILendingModule {
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
     bytes calldata _extraArgs
-  ) external view returns (uint256 totalInterest) {}
+  ) external view returns (uint256 totalInterest) {
+    ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
+
+    (totalInterest, ) = calculateGeneratedInterest(
+      _poolAddress,
+      _poolData,
+      0,
+      cToken,
+      true
+    );
+  }
 
   function getInterestBearingToken(
     address _collateral,
@@ -137,14 +152,26 @@ contract CompoundModule is ILendingModule {
     address _collateral,
     address _interestToken,
     bytes calldata _extraArgs
-  ) external view returns (uint256 interestTokenAmount) {}
+  ) external view returns (uint256 interestTokenAmount) {
+    (, , , uint256 excMantissa) =
+      ICompoundToken(_interestToken).getAccountSnapshot(address(this));
+    Exp memory exchangeRate = Exp({mantissa: excMantissa});
+
+    return div_(_collateralAmount, exchangeRate);
+  }
 
   function interestTokenToCollateral(
     uint256 _interestTokenAmount,
     address _collateral,
     address _interestToken,
     bytes calldata _extraArgs
-  ) external view returns (uint256 collateralAmount) {}
+  ) external view returns (uint256 collateralAmount) {
+    (, , , uint256 excMantissa) =
+      ICompoundToken(_interestToken).getAccountSnapshot(address(this));
+    Exp memory exchangeRate = Exp({mantissa: excMantissa});
+
+    return mul_ScalarTruncate(exchangeRate, _interestTokenAmount);
+  }
 
   function calculateGeneratedInterest(
     address _poolAddress,

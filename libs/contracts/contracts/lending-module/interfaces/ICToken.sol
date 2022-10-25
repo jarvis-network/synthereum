@@ -18,4 +18,14 @@ interface ICompoundToken {
   function balanceOf(address owner) external view returns (uint256);
 
   function name() external view returns (string memory);
+
+  function getAccountSnapshot(address account)
+    external
+    view
+    returns (
+      uint256,
+      uint256,
+      uint256,
+      uint256
+    );
 }
