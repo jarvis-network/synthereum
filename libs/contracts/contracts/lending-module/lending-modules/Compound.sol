@@ -133,13 +133,16 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   ) external view returns (uint256 totalInterest) {
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
-    (totalInterest, ) = calculateGeneratedInterest(
-      _poolAddress,
-      _poolData,
-      0,
-      cToken,
-      true
-    );
+    (, uint256 tokenBalance, , uint256 excMantissa) =
+      cToken.getAccountSnapshot(_poolAddress);
+    Exp memory exchangeRate = Exp({mantissa: excMantissa});
+
+    uint256 totCollateral = mul_ScalarTruncate(exchangeRate, tokenBalance);
+    totalInterest =
+      totCollateral -
+      _poolData.collateralDeposited -
+      _poolData.unclaimedDaoCommission -
+      _poolData.unclaimedDaoJRT;
   }
 
   function getInterestBearingToken(
