@@ -1,7 +1,7 @@
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ILendingModule} from '../interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
-import {ICompoundToken} from '../interfaces/ICToken.sol';
+import {ICompoundToken, IComptroller} from '../interfaces/ICToken.sol';
 import {ExponentialNoError} from '../libs/ExponentialNoError.sol';
 import {IRewardsController} from '../interfaces/IRewardsController.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
@@ -119,6 +119,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     actualTotalCollateral = IERC20(_interestToken).balanceOf(_newPool);
   }
 
+  // TODO
   function claimRewards(
     bytes calldata _lendingArgs,
     address _collateral,
@@ -148,7 +149,20 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   function getInterestBearingToken(
     address _collateral,
     bytes calldata _extraArgs
-  ) external view returns (address token) {}
+  ) external view returns (address token) {
+    IComptroller comptroller = IComptroller(abi.decode(_extraArgs, (address)));
+    address[] memory markets = comptroller.getAllMarkets();
+
+    for (uint256 i = 0; i < markets.length; i++) {
+      try ICompoundToken(markets[i]).underlying() returns (address coll) {
+        if (coll == _collateral) {
+          token = markets[i];
+          break;
+        }
+      } catch {}
+    }
+    require(token != address(0), 'Token not found');
+  }
 
   function collateralToInterestToken(
     uint256 _collateralAmount,
