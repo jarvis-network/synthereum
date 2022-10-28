@@ -4,7 +4,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 pragma solidity ^0.8.9;
 
 interface ICompoundToken is IERC20 {
-  function mintBehalf(address, uint256) external returns (uint256);
+  function mint(uint256) external returns (uint256);
 
   function exchangeRateCurrent() external returns (uint256);
 

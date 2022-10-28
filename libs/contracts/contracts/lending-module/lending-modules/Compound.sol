@@ -12,9 +12,11 @@ import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import 'hardhat/console.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
+  using SafeERC20 for ICompoundToken;
 
   function deposit(
     ILendingStorageManager.PoolStorage calldata _poolData,
@@ -36,7 +38,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
     // get tokens balance before
-    uint256 cTokenBalanceBefore = cToken.balanceOf((msg.sender));
+    uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -49,15 +51,18 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // approve and deposit underlying
     collateral.safeIncreaseAllowance(address(cToken), _amount);
-    uint256 success = cToken.mintBehalf(msg.sender, _amount);
+    uint256 success = cToken.mint(_amount);
     require(success == 0, 'Failed mint');
 
     // get tokens balance before
-    uint256 cTokenBalanceAfter = cToken.balanceOf((msg.sender));
+    uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
 
     // set return values
     tokensOut = cTokenBalanceAfter - cTokenBalanceBefore;
     tokensTransferred = tokensOut;
+
+    console.log('TOK', tokensOut);
+    cToken.transfer(msg.sender, tokensOut);
   }
 
   function withdraw(
