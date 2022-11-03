@@ -12,7 +12,6 @@ import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
-import 'hardhat/console.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
@@ -61,7 +60,6 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     tokensOut = cTokenBalanceAfter - cTokenBalanceBefore;
     tokensTransferred = tokensOut;
 
-    console.log('TOK', tokensOut);
     cToken.transfer(msg.sender, tokensOut);
   }
 
