@@ -38,15 +38,6 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     let deadline = (await web3.eth.getBlock('latest')).timestamp + 60000;
 
     const nativeAmount = web3.utils.toWei('100');
-    const actualBalance = await web3.eth.getBalance(recipient);
-    const newTotal = web3.utils
-      .toBN(nativeAmount)
-      .add(web3.utils.toBN(actualBalance));
-
-    await network.provider.send('hardhat_setBalance', [
-      recipient,
-      web3.utils.toHex(newTotal.toString()),
-    ]);
 
     let uniswapInstance = await IUniswapRouter.at(
       data[networkId].JRTSwapRouter,
@@ -67,7 +58,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     storageManager = await LendingStorageManager.new(finder.address);
     proxy = await LendingProxy.new(finder.address, Roles);
     cUSDC = await CToken.at(data[networkId].vUSDC);
-    USDC = await cUSDC.underlying.call();
+    USDC = data[networkId].USDC;
     USDCInstance = await TestnetSelfMintingERC20.at(USDC);
 
     JRT = data[networkId].JRT;
@@ -123,12 +114,12 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       lendingModule: module.address,
       args,
     };
-    await proxy.setLendingModule('ovix', lendingInfo, {
+    await proxy.setLendingModule('venus', lendingInfo, {
       from: maintainer,
     });
 
     await storageManager.setPoolStorage(
-      'ovix',
+      'venus',
       poolMock.address,
       USDC,
       cUSDC.address,
