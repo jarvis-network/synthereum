@@ -38,6 +38,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get tokens balance before
     uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
+    uint256 balanceBefore = collateralToken.balanceOf(address(this));
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -55,10 +56,11 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get tokens balance before
     uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
+    uint256 balanceAfter = collateralToken.balanceOf(address(this));
 
     // set return values
-    tokensOut = cTokenBalanceAfter - cTokenBalanceBefore;
-    tokensTransferred = tokensOut;
+    tokensTransferred = cTokenBalanceAfter - cTokenBalanceBefore;
+    tokensOut = balanceBefore - balanceAfter;
 
     cToken.transfer(msg.sender, tokensOut);
   }
@@ -83,6 +85,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     // get balance of collateral before redeeming
     IERC20 collateralToken = IERC20(_poolData.collateral);
     uint256 balanceBefore = collateralToken.balanceOf(address(this));
+    uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -98,10 +101,11 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get balance of collateral after redeeming
     uint256 balanceAfter = collateralToken.balanceOf(address(this));
+    uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
 
     // set return values
-    tokensTransferred = tokensOut;
     tokensOut = balanceAfter - balanceBefore;
+    tokensTransferred = cTokenBalanceBefore - cTokenBalanceAfter;
 
     // transfer underlying
     IERC20(address(cToken)).safeTransfer(_pool, tokensOut);
