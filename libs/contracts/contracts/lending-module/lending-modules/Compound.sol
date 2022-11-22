@@ -38,7 +38,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get tokens balance before
     uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
-    uint256 balanceBefore = collateralToken.balanceOf(address(this));
+    uint256 balanceBefore = collateral.balanceOf(address(this));
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -56,13 +56,13 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get tokens balance before
     uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
-    uint256 balanceAfter = collateralToken.balanceOf(address(this));
+    uint256 balanceAfter = collateral.balanceOf(address(this));
 
     // set return values
     tokensTransferred = cTokenBalanceAfter - cTokenBalanceBefore;
     tokensOut = balanceBefore - balanceAfter;
 
-    cToken.transfer(msg.sender, tokensOut);
+    cToken.transfer(msg.sender, tokensTransferred);
   }
 
   function withdraw(
