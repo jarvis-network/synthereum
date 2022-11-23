@@ -24,7 +24,13 @@ const { toBN, toWei, toHex } = web3Utils;
 
 contract('Compound Lending module - Venus protocol integration', accounts => {
   let finder, poolMock, module, proxy, storageManager, networkId, expiration;
-  let cUSDC, USDC, USDCInstance, JRT, JRTInstance, aaveInstance, factoryVers;
+  let cUSDC,
+    USDC,
+    USDCInstance,
+    JRT,
+    JRTInstance,
+    compoundInstance,
+    factoryVers;
   const maintainer = accounts[1];
   const admin = accounts[0];
   const Roles = { admin, maintainer };
@@ -32,23 +38,54 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
   const jrtShare = toWei('0.5');
   const commissionShare = toWei('0.5');
 
+  const getRandomInt = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  };
+
+  const openCDP = async (deposit, borrow, from) => {
+    await getUSDC(toBN(deposit).add(toBN(borrow)).toString(), from);
+    await USDCInstance.approve(cUSDC.address, deposit, { from });
+    await cUSDC.mint(deposit, { from });
+    await cUSDC.borrow(borrow, { from });
+
+    // produce more blocks and interest
+    await network.provider.send('evm_increaseTime', [
+      getRandomInt(36000, 24 * 7 * 36000),
+    ]);
+    await network.provider.send('evm_mine');
+
+    // repay all debt
+    await USDCInstance.increaseAllowance(cUSDC.address, deposit, { from });
+    await cUSDC.repayBorrow(borrow, {
+      from,
+    });
+    await network.provider.send('evm_increaseTime', [5]);
+    await network.provider.send('evm_mine');
+  };
+
   const getUSDC = async (collateralAmount, recipient) => {
     let NativeWrapperAddr = data[networkId].NativeWrapper;
 
     let deadline = (await web3.eth.getBlock('latest')).timestamp + 60000;
 
-    const nativeAmount = web3.utils.toWei('100');
+    const nativeAmount = web3.utils.toWei('10');
 
     let uniswapInstance = await IUniswapRouter.at(
       data[networkId].JRTSwapRouter,
     );
-    await uniswapInstance.swapETHForExactTokens(
+    await uniswapInstance.swapExactETHForTokens(
       collateralAmount,
       [NativeWrapperAddr, USDC],
-      recipient,
+      accounts[10],
       deadline,
       { from: recipient, value: nativeAmount },
     );
+
+    await USDCInstance.transfer(recipient, collateralAmount, {
+      from: accounts[10],
+    });
   };
 
   before(async () => {
@@ -57,7 +94,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     factoryVers = await SynthereumFactoryVersioning.deployed();
     storageManager = await LendingStorageManager.new(finder.address);
     proxy = await LendingProxy.new(finder.address, Roles);
-    cUSDC = await CToken.at(data[networkId].vUSDC);
+    cUSDC = await CToken.at(data[networkId].cUSDC);
     USDC = data[networkId].USDC;
     USDCInstance = await TestnetSelfMintingERC20.at(USDC);
 
@@ -163,14 +200,14 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
   describe('Compound module', () => {
     const user = accounts[2];
-    let amountMint = '100000000';
-    let amountFirstDeposit = '30000000';
+    let amountMint = '100';
+    let amountFirstDeposit = '10';
 
-    it.only('First deposit- Correctly deposits and update values', async () => {
+    it('First deposit- Correctly deposits and update values', async () => {
       await getUSDC(amountMint, user);
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
-      assert.equal(userUSDCBefore.toString(), amountMint.toString());
 
+      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
       let userCUSDCBefore = await cUSDC.balanceOf.call(user);
       let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
@@ -187,40 +224,40 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
 
+      let expectedCUSDCOut = toBN(amountFirstDeposit)
+        .mul(toBN(Math.pow(10, 18)))
+        .div(exchangeRate);
       let userUSDCAfter = await USDCInstance.balanceOf.call(user);
-      let userAUSDCAfter = await cUSDC.balanceOf.call(user);
-      let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
+      let userCUSDCAfter = await cUSDC.balanceOf.call(user);
+      let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
       let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
 
       // check return values to pool
-      assertWeiDifference(
+      assert.equal(
         returnValues.tokensOut.toString(),
         amountFirstDeposit.toString(),
       );
-      assertWeiDifference(
+      assert.equal(
         returnValues.tokensTransferred.toString(),
-        amountFirstDeposit.toString(),
+        expectedCUSDCOut.toString(),
       );
       assert.equal(returnValues.poolInterest.toString(), '0');
       assert.equal(returnValues.daoInterest.toString(), '0');
 
       // check tokens have moved correctly
-      assertWeiDifference(
+      assert.equal(
         userUSDCAfter.toString(),
         userUSDCBefore.sub(toBN(amountFirstDeposit)).toString(),
       );
-      assertWeiDifference(
-        userCUSDCBefore.toString(),
-        userAUSDCAfter.toString(),
+      assert.equal(userCUSDCBefore.toString(), userCUSDCAfter.toString());
+      assert.equal(
+        poolCUSDCAfter.toString(),
+        poolCUSDCBefore.add(expectedCUSDCOut).toString(),
       );
-      assertWeiDifference(
-        poolAUSDCAfter.toString(),
-        poolCUSDCBefore.add(toBN(amountFirstDeposit)).toString(),
-      );
-      assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
       // check pool storage update on proxy
-      assertWeiDifference(
+      assert.equal(
         poolStorage.collateralDeposited.toString(),
         amountFirstDeposit.toString(),
       );
@@ -228,403 +265,410 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       assert.equal(poolStorage.unclaimedDaoCommission.toString(), '0');
     });
 
-    // it('Subsequent deposit- Correctly deposits and update values, interest', async () => {
-    //   let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
-    //   let userCUSDCBefore = await cUSDC.balanceOf.call(user);
+    it('Subsequent deposit- Correctly deposits and update values, interest', async () => {
+      let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
+      let userCUSDCBefore = await cUSDC.balanceOf.call(user);
 
-    //   // borrow on aave to generate interest
-    //   await openCDP('100000000', '40000000', accounts[3]);
+      // borrow on compound to generate interest
+      await openCDP('1000', '40', accounts[3]);
 
-    //   let generatedInterest = await proxy.getAccumulatedInterest.call(
-    //     poolMock.address,
-    //   );
+      let generatedInterest = await proxy.getAccumulatedInterest.call(
+        poolMock.address,
+      );
 
-    //   let userUSDCBefore = await USDCInstance.balanceOf.call(user);
-    //   assertWeiDifference(
-    //     userUSDCBefore.toString(),
-    //     toBN(amountMint).sub(toBN(amountFirstDeposit)).toString(),
-    //   );
-    //   let poolStorageBefore = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
-    //   let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
+      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
+      let userUSDCBefore = await USDCInstance.balanceOf.call(user);
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+      let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
 
-    //   // deposit to trigger interest split update
-    //   let amountDeposit = '10000000';
-    //   await USDCInstance.approve(poolMock.address, amountDeposit, {
-    //     from: user,
-    //   });
+      // deposit to trigger interest split update
+      let amountDeposit = '10';
+      await USDCInstance.approve(poolMock.address, amountDeposit, {
+        from: user,
+      });
 
-    //   let returnValues = await poolMock.deposit.call(amountDeposit, USDC, {
-    //     from: user,
-    //   });
-    //   await poolMock.deposit(amountDeposit, USDC, { from: user });
-    //   let poolStorage = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
-    //   await network.provider.send('evm_increaseTime', [1]);
-    //   await network.provider.send('evm_mine');
+      let returnValues = await poolMock.deposit.call(amountDeposit, USDC, {
+        from: user,
+      });
+      await poolMock.deposit(amountDeposit, USDC, { from: user });
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
-    //   let userUSDCAfter = await USDCInstance.balanceOf.call(user);
-    //   let userAUSDCAfter = await cUSDC.balanceOf.call(user);
-    //   let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
-    //   let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let expectedCUSDCOut = toBN(amountDeposit)
+        .mul(toBN(Math.pow(10, 18)))
+        .div(exchangeRate);
 
-    //   let expectedInterest = poolAUSDCAfter
-    //     .sub(poolCUSDCBefore)
-    //     .sub(toBN(amountDeposit));
-    //   let expectedDaoInterest = expectedInterest
-    //     .mul(toBN(daoInterestShare))
-    //     .div(toBN(Math.pow(10, 18)));
-    //   let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+      let userUSDCAfter = await USDCInstance.balanceOf.call(user);
+      let userCUSDCAfter = await cUSDC.balanceOf.call(user);
+      let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   // check return values to pool
-    //   assertWeiDifference(
-    //     returnValues.tokensOut.toString(),
-    //     amountDeposit.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     returnValues.poolInterest.toString(),
-    //     expectedPoolInterest.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     returnValues.daoInterest.toString(),
-    //     expectedDaoInterest.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     generatedInterest.poolInterest.toString(),
-    //     expectedPoolInterest.toString(),
-    //   );
+      let expectedInterest = poolUnderlyingAfter
+        .sub(poolUnderlyingBefore)
+        .sub(toBN(amountDeposit));
+      let expectedDaoInterest = expectedInterest
+        .mul(toBN(daoInterestShare))
+        .div(toBN(Math.pow(10, 18)));
+      let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-    //   // check tokens have moved correctly
-    //   assertWeiDifference(
-    //     userUSDCAfter.toString(),
-    //     userUSDCBefore.sub(toBN(amountDeposit)).toString(),
-    //   );
-    //   assertWeiDifference(
-    //     userCUSDCBefore.toString(),
-    //     userAUSDCAfter.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     poolAUSDCAfter.toString(),
-    //     poolCUSDCBefore
-    //       .add(toBN(amountDeposit))
-    //       .add(toBN(returnValues.poolInterest))
-    //       .add(toBN(returnValues.daoInterest))
-    //       .toString(),
-    //   );
-    //   assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      // check return values to pool
+      assert.equal(returnValues.tokensOut.toString(), amountDeposit.toString());
+      assert.equal(
+        returnValues.tokensTransferred.toString(),
+        expectedCUSDCOut.toString(),
+      );
+      assert.equal(
+        returnValues.poolInterest.toString(),
+        expectedPoolInterest.toString(),
+      );
+      assert.equal(
+        returnValues.daoInterest.toString(),
+        expectedDaoInterest.toString(),
+      );
+      assert.equal(
+        generatedInterest.poolInterest.toString(),
+        expectedPoolInterest.toString(),
+      );
 
-    //   // check pool storage update on proxy
-    //   let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-    //     .add(expectedPoolInterest)
-    //     .add(toBN(amountDeposit))
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.collateralDeposited.toString(),
-    //     expectedCollateral,
-    //   );
+      // check tokens have moved correctly
+      assert.equal(
+        userUSDCAfter.toString(),
+        userUSDCBefore.sub(toBN(amountDeposit)).toString(),
+      );
+      assert.equal(userCUSDCBefore.toString(), userCUSDCAfter.toString());
+      assert.equal(
+        poolCUSDCAfter.toString(),
+        poolCUSDCBefore.add(expectedCUSDCOut).toString(),
+      );
+      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
-    //   let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
-    //     .add(
-    //       toBN(returnValues.daoInterest)
-    //         .mul(toBN(jrtShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
-    //   assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      // check pool storage update on proxy
+      let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
+        .add(expectedPoolInterest)
+        .add(toBN(amountDeposit))
+        .toString();
+      assert.equal(
+        poolStorage.collateralDeposited.toString(),
+        expectedCollateral,
+      );
 
-    //   let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
-    //     .add(
-    //       toBN(returnValues.daoInterest)
-    //         .mul(toBN(commissionShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
+      let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(jrtShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
-    //   assertWeiDifference(
-    //     poolStorage.unclaimedDaoCommission.toString(),
-    //     expectedDaoCommisson,
-    //   );
-    // });
+      let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(commissionShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
 
-    // it('Reverts if msg.sender is not a registered pool', async () => {
-    //   await truffleAssert.reverts(
-    //     proxy.deposit(10, { from: user }),
-    //     'Not existing pool',
-    //   );
-    // });
+      assert.equal(
+        poolStorage.unclaimedDaoCommission.toString(),
+        expectedDaoCommisson,
+      );
+    });
 
-    // it('Reverts if not enough collateral is sent to proxy', async () => {
-    //   await truffleAssert.reverts(
-    //     poolMock.depositShouldRevert(10, { from: user }),
-    //     'Wrong balance',
-    //   );
-    // });
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.deposit(10, { from: user }),
+        'Not existing pool',
+      );
+    });
 
-    // it('Withdraw - Correctly withdraw and update values, interest', async () => {
-    //   let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+    it('Reverts if not enough collateral is sent to proxy', async () => {
+      await truffleAssert.reverts(
+        poolMock.depositShouldRevert(10, { from: user }),
+        'Wrong balance',
+      );
+    });
 
-    //   // borrow on aave to generate interest
-    //   await openCDP('100000000', '40000000', accounts[3]);
+    it('Withdraw - Correctly withdraw and update values, interest', async () => {
+      let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   let amountWithdraw = '1';
-    //   let userCUSDCBefore = await cUSDC.balanceOf.call(user);
-    //   let userUSDCBefore = await USDCInstance.balanceOf.call(user);
-    //   let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
-    //   let poolStorageBefore = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
+      // borrow on compound to generate interest
+      await openCDP('1000', '40', accounts[3]);
 
-    //   // withdraw
-    //   let returnValues = await poolMock.withdraw.call(
-    //     amountWithdraw,
-    //     user,
-    //     cUSDC.address,
-    //     {
-    //       from: user,
-    //     },
-    //   );
-    //   await poolMock.withdraw(amountWithdraw, user, cUSDC.address, {
-    //     from: user,
-    //   });
+      let amountWithdraw = '1';
+      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
+      let userCUSDCBefore = await cUSDC.balanceOf.call(user);
+      let userUSDCBefore = await USDCInstance.balanceOf.call(user);
+      let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
-    //   let poolStorage = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
+      // withdraw
+      let returnValues = await poolMock.withdraw.call(
+        amountWithdraw,
+        user,
+        cUSDC.address,
+        {
+          from: user,
+        },
+      );
+      await poolMock.withdraw(amountWithdraw, user, cUSDC.address, {
+        from: user,
+      });
 
-    //   let userUSDCAfter = await USDCInstance.balanceOf.call(user);
-    //   let userAUSDCAfter = await cUSDC.balanceOf.call(user);
-    //   let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
-    //   let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
-    //   let expectedInterest = poolAUSDCAfter
-    //     .add(toBN(amountWithdraw))
-    //     .sub(poolCUSDCBefore);
+      let USDCOut = toBN(amountWithdraw)
+        .mul(exchangeRate)
+        .div(toBN(Math.pow(10, 18)));
 
-    //   let expectedDaoInterest = expectedInterest
-    //     .mul(toBN(daoInterestShare))
-    //     .div(toBN(Math.pow(10, 18)));
+      let userUSDCAfter = await USDCInstance.balanceOf.call(user);
+      let userCUSDCAfter = await cUSDC.balanceOf.call(user);
+      let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+      let expectedInterest = poolUnderlyingAfter
+        .add(toBN(USDCOut))
+        .sub(poolUnderlyingBefore);
 
-    //   // check return values to pool
-    //   assertWeiDifference(
-    //     returnValues.tokensOut.toString(),
-    //     amountWithdraw.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     returnValues.tokensTransferred.toString(),
-    //     amountWithdraw.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     returnValues.poolInterest.toString(),
-    //     expectedPoolInterest.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     returnValues.daoInterest.toString(),
-    //     expectedDaoInterest.toString(),
-    //   );
+      let expectedDaoInterest = expectedInterest
+        .mul(toBN(daoInterestShare))
+        .div(toBN(Math.pow(10, 18)));
 
-    //   // check tokens have moved correctly
-    //   assertWeiDifference(
-    //     userUSDCAfter.toString(),
-    //     userUSDCBefore.add(toBN(returnValues.tokensTransferred)).toString(),
-    //   );
-    //   assertWeiDifference(
-    //     userCUSDCBefore.toString(),
-    //     userAUSDCAfter.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     poolAUSDCAfter.toString(),
-    //     poolCUSDCBefore
-    //       .sub(toBN(amountWithdraw))
-    //       .add(toBN(returnValues.poolInterest))
-    //       .add(toBN(returnValues.daoInterest))
-    //       .toString(),
-    //   );
-    //   assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-    //   // check pool storage update on proxy
-    //   let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-    //     .add(expectedPoolInterest)
-    //     .sub(toBN(amountWithdraw))
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.collateralDeposited.toString(),
-    //     expectedCollateral,
-    //   );
+      // check return values to pool
+      assert.equal(
+        returnValues.tokensOut.toString(),
+        amountWithdraw.toString(),
+      );
+      assert.equal(
+        returnValues.tokensTransferred.toString(),
+        USDCOut.toString(),
+      );
+      assert.equal(
+        returnValues.poolInterest.toString(),
+        expectedPoolInterest.toString(),
+      );
+      assert.equal(
+        returnValues.daoInterest.toString(),
+        expectedDaoInterest.toString(),
+      );
 
-    //   let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
-    //     .add(
-    //       toBN(returnValues.daoInterest)
-    //         .mul(toBN(jrtShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.unclaimedDaoJRT.toString(),
-    //     expectedUnclaimedJRT,
-    //   );
+      // check tokens have moved correctly
+      assert.equal(
+        userUSDCAfter.toString(),
+        userUSDCBefore.add(toBN(returnValues.tokensTransferred)).toString(),
+      );
+      assert.equal(userCUSDCBefore.toString(), userCUSDCAfter.toString());
+      assert.equal(
+        poolCUSDCAfter.toString(),
+        poolCUSDCBefore.sub(toBN(amountWithdraw)).toString(),
+      );
+      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
-    //   let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
-    //     .add(
-    //       toBN(returnValues.daoInterest)
-    //         .mul(toBN(commissionShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.unclaimedDaoCommission.toString(),
-    //     expectedDaoCommisson,
-    //   );
-    // });
+      // check pool storage update on proxy
+      let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
+        .add(expectedPoolInterest)
+        .sub(toBN(USDCOut))
+        .toString();
+      assert.equal(
+        poolStorage.collateralDeposited.toString(),
+        expectedCollateral,
+      );
 
-    // it('Reverts if msg.sender is not a registered pool', async () => {
-    //   await truffleAssert.reverts(
-    //     proxy.withdraw(10, user, { from: user }),
-    //     'Not existing pool',
-    //   );
-    // });
+      let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(jrtShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(
+        poolStorage.unclaimedDaoJRT.toString(),
+        expectedUnclaimedJRT,
+      );
 
-    // it('Reverts if not enough aToken is sent to proxy', async () => {
-    //   await truffleAssert.reverts(
-    //     poolMock.withdrawShouldRevert(10, user, { from: user }),
-    //   );
-    // });
+      let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(commissionShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(
+        poolStorage.unclaimedDaoCommission.toString(),
+        expectedDaoCommisson,
+      );
+    });
 
-    // it('Correctly claim commissions', async () => {
-    //   let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+    it('Reverts if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.withdraw(10, user, { from: user }),
+        'Not existing pool',
+      );
+    });
 
-    //   // borrow on aave to generate interest
-    //   await openCDP('100000000', '40000000', accounts[3]);
+    it('Reverts if not enough aToken is sent to proxy', async () => {
+      await truffleAssert.reverts(
+        poolMock.withdrawShouldRevert(10, user, { from: user }),
+      );
+    });
 
-    //   // sets recipient
-    //   let commissionReceiver = accounts[4];
-    //   await finder.changeImplementationAddress(
-    //     web3Utils.utf8ToHex('CommissionReceiver'),
-    //     commissionReceiver,
-    //     { from: maintainer },
-    //   );
+    it('Correctly claim commissions', async () => {
+      let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   let commissionUSDCBefore = await USDCInstance.balanceOf.call(
-    //     commissionReceiver,
-    //   );
-    //   let poolStorageBefore = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
-    //   let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
+      // borrow on compound to generate interest
+      await openCDP('1000', '40', accounts[3]);
 
-    //   // claim commission
-    //   let amount = toBN(poolStorageBefore.unclaimedDaoCommission);
+      // sets recipient
+      let commissionReceiver = accounts[4];
+      await finder.changeImplementationAddress(
+        web3Utils.utf8ToHex('CommissionReceiver'),
+        commissionReceiver,
+        { from: maintainer },
+      );
+      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
+      let commissionUSDCBefore = await USDCInstance.balanceOf.call(
+        commissionReceiver,
+      );
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+      let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
 
-    //   let tx = await proxy.batchClaimCommission([poolMock.address], [amount], {
-    //     from: maintainer,
-    //   });
-    //   await network.provider.send('evm_increaseTime', [1]);
-    //   await network.provider.send('evm_mine');
+      // claim commission
+      let amount = toBN(poolStorageBefore.unclaimedDaoCommission);
 
-    //   truffleAssert.eventEmitted(tx, 'BatchCommissionClaim', ev => {
-    //     return (
-    //       ev.collateralOut.toString() == amount.toString() &&
-    //       ev.receiver == commissionReceiver
-    //     );
-    //   });
+      let tx = await proxy.batchClaimCommission([poolMock.address], [amount], {
+        from: maintainer,
+      });
+      await network.provider.send('evm_increaseTime', [1]);
+      await network.provider.send('evm_mine');
 
-    //   let poolStorage = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
-    //   let commissionUSDCAfter = await USDCInstance.balanceOf.call(
-    //     commissionReceiver,
-    //   );
-    //   let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
-    //   let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      truffleAssert.eventEmitted(tx, 'BatchCommissionClaim', ev => {
+        return (
+          ev.collateralOut.toString() == amount.toString() &&
+          ev.receiver == commissionReceiver
+        );
+      });
 
-    //   let expectedInterest = poolAUSDCAfter
-    //     .add(toBN(amount))
-    //     .sub(poolCUSDCBefore);
-    //   let expectedDaoInterest = expectedInterest
-    //     .mul(toBN(daoInterestShare))
-    //     .div(toBN(Math.pow(10, 18)));
-    //   let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
+      let commissionUSDCAfter = await USDCInstance.balanceOf.call(
+        commissionReceiver,
+      );
+      let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   // check tokens have moved correctly
-    //   assertWeiDifference(
-    //     commissionUSDCAfter.toString(),
-    //     commissionUSDCBefore.add(toBN(amount)).toString(),
-    //   );
-    //   assertWeiDifference(
-    //     poolAUSDCAfter.toString(),
-    //     poolCUSDCBefore
-    //       .add(toBN(expectedInterest))
-    //       .sub(toBN(amount))
-    //       .toString(),
-    //   );
-    //   assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+      let expectedCUSDCOut = toBN(amount)
+        .mul(toBN(Math.pow(10, 18)))
+        .div(exchangeRate);
 
-    //   // check pool storage update on proxy
-    //   let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-    //     .add(toBN(expectedPoolInterest))
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.collateralDeposited.toString(),
-    //     expectedCollateral,
-    //   );
+      let expectedInterest = poolUnderlyingAfter
+        .add(toBN(amount))
+        .sub(poolUnderlyingBefore);
+      let expectedDaoInterest = expectedInterest
+        .mul(toBN(daoInterestShare))
+        .div(toBN(Math.pow(10, 18)));
+      let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-    //   let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
-    //     .add(
-    //       toBN(expectedDaoInterest)
-    //         .mul(toBN(jrtShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
-    //   assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      // check tokens have moved correctly
+      assert.equal(
+        commissionUSDCAfter.toString(),
+        commissionUSDCBefore.add(toBN(amount)).toString(),
+      );
+      assert.equal(
+        poolCUSDCAfter.toString(),
+        poolCUSDCBefore.sub(toBN(expectedCUSDCOut)).toString(),
+      );
+      assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
-    //   let expectedDaoCommisson = toBN(expectedDaoInterest)
-    //     .mul(toBN(commissionShare))
-    //     .div(toBN(Math.pow(10, 18)));
+      // check pool storage update on proxy
+      let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
+        .add(toBN(expectedPoolInterest))
+        .toString();
+      assert.equal(
+        poolStorage.collateralDeposited.toString(),
+        expectedCollateral,
+      );
 
-    //   assertWeiDifference(
-    //     expectedDaoCommisson,
-    //     poolStorage.unclaimedDaoCommission,
-    //   );
-    // });
+      let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+        .add(
+          toBN(expectedDaoInterest)
+            .mul(toBN(jrtShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
-    // it('Cant claim more commission than due', async () => {
-    //   // sets recipient
-    //   let commissionReceiver = accounts[4];
-    //   await finder.changeImplementationAddress(
-    //     web3Utils.utf8ToHex('CommissionReceiver'),
-    //     commissionReceiver,
-    //     { from: maintainer },
-    //   );
+      let expectedDaoCommisson = toBN(expectedDaoInterest)
+        .mul(toBN(commissionShare))
+        .div(toBN(Math.pow(10, 18)));
 
-    //   // claim commission
-    //   let amount = (await storageManager.getPoolStorage.call(poolMock.address))
-    //     .unclaimedDaoJRT;
-    //   amount = toBN(amount).muln(2);
-    //   await truffleAssert.reverts(
-    //     proxy.batchClaimCommission([poolMock.address], [amount], {
-    //       from: maintainer,
-    //     }),
-    //   );
-    // });
+      assert.equal(expectedDaoCommisson, poolStorage.unclaimedDaoCommission);
+    });
 
-    // it('Reverts if msg.sender is not maintainer', async () => {
-    //   await truffleAssert.reverts(
-    //     proxy.batchClaimCommission([poolMock.address], [10], { from: user }),
-    //     'Sender must be the maintainer',
-    //   );
-    // });
+    it('Cant claim more commission than due', async () => {
+      // sets recipient
+      let commissionReceiver = accounts[4];
+      await finder.changeImplementationAddress(
+        web3Utils.utf8ToHex('CommissionReceiver'),
+        commissionReceiver,
+        { from: maintainer },
+      );
 
-    // it('Reverts if number of pools and amount mismatch', async () => {
-    //   await truffleAssert.reverts(
-    //     proxy.batchClaimCommission([poolMock.address], [10, 20], {
-    //       from: maintainer,
-    //     }),
-    //     'Invalid call',
-    //   );
-    // });
+      // claim commission
+      let amount = (await storageManager.getPoolStorage.call(poolMock.address))
+        .unclaimedDaoJRT;
+      amount = toBN(amount).muln(2);
+      await truffleAssert.reverts(
+        proxy.batchClaimCommission([poolMock.address], [amount], {
+          from: maintainer,
+        }),
+      );
+    });
+
+    it('Reverts if msg.sender is not maintainer', async () => {
+      await truffleAssert.reverts(
+        proxy.batchClaimCommission([poolMock.address], [10], { from: user }),
+        'Sender must be the maintainer',
+      );
+    });
+
+    it('Reverts if number of pools and amount mismatch', async () => {
+      await truffleAssert.reverts(
+        proxy.batchClaimCommission([poolMock.address], [10, 20], {
+          from: maintainer,
+        }),
+        'Invalid call',
+      );
+    });
 
     // it('Correctly claim and swap to JRT', async () => {
     //   let jrtSwap = await JRTSWAP.new();
@@ -633,7 +677,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
     //   let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
 
-    //   // borrow on aave to generate interest
+    //   // borrow on compound to generate interest
     //   await openCDP('100000000', '40000000', accounts[3]);
 
     //   // sets recipient
@@ -700,10 +744,10 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     //   );
     //   let receiverJRTAfter = await JRTInstance.balanceOf.call(buybackReceiver);
 
-    //   let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
+    //   let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
     //   let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
 
-    //   let expectedInterest = poolAUSDCAfter
+    //   let expectedInterest = poolCUSDCAfter
     //     .add(toBN(amount))
     //     .sub(poolCUSDCBefore);
     //   let expectedDaoInterest = expectedInterest
@@ -712,25 +756,25 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     //   let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
     //   // check tokens have moved correctly
-    //   assertWeiDifference(
+    //   assert.equal(
     //     receiverJRTAfter.toString(),
     //     receiverJRTBefore.add(toBN(JRTOut)).toString(),
     //   );
     //   // interest has been added to pool
-    //   assertWeiDifference(
-    //     poolAUSDCAfter.toString(),
+    //   assert.equal(
+    //     poolCUSDCAfter.toString(),
     //     poolCUSDCBefore
     //       .add(toBN(expectedInterest))
     //       .sub(toBN(amount))
     //       .toString(),
     //   );
-    //   assertWeiDifference(poolUSDCBefore.toString(), poolUSDCAfter.toString());
+    //   assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
     //   // check pool storage update on proxy
     //   let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
     //     .add(toBN(expectedPoolInterest))
     //     .toString();
-    //   assertWeiDifference(
+    //   assert.equal(
     //     poolStorage.collateralDeposited.toString(),
     //     expectedCollateral,
     //   );
@@ -739,7 +783,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     //     .mul(toBN(jrtShare))
     //     .div(toBN(Math.pow(10, 18)))
     //     .toString();
-    //   assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+    //   assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
     //   let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
     //     .add(
@@ -749,7 +793,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     //     )
     //     .toString();
 
-    //   assertWeiDifference(
+    //   assert.equal(
     //     poolStorage.unclaimedDaoCommission,
     //     expectedDaoCommisson,
     //   );
@@ -782,325 +826,336 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     //   );
     // });
 
-    // it('Provides collateral to interest token conversion', async () => {
-    //   let collateralAmount = toWei('10');
+    it('Provides collateral to interest token conversion', async () => {
+      let amount = toWei('10');
+      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
 
-    //   // passed as exact transfer to do
-    //   let res = await proxy.collateralToInterestToken.call(
-    //     poolMock.address,
-    //     collateralAmount,
-    //     { from: user },
-    //   );
-    //   assert.equal(
-    //     res.interestTokenAmount.toString(),
-    //     collateralAmount.toString(),
-    //   );
-    //   assert.equal(res.interestTokenAddr.toString(), cUSDC.address);
+      // passed as exact transfer to do
+      let res = await proxy.collateralToInterestToken.call(
+        poolMock.address,
+        amount,
+        { from: user },
+      );
+      let expectedOut = toBN(amount)
+        .mul(toBN(Math.pow(10, 18)))
+        .div(exchangeRate);
+      assert.equal(res.interestTokenAmount.toString(), expectedOut.toString());
+      assert.equal(res.interestTokenAddr.toString(), cUSDC.address);
 
-    //   // passed as exact transfer to receive
-    //   res = await proxy.collateralToInterestToken.call(
-    //     poolMock.address,
-    //     collateralAmount,
-    //     { from: user },
-    //   );
-    //   assert.equal(
-    //     res.interestTokenAmount.toString(),
-    //     collateralAmount.toString(),
-    //   );
-    //   assert.equal(res.interestTokenAddr.toString(), cUSDC.address);
-    // });
+      expectedOut = toBN(amount)
+        .mul(exchangeRate)
+        .div(toBN(Math.pow(10, 18)));
+      // passed as exact transfer to receive
+      res = await proxy.interestTokenToCollateral.call(
+        poolMock.address,
+        amount,
+        { from: user },
+      );
+      assert.equal(res.interestTokenAmount.toString(), expectedOut.toString());
+      assert.equal(res.interestTokenAddr.toString(), cUSDC.address);
+    });
 
-    // it('Let a pool update his own state without moving collateral', async () => {
-    //   let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+    it('Let a pool update his own state without moving collateral', async () => {
+      let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   // borrow on aave to generate interest
-    //   await openCDP('100000000', '40000000', accounts[3]);
+      // borrow on compound to generate interest
+      await openCDP('1000', '40', accounts[3]);
 
-    //   let poolStorageBefore = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
+      let poolStorageBefore = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
-    //   // call updateAccumulatedInterest to trigger interest split update
-    //   let returnValues = await poolMock.updateAccumulatedInterest.call({
-    //     from: user,
-    //   });
-    //   await poolMock.updateAccumulatedInterest({ from: user });
-    //   let poolStorage = await storageManager.getPoolStorage.call(
-    //     poolMock.address,
-    //   );
+      // call updateAccumulatedInterest to trigger interest split update
+      let returnValues = await poolMock.updateAccumulatedInterest.call({
+        from: user,
+      });
+      await poolMock.updateAccumulatedInterest({ from: user });
+      let poolStorage = await storageManager.getPoolStorage.call(
+        poolMock.address,
+      );
 
-    //   let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
-    //   let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
+      let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+      let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
+        poolMock.address,
+      );
 
-    //   let expectedInterest = poolAUSDCAfter.sub(poolCUSDCBefore);
-    //   let expectedDaoInterest = expectedInterest
-    //     .mul(toBN(daoInterestShare))
-    //     .div(toBN(Math.pow(10, 18)));
-    //   let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+      let expectedInterest = poolUnderlyingAfter.sub(poolUnderlyingBefore);
+      let expectedDaoInterest = expectedInterest
+        .mul(toBN(daoInterestShare))
+        .div(toBN(Math.pow(10, 18)));
+      let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-    //   // check return values to pool
-    //   assert.equal(returnValues.tokensOut.toString(), '0');
-    //   assertWeiDifference(
-    //     returnValues.poolInterest.toString(),
-    //     expectedPoolInterest.toString(),
-    //   );
-    //   assertWeiDifference(
-    //     returnValues.daoInterest.toString(),
-    //     expectedDaoInterest.toString(),
-    //   );
+      // check return values to pool
+      assert.equal(returnValues.tokensOut.toString(), '0');
+      assert.equal(
+        returnValues.poolInterest.toString(),
+        expectedPoolInterest.toString(),
+      );
+      assert.equal(
+        returnValues.daoInterest.toString(),
+        expectedDaoInterest.toString(),
+      );
 
-    //   // check tokens have moved correctly
-    //   assertWeiDifference(
-    //     poolAUSDCAfter.toString(),
-    //     poolCUSDCBefore
-    //       .add(toBN(returnValues.poolInterest))
-    //       .add(toBN(returnValues.daoInterest))
-    //       .toString(),
-    //   );
+      // check tokens have moved correctly
+      assert.equal(
+        poolUnderlyingAfter.toString(),
+        poolUnderlyingBefore
+          .add(toBN(returnValues.poolInterest))
+          .add(toBN(returnValues.daoInterest))
+          .toString(),
+      );
 
-    //   // check pool storage update on proxy
-    //   let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-    //     .add(expectedPoolInterest)
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.collateralDeposited.toString(),
-    //     expectedCollateral,
-    //   );
+      // check pool storage update on proxy
+      let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
+        .add(expectedPoolInterest)
+        .toString();
+      assert.equal(
+        poolStorage.collateralDeposited.toString(),
+        expectedCollateral,
+      );
 
-    //   let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
-    //     .add(
-    //       toBN(returnValues.daoInterest)
-    //         .mul(toBN(jrtShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
-    //   assertWeiDifference(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
+      let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(jrtShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(poolStorage.unclaimedDaoJRT, expectedUnclaimedJRT);
 
-    //   let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
-    //     .add(
-    //       toBN(returnValues.daoInterest)
-    //         .mul(toBN(commissionShare))
-    //         .div(toBN(Math.pow(10, 18))),
-    //     )
-    //     .toString();
-    //   assertWeiDifference(
-    //     poolStorage.unclaimedDaoCommission.toString(),
-    //     expectedDaoCommisson,
-    //   );
-    // });
+      let expectedDaoCommisson = toBN(poolStorageBefore.unclaimedDaoCommission)
+        .add(
+          toBN(returnValues.daoInterest)
+            .mul(toBN(commissionShare))
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString();
+      assert.equal(
+        poolStorage.unclaimedDaoCommission.toString(),
+        expectedDaoCommisson,
+      );
+    });
 
-    // it('Revert if msg.sender is not a registered pool', async () => {
-    //   await truffleAssert.reverts(
-    //     proxy.updateAccumulatedInterest({
-    //       from: user,
-    //     }),
-    //     'Not existing pool',
-    //   );
-    // });
+    it('Revert if msg.sender is not a registered pool', async () => {
+      await truffleAssert.reverts(
+        proxy.updateAccumulatedInterest({
+          from: user,
+        }),
+        'Not existing pool',
+      );
+    });
 
-    // context('Migrations', () => {
-    //   it('Correctly migrate lending module', async () => {
-    //     let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
-    //     let poolUSDCBefore = await USDCInstance.balanceOf.call(
-    //       poolMock.address,
-    //     );
+    context('Migrations', () => {
+      it('Correctly migrate lending module', async () => {
+        let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
+          poolMock.address,
+        );
+        let poolUSDCBefore = await USDCInstance.balanceOf.call(
+          poolMock.address,
+        );
 
-    //     // borrow on aave to generate interest
-    //     await openCDP('100000000', '40000000', accounts[3]);
+        // borrow on compound to generate interest
+        await openCDP('1000', '40', accounts[3]);
 
-    //     // deploy new module
-    //     newModule = await LendingModule.new();
+        // deploy new module
+        newModule = await LendingModule.new();
 
-    //     // set new module args and id
-    //     let args = web3.eth.abi.encodeParameters(
-    //       ['address', 'address'],
-    //       [data[networkId].AaveV3, ZERO_ADDRESS],
-    //     );
-    //     let newLendingInfo = {
-    //       lendingModule: newModule.address,
-    //       args,
-    //     };
-    //     await proxy.setLendingModule('new', newLendingInfo, {
-    //       from: maintainer,
-    //     });
+        // set new module args and id
+        let args = web3.eth.abi.encodeParameters(
+          ['address', 'address'],
+          [data[networkId].AaveV3, ZERO_ADDRESS],
+        );
+        let newLendingInfo = {
+          lendingModule: newModule.address,
+          args,
+        };
+        await proxy.setLendingModule('new', newLendingInfo, {
+          from: maintainer,
+        });
 
-    //     let poolStorageBefore = await storageManager.getPoolStorage.call(
-    //       poolMock.address,
-    //     );
+        let poolStorageBefore = await storageManager.getPoolStorage.call(
+          poolMock.address,
+        );
 
-    //     // call migration from pool
-    //     let amount = await cUSDC.balanceOf.call(poolMock.address);
-    //     let returnValues = await poolMock.migrateLendingModule.call(
-    //       cUSDC.address,
-    //       'new',
-    //       cUSDC.address,
-    //       amount,
-    //     );
-    //     await poolMock.migrateLendingModule(
-    //       cUSDC.address,
-    //       'new',
-    //       cUSDC.address,
-    //       amount,
-    //     );
+        // call migration from pool
+        let amount = await cUSDC.balanceOf.call(poolMock.address);
+        let returnValues = await poolMock.migrateLendingModule.call(
+          cUSDC.address,
+          'new',
+          cUSDC.address,
+          amount,
+        );
+        await poolMock.migrateLendingModule(
+          cUSDC.address,
+          'new',
+          cUSDC.address,
+          amount,
+        );
 
-    //     let poolAUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
-    //     let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
-    //     let poolStorage = await storageManager.getPoolData.call(
-    //       poolMock.address,
-    //     );
-    //     let expectedInterest = poolAUSDCAfter.sub(poolCUSDCBefore);
+        let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
+          poolMock.address,
+        );
+        let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
+        let poolStorage = await storageManager.getPoolData.call(
+          poolMock.address,
+        );
+        let expectedInterest = poolUnderlyingAfter.sub(poolUnderlyingBefore);
 
-    //     let expectedDaoInterest = expectedInterest
-    //       .mul(toBN(daoInterestShare))
-    //       .div(toBN(Math.pow(10, 18)));
+        let expectedDaoInterest = expectedInterest
+          .mul(toBN(daoInterestShare))
+          .div(toBN(Math.pow(10, 18)));
 
-    //     let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
+        let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-    //     // check return values to pool
-    //     assertWeiDifference(
-    //       returnValues.prevTotalCollateral.toString(),
-    //       poolStorageBefore.collateralDeposited.toString(),
-    //     );
-    //     assertWeiDifference(
-    //       returnValues.actualTotalCollateral.toString(),
-    //       toBN(poolAUSDCAfter)
-    //         .sub(toBN(expectedDaoInterest))
-    //         .sub(toBN(poolStorageBefore.unclaimedDaoCommission))
-    //         .sub(toBN(poolStorageBefore.unclaimedDaoJRT))
-    //         .toString(),
-    //     );
-    //     assertWeiDifference(
-    //       returnValues.poolInterest.toString(),
-    //       expectedPoolInterest.toString(),
-    //     );
+        // check return values to pool
+        assert.equal(
+          returnValues.prevTotalCollateral.toString(),
+          poolStorageBefore.collateralDeposited.toString(),
+        );
+        assert.equal(
+          returnValues.actualTotalCollateral.toString(),
+          toBN(poolUnderlyingAfter)
+            .sub(toBN(expectedDaoInterest))
+            .sub(toBN(poolStorageBefore.unclaimedDaoCommission))
+            .sub(toBN(poolStorageBefore.unclaimedDaoJRT))
+            .toString(),
+        );
+        assert.equal(
+          returnValues.poolInterest.toString(),
+          expectedPoolInterest.toString(),
+        );
 
-    //     // check pool storage update on proxy
-    //     let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
-    //       .add(toBN(returnValues.poolInterest))
-    //       .toString();
-    //     assertWeiDifference(
-    //       poolStorage.poolData.collateralDeposited.toString(),
-    //       expectedCollateral,
-    //     );
+        // check pool storage update on proxy
+        let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
+          .add(toBN(returnValues.poolInterest))
+          .toString();
+        assert.equal(
+          poolStorage.poolData.collateralDeposited.toString(),
+          expectedCollateral,
+        );
 
-    //     let expectedUnclaimedDao = toBN(returnValues.actualTotalCollateral)
-    //       .sub(toBN(returnValues.prevTotalCollateral))
-    //       .sub(toBN(returnValues.poolInterest));
+        let expectedUnclaimedDao = toBN(returnValues.actualTotalCollateral)
+          .sub(toBN(returnValues.prevTotalCollateral))
+          .sub(toBN(returnValues.poolInterest));
 
-    //     let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
-    //       .add(
-    //         expectedDaoInterest.mul(toBN(jrtShare)).div(toBN(Math.pow(10, 18))),
-    //       )
-    //       .toString();
-    //     assertWeiDifference(
-    //       poolStorage.poolData.unclaimedDaoJRT.toString(),
-    //       expectedUnclaimedJRT,
-    //     );
+        let expectedUnclaimedJRT = toBN(poolStorageBefore.unclaimedDaoJRT)
+          .add(
+            expectedDaoInterest.mul(toBN(jrtShare)).div(toBN(Math.pow(10, 18))),
+          )
+          .toString();
+        assert.equal(
+          poolStorage.poolData.unclaimedDaoJRT.toString(),
+          expectedUnclaimedJRT,
+        );
 
-    //     let expectedDaoCommisson = toBN(
-    //       poolStorageBefore.unclaimedDaoCommission,
-    //     )
-    //       .add(
-    //         expectedDaoInterest
-    //           .mul(toBN(commissionShare))
-    //           .div(toBN(Math.pow(10, 18))),
-    //       )
-    //       .toString();
-    //     assertWeiDifference(
-    //       poolStorage.poolData.unclaimedDaoCommission.toString(),
-    //       expectedDaoCommisson,
-    //     );
+        let expectedDaoCommisson = toBN(
+          poolStorageBefore.unclaimedDaoCommission,
+        )
+          .add(
+            expectedDaoInterest
+              .mul(toBN(commissionShare))
+              .div(toBN(Math.pow(10, 18))),
+          )
+          .toString();
+        assert.equal(
+          poolStorage.poolData.unclaimedDaoCommission.toString(),
+          expectedDaoCommisson,
+        );
 
-    //     // check lending module changed
-    //     assert.equal(poolStorage.lendingInfo.lendingModule, newModule.address);
-    //     assert.equal(poolStorage.poolData.interestBearingToken, cUSDC.address);
-    //   });
+        // check lending module changed
+        assert.equal(poolStorage.lendingInfo.lendingModule, newModule.address);
+        assert.equal(poolStorage.poolData.interestBearingToken, cUSDC.address);
+      });
 
-    //   it('Reverts if msg.sender is not a registered pool', async () => {
-    //     await truffleAssert.reverts(
-    //       proxy.migrateLendingModule('aave', accounts[5], 10, {
-    //         from: user,
-    //       }),
-    //       'Not existing pool',
-    //     );
-    //   });
+      it('Reverts if msg.sender is not a registered pool', async () => {
+        await truffleAssert.reverts(
+          proxy.migrateLendingModule('compound', accounts[5], 10, {
+            from: user,
+          }),
+          'Not existing pool',
+        );
+      });
 
-    //   it('Reverts if new bearing token is not set and new lending module reverts', async () => {
-    //     await truffleAssert.reverts(
-    //       poolMock.migrateLendingModule(
-    //         cUSDC.address,
-    //         'badlendingInfo',
-    //         ZERO_ADDRESS,
-    //         1,
-    //       ),
-    //       'No bearing token passed',
-    //     );
-    //   });
+      it('Reverts if new bearing token is not set and new lending module reverts', async () => {
+        await truffleAssert.reverts(
+          poolMock.migrateLendingModule(
+            cUSDC.address,
+            'badlendingInfo',
+            ZERO_ADDRESS,
+            1,
+          ),
+          'No bearing token passed',
+        );
+      });
 
-    //   it('Correctly migrate pool data to a new one', async () => {
-    //     // deploy new pool
-    //     let newPool = await PoolMock.new(
-    //       USDC,
-    //       jEUR.address,
-    //       proxy.address,
-    //       storageManager.address,
-    //       {
-    //         from: maintainer,
-    //       },
-    //     );
+      it('Correctly migrate pool data to a new one', async () => {
+        // deploy new pool
+        let newPool = await PoolMock.new(
+          USDC,
+          jEUR.address,
+          proxy.address,
+          storageManager.address,
+          {
+            from: maintainer,
+          },
+        );
 
-    //     let poolStorageBefore = await storageManager.getPoolData.call(
-    //       poolMock.address,
-    //     );
+        let poolStorageBefore = await storageManager.getPoolData.call(
+          poolMock.address,
+        );
 
-    //     // call migration from pool
-    //     await proxy.migratePool(poolMock.address, newPool.address, {
-    //       from: maintainer,
-    //     });
+        // call migration from pool
+        await proxy.migratePool(poolMock.address, newPool.address, {
+          from: maintainer,
+        });
 
-    //     await truffleAssert.reverts(
-    //       storageManager.getPoolData.call(poolMock.address),
-    //       'Not existing pool',
-    //     );
+        await truffleAssert.reverts(
+          storageManager.getPoolData.call(poolMock.address),
+          'Not existing pool',
+        );
 
-    //     let newPoolStorageAft = await storageManager.getPoolData.call(
-    //       newPool.address,
-    //     );
+        let newPoolStorageAft = await storageManager.getPoolData.call(
+          newPool.address,
+        );
 
-    //     // check storage have been copied on new pool
-    //     assert.equal(
-    //       poolStorageBefore.lendingInfo.lendingModule,
-    //       newPoolStorageAft.lendingInfo.lendingModule,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.collateral,
-    //       newPoolStorageAft.poolData.collateral,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.interestBearingToken,
-    //       newPoolStorageAft.poolData.interestBearingToken,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.jrtBuybackShare,
-    //       newPoolStorageAft.poolData.jrtBuybackShare,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.daoInterestShare,
-    //       newPoolStorageAft.poolData.daoInterestShare,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.collateralDeposited,
-    //       newPoolStorageAft.poolData.collateralDeposited,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.unclaimedDaoJRT,
-    //       newPoolStorageAft.poolData.unclaimedDaoJRT,
-    //     );
-    //     assert.equal(
-    //       poolStorageBefore.poolData.unclaimedDaoCommission,
-    //       newPoolStorageAft.poolData.unclaimedDaoCommission,
-    //     );
-    //   });
-    // });
+        // check storage have been copied on new pool
+        assert.equal(
+          poolStorageBefore.lendingInfo.lendingModule,
+          newPoolStorageAft.lendingInfo.lendingModule,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.collateral,
+          newPoolStorageAft.poolData.collateral,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.interestBearingToken,
+          newPoolStorageAft.poolData.interestBearingToken,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.jrtBuybackShare,
+          newPoolStorageAft.poolData.jrtBuybackShare,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.daoInterestShare,
+          newPoolStorageAft.poolData.daoInterestShare,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.collateralDeposited,
+          newPoolStorageAft.poolData.collateralDeposited,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.unclaimedDaoJRT,
+          newPoolStorageAft.poolData.unclaimedDaoJRT,
+        );
+        assert.equal(
+          poolStorageBefore.poolData.unclaimedDaoCommission,
+          newPoolStorageAft.poolData.unclaimedDaoCommission,
+        );
+      });
+    });
   });
 });

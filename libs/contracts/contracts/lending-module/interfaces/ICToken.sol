@@ -6,6 +6,10 @@ pragma solidity ^0.8.9;
 interface ICompoundToken is IERC20 {
   function mint(uint256) external returns (uint256);
 
+  function borrow(uint256) external returns (uint256);
+
+  function repayBorrow(uint256) external returns (uint256);
+
   function exchangeRateCurrent() external returns (uint256);
 
   function supplyRatePerBlock() external returns (uint256);
