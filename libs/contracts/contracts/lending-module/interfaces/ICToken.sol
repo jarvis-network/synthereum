@@ -8,6 +8,8 @@ interface ICompoundToken is IERC20 {
 
   function borrow(uint256) external returns (uint256);
 
+  function borrowBalanceCurrent(address account) external returns (uint256);
+
   function repayBorrow(uint256) external returns (uint256);
 
   function exchangeRateCurrent() external returns (uint256);

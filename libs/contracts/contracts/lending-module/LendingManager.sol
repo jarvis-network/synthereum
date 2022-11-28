@@ -636,6 +636,8 @@ contract LendingManager is
       ILendingStorageManager.LendingInfo memory lendingInfo
     ) = poolStorageManager.getPoolData(_pool);
 
+    require(_collateralAmount <= poolData.unclaimedDaoCommission);
+
     // trigger transfer of funds from _pool
     (uint256 interestTokenAmount, ) =
       collateralToInterestToken(_pool, _collateralAmount);

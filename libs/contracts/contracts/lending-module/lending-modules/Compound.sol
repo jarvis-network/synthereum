@@ -38,7 +38,6 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get tokens balance before
     uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
-    uint256 balanceBefore = collateral.balanceOf(address(this));
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -54,15 +53,19 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     uint256 success = cToken.mint(_amount);
     require(success == 0, 'Failed mint');
 
-    // get tokens balance before
     uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
-    uint256 balanceAfter = collateral.balanceOf(address(this));
 
     // set return values
     tokensTransferred = cTokenBalanceAfter - cTokenBalanceBefore;
-    tokensOut = balanceBefore - balanceAfter;
 
+    // transfer cToken to pool
     cToken.transfer(msg.sender, tokensTransferred);
+    tokensOut = _interestTokenToCollateral(
+      tokensTransferred,
+      address(collateral),
+      address(cToken),
+      _lendingArgs
+    );
   }
 
   function withdraw(
@@ -84,31 +87,37 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get balance of collateral before redeeming
     IERC20 collateralToken = IERC20(_poolData.collateral);
-    uint256 balanceBefore = collateralToken.balanceOf(address(this));
-    uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
+
+    uint256 collAmount =
+      _interestTokenToCollateral(
+        _cTokenAmount,
+        address(collateralToken),
+        address(cToken),
+        _lendingArgs
+      );
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
       _pool,
       _poolData,
-      _cTokenAmount,
+      collAmount,
       cToken,
       false
     );
 
-    uint256 success = cToken.redeem(_cTokenAmount);
-    require(success == 0, 'Failed withdraw');
+    // get balances before redeeming
+    uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
+    require(cToken.redeem(_cTokenAmount) == 0, 'Failed withdraw');
 
-    // get balance of collateral after redeeming
-    uint256 balanceAfter = collateralToken.balanceOf(address(this));
+    // get balances after redeeming
     uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
 
     // set return values
-    tokensOut = balanceAfter - balanceBefore;
+    tokensOut = collAmount;
     tokensTransferred = cTokenBalanceBefore - cTokenBalanceAfter;
 
     // transfer underlying
-    IERC20(address(cToken)).safeTransfer(_pool, tokensOut);
+    collateralToken.safeTransfer(_recipient, tokensOut);
   }
 
   function totalTransfer(
@@ -190,10 +199,24 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _interestToken,
     bytes calldata _extraArgs
   ) external view returns (uint256 collateralAmount) {
+    return
+      _interestTokenToCollateral(
+        _interestTokenAmount,
+        _collateral,
+        _interestToken,
+        _extraArgs
+      );
+  }
+
+  function _interestTokenToCollateral(
+    uint256 _interestTokenAmount,
+    address _collateral,
+    address _interestToken,
+    bytes calldata _extraArgs
+  ) internal view returns (uint256 collateralAmount) {
     (, , , uint256 excMantissa) =
       ICompoundToken(_interestToken).getAccountSnapshot(address(this));
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
-
     return mul_ScalarTruncate(exchangeRate, _interestTokenAmount);
   }
 
