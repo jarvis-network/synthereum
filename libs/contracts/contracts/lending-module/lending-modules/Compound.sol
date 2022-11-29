@@ -12,6 +12,7 @@ import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import 'hardhat/console.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
@@ -60,12 +61,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // transfer cToken to pool
     cToken.transfer(msg.sender, tokensTransferred);
-    tokensOut = _interestTokenToCollateral(
-      tokensTransferred,
-      address(collateral),
-      address(cToken),
-      _lendingArgs
-    );
+    tokensOut = _amount;
   }
 
   function withdraw(
@@ -85,7 +81,6 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     // initialise compound interest token
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
-    // get balance of collateral before redeeming
     IERC20 collateralToken = IERC20(_poolData.collateral);
 
     uint256 collAmount =
@@ -106,15 +101,17 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     );
 
     // get balances before redeeming
-    uint256 cTokenBalanceBefore = cToken.balanceOf(address(this));
+    uint256 collBalanceBefore = collateralToken.balanceOf(address(this));
+
+    // redeem
     require(cToken.redeem(_cTokenAmount) == 0, 'Failed withdraw');
 
     // get balances after redeeming
-    uint256 cTokenBalanceAfter = cToken.balanceOf(address(this));
+    uint256 collBalanceAfter = collateralToken.balanceOf(address(this));
 
     // set return values
     tokensOut = collAmount;
-    tokensTransferred = cTokenBalanceBefore - cTokenBalanceAfter;
+    tokensTransferred = collBalanceAfter - collBalanceBefore;
 
     // transfer underlying
     collateralToken.safeTransfer(_recipient, tokensOut);
@@ -132,7 +129,9 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   {
     prevTotalCollateral = SynthereumPoolMigrationFrom(_oldPool)
       .migrateTotalFunds(_newPool);
-    actualTotalCollateral = IERC20(_interestToken).balanceOf(_newPool);
+    actualTotalCollateral = ICompoundToken(_interestToken).balanceOfUnderlying(
+      _newPool
+    );
   }
 
   // TODO
@@ -231,6 +230,10 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // get current pool total amount of collateral
     poolBalance = _cToken.balanceOfUnderlying(_poolAddress);
+
+    // (, uint256 tokenBalance, , uint256 rate) =
+    //   _cToken.getAccountSnapshot(msg.sender);
+    // poolBalance = tokenBalance * rate / 1e18;
 
     // the total interest is delta between current balance and lastBalance
     totalInterestGenerated = _isDeposit

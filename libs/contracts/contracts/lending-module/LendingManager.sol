@@ -25,6 +25,7 @@ import {
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import 'hardhat/console.sol';
 
 contract LendingManager is
   ILendingManager,
@@ -234,11 +235,12 @@ contract LendingManager is
       );
     uint256 totalAmount;
     for (uint8 i = 0; i < _pools.length; i++) {
-      claimCommission(_pools[i], _amounts[i], recipient);
-      totalAmount += _amounts[i];
+      if (_amounts[i] > 0) {
+        claimCommission(_pools[i], _amounts[i], recipient);
+        totalAmount += _amounts[i];
+      }
     }
 
-    // todo emit event
     emit BatchCommissionClaim(totalAmount, recipient);
   }
 
@@ -636,8 +638,6 @@ contract LendingManager is
       ILendingStorageManager.LendingInfo memory lendingInfo
     ) = poolStorageManager.getPoolData(_pool);
 
-    require(_collateralAmount <= poolData.unclaimedDaoCommission);
-
     // trigger transfer of funds from _pool
     (uint256 interestTokenAmount, ) =
       collateralToInterestToken(_pool, _collateralAmount);
@@ -668,6 +668,7 @@ contract LendingManager is
       );
 
     //update pool storage
+    console.log('LOL', res.tokensOut, interestSplit.commissionInterest);
     poolStorageManager.updateValues(
       _pool,
       poolData.collateralDeposited + interestSplit.poolInterest,
