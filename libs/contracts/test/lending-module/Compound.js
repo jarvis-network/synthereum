@@ -45,22 +45,25 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
   };
 
   const openCDP = async (deposit, borrow, from) => {
-    await getUSDC(toBN(deposit).add(toBN(borrow)).toString(), from);
-    await USDCInstance.approve(cUSDC.address, deposit, { from });
-    await cUSDC.mint(deposit, { from });
-    await cUSDC.borrow(borrow, { from });
-
-    // produce more blocks and interest
-    // await network.provider.send('evm_increaseTime', [
-    //   5,
-    // ]);
-    for (let i = 0; i < 5; i++) {
-      await network.provider.send('evm_mine');
+    for (let i = 0; i < 3; i++) {
+      await getUSDC(toBN(deposit).add(toBN(borrow)).toString(), from);
+      await USDCInstance.approve(cUSDC.address, deposit, { from });
+      await cUSDC.mint(deposit, { from });
+      await cUSDC.borrow(borrow, { from });
+      // produce more blocks and interest
+      // await network.provider.send('evm_increaseTime', [
+      //   1,
+      // ]);
+      // for (let i = 0; i < 3; i++) {
+      //   await network.provider.send('evm_mine');
+      // }
     }
+  };
 
+  const repay = async from => {
     // repay all debt
     let debt = (await cUSDC.borrowBalanceCurrent.call(from)).toString();
-
+    // console.log("REPAY", debt.toString());
     await USDCInstance.increaseAllowance(cUSDC.address, debt, { from });
     await cUSDC.repayBorrow(debt, {
       from,
@@ -181,6 +184,10 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     );
   });
 
+  // beforeEach(async () => {
+  //   await openCDP('1000', '900', accounts[3]);
+  // })
+
   it('Correctly initialise storage', async () => {
     let poolStorage = await storageManager.getPoolData.call(poolMock.address);
     assert.equal(poolStorage.lendingInfo.lendingModule, module.address);
@@ -238,6 +245,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       });
       let exchangeRate = await cUSDC.exchangeRateCurrent.call();
       await poolMock.deposit(amountFirstDeposit, USDC, { from: user });
+      await openCDP(toWei('10', 'mwei'), toWei('9', 'mwei'), accounts[3]);
 
       let poolStorage = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -258,7 +266,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let expectedDeposit = poolUnderlyingAfter.sub(poolUnderlyingBefore);
 
       // check return values to pool
-      assert.equal(
+      assertWeiDifference(
         returnValues.tokensOut.toString(),
         expectedDeposit.toString(),
       );
@@ -313,8 +321,9 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
       );
+      await repay(accounts[3]);
       // borrow on compound to generate interest
-      await openCDP('1000', '900', accounts[3]);
+      await openCDP(toWei('10', 'mwei'), toWei('9', 'mwei'), accounts[3]);
       await poolMock.deposit(amountDeposit, USDC, { from: user });
       let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
       let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
@@ -348,8 +357,9 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       );
 
       let expectedInterest = poolUnderlyingAfter
-        .sub(poolUnderlyingBefore)
-        .sub(toBN(expectedDeposit));
+        .sub(toBN(amountDeposit))
+        .sub(toBN(poolStorageBefore.collateralDeposited));
+
       let expectedDaoInterest = expectedInterest
         .mul(toBN(daoInterestShare))
         .div(toBN(Math.pow(10, 18)));
@@ -454,11 +464,11 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
       );
-      // borrow on compound to generate interest
-      await openCDP('1000', '900', accounts[3]);
       await poolMock.withdraw(amountWithdraw, user, cUSDC.address, {
         from: user,
       });
+      await repay(accounts[3]);
+
       let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
       );
@@ -478,7 +488,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
       let expectedInterest = poolUnderlyingAfter
         .add(toBN(USDCOut))
-        .sub(poolUnderlyingBefore);
+        .sub(toBN(poolStorageBefore.collateralDeposited));
 
       let expectedDaoInterest = expectedInterest
         .mul(toBN(daoInterestShare))
@@ -490,7 +500,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       assert.equal(returnValues.tokensOut.toString(), USDCOut.toString());
       assert.equal(
         returnValues.tokensTransferred.toString(),
-        amountWithdraw.toString(),
+        USDCOut.toString(),
       );
       assert.equal(
         returnValues.poolInterest.toString(),
@@ -566,9 +576,6 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
       );
-
-      // borrow on compound to generate interest
-      await openCDP('1000', '900', accounts[3]);
 
       // sets recipient
       let commissionReceiver = accounts[4];
@@ -672,7 +679,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       // claim commission
       let amount = (await storageManager.getPoolStorage.call(poolMock.address))
         .unclaimedDaoCommission;
-      amount = toBN(amount).muln(2);
+      amount = toBN(amount).addn(1);
+
       await truffleAssert.reverts(
         proxy.batchClaimCommission([poolMock.address], [amount], {
           from: maintainer,
@@ -879,7 +887,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         amount,
         { from: user },
       );
-      assert.equal(res.interestTokenAmount.toString(), expectedOut.toString());
+      assert.equal(res.collateralAmount.toString(), expectedOut.toString());
       assert.equal(res.interestTokenAddr.toString(), cUSDC.address);
     });
 
@@ -889,8 +897,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
 
-      // borrow on compound to generate interest
-      await openCDP('1000', '40', accounts[3]);
+      // // borrow on compound to generate interest
+      // await openCDP('1000', '40', accounts[3]);
 
       let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -987,7 +995,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         );
 
         // borrow on compound to generate interest
-        await openCDP('1000', '40', accounts[3]);
+        // await openCDP('1000', '40', accounts[3]);
 
         // deploy new module
         newModule = await LendingModule.new();
@@ -1025,13 +1033,15 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         );
 
         let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
-          poolMock.address,
+          newModule.address,
         );
         let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
         let poolStorage = await storageManager.getPoolData.call(
           poolMock.address,
         );
-        let expectedInterest = poolUnderlyingAfter.sub(poolUnderlyingBefore);
+        let expectedInterest = toBN(poolUnderlyingAfter).sub(
+          toBN(poolStorageBefore.collateralDeposited),
+        );
 
         let expectedDaoInterest = expectedInterest
           .mul(toBN(daoInterestShare))
@@ -1044,7 +1054,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
           returnValues.prevTotalCollateral.toString(),
           poolStorageBefore.collateralDeposited.toString(),
         );
-        assert.equal(
+        assert(
           returnValues.actualTotalCollateral.toString(),
           toBN(poolUnderlyingAfter)
             .sub(toBN(expectedDaoInterest))
@@ -1109,13 +1119,15 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       });
 
       it('Reverts if new bearing token is not set and new lending module reverts', async () => {
+        let newLendingInfo = {
+          lendingModule: proxy.address,
+          args: '0x0000',
+        };
+        await proxy.setLendingModule('test', newLendingInfo, {
+          from: maintainer,
+        });
         await truffleAssert.reverts(
-          poolMock.migrateLendingModule(
-            cUSDC.address,
-            'badlendingInfo',
-            ZERO_ADDRESS,
-            1,
-          ),
+          poolMock.migrateLendingModule(cUSDC.address, 'test', ZERO_ADDRESS, 1),
           'No bearing token passed',
         );
       });
