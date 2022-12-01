@@ -12,7 +12,6 @@ import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
-import 'hardhat/console.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
@@ -61,7 +60,12 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     // transfer cToken to pool
     cToken.transfer(msg.sender, tokensTransferred);
-    tokensOut = _amount;
+
+    uint256 collateralBalanceAfter = cToken.balanceOfUnderlying(msg.sender);
+    tokensOut =
+      collateralBalanceAfter -
+      _poolData.collateralDeposited -
+      totalInterest;
   }
 
   function withdraw(
@@ -83,13 +87,9 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     IERC20 collateralToken = IERC20(_poolData.collateral);
 
-    uint256 collAmount =
-      _interestTokenToCollateral(
-        _cTokenAmount,
-        address(collateralToken),
-        address(cToken),
-        _lendingArgs
-      );
+    // determine collateral amount to w
+    Exp memory exchangeRate = Exp({mantissa: cToken.exchangeRateCurrent()});
+    uint256 collAmount = mul_ScalarTruncate(exchangeRate, _cTokenAmount);
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -114,7 +114,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     tokensTransferred = collBalanceAfter - collBalanceBefore;
 
     // transfer underlying
-    collateralToken.safeTransfer(_recipient, tokensOut);
+    collateralToken.safeTransfer(_recipient, tokensTransferred);
   }
 
   function totalTransfer(
@@ -127,8 +127,12 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     external
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
   {
-    prevTotalCollateral = SynthereumPoolMigrationFrom(_oldPool)
-      .migrateTotalFunds(_newPool);
+    uint256 prevTotalcTokens =
+      SynthereumPoolMigrationFrom(_oldPool).migrateTotalFunds(_newPool);
+    Exp memory exchangeRate =
+      Exp({mantissa: ICompoundToken(_interestToken).exchangeRateCurrent()});
+    prevTotalCollateral = mul_ScalarTruncate(exchangeRate, prevTotalcTokens);
+
     actualTotalCollateral = ICompoundToken(_interestToken).balanceOfUnderlying(
       _newPool
     );
@@ -154,11 +158,21 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
 
     uint256 totCollateral = mul_ScalarTruncate(exchangeRate, tokenBalance);
-    totalInterest =
-      totCollateral -
-      _poolData.collateralDeposited -
-      _poolData.unclaimedDaoCommission -
-      _poolData.unclaimedDaoJRT;
+
+    if (
+      totCollateral <=
+      _poolData.collateralDeposited +
+        _poolData.unclaimedDaoCommission +
+        _poolData.unclaimedDaoJRT
+    ) {
+      totalInterest = 0;
+    } else {
+      totalInterest =
+        totCollateral -
+        _poolData.collateralDeposited -
+        _poolData.unclaimedDaoCommission -
+        _poolData.unclaimedDaoJRT;
+    }
   }
 
   function getInterestBearingToken(
@@ -235,16 +249,23 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     //   _cToken.getAccountSnapshot(msg.sender);
     // poolBalance = tokenBalance * rate / 1e18;
 
-    // the total interest is delta between current balance and lastBalance
-    totalInterestGenerated = _isDeposit
-      ? poolBalance -
-        _pool.collateralDeposited -
-        _pool.unclaimedDaoCommission -
-        _pool.unclaimedDaoJRT
-      : poolBalance +
-        _amount -
+    if (!_isDeposit) {
+      if (_pool.collateralDeposited > poolBalance + _amount) {
+        totalInterestGenerated = 0;
+      } else {
+        totalInterestGenerated =
+          poolBalance +
+          _amount -
+          _pool.collateralDeposited -
+          _pool.unclaimedDaoCommission -
+          _pool.unclaimedDaoJRT;
+      }
+    } else {
+      totalInterestGenerated =
+        poolBalance -
         _pool.collateralDeposited -
         _pool.unclaimedDaoCommission -
         _pool.unclaimedDaoJRT;
+    }
   }
 }
