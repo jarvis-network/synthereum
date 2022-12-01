@@ -12,6 +12,18 @@
     }
   },
   "137": {
+    "Compound": [
+      {
+        "id": "midas",
+        "rewardsController": "0x0000000000000000000000000000000000000000",
+        "isEnabled": true
+      },
+      {
+        "id": "ovix",
+        "rewardsController": "0x0000000000000000000000000000000000000000",
+        "isEnabled": true
+      }
+    ],
     "AaveV3": {
       "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
       "rewardsController": "0x0000000000000000000000000000000000000000",

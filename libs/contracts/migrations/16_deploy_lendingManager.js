@@ -1,8 +1,11 @@
+const { fromUtf8 } = require('ethjs-util');
+
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'LendingManager',
   'LendingStorageManager',
   'AaveV3Module',
+  'CompoundModule',
   'UniV2JRTSwapModule',
   'BalancerJRTSwapModule',
 ]);
@@ -17,6 +20,7 @@ async function migrate(deployer, network, accounts) {
     LendingManager,
     LendingStorageManager,
     AaveV3Module,
+    CompoundModule,
     UniV2JRTSwapModule,
     BalancerJRTSwapModule,
   } = migrate.getContracts(artifacts);
@@ -97,6 +101,8 @@ async function migrate(deployer, network, accounts) {
     )
     .send({ from: maintainer });
   console.log('LendingStoargeManager added to SynthereumFinder');
+
+  //AAVE
   if (lendingData[networkId]?.AaveV3?.isEnabled ?? true) {
     await deploy(web3, deployer, network, AaveV3Module, {
       from: keys.deployer,
@@ -121,6 +127,33 @@ async function migrate(deployer, network, accounts) {
       })
       .send({ from: maintainer });
     console.log('AaveV3Module added to LendingManager');
+  }
+
+  // COMPOUND
+  let compoundModules = lendingData[networkId]?.Compound ?? [];
+  for (let i = 0; i < compoundModules.length; i++) {
+    let protocol = lendingData[networkId].Compound[i];
+    if (protocol.isEnabled ?? true) {
+      await deploy(web3, deployer, network, CompoundModule, {
+        from: keys.deployer,
+      });
+      const compoundModule = await getExistingInstance(
+        web3,
+        CompoundModule,
+        '@jarvis-network/synthereum-contracts',
+      );
+      await lendingManager.methods
+        .setLendingModule(protocol.id, {
+          lendingModule: compoundModule.options.address,
+          args: fromUtf8('0000'),
+        })
+        .send({ from: maintainer });
+      console.log(
+        'Compound module with id',
+        protocol.id,
+        'added to LendingManager',
+      );
+    }
   }
 
   // JARVIS TOKEN SWAP MODULES
