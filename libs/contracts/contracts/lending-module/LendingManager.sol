@@ -25,7 +25,6 @@ import {
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import 'hardhat/console.sol';
 
 contract LendingManager is
   ILendingManager,
@@ -457,7 +456,11 @@ contract LendingManager is
 
     // update storage with accumulated interest
     uint256 actualCollateralDeposited =
-      depositRes.tokensOut - newDaoJRT - newDaoCommission;
+      depositRes.tokensOut +
+        interestSplit.poolInterest -
+        newDaoJRT -
+        newDaoCommission;
+
     poolStorageManager.updateValues(
       msg.sender,
       actualCollateralDeposited,
@@ -668,7 +671,6 @@ contract LendingManager is
       );
 
     //update pool storage
-    console.log('LOL', res.tokensOut, interestSplit.commissionInterest);
     poolStorageManager.updateValues(
       _pool,
       poolData.collateralDeposited + interestSplit.poolInterest,
