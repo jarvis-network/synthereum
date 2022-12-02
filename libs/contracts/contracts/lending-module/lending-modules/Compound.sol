@@ -43,7 +43,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     (totalInterest, ) = calculateGeneratedInterest(
       msg.sender,
       _poolData,
-      _amount,
+      0,
       cToken,
       true
     );
@@ -86,16 +86,13 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
     IERC20 collateralToken = IERC20(_poolData.collateral);
-
-    // determine collateral amount to w
-    Exp memory exchangeRate = Exp({mantissa: cToken.exchangeRateCurrent()});
-    uint256 collAmount = mul_ScalarTruncate(exchangeRate, _cTokenAmount);
+    uint256 collateralToWithdraw;
 
     // calculate accrued interest since last operation
-    (totalInterest, ) = calculateGeneratedInterest(
+    (totalInterest, collateralToWithdraw) = calculateGeneratedInterest(
       _pool,
       _poolData,
-      collAmount,
+      _cTokenAmount,
       cToken,
       false
     );
@@ -110,7 +107,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     uint256 collBalanceAfter = collateralToken.balanceOf(address(this));
 
     // set return values
-    tokensOut = collAmount;
+    tokensOut = collateralToWithdraw;
     tokensTransferred = collBalanceAfter - collBalanceBefore;
 
     // transfer underlying
@@ -129,6 +126,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   {
     uint256 prevTotalcTokens =
       SynthereumPoolMigrationFrom(_oldPool).migrateTotalFunds(_newPool);
+
     Exp memory exchangeRate =
       Exp({mantissa: ICompoundToken(_interestToken).exchangeRateCurrent()});
     prevTotalCollateral = mul_ScalarTruncate(exchangeRate, prevTotalcTokens);
@@ -236,36 +234,35 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   function calculateGeneratedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _pool,
-    uint256 _amount,
+    uint256 _cTokenAmount,
     ICompoundToken _cToken,
     bool _isDeposit
-  ) internal returns (uint256 totalInterestGenerated, uint256 poolBalance) {
+  )
+    internal
+    returns (uint256 totalInterestGenerated, uint256 collateralAmount)
+  {
     if (_pool.collateralDeposited == 0) return (0, 0);
 
-    // get current pool total amount of collateral
-    poolBalance = _cToken.balanceOfUnderlying(_poolAddress);
+    // get cToken pool balance and rate
+    Exp memory exchangeRate = Exp({mantissa: _cToken.exchangeRateCurrent()});
+    uint256 cTokenBalancePool = _cToken.balanceOf(_poolAddress);
 
-    // (, uint256 tokenBalance, , uint256 rate) =
-    //   _cToken.getAccountSnapshot(msg.sender);
-    // poolBalance = tokenBalance * rate / 1e18;
-
-    if (!_isDeposit) {
-      if (_pool.collateralDeposited > poolBalance + _amount) {
-        totalInterestGenerated = 0;
-      } else {
-        totalInterestGenerated =
-          poolBalance +
-          _amount -
-          _pool.collateralDeposited -
-          _pool.unclaimedDaoCommission -
-          _pool.unclaimedDaoJRT;
-      }
+    // determine amount of collateral the pool had before this operation
+    uint256 poolBalance;
+    if (_isDeposit) {
+      poolBalance = mul_ScalarTruncate(exchangeRate, cTokenBalancePool);
     } else {
-      totalInterestGenerated =
-        poolBalance -
-        _pool.collateralDeposited -
-        _pool.unclaimedDaoCommission -
-        _pool.unclaimedDaoJRT;
+      poolBalance = mul_ScalarTruncate(
+        exchangeRate,
+        cTokenBalancePool + _cTokenAmount
+      );
+      collateralAmount = mul_ScalarTruncate(exchangeRate, _cTokenAmount);
     }
+
+    totalInterestGenerated =
+      poolBalance -
+      _pool.collateralDeposited -
+      _pool.unclaimedDaoCommission -
+      _pool.unclaimedDaoJRT;
   }
 }
