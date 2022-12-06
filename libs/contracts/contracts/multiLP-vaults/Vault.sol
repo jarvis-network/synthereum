@@ -14,6 +14,9 @@ import {
   ERC20Upgradeable
 } from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import {
+  IMintableBurnableERC20
+} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -29,22 +32,23 @@ contract Vault is
   ReentrancyGuard
 {
   using SafeERC20 for IERC20;
+  using SafeERC20 for IMintableBurnableERC20;
   using PreciseUnitMath for uint256;
 
   function initialize(
-    string memory _lpTokenName,
-    string memory _lpTokenSymbol,
+    address _lpTokenAddress,
     address _pool,
     uint128 _overCollateralization
   ) external override nonReentrant initializer() {
     // vault initialisation
+    lpToken = IMintableBurnableERC20(_lpTokenAddress);
     pool = ISynthereumMLPPool(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
 
-    // erc20 initialisation
-    __ERC20_init(_lpTokenName, _lpTokenSymbol);
-    __ERC20Permit_init(_lpTokenName);
+    // // erc20 initialisation
+    // __ERC20_init(_lpTokenName, _lpTokenSymbol);
+    // __ERC20Permit_init(_lpTokenName);
   }
 
   function deposit(uint256 collateralAmount)
@@ -83,7 +87,7 @@ contract Vault is
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
-      _mint(msg.sender, lpTokensOut);
+      lpToken.mint(msg.sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
@@ -98,7 +102,7 @@ contract Vault is
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
 
-      _mint(msg.sender, lpTokensOut);
+      lpToken.mint(msg.sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
@@ -121,7 +125,8 @@ contract Vault is
     uint256 collateralEquivalent = rate.mul(lpTokensAmount);
 
     // Burn LP tokens of user
-    _burn(msg.sender, lpTokensAmount);
+    lpToken.safeTransferFrom(msg.sender, address(this), lpTokensAmount);
+    lpToken.burn(lpTokensAmount);
 
     // withdraw collateral from pool
     (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
@@ -186,7 +191,7 @@ contract Vault is
     returns (uint256 rate)
   {
     // get LP tokens total supply
-    uint256 totalSupplyLPTokens = totalSupply();
+    uint256 totalSupplyLPTokens = lpToken.totalSupply();
 
     // calculate rate
     rate = totalSupplyLPTokens == 0

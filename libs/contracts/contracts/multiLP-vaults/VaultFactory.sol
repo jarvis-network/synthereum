@@ -34,23 +34,16 @@ contract SynthereumMultiLPVaultFactory is
 
   /**
    * @notice Check if the sender is the deployer and deploy a vault
-   * @param _lpTokenName name of the LP token representing a share in the vault
-   * @param _lpTokenSymbol symbol of the LP token representing a share in the vault
+   * @param _lpToken address of the LP token representing a share in the vault
    * @param _pool address of MultiLP pool the vault interacts with
    * @param _overCollateralization over collateral requirement of the vault position in the pool
    * @return vault Deployed vault
    */
   function createVault(
-    string memory _lpTokenName,
-    string memory _lpTokenSymbol,
+    address _lpToken,
     address _pool,
     uint128 _overCollateralization
   ) public override nonReentrant returns (IVault vault) {
-    vault = super.createVault(
-      _lpTokenName,
-      _lpTokenSymbol,
-      _pool,
-      _overCollateralization
-    );
+    vault = super.createVault(_lpToken, _pool, _overCollateralization);
   }
 }
