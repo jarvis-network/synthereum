@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
+import {BaseVaultStorage} from './BaseVault.sol';
 import {
   ISynthereumMLPPool
 } from '../synthereum-pool/v7/interfaces/IMLPPool.sol';
@@ -21,6 +22,7 @@ import {
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract Vault is
+  BaseVaultStorage,
   IVault,
   ERC20Upgradeable,
   ERC20PermitUpgradeable,
@@ -28,13 +30,6 @@ contract Vault is
 {
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
-
-  // IMintableBurnableERC20 immutable lpToken; // vault LP token
-  ISynthereumMLPPool internal pool; // reference pool
-  IERC20 internal collateralAsset; // reference pool collateral token
-
-  uint128 internal overCollateralization; // overcollateralization of the vault position
-  bool internal isLpActive; // dictates if first deposit on pool or not
 
   function initialize(
     string memory _lpTokenName,
