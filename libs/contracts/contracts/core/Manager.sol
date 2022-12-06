@@ -3,12 +3,26 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
-import {IAccessControlEnumerable} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
+import {
+  IAccessControlEnumerable
+} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {IEmergencyShutdown} from '../common/interfaces/IEmergencyShutdown.sol';
-import {ISynthereumLendingSwitch} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
+import {
+  ISynthereumLendingSwitch
+} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 import {SynthereumInterfaces} from './Constants.sol';
-import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  SynthereumMultiLPVaultFactory
+} from '../multiLP-vaults/VaultFactory.sol';
+import {
+  TransparentUpgradeableProxy
+} from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
 
 contract SynthereumManager is
   ISynthereumManager,
@@ -187,6 +201,60 @@ contract SynthereumManager is
     );
     for (uint256 i; i < numberOfPools; i++) {
       pools[i].switchLendingModule(lendingIds[i], bearingTokens[i]);
+    }
+  }
+
+  /**
+   * @notice Upgrades implementation logic for a set of vault (proxies) to the one stored in vault factory
+   * @param vaults List of vaults
+   * @param params List of encoded params to use for initialisation (leave empty to skip initialisation)
+   */
+  function upgradePublicVault(address[] memory vaults, bytes[] memory params)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    require(vaults.length == params.length, 'Mismatch');
+
+    SynthereumMultiLPVaultFactory vaultFactory =
+      SynthereumMultiLPVaultFactory(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.VaultFactory
+        )
+      );
+    address vaultImplementation = vaultFactory.vaultImplementation();
+
+    for (uint256 i = 0; i < vaults.length; i++) {
+      if (params[i].length == 0) {
+        // upgrade to new implementation
+        TransparentUpgradeableProxy(payable(vaults[i])).upgradeTo(
+          vaultImplementation
+        );
+      } else {
+        // upgrade and initialise with data
+        TransparentUpgradeableProxy(payable(vaults[i])).upgradeToAndCall(
+          vaultImplementation,
+          vaultFactory.encodeInitialiseCall(params[i])
+        );
+      }
+    }
+  }
+
+  /**
+   * @notice Upgrades admin address for a set of vault (proxies)
+   * @param vaults List of vaults
+   * @param admins List of new admins
+   */
+  function changePublicVaultAdmin(
+    address[] memory vaults,
+    address[] memory admins
+  ) external override onlyMaintainer nonReentrant {
+    require(vaults.length == admins.length, 'Mismatch');
+
+    for (uint256 i = 0; i < vaults.length; i++) {
+      // update proxy admin
+      TransparentUpgradeableProxy(payable(vaults[i])).changeAdmin(admins[i]);
     }
   }
 }

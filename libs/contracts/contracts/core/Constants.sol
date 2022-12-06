@@ -26,6 +26,10 @@ library SynthereumInterfaces {
   bytes32 public constant LendingRewardsReceiver = 'LendingRewardsReceiver';
   bytes32 public constant JarvisToken = 'JarvisToken';
   bytes32 public constant DebtTokenFactory = 'DebtTokenFactory';
+  bytes32 public constant JarvisBrrrrr = 'JarvisBrrrrr';
+  bytes32 public constant MoneyMarketManager = 'MoneyMarketManager';
+  bytes32 public constant TrustedForwarder = 'TrustedForwarder';
+  bytes32 public constant VaultFactory = 'VaultFactory';
 }
 
 library FactoryInterfaces {

@@ -22,16 +22,14 @@ contract SynthereumMultiLPVaultFactory is
   SynthereumMultiLPVaultCreator
 {
   bytes4 public immutable override deploymentSignature;
-  ISynthereumFinder immutable synthereumFinder;
 
   /**
    * @param _vaultImplementation Address of the deployed vault implementation used for EIP1167
    */
   constructor(address _vaultImplementation, address _synthereumFinder)
-    SynthereumMultiLPVaultCreator(_vaultImplementation)
+    SynthereumMultiLPVaultCreator(_vaultImplementation, _synthereumFinder)
   {
     deploymentSignature = this.createVault.selector;
-    synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
   /**
@@ -48,15 +46,6 @@ contract SynthereumMultiLPVaultFactory is
     address _pool,
     uint128 _overCollateralization
   ) public override nonReentrant returns (IVault vault) {
-    ISynthereumMultiLpLiquidityPool pool =
-      ISynthereumMultiLpLiquidityPool(_pool);
-
-    checkDeploymentConditions(
-      synthereumFinder,
-      IStandardERC20(address(pool.collateralToken())),
-      pool.priceFeedIdentifier()
-    );
-
     vault = super.createVault(
       _lpTokenName,
       _lpTokenSymbol,

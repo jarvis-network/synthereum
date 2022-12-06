@@ -2,8 +2,8 @@
 pragma solidity 0.8.9;
 
 import {
-  ISynthereumMultiLpLiquidityPool
-} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
+  ISynthereumMLPPool
+} from '../synthereum-pool/v7/interfaces/IMLPPool.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {
@@ -30,7 +30,7 @@ contract Vault is
   using PreciseUnitMath for uint256;
 
   // IMintableBurnableERC20 immutable lpToken; // vault LP token
-  ISynthereumMultiLpLiquidityPool internal pool; // reference pool
+  ISynthereumMLPPool internal pool; // reference pool
   IERC20 internal collateralAsset; // reference pool collateral token
 
   uint128 internal overCollateralization; // overcollateralization of the vault position
@@ -43,7 +43,7 @@ contract Vault is
     uint128 _overCollateralization
   ) external override nonReentrant initializer() {
     // vault initialisation
-    pool = ISynthereumMultiLpLiquidityPool(_pool);
+    pool = ISynthereumMLPPool(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
 
@@ -66,7 +66,7 @@ contract Vault is
     collateralAsset.safeApprove(address(pool), collateralAmount);
 
     // retrieve updated vault position on pool
-    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
+    ISynthereumMLPPool.LPInfo memory vaultPosition =
       pool.positionLPInfo(address(this));
 
     // deposit collateral (activate if first deposit) into pool and trigger positions update
@@ -149,7 +149,7 @@ contract Vault is
     override
     returns (uint256 discountedRate, uint256 maxCollateralDiscounted)
   {
-    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition =
+    ISynthereumMLPPool.LPInfo memory vaultPosition =
       pool.positionLPInfo(address(this));
 
     // return zeros if not in discount state
@@ -200,7 +200,7 @@ contract Vault is
   }
 
   function calculateDiscountedRate(
-    ISynthereumMultiLpLiquidityPool.LPInfo memory vaultPosition
+    ISynthereumMLPPool.LPInfo memory vaultPosition
   )
     internal
     view

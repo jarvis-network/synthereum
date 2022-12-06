@@ -55,4 +55,22 @@ interface ISynthereumManager {
     string[] calldata lendingIds,
     address[] calldata bearingTokens
   ) external;
+
+  /**
+   * @notice Upgrades implementation logic for a set of vault (proxies) to the one stored in vault factory
+   * @param vaults List of vaults
+   * @param params List of encoded params to use for initialisation (leave empty to skip initialisation)
+   */
+  function upgradePublicVault(address[] memory vaults, bytes[] memory params)
+    external;
+
+  /**
+   * @notice Upgrades admin address for a set of vault (proxies)
+   * @param vaults List of vaults
+   * @param admins List of new admins
+   */
+  function changePublicVaultAdmin(
+    address[] memory vaults,
+    address[] memory admins
+  ) external;
 }
