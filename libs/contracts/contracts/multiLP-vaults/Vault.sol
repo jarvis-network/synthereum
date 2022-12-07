@@ -2,17 +2,15 @@
 pragma solidity 0.8.9;
 
 import {BaseVaultStorage} from './BaseVault.sol';
-import {
-  ISynthereumMLPPool
-} from '../synthereum-pool/v7/interfaces/IMLPPool.sol';
+import {IPoolVault} from './interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
-import {
-  ERC20PermitUpgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
-import {
-  ERC20Upgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+// import {
+//   ERC20PermitUpgradeable
+// } from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
+// import {
+//   ERC20Upgradeable
+// } from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import {
   IMintableBurnableERC20
 } from '../tokens/interfaces/IMintableBurnableERC20.sol';
@@ -23,14 +21,11 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {
+  Initializable
+} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 
-contract Vault is
-  BaseVaultStorage,
-  IVault,
-  ERC20Upgradeable,
-  ERC20PermitUpgradeable,
-  ReentrancyGuard
-{
+contract Vault is BaseVaultStorage, IVault, Initializable, ReentrancyGuard {
   using SafeERC20 for IERC20;
   using SafeERC20 for IMintableBurnableERC20;
   using PreciseUnitMath for uint256;
@@ -42,7 +37,7 @@ contract Vault is
   ) external override nonReentrant initializer() {
     // vault initialisation
     lpToken = IMintableBurnableERC20(_lpTokenAddress);
-    pool = ISynthereumMLPPool(_pool);
+    pool = IPoolVault(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
 
@@ -65,8 +60,7 @@ contract Vault is
     collateralAsset.safeApprove(address(pool), collateralAmount);
 
     // retrieve updated vault position on pool
-    ISynthereumMLPPool.LPInfo memory vaultPosition =
-      pool.positionLPInfo(address(this));
+    IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
 
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
@@ -149,8 +143,7 @@ contract Vault is
     override
     returns (uint256 discountedRate, uint256 maxCollateralDiscounted)
   {
-    ISynthereumMLPPool.LPInfo memory vaultPosition =
-      pool.positionLPInfo(address(this));
+    IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
 
     // return zeros if not in discount state
     if (vaultPosition.isOvercollateralized) {
@@ -199,9 +192,7 @@ contract Vault is
       : positionCollateralAmount.div(totalSupplyLPTokens);
   }
 
-  function calculateDiscountedRate(
-    ISynthereumMLPPool.LPInfo memory vaultPosition
-  )
+  function calculateDiscountedRate(IPoolVault.LPInfo memory vaultPosition)
     internal
     view
     returns (
