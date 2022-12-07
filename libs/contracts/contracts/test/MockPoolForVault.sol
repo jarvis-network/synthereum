@@ -4,13 +4,11 @@ pragma solidity 0.8.9;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
 import {PoolMock} from './PoolMock.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
+import {IPoolVault} from '../multiLP-vaults/interfaces/IPoolVault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 
-contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
-  LPInfo public position; // vault position
+contract PoolMockForVault is IPoolVault {
+  IPoolVault.LPInfo public position; // vault position
 
   uint8 private poolVersion;
   IERC20 private collateralCurrency;
@@ -31,13 +29,6 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     token = _syntheticToken;
     priceId = id;
   }
-
-  function initialize(InitializationParams calldata _params)
-    external
-    override
-  {}
-
-  function registerLP(address _lp) external override {}
 
   function activateLP(uint256 _collateralAmount, uint128 _overCollateralization)
     external
@@ -97,10 +88,7 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     position.isOvercollateralized = isCollateralised;
   }
 
-  function setOvercollateralization(uint128 _overCollateralization)
-    external
-    override
-  {
+  function setOvercollateralization(uint128 _overCollateralization) external {
     position.overCollateralization = _overCollateralization;
   }
 
@@ -108,144 +96,28 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
     position.utilization = utilization;
   }
 
-  function mint(MintParams calldata mintParams)
-    external
-    override
-    returns (uint256 syntheticTokensMinted, uint256 feePaid)
-  {}
-
-  function redeem(RedeemParams calldata redeemParams)
-    external
-    override
-    returns (uint256 collateralRedeemed, uint256 feePaid)
-  {}
-
-  function liquidate(address lp, uint256 numSynthTokens)
-    external
-    override
-    returns (uint256)
-  {}
-
-  function updatePositions() external override {}
-
-  function transferToLendingManager(uint256 _bearingAmount) external {}
-
-  function setLiquidationReward(uint64 _newLiquidationReward)
-    external
-    override
-  {}
-
-  function setFee(uint64 _fee) external {}
-
-  function getRegisteredLPs()
-    external
-    view
-    override
-    returns (address[] memory lps)
-  {}
-
-  function getActiveLPs()
-    external
-    view
-    override
-    returns (address[] memory lps)
-  {}
-
-  function isRegisteredLP(address _lp)
-    external
-    view
-    override
-    returns (bool isRegistered)
-  {}
-
-  function isActiveLP(address _lp)
-    external
-    view
-    override
-    returns (bool isActive)
-  {}
-
-  function totalSyntheticTokens()
-    external
-    view
-    override
-    returns (uint256 totalTokens)
-  {}
-
-  function totalCollateralAmount()
-    external
-    view
-    override
-    returns (
-      uint256 usersCollateral,
-      uint256 lpsCollateral,
-      uint256 totalCollateral
-    )
-  {}
-
   function positionLPInfo(address _lp)
     external
     view
     override
-    returns (LPInfo memory info)
+    returns (IPoolVault.LPInfo memory info)
   {
     info = position;
   }
 
-  function lendingProtocolInfo()
-    external
-    view
-    override
-    returns (string memory lendingId, address bearingToken)
-  {}
-
-  function collateralTokenDecimals() external view override returns (uint8) {}
-
-  function collateralRequirement()
-    external
-    view
-    override
-    returns (uint256 requirement)
-  {}
-
-  function liquidationReward()
-    external
-    view
-    override
-    returns (uint256 reward)
-  {}
-
-  function priceFeedIdentifier()
-    external
-    view
-    override
-    returns (bytes32 identifier)
-  {
+  function priceFeedIdentifier() external view returns (bytes32 identifier) {
     identifier = priceId;
-  }
-
-  function feePercentage() external view override returns (uint256 fee) {}
-
-  function typology() external view override returns (string memory) {}
-
-  function version() external view returns (uint8) {
-    return poolVersion;
   }
 
   function collateralToken() external view override returns (IERC20) {
     return collateralCurrency;
   }
 
-  function syntheticTokenSymbol()
-    external
-    view
-    override
-    returns (string memory)
-  {
+  function syntheticTokenSymbol() external view returns (string memory) {
     return tokenSymbol;
   }
 
-  function syntheticToken() external view override returns (IERC20) {
+  function syntheticToken() external view returns (IERC20) {
     return token;
   }
 
@@ -256,32 +128,4 @@ contract PoolMockForVault is ISynthereumMultiLpLiquidityPool {
   {
     return ISynthereumPriceFeed(priceFeed).getLatestPrice(identifier);
   }
-
-  function getMintTradeInfo(uint256 _collateralAmount)
-    external
-    view
-    override
-    returns (uint256 synthTokensReceived, uint256 feePaid)
-  {}
-
-  function getRedeemTradeInfo(uint256 _syntTokensAmount)
-    external
-    view
-    override
-    returns (uint256 collateralAmountReceived, uint256 feePaid)
-  {}
-
-  function maxTokensCapacity()
-    external
-    view
-    override
-    returns (uint256 maxCapacity)
-  {}
-
-  function synthereumFinder()
-    external
-    view
-    override
-    returns (ISynthereumFinder finder)
-  {}
 }
