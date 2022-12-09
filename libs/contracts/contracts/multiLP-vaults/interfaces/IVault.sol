@@ -19,11 +19,13 @@ interface IVault {
 
   /**
    * @notice Initialize vault as per OZ Clones pattern
-   * @param _lpToken address of the LP token representing a share in the vault
+   * @param _lpTokenName name of the LP token representing a share in the vault
+   * @param _lpTokenSymbol symbol of the LP token representing a share in the vault
    * @param _pool address of MultiLP pool the vault interacts with
    * @param _overCollateralization over collateral requirement of the vault position in the pool   */
   function initialize(
-    address _lpToken,
+    string memory _lpTokenName,
+    string memory _lpTokenSymbol,
     address _pool,
     uint128 _overCollateralization
   ) external;

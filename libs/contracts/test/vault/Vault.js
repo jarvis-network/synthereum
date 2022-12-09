@@ -92,13 +92,14 @@ contract('Lending Vault', accounts => {
 
     vault = await Vault.new();
     await vault.initialize(
-      lpToken.address,
+      LPName,
+      LPSymbol,
       pool.address,
       overCollateralization,
     );
 
-    await lpToken.addMinter(vault.address, { from: accounts[0] });
-    await lpToken.addBurner(vault.address, { from: accounts[0] });
+    // await lpToken.addMinter(vault.address, { from: accounts[0] });
+    // await lpToken.addBurner(vault.address, { from: accounts[0] });
 
     factoryVault = await VaultFactory.new(vault.address, finder.address);
 
@@ -119,14 +120,14 @@ contract('Lending Vault', accounts => {
         (await vault.getOvercollateralisation.call()).toString(),
         overCollateralization.toString(),
       );
-      assert.equal(await lpToken.name.call(), LPName);
-      assert.equal(await lpToken.symbol.call(), LPSymbol);
+      assert.equal(await vault.name.call(), LPName);
+      assert.equal(await vault.symbol.call(), LPSymbol);
       assert.equal((await vault.getRate.call()).toString(), toWei('1'));
     });
 
     it('Revert if another initialization is tried', async () => {
       await truffleAssert.reverts(
-        vault.initialize(lpToken.address, pool.address, overCollateralization),
+        vault.initialize(LPName, LPSymbol, pool.address, overCollateralization),
         'Initializable: contract is already initialized',
       );
     });
@@ -154,13 +155,15 @@ contract('Lending Vault', accounts => {
         let symbol = 'fcv';
         let overCollateralization = toWei('0.1');
         let vaultAddr = await factoryVault.createVault.call(
-          lpToken.address,
+          LPName,
+          LPSymbol,
           pool.address,
           overCollateralization,
           { from: accounts[0] },
         );
         let tx = await factoryVault.createVault(
-          lpToken.address,
+          LPName,
+          LPSymbol,
           pool.address,
           overCollateralization,
           { from: accounts[0] },
@@ -186,7 +189,8 @@ contract('Lending Vault', accounts => {
       it('Revert if sender is not synthereum deployer', async () => {
         await truffleAssert.reverts(
           factoryVault.createVault(
-            lpToken.address,
+            LPName,
+            LPSymbol,
             pool.address,
             overCollateralization,
             { from: accounts[1] },
@@ -196,7 +200,7 @@ contract('Lending Vault', accounts => {
       });
       it('Revert with 0 overcollateralisation specified', async () => {
         await truffleAssert.reverts(
-          factoryVault.createVault(lpToken.address, pool.address, 0, {
+          factoryVault.createVault(LPName, LPSymbol, pool.address, 0, {
             from: accounts[0],
           }),
           'Overcollateral requirement must be bigger than 0%',
@@ -214,7 +218,7 @@ contract('Lending Vault', accounts => {
 
       it('First deposit - activates LP and correctly deposit', async () => {
         let userBalanceBefore = await USDC.balanceOf.call(user1);
-        let userLPBalanceBefore = await lpToken.balanceOf.call(user1);
+        let userLPBalanceBefore = await vault.balanceOf.call(user1);
         assert.equal(userLPBalanceBefore.toString(), '0');
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
@@ -245,7 +249,7 @@ contract('Lending Vault', accounts => {
 
         // check
         let userBalanceAfter = await USDC.balanceOf.call(user1);
-        let userLPBalanceAfter = await lpToken.balanceOf.call(user1);
+        let userLPBalanceAfter = await vault.balanceOf.call(user1);
         let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
 
         assert.equal(
@@ -269,7 +273,7 @@ contract('Lending Vault', accounts => {
 
       it('Rate unchanged - user 2 deposit - correctly mint LP tokens', async () => {
         let userBalanceBefore = await USDC.balanceOf.call(user2);
-        let userLPBalanceBefore = await lpToken.balanceOf.call(user2);
+        let userLPBalanceBefore = await vault.balanceOf.call(user2);
         assert.equal(userLPBalanceBefore.toString(), '0');
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
@@ -295,7 +299,7 @@ contract('Lending Vault', accounts => {
 
         // check
         let userBalanceAfter = await USDC.balanceOf.call(user2);
-        let userLPBalanceAfter = await lpToken.balanceOf.call(user2);
+        let userLPBalanceAfter = await vault.balanceOf.call(user2);
         let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
 
         assert.equal(
@@ -320,7 +324,7 @@ contract('Lending Vault', accounts => {
       it('Changed rate, new deposit', async () => {
         assert.equal((await vault.getRate.call()).toString(), toWei('1'));
 
-        let LPTotalSupply = await lpToken.totalSupply.call();
+        let LPTotalSupply = await vault.totalSupply.call();
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
@@ -349,7 +353,7 @@ contract('Lending Vault', accounts => {
 
         // deposit
         let userBalanceBefore = await USDC.balanceOf.call(user3);
-        let userLPBalanceBefore = await lpToken.balanceOf.call(user3);
+        let userLPBalanceBefore = await vault.balanceOf.call(user3);
         assert.equal(userLPBalanceBefore.toString(), '0');
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
@@ -378,9 +382,9 @@ contract('Lending Vault', accounts => {
 
         // check
         let userBalanceAfter = await USDC.balanceOf.call(user3);
-        let userLPBalanceAfter = await lpToken.balanceOf.call(user3);
+        let userLPBalanceAfter = await vault.balanceOf.call(user3);
         let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
-        let LPTotalSupplyAfter = await lpToken.totalSupply.call();
+        let LPTotalSupplyAfter = await vault.totalSupply.call();
 
         assert.equal(
           LPTotalSupplyAfter.toString(),
@@ -476,11 +480,11 @@ contract('Lending Vault', accounts => {
 
         let purchaseAmount = toBN(maxCollateralAtDiscount).divn(2);
 
-        let LPTotalSupply = await lpToken.totalSupply.call();
+        let LPTotalSupply = await vault.totalSupply.call();
 
         // deposit
         let userBalanceBefore = await USDC.balanceOf.call(user4);
-        let userLPBalanceBefore = await lpToken.balanceOf.call(user4);
+        let userLPBalanceBefore = await vault.balanceOf.call(user4);
         assert.equal(userLPBalanceBefore.toString(), '0');
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
@@ -507,9 +511,9 @@ contract('Lending Vault', accounts => {
 
         // check
         let userBalanceAfter = await USDC.balanceOf.call(user4);
-        let userLPBalanceAfter = await lpToken.balanceOf.call(user4);
+        let userLPBalanceAfter = await vault.balanceOf.call(user4);
         let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
-        let LPTotalSupplyAfter = await lpToken.totalSupply.call();
+        let LPTotalSupplyAfter = await vault.totalSupply.call();
 
         assert.equal(
           LPTotalSupplyAfter.toString(),
@@ -581,11 +585,11 @@ contract('Lending Vault', accounts => {
 
         let purchaseAmount = toBN(maxCollateralAtDiscount).muln(2);
 
-        let LPTotalSupply = await lpToken.totalSupply.call();
+        let LPTotalSupply = await vault.totalSupply.call();
 
         // deposit
         let userBalanceBefore = await USDC.balanceOf.call(user5);
-        let userLPBalanceBefore = await lpToken.balanceOf.call(user5);
+        let userLPBalanceBefore = await vault.balanceOf.call(user5);
         assert.equal(userLPBalanceBefore.toString(), '0');
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
@@ -621,9 +625,9 @@ contract('Lending Vault', accounts => {
 
         // check
         let userBalanceAfter = await USDC.balanceOf.call(user5);
-        let userLPBalanceAfter = await lpToken.balanceOf.call(user5);
+        let userLPBalanceAfter = await vault.balanceOf.call(user5);
         let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
-        let LPTotalSupplyAfter = await lpToken.totalSupply.call();
+        let LPTotalSupplyAfter = await vault.totalSupply.call();
 
         assert.equal(
           LPTotalSupplyAfter.toString(),
@@ -663,8 +667,8 @@ contract('Lending Vault', accounts => {
 
   describe('Withdraw', () => {
     it('Correctly calculate collateral to withdraw - burn LP tokens', async () => {
-      let userLPBefore = await lpToken.balanceOf.call(user1);
-      let totalSupplyLPBefore = await lpToken.totalSupply.call();
+      let userLPBefore = await vault.balanceOf.call(user1);
+      let totalSupplyLPBefore = await vault.totalSupply.call();
       let userCollateralBefore = await USDC.balanceOf.call(user1);
 
       let actualCollateralAmount = (
@@ -682,7 +686,7 @@ contract('Lending Vault', accounts => {
         .mul(LPInput)
         .div(toBN(Math.pow(10, 18)));
 
-      await lpToken.approve(vault.address, LPInput, { from: user1 });
+      // await lpToken.approve(vault.address, LPInput, { from: user1 });
       let tx = await vault.withdraw(LPInput, { from: user1 });
 
       // check event
@@ -694,8 +698,8 @@ contract('Lending Vault', accounts => {
         );
       });
 
-      let userLPAfter = await lpToken.balanceOf.call(user1);
-      let totalSupplyLPAfter = await lpToken.totalSupply.call();
+      let userLPAfter = await vault.balanceOf.call(user1);
+      let totalSupplyLPAfter = await vault.totalSupply.call();
       let userCollateralAfter = await USDC.balanceOf.call(user1);
 
       let expectedUserLP = userLPBefore.sub(LPInput);

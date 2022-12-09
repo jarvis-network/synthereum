@@ -5,15 +5,12 @@ import {BaseVaultStorage} from './BaseVault.sol';
 import {IPoolVault} from './interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
-// import {
-//   ERC20PermitUpgradeable
-// } from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
-// import {
-//   ERC20Upgradeable
-// } from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import {
-  IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+  ERC20PermitUpgradeable
+} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
+import {
+  ERC20Upgradeable
+} from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -21,29 +18,31 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  Initializable
-} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 
-contract Vault is BaseVaultStorage, IVault, Initializable, ReentrancyGuard {
+contract Vault is
+  BaseVaultStorage,
+  IVault,
+  ERC20Upgradeable,
+  ERC20PermitUpgradeable,
+  ReentrancyGuard
+{
   using SafeERC20 for IERC20;
-  using SafeERC20 for IMintableBurnableERC20;
   using PreciseUnitMath for uint256;
 
   function initialize(
-    address _lpTokenAddress,
+    string memory _lpTokenName,
+    string memory _lpTokenSymbol,
     address _pool,
     uint128 _overCollateralization
   ) external override nonReentrant initializer() {
     // vault initialisation
-    lpToken = IMintableBurnableERC20(_lpTokenAddress);
     pool = IPoolVault(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
 
     // // erc20 initialisation
-    // __ERC20_init(_lpTokenName, _lpTokenSymbol);
-    // __ERC20Permit_init(_lpTokenName);
+    __ERC20_init(_lpTokenName, _lpTokenSymbol);
+    __ERC20Permit_init(_lpTokenName);
   }
 
   function deposit(uint256 collateralAmount)
@@ -81,7 +80,7 @@ contract Vault is BaseVaultStorage, IVault, Initializable, ReentrancyGuard {
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
-      lpToken.mint(msg.sender, lpTokensOut);
+      _mint(msg.sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
@@ -96,7 +95,7 @@ contract Vault is BaseVaultStorage, IVault, Initializable, ReentrancyGuard {
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
 
-      lpToken.mint(msg.sender, lpTokensOut);
+      _mint(msg.sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
@@ -119,8 +118,7 @@ contract Vault is BaseVaultStorage, IVault, Initializable, ReentrancyGuard {
     uint256 collateralEquivalent = rate.mul(lpTokensAmount);
 
     // Burn LP tokens of user
-    lpToken.safeTransferFrom(msg.sender, address(this), lpTokensAmount);
-    lpToken.burn(lpTokensAmount);
+    _burn(msg.sender, lpTokensAmount);
 
     // withdraw collateral from pool
     (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
@@ -184,7 +182,7 @@ contract Vault is BaseVaultStorage, IVault, Initializable, ReentrancyGuard {
     returns (uint256 rate)
   {
     // get LP tokens total supply
-    uint256 totalSupplyLPTokens = lpToken.totalSupply();
+    uint256 totalSupplyLPTokens = totalSupply();
 
     // calculate rate
     rate = totalSupplyLPTokens == 0

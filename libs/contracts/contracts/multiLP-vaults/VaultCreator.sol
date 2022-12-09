@@ -25,15 +25,20 @@ contract SynthereumMultiLPVaultCreator {
   }
 
   function createVault(
-    address _lpToken,
+    string memory _lpTokenName,
+    string memory _lpTokenSymbol,
     address _pool,
     uint128 _overCollateralization
   ) public virtual returns (IVault vault) {
-    require(_lpToken != address(0), 'Missing lp token');
+    require(bytes(_lpTokenName).length != 0, 'Missing LP token name');
+    require(bytes(_lpTokenSymbol).length != 0, 'Missing LP token symbol');
     require(
       _overCollateralization > 0,
       'Overcollateral requirement must be bigger than 0%'
     );
+
+    // bytes memory encodedParams =
+    //   encodeParams(_lpTokenName, _lpTokenSymbol, _pool, _overCollateralization);
 
     // deploy a transparent upgradable proxy and initialize implementation
     address vaultProxy =
@@ -45,7 +50,8 @@ contract SynthereumMultiLPVaultCreator {
           ),
           abi.encodeWithSelector(
             IVault.initialize.selector,
-            _lpToken,
+            _lpTokenName,
+            _lpTokenName,
             _pool,
             _overCollateralization
           )
@@ -58,34 +64,37 @@ contract SynthereumMultiLPVaultCreator {
   }
 
   function encodeParams(
-    address _lpToken,
+    string memory _lpTokenName,
+    string memory _lpTokenSymbol,
     address _pool,
     uint128 _overCollateralization
   ) public returns (bytes memory encoded) {
-    return abi.encode(_lpToken, _pool, _overCollateralization);
+    return
+      abi.encode(_lpTokenName, _lpTokenSymbol, _pool, _overCollateralization);
   }
 
   function decodeParams(bytes memory encodedParams)
     public
     returns (
-      address,
+      string memory,
+      string memory,
       address,
       uint128
     )
   {
-    return abi.decode(encodedParams, (address, address, uint128));
+    return abi.decode(encodedParams, (string, string, address, uint128));
   }
 
   function encodeInitialiseCall(bytes memory encodedParams)
     public
     returns (bytes memory encodedCall)
   {
-    (address lpToken, address pool, uint128 overColl) =
+    (string memory name, string memory symbol, address pool, uint128 overColl) =
       decodeParams(encodedParams);
-
     encodedCall = abi.encodeWithSelector(
       IVault.initialize.selector,
-      lpToken,
+      name,
+      symbol,
       pool,
       overColl
     );
