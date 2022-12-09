@@ -37,9 +37,6 @@ contract SynthereumMultiLPVaultCreator {
       'Overcollateral requirement must be bigger than 0%'
     );
 
-    // bytes memory encodedParams =
-    //   encodeParams(_lpTokenName, _lpTokenSymbol, _pool, _overCollateralization);
-
     // deploy a transparent upgradable proxy and initialize implementation
     address vaultProxy =
       address(
@@ -51,7 +48,7 @@ contract SynthereumMultiLPVaultCreator {
           abi.encodeWithSelector(
             IVault.initialize.selector,
             _lpTokenName,
-            _lpTokenName,
+            _lpTokenSymbol,
             _pool,
             _overCollateralization
           )
