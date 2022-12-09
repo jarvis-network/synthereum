@@ -18,14 +18,15 @@ const VaultFactory = artifacts.require('SynthereumMultiLPVaultFactory');
 const Vault = artifacts.require('Vault');
 const PoolMock = artifacts.require('PoolMockForVault');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
+const Manager = artifacts.require('SynthereumManager');
 const data = require('../../data/test/lendingTestnet.json');
 
 const { toBN, toWei, toHex } = web3Utils;
 
 contract('Lending Vault', accounts => {
-  let vault, factoryVault, pool, USDC, jSynth, lpToken;
+  let vault, factoryVault, vaultImpl, pool, USDC, jSynth, lpToken, manager;
   let networkId;
-  let overCollateralization = toWei('0.05');
+  let overCollateralization = toWei('0.1');
   let LPName = 'vault LP';
   let LPSymbol = 'vLP';
   let user1 = accounts[2];
@@ -69,9 +70,10 @@ contract('Lending Vault', accounts => {
   before(async () => {
     networkId = await web3.eth.net.getId();
     USDC = await TestnetSelfMintingERC20.at(data[networkId].USDC);
-    lpToken = await TestnetSelfMintingERC20.new(LPName, LPSymbol, 18, {
-      from: accounts[0],
-    });
+    // lpToken = await TestnetSelfMintingERC20.new(LPName, LPSymbol, 18, {
+    //   from: accounts[0],
+    // });
+    manager = await Manager.deployed();
 
     finder = await SynthereumFinder.deployed();
 
@@ -90,18 +92,15 @@ contract('Lending Vault', accounts => {
       },
     );
 
-    vault = await Vault.new();
-    await vault.initialize(
+    vaultImpl = await Vault.new();
+    await vaultImpl.initialize(
       LPName,
       LPSymbol,
       pool.address,
       overCollateralization,
     );
 
-    // await lpToken.addMinter(vault.address, { from: accounts[0] });
-    // await lpToken.addBurner(vault.address, { from: accounts[0] });
-
-    factoryVault = await VaultFactory.new(vault.address, finder.address);
+    factoryVault = await VaultFactory.new(vaultImpl.address, finder.address);
 
     // mint collateral to user
     await getUSDC(user1, collateralAllocation);
@@ -114,20 +113,25 @@ contract('Lending Vault', accounts => {
 
   describe('Deployment and initialisation', () => {
     it('Correctly initialise the vault', async () => {
-      assert.equal(await vault.getPool.call(), pool.address);
-      assert.equal(await vault.getPoolCollateral.call(), USDC.address);
+      assert.equal(await vaultImpl.getPool.call(), pool.address);
+      assert.equal(await vaultImpl.getPoolCollateral.call(), USDC.address);
       assert.equal(
-        (await vault.getOvercollateralisation.call()).toString(),
+        (await vaultImpl.getOvercollateralisation.call()).toString(),
         overCollateralization.toString(),
       );
-      assert.equal(await vault.name.call(), LPName);
-      assert.equal(await vault.symbol.call(), LPSymbol);
-      assert.equal((await vault.getRate.call()).toString(), toWei('1'));
+      assert.equal(await vaultImpl.name.call(), LPName);
+      assert.equal(await vaultImpl.symbol.call(), LPSymbol);
+      assert.equal((await vaultImpl.getRate.call()).toString(), toWei('1'));
     });
 
     it('Revert if another initialization is tried', async () => {
       await truffleAssert.reverts(
-        vault.initialize(LPName, LPSymbol, pool.address, overCollateralization),
+        vaultImpl.initialize(
+          LPName,
+          LPSymbol,
+          pool.address,
+          overCollateralization,
+        ),
         'Initializable: contract is already initialized',
       );
     });
@@ -151,9 +155,6 @@ contract('Lending Vault', accounts => {
       });
 
       it('Correctly deploys and initialise a new vault through factory', async () => {
-        let name = 'factoryVaault';
-        let symbol = 'fcv';
-        let overCollateralization = toWei('0.1');
         let vaultAddr = await factoryVault.createVault.call(
           LPName,
           LPSymbol,
@@ -168,22 +169,22 @@ contract('Lending Vault', accounts => {
           overCollateralization,
           { from: accounts[0] },
         );
-        let newVault = await Vault.at(vaultAddr);
+        vault = await Vault.at(vaultAddr);
 
         // check event
         truffleAssert.eventEmitted(tx, 'CreatedVault', ev => {
           return (ev.vaultAddress = vaultAddr && ev.deployer == accounts[0]);
         });
         truffleAssert;
-        assert.equal(await newVault.getPool.call(), pool.address);
-        assert.equal(await newVault.getPoolCollateral.call(), USDC.address);
+        assert.equal(await vault.getPool.call(), pool.address);
+        assert.equal(await vault.getPoolCollateral.call(), USDC.address);
         assert.equal(
-          (await newVault.getOvercollateralisation.call()).toString(),
+          (await vault.getOvercollateralisation.call()).toString(),
           overCollateralization.toString(),
         );
-        // assert.equal(await newVault.name.call(), name);
-        // assert.equal(await newVault.symbol.call(), symbol);
-        assert.equal((await newVault.getRate.call()).toString(), toWei('1'));
+        assert.equal(await vault.name.call(), LPName);
+        assert.equal(await vault.symbol.call(), LPSymbol);
+        assert.equal((await vault.getRate.call()).toString(), toWei('1'));
       });
 
       it('Revert if sender is not synthereum deployer', async () => {
@@ -686,7 +687,6 @@ contract('Lending Vault', accounts => {
         .mul(LPInput)
         .div(toBN(Math.pow(10, 18)));
 
-      // await lpToken.approve(vault.address, LPInput, { from: user1 });
       let tx = await vault.withdraw(LPInput, { from: user1 });
 
       // check event
@@ -723,6 +723,53 @@ contract('Lending Vault', accounts => {
       await truffleAssert.reverts(
         vault.withdraw(0, { from: user1 }),
         'Zero amount',
+      );
+    });
+  });
+
+  describe('Manager - update of logic and admin', () => {
+    let newVaultAddr;
+
+    before(async () => {
+      let newVaultFactory = await VaultFactory.new(
+        vault.address,
+        finder.address,
+        { from: maintainer },
+      );
+      await finder.changeImplementationAddress(
+        toHex('VaultFactory'),
+        newVaultFactory.address,
+        { from: maintainer },
+      );
+      newVaultAddr = await newVaultFactory.createVault.call(
+        LPName,
+        LPSymbol,
+        pool.address,
+        overCollateralization,
+        { from: accounts[0] },
+      );
+      await newVaultFactory.createVault(
+        LPName,
+        LPSymbol,
+        pool.address,
+        overCollateralization,
+        { from: accounts[0] },
+      );
+    });
+
+    it('Correctly upgrades proxy to new implementation through manager', async () => {
+      let userLPBalanceBefore = await vault.balanceOf.call(user2);
+
+      //  console.log("L", userLPBalanceBefore.toString());
+      await manager.upgradePublicVault([newVaultAddr], [Buffer.from([])], {
+        from: maintainer,
+      });
+
+      let userLPBalanceAfter = await vault.balanceOf.call(user2);
+
+      assert.equal(
+        userLPBalanceAfter.toString(),
+        userLPBalanceBefore.toString(),
       );
     });
   });
