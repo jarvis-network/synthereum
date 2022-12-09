@@ -145,7 +145,7 @@ async function migrate(deployer, network, accounts) {
       await lendingManager.methods
         .setLendingModule(protocol.id, {
           lendingModule: compoundModule.options.address,
-          args: fromUtf8('0000'),
+          args: Buffer.from([]),
         })
         .send({ from: maintainer });
       console.log(
