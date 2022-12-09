@@ -19,6 +19,8 @@ const Vault = artifacts.require('Vault');
 const PoolMock = artifacts.require('PoolMockForVault');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const Manager = artifacts.require('SynthereumManager');
+const Proxy = artifacts.require('TransparentUpgradeableProxy');
+
 const data = require('../../data/test/lendingTestnet.json');
 
 const { toBN, toWei, toHex } = web3Utils;
@@ -728,11 +730,11 @@ contract('Lending Vault', accounts => {
   });
 
   describe('Manager - update of logic and admin', () => {
-    let newVaultAddr;
-
+    let newVaultImpl;
     before(async () => {
+      newVaultImpl = await Vault.new();
       let newVaultFactory = await VaultFactory.new(
-        vault.address,
+        newVaultImpl.address,
         finder.address,
         { from: maintainer },
       );
@@ -741,31 +743,25 @@ contract('Lending Vault', accounts => {
         newVaultFactory.address,
         { from: maintainer },
       );
-      newVaultAddr = await newVaultFactory.createVault.call(
-        LPName,
-        LPSymbol,
-        pool.address,
-        overCollateralization,
-        { from: accounts[0] },
-      );
-      await newVaultFactory.createVault(
-        LPName,
-        LPSymbol,
-        pool.address,
-        overCollateralization,
-        { from: accounts[0] },
-      );
     });
 
-    it('Correctly upgrades proxy to new implementation through manager', async () => {
+    it('Correctly upgrades proxy to new implementation through manager - no extra args', async () => {
       let userLPBalanceBefore = await vault.balanceOf.call(user2);
+      let vaultImplAct = await manager.getCurrentVaultImplementation.call(
+        vault.address,
+      );
+      assert.equal(vaultImplAct, vaultImpl.address);
 
       //  console.log("L", userLPBalanceBefore.toString());
-      await manager.upgradePublicVault([newVaultAddr], [Buffer.from([])], {
+      await manager.upgradePublicVault([vault.address], [Buffer.from([])], {
         from: maintainer,
       });
 
       let userLPBalanceAfter = await vault.balanceOf.call(user2);
+      vaultImplAct = await manager.getCurrentVaultImplementation.call(
+        vault.address,
+      );
+      assert.equal(vaultImplAct, newVaultImpl.address);
 
       assert.equal(
         userLPBalanceAfter.toString(),
