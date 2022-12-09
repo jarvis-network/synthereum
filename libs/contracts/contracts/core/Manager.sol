@@ -257,4 +257,15 @@ contract SynthereumManager is
       TransparentUpgradeableProxy(payable(vaults[i])).changeAdmin(admins[i]);
     }
   }
+
+  /**
+   * @notice Retrieves address of the proxy implementation contract
+   * @return address of implementer
+   */
+  function getCurrentVaultImplementation(address vaultProxy)
+    external
+    returns (address)
+  {
+    return TransparentUpgradeableProxy(payable(vaultProxy)).implementation();
+  }
 }
