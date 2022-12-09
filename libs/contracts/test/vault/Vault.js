@@ -768,5 +768,18 @@ contract('Lending Vault', accounts => {
         userLPBalanceBefore.toString(),
       );
     });
+
+    it('Correctly upgrades proxy to new admin address through manager', async () => {
+      let newAdmin = accounts[4];
+
+      await manager.changePublicVaultAdmin([vault.address], [newAdmin], {
+        from: maintainer,
+      });
+
+      let proxy = await Proxy.at(vault.address);
+      let actual = await proxy.admin.call({ from: newAdmin });
+      assert.equal(actual, newAdmin);
+      // new admin should the only one now that can call getAdmin from proxy
+    });
   });
 });
