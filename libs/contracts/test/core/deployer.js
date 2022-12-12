@@ -56,6 +56,7 @@ const SynthereumSyntheticTokenPermitFactory = artifacts.require(
 const SynthereumTrustedForwarder = artifacts.require(
   'SynthereumTrustedForwarder',
 );
+const PoolMock = artifacts.require('PoolMockForVault');
 const {
   encodeMultiLpLiquidityPool,
   encodeMultiLpLiquidityPoolMigration,
@@ -1426,6 +1427,63 @@ contract('Deployer', function (accounts) {
           from: maintainer,
         }),
         'Contract has burner role',
+      );
+    });
+  });
+
+  describe('Should deploy a public vault', () => {
+    let pool;
+    beforeEach(async () => {
+      deployerInstance = await SynthereumDeployer.deployed();
+      pool = await PoolMock.new(
+        1,
+        collateralAddress,
+        'jEUR',
+        syntheticTokenAddress,
+        web3Utils.toHex(priceFeedIdentifier),
+        {
+          from: accounts[0],
+        },
+      );
+    });
+    it('Correctly deploy public vault', async () => {
+      let lpName = 'test';
+      let lpSymbol = 'lpTest';
+      let collateralRequirement = web3Utils.toWei('1.1');
+
+      let address = await deployerInstance.deployPublicVault.call(
+        lpName,
+        lpSymbol,
+        pool.address,
+        collateralRequirement,
+        { from: maintainer },
+      );
+      let assertion = address == ZERO_ADDRESS;
+      assert.equal(assertion, false);
+
+      let tx = await deployerInstance.deployPublicVault(
+        lpName,
+        lpSymbol,
+        pool.address,
+        collateralRequirement,
+        { from: maintainer },
+      );
+      truffleAssert.eventEmitted(tx, 'PublicVaultDeployed', ev => {
+        return ev.vault == address;
+      });
+    });
+    it('Revert if caller not maintainer', async () => {
+      let lpName = 'test';
+      let lpSymbol = 'lpTest';
+      await truffleAssert.reverts(
+        deployerInstance.deployPublicVault(
+          lpName,
+          lpSymbol,
+          pool.address,
+          collateralRequirement,
+          { from: accounts[8] },
+        ),
+        'Sender must be the maintainer',
       );
     });
   });

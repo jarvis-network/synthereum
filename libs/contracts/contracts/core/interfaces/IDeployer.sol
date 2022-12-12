@@ -3,7 +3,10 @@ pragma solidity >=0.8.0;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
-import {SynthereumPoolMigrationFrom} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {
+  SynthereumPoolMigrationFrom
+} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {IVault} from '../../multiLP-vaults/interfaces/IVault.sol';
 
 /**
  * @title Provides interface with functions of Synthereum deployer
@@ -73,4 +76,19 @@ interface ISynthereumDeployer {
    * @param _fixedRate Fixed-rate to remove
    */
   function removeFixedRate(ISynthereumDeployment _fixedRate) external;
+
+  /**
+   * @notice Deploy a public vault
+   * @param _lpTokenName name of the LP token representing a share in the vault
+   * @param _lpTokenSymbol symbol of the LP token representing a share in the vault
+   * @param _pool address of MultiLP pool the vault interacts with
+   * @param _overCollateralization over collateral requirement of the vault position in the pool
+   * @return vault Deployed vault
+   */
+  function deployPublicVault(
+    string memory _lpTokenName,
+    string memory _lpTokenSymbol,
+    address _pool,
+    uint128 _overCollateralization
+  ) external returns (IVault vault);
 }

@@ -45,7 +45,13 @@ contract SynthereumMultiLPVaultFactory is
     string memory _lpTokenSymbol,
     address _pool,
     uint128 _overCollateralization
-  ) public override nonReentrant returns (IVault vault) {
+  )
+    public
+    override
+    nonReentrant
+    onlyDeployer(synthereumFinder)
+    returns (IVault vault)
+  {
     vault = super.createVault(
       _lpTokenName,
       _lpTokenSymbol,
