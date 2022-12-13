@@ -147,6 +147,19 @@ contract AaveV3Module is ILendingModule {
     IRewardsController(rewardsController).claimAllRewards(assets, _recipient);
   }
 
+  function getUpdatedInterest(
+    address _poolAddress,
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _extraArgs
+  ) external override returns (uint256 totalInterest) {
+    (totalInterest, ) = calculateGeneratedInterest(
+      _poolAddress,
+      _poolData,
+      0,
+      true
+    );
+  }
+
   function getAccumulatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,

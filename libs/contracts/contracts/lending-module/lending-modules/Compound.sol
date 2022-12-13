@@ -12,6 +12,7 @@ import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import 'hardhat/console.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
@@ -23,6 +24,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     uint256 _amount
   )
     external
+    override
     returns (
       uint256 totalInterest,
       uint256 tokensOut,
@@ -76,6 +78,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _recipient
   )
     external
+    override
     returns (
       uint256 totalInterest,
       uint256 tokensOut,
@@ -122,6 +125,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     bytes calldata _extraArgs
   )
     external
+    override
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
   {
     uint256 prevTotalcTokens =
@@ -142,13 +146,44 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _collateral,
     address _bearingToken,
     address _recipient
-  ) external {}
+  ) external override {}
+
+  function getUpdatedInterest(
+    address _poolAddress,
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _extraArgs
+  ) external override returns (uint256 totalInterest) {
+    // instantiate cToken
+    ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
+
+    // get updated exchange rate
+    Exp memory exchangeRate = Exp({mantissa: cToken.exchangeRateCurrent()});
+
+    // calculate collateral
+    uint256 totCollateral =
+      mul_ScalarTruncate(exchangeRate, cToken.balanceOf(_poolAddress));
+
+    if (
+      totCollateral <=
+      _poolData.collateralDeposited +
+        _poolData.unclaimedDaoCommission +
+        _poolData.unclaimedDaoJRT
+    ) {
+      totalInterest = 0;
+    } else {
+      totalInterest =
+        totCollateral -
+        _poolData.collateralDeposited -
+        _poolData.unclaimedDaoCommission -
+        _poolData.unclaimedDaoJRT;
+    }
+  }
 
   function getAccumulatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
     bytes calldata _extraArgs
-  ) external view returns (uint256 totalInterest) {
+  ) external view override returns (uint256 totalInterest) {
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
     (, uint256 tokenBalance, , uint256 excMantissa) =
@@ -156,7 +191,12 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
 
     uint256 totCollateral = mul_ScalarTruncate(exchangeRate, tokenBalance);
-
+    console.log(
+      excMantissa,
+      totCollateral,
+      _poolData.collateralDeposited,
+      _poolData.unclaimedDaoCommission
+    );
     if (
       totCollateral <=
       _poolData.collateralDeposited +
@@ -176,7 +216,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   function getInterestBearingToken(
     address _collateral,
     bytes calldata _extraArgs
-  ) external view returns (address token) {
+  ) external view override returns (address token) {
     IComptroller comptroller = IComptroller(abi.decode(_extraArgs, (address)));
     address[] memory markets = comptroller.getAllMarkets();
 
@@ -196,7 +236,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _collateral,
     address _interestToken,
     bytes calldata _extraArgs
-  ) external view returns (uint256 interestTokenAmount) {
+  ) external view override returns (uint256 interestTokenAmount) {
     (, , , uint256 excMantissa) =
       ICompoundToken(_interestToken).getAccountSnapshot(address(this));
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
@@ -209,7 +249,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _collateral,
     address _interestToken,
     bytes calldata _extraArgs
-  ) external view returns (uint256 collateralAmount) {
+  ) external view override returns (uint256 collateralAmount) {
     return
       _interestTokenToCollateral(
         _interestTokenAmount,

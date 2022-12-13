@@ -93,6 +93,19 @@ interface ILendingModule {
   ) external;
 
   /**
+   * @notice updates eventual state and returns updated accumulated interest
+   * @param _poolAddress reference pool to check accumulated interest
+   * @param _poolData pool storage information
+   * @param _extraArgs encoded args the ILendingModule implementer might need. see ILendingManager.LendingInfo struct
+   * @return totalInterest total amount of interest accumulated
+   */
+  function getUpdatedInterest(
+    address _poolAddress,
+    ILendingStorageManager.PoolStorage calldata _poolData,
+    bytes calldata _extraArgs
+  ) external returns (uint256 totalInterest);
+
+  /**
    * @notice returns accumulated interest of a pool since state-changing last operation
    * @dev does not update state
    * @param _poolAddress reference pool to check accumulated interest
