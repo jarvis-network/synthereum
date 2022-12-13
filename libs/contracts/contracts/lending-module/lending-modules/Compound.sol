@@ -12,7 +12,6 @@ import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {
   SynthereumPoolMigrationFrom
 } from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
-import 'hardhat/console.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
@@ -191,12 +190,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
 
     uint256 totCollateral = mul_ScalarTruncate(exchangeRate, tokenBalance);
-    console.log(
-      excMantissa,
-      totCollateral,
-      _poolData.collateralDeposited,
-      _poolData.unclaimedDaoCommission
-    );
+
     if (
       totCollateral <=
       _poolData.collateralDeposited +
