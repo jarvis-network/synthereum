@@ -223,8 +223,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
   // THE rate returned in returnValues is different from the one used in tx
   describe('Compound module', () => {
     const user = accounts[5];
-    let amountMint = toWei('50', 'mwei');
-    let amountFirstDeposit = toWei('30', 'mwei');
+    let amountMint = toWei('500', 'mwei');
+    let amountFirstDeposit = toWei('300', 'mwei');
 
     it('First deposit- Correctly deposits and update values', async () => {
       await getUSDC(amountMint, user);
@@ -244,6 +244,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
       let exchangeRate = await cUSDC.exchangeRateCurrent.call();
+
       await poolMock.deposit(amountFirstDeposit, USDC, { from: user });
       let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
@@ -308,7 +309,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
 
       // deposit to trigger interest split update
-      let amountDeposit = toWei('10', 'mwei');
+      let amountDeposit = toWei('100', 'mwei');
       await USDCInstance.approve(poolMock.address, amountDeposit, {
         from: user,
       });
@@ -440,7 +441,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     });
 
     it('Withdraw - Correctly withdraw and update values, interest', async () => {
-      let amountWithdraw = toWei('15', 'mwei');
+      let amountWithdraw = toWei('50', 'mwei');
       let userCUSDCBefore = await cUSDC.balanceOf.call(user);
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
@@ -624,7 +625,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
       let expectedInterest = poolUnderlyingAfter
         .add(toBN(amount))
-        .sub(poolUnderlyingBefore);
+        .sub(toBN(poolStorageBefore.collateralDeposited));
       let expectedDaoInterest = expectedInterest
         .mul(toBN(daoInterestShare))
         .div(toBN(Math.pow(10, 18)));
@@ -645,7 +646,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(toBN(expectedPoolInterest))
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
@@ -918,7 +919,9 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
 
-      let expectedInterest = poolUnderlyingAfter.sub(poolUnderlyingBefore);
+      let expectedInterest = poolUnderlyingAfter.sub(
+        toBN(poolStorageBefore.collateralDeposited),
+      );
       let expectedDaoInterest = expectedInterest
         .mul(toBN(daoInterestShare))
         .div(toBN(Math.pow(10, 18)));
@@ -926,7 +929,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
       // check return values to pool
       assert.equal(returnValues.tokensOut.toString(), '0');
-      assert.equal(
+      assertWeiDifference(
         returnValues.poolInterest.toString(),
         expectedPoolInterest.toString(),
       );
@@ -948,7 +951,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let expectedCollateral = toBN(poolStorageBefore.collateralDeposited)
         .add(expectedPoolInterest)
         .toString();
-      assert.equal(
+      assertWeiDifference(
         poolStorage.collateralDeposited.toString(),
         expectedCollateral,
       );
