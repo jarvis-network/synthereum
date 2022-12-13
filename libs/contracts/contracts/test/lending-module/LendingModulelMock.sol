@@ -108,6 +108,12 @@ contract LendingModulelMock is ILendingModule {
     address _recipient
   ) external override {}
 
+  function getUpdatedInterest(
+    address poolAddress,
+    ILendingStorageManager.PoolStorage calldata poolData,
+    bytes memory extraArgs
+  ) external override returns (uint256 totalInterest) {}
+
   function getAccumulatedInterest(
     address poolAddress,
     ILendingStorageManager.PoolStorage calldata poolData,
