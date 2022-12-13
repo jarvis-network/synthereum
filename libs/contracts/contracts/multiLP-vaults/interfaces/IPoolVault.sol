@@ -4,41 +4,10 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   IMintableBurnableERC20
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  StandardAccessControlEnumerable
-} from '../../common/roles/StandardAccessControlEnumerable.sol';
-import {
-  IJarvisBuybackVault
-} from '../../jarvis-token/interfaces/IBuybackVault.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 interface IPoolVault {
-  struct InitializationParams {
-    // Synthereum finder
-    ISynthereumFinder finder;
-    // Synthereum pool version
-    uint8 version;
-    // ERC20 collateral token
-    IStandardERC20 collateralToken;
-    // ERC20 synthetic token
-    IMintableBurnableERC20 syntheticToken;
-    // The addresses of admin and maintainer
-    StandardAccessControlEnumerable.Roles roles;
-    // The fee percentage
-    uint64 fee;
-    // Identifier of price to be used in the price feed
-    bytes32 priceIdentifier;
-    // Percentage of overcollateralization to which a liquidation can triggered
-    uint128 overCollateralRequirement;
-    // Percentage of reward for correct liquidation by a liquidator
-    uint64 liquidationReward;
-    // Name of the lending protocol used
-    string lendingModuleId;
-    // Buyback vault associated to the pool
-    IJarvisBuybackVault buybackVault;
-  }
-
   struct LPInfo {
     // Actual collateral owned
     uint256 actualCollateralAmount;
