@@ -128,4 +128,12 @@ contract PoolMockForVault is IPoolVault {
   {
     return ISynthereumPriceFeed(priceFeed).getLatestPrice(identifier);
   }
+
+  function synthereumFinder()
+    external
+    view
+    returns (ISynthereumFinder finder)
+  {}
+
+  function version() external view returns (uint8 contractVersion) {}
 }
