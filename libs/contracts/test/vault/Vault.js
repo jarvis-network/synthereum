@@ -95,12 +95,6 @@ contract('Lending Vault', accounts => {
     );
 
     vaultImpl = await Vault.new();
-    await vaultImpl.initialize(
-      LPName,
-      LPSymbol,
-      pool.address,
-      overCollateralization,
-    );
 
     factoryVault = await VaultFactory.new(vaultImpl.address, finder.address);
 
@@ -114,30 +108,6 @@ contract('Lending Vault', accounts => {
   });
 
   describe('Deployment and initialisation', () => {
-    it('Correctly initialise the vault', async () => {
-      assert.equal(await vaultImpl.getPool.call(), pool.address);
-      assert.equal(await vaultImpl.getPoolCollateral.call(), USDC.address);
-      assert.equal(
-        (await vaultImpl.getOvercollateralisation.call()).toString(),
-        overCollateralization.toString(),
-      );
-      assert.equal(await vaultImpl.name.call(), LPName);
-      assert.equal(await vaultImpl.symbol.call(), LPSymbol);
-      assert.equal((await vaultImpl.getRate.call()).toString(), toWei('1'));
-    });
-
-    it('Revert if another initialization is tried', async () => {
-      await truffleAssert.reverts(
-        vaultImpl.initialize(
-          LPName,
-          LPSymbol,
-          pool.address,
-          overCollateralization,
-        ),
-        'Initializable: contract is already initialized',
-      );
-    });
-
     describe('Factory contract', async () => {
       before(async () => {
         await finder.changeImplementationAddress(
@@ -207,6 +177,18 @@ contract('Lending Vault', accounts => {
             from: accounts[0],
           }),
           'Overcollateral requirement must be bigger than 0%',
+        );
+      });
+
+      it('Revert if another initialization is tried', async () => {
+        await truffleAssert.reverts(
+          vault.initialize(
+            LPName,
+            LPSymbol,
+            pool.address,
+            overCollateralization,
+          ),
+          'Initializable: contract is already initialized',
         );
       });
     });
