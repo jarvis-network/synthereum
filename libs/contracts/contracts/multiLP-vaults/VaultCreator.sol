@@ -20,6 +20,8 @@ contract SynthereumMultiLPVaultCreator {
    * @param _vaultImplementation Address of the deployed vault implementation used for proxy
    */
   constructor(address _vaultImplementation, address _finder) {
+    require(_vaultImplementation != address(0), 'Bad vault implementation');
+    require(_finder != address(0), 'Bad finder');
     synthereumFinder = ISynthereumFinder(_finder);
     vaultImplementation = _vaultImplementation;
   }
@@ -30,6 +32,7 @@ contract SynthereumMultiLPVaultCreator {
     address _pool,
     uint128 _overCollateralization
   ) public virtual returns (IVault vault) {
+    require(_pool != address(0), 'Bad pool');
     require(bytes(_lpTokenName).length != 0, 'Missing LP token name');
     require(bytes(_lpTokenSymbol).length != 0, 'Missing LP token symbol');
     require(
