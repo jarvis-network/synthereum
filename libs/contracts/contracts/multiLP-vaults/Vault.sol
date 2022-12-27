@@ -29,6 +29,10 @@ contract Vault is
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
+  constructor() public {
+    _disableInitializers();
+  }
+
   function initialize(
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
