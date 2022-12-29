@@ -151,7 +151,7 @@ contract AaveV3Module is ILendingModule {
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
     bytes calldata _extraArgs
-  ) external override returns (uint256 totalInterest) {
+  ) external view override returns (uint256 totalInterest) {
     (totalInterest, ) = calculateGeneratedInterest(
       _poolAddress,
       _poolData,
@@ -212,8 +212,6 @@ contract AaveV3Module is ILendingModule {
     view
     returns (uint256 totalInterestGenerated, uint256 poolBalance)
   {
-    if (_pool.collateralDeposited == 0) return (0, 0);
-
     // get current pool total amount of collateral
     poolBalance = IERC20(_pool.interestBearingToken).balanceOf(_poolAddress);
 

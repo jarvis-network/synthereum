@@ -456,10 +456,7 @@ contract LendingManager is
 
     // update storage with accumulated interest
     uint256 actualCollateralDeposited =
-      depositRes.tokensOut +
-        interestSplit.poolInterest -
-        newDaoJRT -
-        newDaoCommission;
+      depositRes.tokensOut - newDaoJRT - newDaoCommission;
 
     poolStorageManager.updateValues(
       msg.sender,
