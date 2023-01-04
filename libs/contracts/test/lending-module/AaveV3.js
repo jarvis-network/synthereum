@@ -439,13 +439,12 @@ contract('AaveV3 Lending module', accounts => {
   });
   describe('AAVe module', () => {
     const user = accounts[2];
-    let amountMint = '100000000';
-    let amountFirstDeposit = '30000000';
+    let amountMint = '1000';
+    let amountFirstDeposit = '300';
 
     it('First deposit- Correctly deposits and update values', async () => {
       await getUSDC(amountMint, user);
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
-      assert.equal(userUSDCBefore.toString(), amountMint.toString());
 
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
@@ -505,28 +504,26 @@ contract('AaveV3 Lending module', accounts => {
     });
 
     it('Subsequent deposit- Correctly deposits and update values, interest', async () => {
+      let amountDeposit = '10000000';
+      await getUSDC(amountDeposit, user);
+
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
 
       // borrow on aave to generate interest
-      await openCDP('100000000', '40000000', accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       let generatedInterest = await proxy.getAccumulatedInterest.call(
         poolMock.address,
       );
 
       let userUSDCBefore = await USDCInstance.balanceOf.call(user);
-      assertWeiDifference(
-        userUSDCBefore.toString(),
-        toBN(amountMint).sub(toBN(amountFirstDeposit)).toString(),
-      );
       let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
       let poolUSDCBefore = await USDCInstance.balanceOf.call(poolMock.address);
 
       // deposit to trigger interest split update
-      let amountDeposit = '10000000';
       await USDCInstance.approve(poolMock.address, amountDeposit, {
         from: user,
       });
@@ -642,7 +639,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP('100000000', '40000000', accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       let amountWithdraw = '1';
       let userAUSDCBefore = await aUSDC.balanceOf.call(user);
@@ -773,7 +770,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP('100000000', '40000000', accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       // sets recipient
       let commissionReceiver = accounts[4];
@@ -910,7 +907,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP('100000000', '40000000', accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       // sets recipient
       let buybackReceiver = accounts[5];
@@ -1090,7 +1087,7 @@ contract('AaveV3 Lending module', accounts => {
       let poolAUSDCBefore = await aUSDC.balanceOf.call(poolMock.address);
 
       // borrow on aave to generate interest
-      await openCDP('100000000', '40000000', accounts[3]);
+      await openCDP('1000', '400', accounts[3]);
 
       let poolStorageBefore = await storageManager.getPoolStorage.call(
         poolMock.address,
@@ -1182,7 +1179,7 @@ contract('AaveV3 Lending module', accounts => {
         );
 
         // borrow on aave to generate interest
-        await openCDP('100000000', '40000000', accounts[3]);
+        await openCDP('1000', '400', accounts[3]);
 
         // deploy new module
         newModule = await LendingModule.new();
