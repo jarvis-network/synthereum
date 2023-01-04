@@ -35,6 +35,8 @@ interface ICompoundToken is IERC20 {
   function underlying() external view returns (address);
 
   function getOwner() external view returns (address);
+
+  function exchangeRateStored() external view returns (uint256);
 }
 
 interface IComptroller {

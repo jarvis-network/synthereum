@@ -147,7 +147,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _collateral,
     address _bearingToken,
     address _recipient
-  ) external override {
+  ) external virtual override {
     revert('Claim rewards not supported');
   }
 
@@ -159,27 +159,14 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     // instantiate cToken
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
-    // get updated exchange rate
-    Exp memory exchangeRate = Exp({mantissa: cToken.exchangeRateCurrent()});
-
     // calculate collateral
-    uint256 totCollateral =
-      mul_ScalarTruncate(exchangeRate, cToken.balanceOf(_poolAddress));
+    uint256 totCollateral = cToken.balanceOfUnderlying(_poolAddress);
 
-    if (
-      totCollateral <=
-      _poolData.collateralDeposited +
-        _poolData.unclaimedDaoCommission +
-        _poolData.unclaimedDaoJRT
-    ) {
-      totalInterest = 0;
-    } else {
-      totalInterest =
-        totCollateral -
-        _poolData.collateralDeposited -
-        _poolData.unclaimedDaoCommission -
-        _poolData.unclaimedDaoJRT;
-    }
+    totalInterest =
+      totCollateral -
+      _poolData.collateralDeposited -
+      _poolData.unclaimedDaoCommission -
+      _poolData.unclaimedDaoJRT;
   }
 
   function getAccumulatedInterest(
@@ -195,20 +182,11 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
     uint256 totCollateral = mul_ScalarTruncate(exchangeRate, tokenBalance);
 
-    if (
-      totCollateral <=
-      _poolData.collateralDeposited +
-        _poolData.unclaimedDaoCommission +
-        _poolData.unclaimedDaoJRT
-    ) {
-      totalInterest = 0;
-    } else {
-      totalInterest =
-        totCollateral -
-        _poolData.collateralDeposited -
-        _poolData.unclaimedDaoCommission -
-        _poolData.unclaimedDaoJRT;
-    }
+    totalInterest =
+      totCollateral -
+      _poolData.collateralDeposited -
+      _poolData.unclaimedDaoCommission -
+      _poolData.unclaimedDaoJRT;
   }
 
   function getInterestBearingToken(
@@ -235,8 +213,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     address _interestToken,
     bytes calldata
   ) external view override returns (uint256 interestTokenAmount) {
-    (, , , uint256 excMantissa) =
-      ICompoundToken(_interestToken).getAccountSnapshot(address(this));
+    uint256 excMantissa = ICompoundToken(_interestToken).exchangeRateStored();
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
 
     return div_(_collateralAmount, exchangeRate);
@@ -244,27 +221,11 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
   function interestTokenToCollateral(
     uint256 _interestTokenAmount,
-    address _collateral,
+    address,
     address _interestToken,
     bytes calldata _extraArgs
   ) external view override returns (uint256 collateralAmount) {
-    return
-      _interestTokenToCollateral(
-        _interestTokenAmount,
-        _collateral,
-        _interestToken,
-        _extraArgs
-      );
-  }
-
-  function _interestTokenToCollateral(
-    uint256 _interestTokenAmount,
-    address _collateral,
-    address _interestToken,
-    bytes calldata _extraArgs
-  ) internal view returns (uint256 collateralAmount) {
-    (, , , uint256 excMantissa) =
-      ICompoundToken(_interestToken).getAccountSnapshot(address(this));
+    uint256 excMantissa = ICompoundToken(_interestToken).exchangeRateStored();
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
     return mul_ScalarTruncate(exchangeRate, _interestTokenAmount);
   }
