@@ -52,6 +52,8 @@ contract PoolAnalyticsMock {
     uint256 poolBearingBalance;
     uint256 poolCollBalance;
     uint256 expectedBearing;
+    uint256 poolTotCollateral;
+    uint256 expectedCollateral;
   }
 
   constructor(address _finder) {
@@ -69,6 +71,8 @@ contract PoolAnalyticsMock {
       Interest memory interest
     )
   {
+    ISynthereumMultiLpLiquidityPool poolContract =
+      ISynthereumMultiLpLiquidityPool(_pool);
     ILendingStorageManager storageManager =
       ILendingStorageManager(
         finder.getImplementationAddress(
@@ -80,8 +84,6 @@ contract PoolAnalyticsMock {
         finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
       );
     poolData = storageManager.getPoolStorage(_pool);
-    ISynthereumMultiLpLiquidityPool poolContract =
-      ISynthereumMultiLpLiquidityPool(_pool);
     (
       totColl.usersCollateral,
       totColl.lpsCollateral,
@@ -98,14 +100,20 @@ contract PoolAnalyticsMock {
       interest.buybackInterest,
 
     ) = lendingManager.getAccumulatedInterest(_pool);
+    amounts.poolTotCollateral =
+      poolData.collateralDeposited +
+      poolData.unclaimedDaoJRT +
+      poolData.unclaimedDaoCommission +
+      interest.poolInterest +
+      interest.commissionInterest +
+      interest.buybackInterest;
     (amounts.expectedBearing, ) = lendingManager.collateralToInterestToken(
       _pool,
-      poolData.collateralDeposited +
-        poolData.unclaimedDaoJRT +
-        poolData.unclaimedDaoCommission +
-        interest.poolInterest +
-        interest.commissionInterest +
-        interest.buybackInterest
+      amounts.poolTotCollateral
+    );
+    (amounts.expectedCollateral, ) = lendingManager.interestTokenToCollateral(
+      _pool,
+      amounts.poolBearingBalance
     );
     lpsInfo = new ISynthereumMultiLpLiquidityPool.LPInfo[](_lps.length);
     for (uint256 j = 0; j < _lps.length; j++) {
@@ -121,6 +129,7 @@ contract PoolAnalyticsMock {
   ) external {
     ISynthereumMultiLpLiquidityPool poolContract =
       ISynthereumMultiLpLiquidityPool(_pool);
+    poolContract.updatePositions();
     uint256 maxCapacity = poolContract.maxTokensCapacity();
     IERC20 collateralContract = poolContract.collateralToken();
     uint8 decimals = poolContract.collateralTokenDecimals();

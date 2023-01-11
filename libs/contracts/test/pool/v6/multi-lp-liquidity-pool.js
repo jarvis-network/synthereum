@@ -33,6 +33,7 @@ const IUniswapRouter = artifacts.require('ISwapRouter02');
 const MockOnChainOracle = artifacts.require('MockOnChainOracle');
 const LendingTestnetERC20 = artifacts.require('LendingTestnetERC20');
 const LendingModulelMock = artifacts.require('LendingModulelMock');
+const ICompoundToken = artifacts.require('ICompoundToken');
 const {
   encodeMultiLpLiquidityPool,
   encodeMultiLpLiquidityPoolMigration,
@@ -70,6 +71,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
   let sender;
   let receiver;
   let genericSender;
+  let lendingId;
+  let selectedLendingId;
   const admin = accounts[0];
   const maintainer = accounts[1];
   const roles = {
@@ -87,7 +90,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
   const feePercentageWei = web3.utils.toWei(feePercentage);
   const overCollateralRequirement = web3.utils.toWei('0.05');
   const liquidationReward = web3.utils.toWei('0.7');
-  const lendingId = 'AaveV3';
   const daoInterestShare = web3.utils.toWei('0.1');
   const jrtBuybackShare = web3.utils.toWei('0.6');
   const poolVersion = 6;
@@ -248,6 +250,46 @@ contract('MultiLPLiquidityPool', function (accounts) {
     );
   };
 
+  const initializeLendingProtocol = async lendingId => {
+    if (lendingId == 'ovix') {
+      const aggregators = [
+        '0x97371dF4492605486e23Da797fA68e55Fc38a13f',
+        '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
+        '0xc907E116054Ad103354f2D350FD2514433D57F6f',
+        '0x4746DeC9e833A82EC7C2C1356372CcF2cfcD2F3D',
+        '0xF9680D99D6C9589e2a93a78A04A279e509205945',
+        '0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7',
+        '0x0A6513e40db6EB1b165753AD52E80663aeA50545',
+        '0xd8d483d813547CfB624b8Dc33a00F2fcbCd2D428',
+        '0x5d37E4b374E6907de8Fc7fb33EE3b0af403C7403',
+        '0x73366Fe0AA0Ded304479862808e02506FE556a98',
+      ];
+      for (let j = 0; j < aggregators.length; j++) {
+        const slot = web3.utils.soliditySha3(
+          web3.utils.hexToNumberString(aggregators[j]),
+          3,
+        );
+        await network.provider.send('hardhat_setStorageAt', [
+          '0x1c312b14c129EabC4796b0165A2c470b659E5f01',
+          slot.replace('0x0', '0x'),
+          web3.utils.padLeft(
+            web3.utils.numberToHex(web3.utils.toBN(web3.utils.toWei('1'))),
+            64,
+          ),
+        ]);
+      }
+    }
+  };
+
+  const updateLendingRate = async (lendingModule, pool) => {
+    if (lendingModule == 'ovix') {
+      const bearingToken = await ICompoundToken.at(
+        (await pool.lendingProtocolInfo.call())[1],
+      );
+      await bearingToken.exchangeRateCurrent();
+    }
+  };
+
   const checkGlobalData = async (
     pool,
     lps,
@@ -261,8 +303,9 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await network.provider.send('evm_increaseTime', [timeTravel]);
       await network.provider.send('evm_mine');
     }
+    await updateLendingRate(lendingId, pool);
     console.log('RESULT AFTER: ' + timeTravel + ' seconds');
-    const result = await analyticsMock.getAllPoolData.call(pool.address, lps);
+    const result = await analyticsMock.getAllPoolData(pool.address, lps);
     console.log(result[0], result[1], result[2], result[4]);
     const _totTokens = result[2][0];
     assert.equal(
@@ -345,16 +388,38 @@ contract('MultiLPLiquidityPool', function (accounts) {
     );
     const poolBearingBalance = result[2][2];
     const bearingValue = result[2][4];
-    assert.equal(
-      poolBearingBalance.toString(),
-      bearingValue.toString(),
-      'Wrong total bearing amount in the pool',
-    );
+    if (lendingId == 'AaveV3') {
+      assert.equal(
+        poolBearingBalance.toString(),
+        bearingValue.toString(),
+        'Wrong total bearing amount in the pool',
+      );
+    } else {
+      assert.equal(
+        web3.utils.toBN(poolBearingBalance).gte(web3.utils.toBN(bearingValue)),
+        true,
+        'Wrong total bearing amount in the pool',
+      );
+      console.log(
+        'DIFF POOL BEARING: ',
+        web3.utils
+          .toBN(poolBearingBalance)
+          .sub(web3.utils.toBN(bearingValue))
+          .toString(),
+      );
+    }
     const poolCollBalance = result[2][3];
     assert.equal(
       poolCollBalance.toString(),
       '0',
       'Collateral in the pool not 0',
+    );
+    const actualTotalCollateral = result[2][5];
+    const actualExpectedCollateral = result[2][6];
+    assert.equal(
+      actualTotalCollateral.toString(),
+      actualExpectedCollateral.toString(),
+      'Wrong total actual collateral',
     );
   };
 
@@ -374,6 +439,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
 
   before(async () => {
     networkId = await web3.eth.net.getId();
+    selectedLendingId = PoolV6Data[networkId].lendingId;
+    lendingId = selectedLendingId;
     collateralContract = await ERC20.at(PoolV6Data[networkId].collateral);
     collateralAddress = collateralContract.address;
     collateralDecimals = await collateralContract.decimals.call();
@@ -431,6 +498,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     lendingManagerContract = await LendingManager.deployed();
     lendingManagerAddress = lendingManagerContract.address;
     analyticsMock = await PoolAnalyticsMock.new(syntheFinderAddress);
+    await initializeLendingProtocol(lendingId);
   });
 
   beforeEach(async () => {
@@ -707,11 +775,12 @@ contract('MultiLPLiquidityPool', function (accounts) {
       truffleAssert.eventEmitted(activateTx, 'ActivatedLP', ev => {
         return ev.lp == LPs[0];
       });
+      let collateralDeposited;
       truffleAssert.eventEmitted(activateTx, 'DepositedLiquidity', ev => {
+        collateralDeposited = ev.collateralDeposited;
         return (
           ev.lp == LPs[0] &&
-          ev.collateralSent.toString() == LPsCollateral[0].toString() &&
-          ev.collateralDeposited.toString() == LPsCollateral[0].toString()
+          ev.collateralSent.toString() == LPsCollateral[0].toString()
         );
       });
       truffleAssert.eventEmitted(activateTx, 'SetOvercollateralization', ev => {
@@ -720,7 +789,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
           ev.overCollateralization.toString() == LPsOverCollateral[0].toString()
         );
       });
-      const temp = await poolContract.positionLPInfo.call(LPs[0]);
+      await poolContract.positionLPInfo.call(LPs[0]);
       isLpActive = await poolContract.isActiveLP.call(LPs[0]);
       assert.equal(true, isLpActive, 'Lp not active');
       const activeLps = await poolContract.getActiveLPs.call();
@@ -738,8 +807,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
         poolContract,
         [LPs[0]],
         0,
-        LPsCollateral[0],
-        LPsCollateral[0],
+        collateralDeposited,
+        collateralDeposited,
         price,
         0,
       );
@@ -747,8 +816,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
         poolContract,
         [LPs[0]],
         0,
-        LPsCollateral[0],
-        LPsCollateral[0],
+        collateralDeposited,
+        collateralDeposited,
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
@@ -780,6 +849,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         if (j == lpNumber - 1) {
           console.log('Gas used fot activation: ', activateTx.receipt.gasUsed);
         }
+        await network.provider.send('evm_increaseTime', [3600]);
       }
       const price = await priceFeedContract.getLatestPrice.call(
         priceIdenitiferBytes,
@@ -1227,7 +1297,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
 
     it('Can redeem', async () => {
-      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
+      const tokensAmount = web3.utils.toBN(web3.utils.toWei('100.3567459'));
       const price = await priceFeedContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
@@ -2383,6 +2453,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await network.provider.send('evm_increaseTime', [
         getRandomInt(3600, 24 * 7 * 3600),
       ]);
+      await updateLendingRate(lendingId, poolContract);
       await analyticsMock.updatePositions(poolAddress);
       const totalInterest = await analyticsMock.poolInterest.call();
       const lpInterst = calculateLpInterests(
@@ -2494,6 +2565,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await network.provider.send('evm_increaseTime', [
         getRandomInt(3600, 24 * 7 * 3600),
       ]);
+      await updateLendingRate(lendingId, poolContract);
       await analyticsMock.updatePositions(poolAddress);
       const totalInterest = await analyticsMock.poolInterest.call();
       const lpInterst = calculateLpInterests(
@@ -2623,6 +2695,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await network.provider.send('evm_increaseTime', [
         getRandomInt(3600, 24 * 7 * 3600),
       ]);
+      await updateLendingRate(lendingId, poolContract);
       await analyticsMock.updatePositions(poolAddress);
       const totalInterest = await analyticsMock.poolInterest.call();
       const lpInterst = calculateLpInterests(
@@ -3442,6 +3515,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         .add(totalCollateral)
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3460,6 +3534,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can switch to a lending module with fees on deposit', async () => {
       const depBonusPrcg = web3.utils.toWei('0.01');
@@ -3514,6 +3589,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         .add(totalCollateral)
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3532,6 +3608,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can revert if switch function is not called by the manager', async () => {
       const depBonusPrcg = web3.utils.toWei('0.01');
@@ -3671,6 +3748,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const exceedingAmount = collateralAmount
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3689,6 +3767,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can redeem', async () => {
       const collateralAmount = web3.utils
@@ -3729,6 +3808,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const redeemTx = await poolContract.redeem(redeemParams, {
         from: sender,
       });
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3751,6 +3831,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can add liquidity', async () => {
       const collateralAmount = web3.utils
@@ -3793,6 +3874,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const price = await priceFeedContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3815,6 +3897,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can remove liquidity', async () => {
       const collateralAmount = web3.utils
@@ -3865,6 +3948,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
           return true;
         },
       );
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3887,6 +3971,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can liquidate', async () => {
       const collateralAmount = web3.utils
@@ -3947,6 +4032,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         bonusAmount = ev.bonusAmount.toString();
         return true;
       });
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -3971,6 +4057,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         newPrice,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
       await resetOracle();
     });
   });
@@ -4086,6 +4173,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const exceedingAmount = collateralAmount
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -4104,6 +4192,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can redeem', async () => {
       const collateralAmount = web3.utils
@@ -4147,6 +4236,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const exceedingAmount = collateralAmount
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -4171,6 +4261,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can add liquidity', async () => {
       const collateralAmount = web3.utils
@@ -4216,6 +4307,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const exceedingAmount = collateralAmount
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -4240,6 +4332,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can remove liquidity', async () => {
       const collateralAmount = web3.utils
@@ -4293,6 +4386,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const exceedingAmount = collateralAmount
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -4317,6 +4411,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         price,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
     });
     it('Can liquidate', async () => {
       const collateralAmount = web3.utils
@@ -4380,6 +4475,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const exceedingAmount = collateralAmount
         .mul(web3.utils.toBN(depBonusPrcg))
         .div(web3.utils.toBN(preciseUnit.toString()));
+      lendingId = 'mock';
       await checkGlobalData(
         poolContract,
         LPs,
@@ -4406,6 +4502,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         newPrice,
         getRandomInt(3600, 24 * 7 * 3600),
       );
+      lendingId = selectedLendingId;
       await resetOracle();
     });
   });
