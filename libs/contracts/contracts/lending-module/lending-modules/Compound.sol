@@ -112,7 +112,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     tokensOut =
       totalPrevDeposit +
       totalInterest -
-      cToken.balanceOfUnderlying(msg.sender);
+      cToken.balanceOfUnderlying(_pool);
     tokensTransferred = collBalanceAfter - collBalanceBefore;
 
     // transfer underlying
