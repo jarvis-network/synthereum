@@ -130,29 +130,35 @@ async function migrate(deployer, network, accounts) {
   }
 
   // COMPOUND
-  let compoundModules = lendingData[networkId]?.Compound ?? [];
-  for (let i = 0; i < compoundModules.length; i++) {
-    let protocol = lendingData[networkId].Compound[i];
-    if (protocol.isEnabled ?? true) {
-      await deploy(web3, deployer, network, CompoundModule, {
-        from: keys.deployer,
-      });
-      const compoundModule = await getExistingInstance(
-        web3,
-        CompoundModule,
-        '@jarvis-network/synthereum-contracts',
-      );
-      await lendingManager.methods
-        .setLendingModule(protocol.id, {
-          lendingModule: compoundModule.options.address,
-          args: Buffer.from([]),
-        })
-        .send({ from: maintainer });
-      console.log(
-        'Compound module with id',
-        protocol.id,
-        'added to LendingManager',
-      );
+  if (lendingData[networkId]?.AaveV3?.isEnabled ?? true) {
+    await deploy(web3, deployer, network, CompoundModule, {
+      from: keys.deployer,
+    });
+    const compoundModule = await getExistingInstance(
+      web3,
+      CompoundModule,
+      '@jarvis-network/synthereum-contracts',
+    );
+    let compoundModules = lendingData[networkId]?.Compound ?? [];
+    for (let i = 0; i < compoundModules.length; i++) {
+      let protocol = lendingData[networkId].Compound[i];
+      if (protocol.isEnabled ?? true) {
+        const encodedInfo = web3.eth.abi.encodeParameters(
+          ['address'],
+          [lendingData[networkId].Compound[i].comptroller],
+        );
+        await lendingManager.methods
+          .setLendingModule(protocol.id, {
+            lendingModule: compoundModule.options.address,
+            args: encodedInfo,
+          })
+          .send({ from: maintainer });
+        console.log(
+          'Compound module with id',
+          protocol.id,
+          'added to LendingManager',
+        );
+      }
     }
   }
 
