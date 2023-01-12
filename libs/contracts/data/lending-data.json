@@ -12,18 +12,21 @@
     }
   },
   "137": {
-    "Compound": [
-      {
-        "id": "midas",
-        "comptroller": "0x0000000000000000000000000000000000000000",
-        "isEnabled": true
-      },
-      {
-        "id": "ovix",
-        "comptroller": "0x8849f1a0cB6b5D6076aB150546EddEe193754F1C",
-        "isEnabled": true
-      }
-    ],
+    "Compound": {
+      "modules": [
+        {
+          "id": "midas",
+          "comptroller": "0x0000000000000000000000000000000000000000",
+          "isEnabled": true
+        },
+        {
+          "id": "ovix",
+          "comptroller": "0x8849f1a0cB6b5D6076aB150546EddEe193754F1C",
+          "isEnabled": true
+        }
+      ],
+      "isEnabled": true
+    },
     "AaveV3": {
       "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
       "rewardsController": "0x0000000000000000000000000000000000000000",
@@ -64,5 +67,24 @@
     "commissionReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
     "buybackProgramReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
     "lendingRewardsReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c"
+  },
+  "97": {
+    "Compound": {
+      "modules": [],
+      "isEnabled": false
+    },
+    "AaveV3": {
+      "moneyManager": "",
+      "rewardsController": "0x0000000000000000000000000000000000000000",
+      "isEnabled": false
+    },
+    "SwapModules": {
+      "uniV2": false,
+      "balancer": false,
+      "collateral": ""
+    },
+    "commissionReceiver": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
+    "buybackProgramReceiver": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
+    "lendingRewardsReceiver": "0x0000000000000000000000000000000000000000"
   }
 }

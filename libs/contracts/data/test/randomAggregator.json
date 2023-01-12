@@ -17,15 +17,15 @@
   },
   "97": {
     "EURUSD": {
-      "initialPrice": "1.1281",
+      "initialPrice": "1.07",
       "maxSpread": "0.00000000868"
     },
     "GBPUSD": {
-      "initialPrice": "1.3449",
+      "initialPrice": "1.22",
       "maxSpread": "0.00000000868"
     },
     "NGNUSD": {
-      "initialPrice": "0.00243404",
+      "initialPrice": "0.0022",
       "maxSpread": "0.00000000868"
     }
   },

@@ -42,7 +42,12 @@
   "97": {
     "LiquidityPoolFactory": {
       "version": 5,
-      "isEnabled": true
+      "isEnabled": false
+    },
+    "MultiLpLiquidityPoolFactory": {
+      "version": 6,
+      "isEnabled": true,
+      "isRewarded": false
     }
   },
   "56": {
