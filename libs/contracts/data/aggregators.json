@@ -207,11 +207,6 @@
       "aggregator": "0x8FAf16F710003E538189334541F5D4a391Da46a0",
       "intermediatePairs": []
     },
-    "NGNUSD": {
-      "type": 0,
-      "aggregator": "0x1FF2B48ed0A1669d6CcC83f4B3c84FDdF13Ea594",
-      "intermediatePairs": []
-    },
     "BRLUSD": {
       "type": 0,
       "aggregator": "0x5cb1Cb3eA5FB46de1CE1D0F3BaDB3212e8d8eF48",
