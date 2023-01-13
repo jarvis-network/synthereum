@@ -30,8 +30,14 @@
   },
   "56": {
     "isEnabled": true,
-    "Pool": 5,
-    "SynthToken": {}
+    "Pool": 6,
+    "SynthToken": {
+      "jEUR": "0x23b8683Ff98F9E4781552DFE6f12Aa32814924e8",
+      "jGBP": "0x048E9b1ddF9EBbb224812372280e94Ccac443f9e",
+      "jCHF": "0x7c869b5A294b1314E985283d01C702B62224a05f",
+      "jMXN": "0x47b19Af93d0bC33805269Af02B5CA953Aa145127",
+      "jBRL": "0x316622977073BBC3dF32E7d2A9B3c77596a0a603"
+    }
   },
   "100": {
     "isEnabled": true,
