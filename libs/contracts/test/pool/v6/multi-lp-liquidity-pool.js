@@ -251,7 +251,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   };
 
   const initializeLendingProtocol = async lendingId => {
-    if (lendingId == 'ovix') {
+    if (lendingId == 'Ovix') {
       const aggregators = [
         '0x97371dF4492605486e23Da797fA68e55Fc38a13f',
         '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
@@ -282,7 +282,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   };
 
   const updateLendingRate = async (lendingModule, pool) => {
-    if (lendingModule == 'ovix') {
+    if (lendingModule == 'Ovix') {
       const bearingToken = await ICompoundToken.at(
         (await pool.lendingProtocolInfo.call())[1],
       );
