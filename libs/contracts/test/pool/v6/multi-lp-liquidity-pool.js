@@ -282,7 +282,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   };
 
   const updateLendingRate = async (lendingModule, pool) => {
-    if (lendingModule == 'Ovix') {
+    if (lendingModule == 'Ovix' || lendingModule == 'Midas') {
       const bearingToken = await ICompoundToken.at(
         (await pool.lendingProtocolInfo.call())[1],
       );
