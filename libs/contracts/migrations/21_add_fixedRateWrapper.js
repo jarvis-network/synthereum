@@ -93,14 +93,14 @@ module.exports = async function (deployer, network, accounts) {
           txData[j].fixedRateWrapperVersion,
           txData[j].fixedRatePayload,
         )
-        .estimateGas({ from: accounts[0] });
+        .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
         const tx = await synthereumDeployer.methods
           .deployFixedRate(
             txData[j].fixedRateWrapperVersion,
             txData[j].fixedRatePayload,
           )
-          .send({ from: accounts[0] });
+          .send({ from: maintainer });
         const { transactionHash } = tx;
         await logTransactionOutput({
           log,

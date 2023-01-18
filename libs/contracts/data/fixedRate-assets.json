@@ -29,6 +29,12 @@
       "syntheticSymbol": "jTRY",
       "rate": "1000000000000000000",
       "collateralAddress": "0x4Fb71290Ac171E1d144F7221D882BECAc7196EB5"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "rate": "1000000000000000000",
+      "collateralAddress": "0x491a4eB4f1FC3BfF8E1d2FC856a6A46663aD556f"
     }
   ],
   "80001": [
