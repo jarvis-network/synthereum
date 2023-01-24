@@ -109,6 +109,13 @@ export function setForkingUrl(
     enabled: true,
     blockNumber,
   };
+  config.networks.hardhat.accounts = {
+    mnemonic:
+      process.env.MNEMONIC ??
+      // contents are irrelevant, only used for CI builds
+      'ripple ship viable club inquiry act trap draft supply type again document',
+  };
+
   config.networks.hardhat.chainId = chainId;
   console.log(
     `'${gitlabForkEnvVariable}' env variable is specified -> updating Hardhat Network settings to:`,
