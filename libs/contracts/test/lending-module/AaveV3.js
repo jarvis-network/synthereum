@@ -70,7 +70,7 @@ contract('AaveV3 Lending module', accounts => {
 
     let deadline = (await web3.eth.getBlock('latest')).timestamp + 60000;
 
-    const nativeAmount = web3.utils.toWei('100');
+    const nativeAmount = web3.utils.toWei('10000');
     const actualBalance = await web3.eth.getBalance(recipient);
     const newTotal = web3.utils
       .toBN(nativeAmount)

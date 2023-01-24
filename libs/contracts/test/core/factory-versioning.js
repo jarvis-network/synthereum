@@ -1,11 +1,14 @@
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
+const SynthereumLiquidityPoolLib = artifacts.require(
+  'SynthereumLiquidityPoolLib',
+);
 const SynthereumLiquidityPoolFactory = artifacts.require(
   'SynthereumLiquidityPoolFactory',
 );
+const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineFactory = artifacts.require('CreditLineFactory');
-const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
 const {
   ZERO_ADDRESS,
@@ -27,11 +30,20 @@ contract('Factory versioning', function (accounts) {
     web3.utils.stringToHex('SelfMintingFactory'),
     64,
   );
-
-  beforeEach(async () => {
+  before(async () => {
     factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
-    poolFactoryAddress = (await SynthereumLiquidityPoolFactory.deployed())
-      .address;
+    const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
+    await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    const finder = await SynthereumFinder.deployed();
+    poolFactoryAddress = (
+      await SynthereumLiquidityPoolFactory.new(finder.address)
+    ).address;
+    await factoryVersioningInstance.setFactory(
+      web3.utils.stringToHex('PoolFactory'),
+      5,
+      poolFactoryAddress,
+      { from: maintainer },
+    );
     selfMintingFactoryAddress = (await CreditLineFactory.deployed()).address;
   });
 

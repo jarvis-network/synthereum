@@ -24,7 +24,6 @@ const SynthereumIdentifierWhitelist = artifacts.require(
 const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
-const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
 const MockAggregator = artifacts.require('MockAggregator');
 const PriceFeedGetter = artifacts.require('PriceFeedGetter');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
@@ -32,6 +31,15 @@ const CreditLine = artifacts.require('CreditLine');
 const WrongTypology = artifacts.require('WrongTypology');
 const PoolMock = artifacts.require('PoolMock');
 const PoolRegistryMock = artifacts.require('PoolRegistryMock');
+const SynthereumLiquidityPoolLib = artifacts.require(
+  'SynthereumLiquidityPoolLib',
+);
+const SynthereumLiquidityPoolFactory = artifacts.require(
+  'SynthereumLiquidityPoolFactory',
+);
+const SynthereumFactoryVersioning = artifacts.require(
+  'SynthereumFactoryVersioning',
+);
 
 contract('Synthereum chainlink price feed', function (accounts) {
   let collateralAddress;
@@ -88,6 +96,19 @@ contract('Synthereum chainlink price feed', function (accounts) {
       web3.utils.utf8ToHex(priceFeedIdentifier),
       aggregator.address,
       [],
+      { from: maintainer },
+    );
+    const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
+    await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    const finder = await SynthereumFinder.deployed();
+    poolFactoryInstance = await SynthereumLiquidityPoolFactory.new(
+      finder.address,
+    );
+    const factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
+    await factoryVersioningInstance.setFactory(
+      web3.utils.stringToHex('PoolFactory'),
+      5,
+      poolFactoryInstance.address,
       { from: maintainer },
     );
   });

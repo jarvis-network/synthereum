@@ -132,7 +132,18 @@ contract('Registries', function (accounts) {
     );
     factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
     tokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
-    poolFactoryInstance = await SynthereumLiquidityPoolFactory.deployed();
+    finder = await SynthereumFinder.deployed();
+    const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
+    await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    poolFactoryInstance = await SynthereumLiquidityPoolFactory.new(
+      finder.address,
+    );
+    await factoryVersioningInstance.setFactory(
+      web3.utils.stringToHex('PoolFactory'),
+      5,
+      poolFactoryInstance.address,
+      { from: maintainer },
+    );
     selfMintingFactoryInstance = await CreditLineFactory.deployed();
     poolRegistryInstance = await SynthereumPoolRegistry.deployed();
     minterRole = web3Utils.soliditySha3('Minter');
@@ -143,7 +154,6 @@ contract('Registries', function (accounts) {
     poolVersion = 5;
     selfMintingVersion = 2;
     fixedRateVersion = 1;
-    finder = await SynthereumFinder.deployed();
     synthereumFinderAddress = finder.address;
     manager = await SynthereumManager.deployed();
     poolPayload = encodeLiquidityPool(

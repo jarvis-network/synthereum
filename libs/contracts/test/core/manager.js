@@ -21,13 +21,20 @@ const SynthereumCollateralWhitelist = artifacts.require(
 const SynthereumIdentifierWhitelist = artifacts.require(
   'SynthereumIdentifierWhitelist',
 );
-const CreditLineLib = artifacts.require('CreditLineLib');
-const CreditLineFactory = artifacts.require('CreditLineFactory');
-const CreditLineController = artifacts.require('CreditLineController');
+const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 const MockAggregator = artifacts.require('MockAggregator');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
+);
+const SynthereumLiquidityPoolLib = artifacts.require(
+  'SynthereumLiquidityPoolLib',
+);
+const SynthereumLiquidityPoolFactory = artifacts.require(
+  'SynthereumLiquidityPoolFactory',
+);
+const SynthereumFactoryVersioning = artifacts.require(
+  'SynthereumFactoryVersioning',
 );
 
 contract('Manager', function (accounts) {
@@ -100,6 +107,19 @@ contract('Manager', function (accounts) {
       {
         from: maintainer,
       },
+    );
+    const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
+    await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    const finder = await SynthereumFinder.deployed();
+    poolFactoryInstance = await SynthereumLiquidityPoolFactory.new(
+      finder.address,
+    );
+    const factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
+    await factoryVersioningInstance.setFactory(
+      web3.utils.stringToHex('PoolFactory'),
+      5,
+      poolFactoryInstance.address,
+      { from: maintainer },
     );
     managerInstance = await SynthereumManager.deployed();
     adminRole = '0x00';

@@ -12,12 +12,11 @@ const { artifacts } = require('hardhat');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumManager = artifacts.require('SynthereumManager');
+const SynthereumLiquidityPoolLib = artifacts.require(
+  'SynthereumLiquidityPoolLib',
+);
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
-);
-const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
-const MintableBurnableSyntheticToken = artifacts.require(
-  'MintableBurnableSyntheticToken',
 );
 const SynthereumCollateralWhitelist = artifacts.require(
   'SynthereumCollateralWhitelist',
@@ -128,7 +127,18 @@ contract('Factories', function (accounts) {
     );
     factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
     tokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
-    poolFactoryInstance = await SynthereumLiquidityPoolFactory.deployed();
+    const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
+    await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    const finder = await SynthereumFinder.deployed();
+    poolFactoryInstance = await SynthereumLiquidityPoolFactory.new(
+      finder.address,
+    );
+    await factoryVersioningInstance.setFactory(
+      web3.utils.stringToHex('PoolFactory'),
+      5,
+      poolFactoryInstance.address,
+      { from: maintainer },
+    );
     multiLpPoolFactoryInstance = await SynthereumMultiLpLiquidityPoolFactory.deployed();
     selfMintingFactoryInstance = await CreditLineFactory.deployed();
   });

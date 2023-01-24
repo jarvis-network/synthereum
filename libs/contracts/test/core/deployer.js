@@ -64,9 +64,12 @@ const PoolV6Data = require('../../data/test/poolV6.json');
 
 contract('Deployer', function (accounts) {
   let collateralAddress;
-  let priceFeedIdentifier = 'EURUSD';
+  let priceIdentifier = 'EURUSD';
   let syntheticName = 'Jarvis Synthetic Euro';
-  let syntheticSymbol = 'jEUR';
+  let synthSymbol = 'jEUR';
+  let lendingId = 'AaveV3';
+  let daoInterestShare = web3.utils.toWei('0.1');
+  let jrtBuybackShare = web3.utils.toWei('0.6');
   let syntheticTokenAddress = ZERO_ADDRESS;
   let collateralRequirement = web3Utils.toWei('1.1');
   let minSponsorTokens = web3Utils.toWei('1');
@@ -84,6 +87,7 @@ contract('Deployer', function (accounts) {
     liquidityProvider,
   };
   let overCollateralization = web3Utils.toWei('0.2');
+  let overCollateralRequirement = web3.utils.toWei('0.05');
   let liquidationReward = web3Utils.toWei('0.5');
   let feePercentage = 0.02;
   let DAO = accounts[5];
@@ -115,7 +119,7 @@ contract('Deployer', function (accounts) {
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
     await synthereumChainlinkPriceFeed.setPair(
       0,
-      web3.utils.utf8ToHex(priceFeedIdentifier),
+      web3.utils.utf8ToHex(priceIdentifier),
       mockAggregator.address,
       [],
       { from: maintainer },
@@ -126,7 +130,7 @@ contract('Deployer', function (accounts) {
     });
     identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
     await identifierWhitelistInstance.addToWhitelist(
-      web3.utils.utf8ToHex(priceFeedIdentifier),
+      web3.utils.utf8ToHex(priceIdentifier),
       {
         from: maintainer,
       },
@@ -139,27 +143,35 @@ contract('Deployer', function (accounts) {
   });
   beforeEach(async () => {
     deployerInstance = await SynthereumDeployer.deployed();
-    poolVersion = 5;
+    poolVersion = 6;
     finderInstance = await SynthereumFinder.deployed();
     synthereumFinderAddress = finderInstance.address;
     managerContract = await SynthereumManager.deployed();
     manager = managerContract.address;
-    poolPayload = encodeLiquidityPool(
+    poolPayload = encodeMultiLpLiquidityPool(
+      poolVersion,
       collateralAddress,
       syntheticName,
-      syntheticSymbol,
-      syntheticTokenAddress,
+      synthSymbol,
+      ZERO_ADDRESS,
       roles,
-      overCollateralization,
-      fee,
-      priceFeedIdentifier,
-      collateralRequirement,
+      feePercentage,
+      priceIdentifier,
+      overCollateralRequirement,
       liquidationReward,
-      poolVersion,
+      lendingId,
+      ZERO_ADDRESS,
+      daoInterestShare,
+      jrtBuybackShare,
     );
   });
 
   describe('Should deploy pool', () => {
+    before(async () => {
+      const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.new();
+      await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+    });
+
     it('Can deploy with new synthetic token', async () => {
       const pool = await deployerInstance.deployPool.call(
         poolVersion,
@@ -172,7 +184,7 @@ contract('Deployer', function (accounts) {
         { from: maintainer },
       );
       truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
-        return ev.poolVersion == 5 && ev.newPool == pool;
+        return ev.poolVersion == 6 && ev.newPool == pool;
       });
       //Check roles of synth token
       const liquidityPool = await SynthereumLiquidityPool.at(pool);
@@ -216,18 +228,21 @@ contract('Deployer', function (accounts) {
       const synthTokenInstance = await MintableBurnableSyntheticToken.at(
         synthTokenAddress,
       );
-      const secondPoolPayload = encodeLiquidityPool(
+      const secondPoolPayload = encodeMultiLpLiquidityPool(
+        poolVersion,
         collateralAddress,
         syntheticName,
-        syntheticSymbol,
+        synthSymbol,
         synthTokenAddress,
         roles,
-        overCollateralization,
-        fee,
-        priceFeedIdentifier,
-        collateralRequirement,
+        feePercentage,
+        priceIdentifier,
+        overCollateralRequirement,
         liquidationReward,
-        poolVersion,
+        lendingId,
+        ZERO_ADDRESS,
+        daoInterestShare,
+        jrtBuybackShare,
       );
       const secondPool = await deployerInstance.deployPool.call(
         poolVersion,
@@ -318,8 +333,7 @@ contract('Deployer', function (accounts) {
         forwarderInstance.address,
         { from: maintainer },
       );
-      const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.deployed();
-      await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
+
       const wrongFactory = await SynthereumLiquidityPoolFactory.new(
         newFinder.address,
       );
@@ -329,36 +343,58 @@ contract('Deployer', function (accounts) {
         wrongFactory.address,
         { from: maintainer },
       );
+      const revertingPoolPayload = encodeLiquidityPool(
+        collateralAddress,
+        syntheticName,
+        synthSymbol,
+        ZERO_ADDRESS,
+        roles,
+        overCollateralization,
+        fee,
+        priceIdentifier,
+        collateralRequirement,
+        liquidationReward,
+        5,
+      );
       await truffleAssert.reverts(
-        deployerInstance.deployPool(poolVersion, poolPayload, {
+        deployerInstance.deployPool(5, revertingPoolPayload, {
           from: maintainer,
         }),
         'Wrong finder in deployment',
       );
-      await factoryVersioningInstance.setFactory(
+      await factoryVersioningInstance.removeFactory(
         web3.utils.stringToHex('PoolFactory'),
         5,
-        (await SynthereumLiquidityPoolFactory.deployed()).address,
         { from: maintainer },
       );
     });
     it('Can revert if pool version is different from the one using in the deployemnt', async () => {
+      const newFactory = await SynthereumLiquidityPoolFactory.new(
+        finderInstance.address,
+      );
+      await factoryVersioningInstance.setFactory(
+        web3.utils.stringToHex('PoolFactory'),
+        5,
+        newFactory.address,
+        { from: maintainer },
+      );
       const wrongPoolVersion = 6;
-      poolPayload = encodeLiquidityPool(
+      const revertingPoolPayload = encodeLiquidityPool(
         collateralAddress,
         syntheticName,
-        syntheticSymbol,
-        syntheticTokenAddress,
+        synthSymbol,
+        ZERO_ADDRESS,
         roles,
         overCollateralization,
         fee,
-        priceFeedIdentifier,
+        priceIdentifier,
         collateralRequirement,
         liquidationReward,
         wrongPoolVersion,
       );
+
       await truffleAssert.reverts(
-        deployerInstance.deployPool(poolVersion, poolPayload, {
+        deployerInstance.deployPool(5, revertingPoolPayload, {
           from: maintainer,
         }),
         'Wrong version in deployment',
@@ -375,18 +411,17 @@ contract('Deployer', function (accounts) {
         maintainer,
       };
       const overCollateralRequirement = web3.utils.toWei('0.05');
-      const lendingId = 'AaveV3';
       const daoInterestShare = web3.utils.toWei('0.1');
       const jrtBuybackShare = web3.utils.toWei('0.6');
       poolDataPayload = encodeMultiLpLiquidityPool(
         migratePoolVersion,
         collateralAddress,
         syntheticName,
-        syntheticSymbol,
+        synthSymbol,
         ZERO_ADDRESS,
         multiLpRoles,
         feePercentage,
-        priceFeedIdentifier,
+        priceIdentifier,
         overCollateralRequirement,
         liquidationReward,
         lendingId,
@@ -648,7 +683,7 @@ contract('Deployer', function (accounts) {
         selfMintingCollateralAddress,
         selfMintingPriceFeedIdentifier,
         syntheticName,
-        syntheticSymbol,
+        synthSymbol,
         synthTokenInstance.address,
         collateralRequirement,
         minSponsorTokens,
@@ -796,7 +831,7 @@ contract('Deployer', function (accounts) {
         selfMintingCollateralAddress,
         selfMintingPriceFeedIdentifier,
         syntheticName,
-        syntheticSymbol,
+        synthSymbol,
         synthTokenInstance.address,
         collateralRequirement,
         minSponsorTokens,
@@ -876,7 +911,7 @@ contract('Deployer', function (accounts) {
         selfMintingCollateralAddress,
         selfMintingPriceFeedIdentifier,
         syntheticName,
-        syntheticSymbol,
+        synthSymbol,
         synthTokenInstance.address,
         collateralRequirement,
         minSponsorTokens,
@@ -1066,7 +1101,7 @@ contract('Deployer', function (accounts) {
       const secondFixedRatePayload = encodeFixedRate(
         collateralAddress,
         syntheticName,
-        syntheticSymbol,
+        synthSymbol,
         synthTokenAddress,
         {
           admin: admin,
