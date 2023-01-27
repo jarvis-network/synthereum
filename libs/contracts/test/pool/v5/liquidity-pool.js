@@ -38,6 +38,7 @@ const {
   liquidateV5Encoding,
   settleEmergencyShutdownV5Encoding,
 } = require('../../../utils/metaTx.js');
+require('dotenv').config();
 
 contract('LiquidityPool', function (accounts) {
   let collateralInstance;
@@ -90,7 +91,8 @@ contract('LiquidityPool', function (accounts) {
   const initialUserAllocation = web3Utils.toWei('500', 'mwei');
   const MAX_GAS = 12000000;
   const mnemonic =
-    'test test test test test test test test test test test junk';
+    process.env.MNEMONIC ??
+    'ripple ship viable club inquiry act trap draft supply type again document';
 
   const checkResult = async (
     liquidityPool,
@@ -1662,7 +1664,9 @@ contract('LiquidityPool', function (accounts) {
       const increaseCollateralTx = await liquidityPoolInstance.increaseCollateral(
         0,
         collateralToAdd,
-        { from: liquidityProvider },
+        {
+          from: liquidityProvider,
+        },
       );
       const newTotalCollateral = web3Utils
         .toBN(actualPositionCollateral)
@@ -1835,7 +1839,9 @@ contract('LiquidityPool', function (accounts) {
       const decreaseCollateralTx = await liquidityPoolInstance.decreaseCollateral(
         collateralToRemove,
         0,
-        { from: liquidityProvider },
+        {
+          from: liquidityProvider,
+        },
       );
       const newTotalCollateral = web3Utils
         .toBN(actualPositionCollateral)

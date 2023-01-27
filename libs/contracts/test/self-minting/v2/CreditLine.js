@@ -1007,7 +1007,8 @@ contract('Synthereum CreditLine ', function (accounts) {
     it('Can test msgData with meta-tx', async () => {
       const MAX_GAS = 12000000;
       const mnemonic =
-        'test test test test test test test test test test test junk';
+        process.env.MNEMONIC ??
+        'ripple ship viable club inquiry act trap draft supply type again document';
       await MockContext.link(creditLineLib);
       const context = await MockContext.new(creditLineParams);
       const data = Web3EthAbi.encodeFunctionSignature('test()');
@@ -1848,7 +1849,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
     const emergencyShutdownTx = await synthereumManagerInstance.emergencyShutdown(
       [creditLine.address],
-      { from: maintainers },
+      {
+        from: maintainers,
+      },
     );
 
     // // // check event
