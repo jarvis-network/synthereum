@@ -28,6 +28,7 @@ contract DebtToken is ERC20, ReentrancyGuard, StandardAccessControlEnumerable {
   uint256 public donated;
   uint256 public bonded;
   uint256 public withdrawn;
+  uint256 public burned;
 
   event Donated(address indexed user, uint256 amount);
   event Bonded(address indexed user, uint256 amount);
@@ -84,6 +85,7 @@ contract DebtToken is ERC20, ReentrancyGuard, StandardAccessControlEnumerable {
 
     if (burn) {
       IMintableBurnableERC20(jFiat).burn(amount);
+      burned += amount;
     }
 
     withdrawn -= amount;
