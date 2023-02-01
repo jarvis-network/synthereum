@@ -43,15 +43,48 @@ contract('Debt Token Contract', accounts => {
     await jFiat.mint(user2, jrtAmount.toString(), { from: accounts[0] });
   });
 
+  const finalCheck = async debtToken => {
+    const jAssetBalance = toBN(await debtToken.jFiatBalance.call());
+    const donated = toBN(await debtToken.donated.call());
+    const bonded = toBN(await debtToken.bonded.call());
+    const withdrawn = toBN(await debtToken.withdrawn.call());
+    assert.equal(
+      jAssetBalance.toString(),
+      donated.add(bonded).sub(withdrawn).toString(),
+    );
+    const sentAmount = toBN(toWei('15'));
+    await jFiat.mint(user1, sentAmount.toString(), { from: accounts[0] });
+    await jFiat.transfer(debtToken.address, sentAmount.toString(), {
+      from: user1,
+    });
+    const jAssetBalanceAfter = toBN(await debtToken.jFiatBalance.call());
+    const donatedAfter = toBN(await debtToken.donated.call());
+    assert.equal(
+      jAssetBalanceAfter.toString(),
+      jAssetBalance.add(sentAmount).toString(),
+    );
+    assert.equal(donatedAfter.toString(), donated.add(sentAmount).toString());
+    assert.equal(
+      jAssetBalanceAfter.toString(),
+      donatedAfter.add(bonded).sub(withdrawn).toString(),
+    );
+  };
+
   describe('Lifecycle', () => {
+    afterEach(async () => {
+      await finalCheck(debtToken);
+    });
     it('Allows to deposit jFiat as donation', async () => {
       let userBalanceBefore = await jFiat.balanceOf.call(user1);
+      let contractBalanceBefore = await jFiat.balanceOf.call(debtToken.address);
       let debtTokenBalanceBefore = await debtToken.balanceOf.call(user1);
       let totalDepositBefore = await debtToken.donated.call();
       let amount = toWei('10');
 
       await jFiat.approve(debtToken.address, amount, { from: user1 });
-      let tx = await debtToken.deposit(amount, true, { from: user1 });
+      let tx = await debtToken.depositJFiat(amount, true, {
+        from: user1,
+      });
       truffleAssert.eventEmitted(tx, 'Donated', ev => {
         return ev.user == user1 && ev.amount.toString() == amount.toString();
       });
@@ -63,11 +96,16 @@ contract('Debt Token Contract', accounts => {
       );
 
       let userBalanceAfter = await jFiat.balanceOf.call(user1);
+      let contractBalanceAfter = await jFiat.balanceOf.call(debtToken.address);
       let debtTokenBalanceAfter = await debtToken.balanceOf.call(user1);
 
       assert.equal(
         userBalanceAfter.toString(),
         toBN(userBalanceBefore).sub(toBN(amount)).toString(),
+      );
+      assert.equal(
+        contractBalanceAfter.toString(),
+        toBN(contractBalanceBefore).add(toBN(amount)).toString(),
       );
       assert.equal(
         debtTokenBalanceAfter.toString(),
@@ -78,12 +116,13 @@ contract('Debt Token Contract', accounts => {
     it('Allows to deposit jFiat and bond to receive debt token', async () => {
       let userBalanceBefore = await jFiat.balanceOf.call(user1);
       let debtTokenBalanceBefore = await debtToken.balanceOf.call(user1);
+      let contractBalanceBefore = await jFiat.balanceOf.call(debtToken.address);
       let totalBondedBefore = await debtToken.bonded.call();
 
       let amount = toWei('10');
 
       await jFiat.approve(debtToken.address, amount, { from: user1 });
-      let tx = await debtToken.deposit(amount, false, { from: user1 });
+      let tx = await debtToken.depositJFiat(amount, false, { from: user1 });
       truffleAssert.eventEmitted(tx, 'Bonded', ev => {
         return ev.user == user1 && ev.amount.toString() == amount.toString();
       });
@@ -95,6 +134,7 @@ contract('Debt Token Contract', accounts => {
       );
 
       let userBalanceAfter = await jFiat.balanceOf.call(user1);
+      let contractBalanceAfter = await jFiat.balanceOf.call(debtToken.address);
       let debtTokenBalanceAfter = await debtToken.balanceOf.call(user1);
 
       assert.equal(
@@ -102,31 +142,32 @@ contract('Debt Token Contract', accounts => {
         toBN(userBalanceBefore).sub(toBN(amount)).toString(),
       );
       assert.equal(
+        contractBalanceAfter.toString(),
+        toBN(contractBalanceBefore).add(toBN(amount)).toString(),
+      );
+      assert.equal(
         debtTokenBalanceAfter.toString(),
         toBN(debtTokenBalanceBefore).add(toBN(amount)).toString(),
       );
     });
 
-    it('Only maintainer can withdraw bonded jFiat', async () => {
-      let maintainerBalanceBefore = await jFiat.balanceOf.call(
-        roles.maintainer,
-      );
+    it('Maintainer can withdraw bonded jFiat', async () => {
+      let receiverBalanceBefore = await jFiat.balanceOf.call(user2);
       let contractBalanceBefore = await jFiat.balanceOf.call(debtToken.address);
       let totalWithdrawnBefore = await debtToken.withdrawn.call();
 
-      let amount = toWei('10');
+      let amount = toWei('15');
 
-      let tx = await debtToken.withdrawBondedJFiat(amount, roles.maintainer, {
+      let tx = await debtToken.withdrawJFiat(amount, user2, {
         from: roles.maintainer,
       });
       truffleAssert.eventEmitted(tx, 'Withdrawn', ev => {
         return (
-          ev.recipient == roles.maintainer &&
-          ev.amount.toString() == amount.toString()
+          ev.recipient == user2 && ev.amount.toString() == amount.toString()
         );
       });
 
-      let maintainerBalanceAfter = await jFiat.balanceOf.call(roles.maintainer);
+      let receiverBalanceAfter = await jFiat.balanceOf.call(user2);
       let contractBalanceAfter = await jFiat.balanceOf.call(debtToken.address);
       let totalWithdrawnAfter = await debtToken.withdrawn.call();
 
@@ -135,8 +176,8 @@ contract('Debt Token Contract', accounts => {
         toBN(totalWithdrawnBefore).add(toBN(amount)).toString(),
       );
       assert.equal(
-        maintainerBalanceAfter.toString(),
-        toBN(maintainerBalanceBefore).add(toBN(amount)).toString(),
+        receiverBalanceAfter.toString(),
+        toBN(receiverBalanceBefore).add(toBN(amount)).toString(),
       );
       assert.equal(
         contractBalanceAfter.toString(),
@@ -144,70 +185,13 @@ contract('Debt Token Contract', accounts => {
       );
     });
 
-    it('Only maintainer can deposit and burn withdrawn jFiat', async () => {
-      let maintainerBalanceBefore = await jFiat.balanceOf.call(
-        roles.maintainer,
-      );
-      let contractBalanceBefore = await jFiat.balanceOf.call(debtToken.address);
-      let totalWithdrawnBefore = await debtToken.withdrawn.call();
-
-      let amountDeposit = toWei('5');
-      let amountBurn = toWei('5');
-
-      await jFiat.approve(debtToken.address, toWei('10'), {
-        from: roles.maintainer,
-      });
-
-      // deposit to burn
-      let tx = await debtToken.depositBondedJFiat(amountBurn, true, {
-        from: roles.maintainer,
-      });
-      truffleAssert.eventEmitted(tx, 'Deposited', ev => {
-        return ev.burn == true && ev.amount.toString() == amountBurn.toString();
-      });
-
-      let maintainerBalanceAfter = await jFiat.balanceOf.call(roles.maintainer);
-      let contractBalanceAfter = await jFiat.balanceOf.call(debtToken.address);
-      let totalWithdrawnAfter = await debtToken.withdrawn.call();
-
-      assert.equal(
-        totalWithdrawnAfter.toString(),
-        toBN(totalWithdrawnBefore).sub(toBN(amountBurn)).toString(),
-      );
-      assert.equal(
-        maintainerBalanceAfter.toString(),
-        toBN(maintainerBalanceBefore).sub(toBN(amountBurn)).toString(),
-      );
-      assert.equal(
-        contractBalanceAfter.toString(),
-        toBN(contractBalanceBefore).toString(),
-      );
-
-      // deposit no burn
-      tx = await debtToken.depositBondedJFiat(amountDeposit, false, {
-        from: roles.maintainer,
-      });
-      truffleAssert.eventEmitted(tx, 'Deposited', ev => {
-        return (
-          ev.burn == false && ev.amount.toString() == amountDeposit.toString()
-        );
-      });
-
-      let maintainerBalanceFinal = await jFiat.balanceOf.call(roles.maintainer);
-      let contractBalanceFinal = await jFiat.balanceOf.call(debtToken.address);
-      let totalWithdrawnFinal = await debtToken.withdrawn.call();
-
-      assert.equal(
-        totalWithdrawnFinal.toString(),
-        toBN(totalWithdrawnAfter).sub(toBN(amountDeposit)).toString(),
-      );
-      assert.equal(
-        maintainerBalanceFinal.toString(),
-        toBN(maintainerBalanceAfter).sub(toBN(amountDeposit)).toString(),
-      );
-      assert.equal(
-        contractBalanceFinal.toString(),
-        toBN(contractBalanceAfter).add(toBN(amountDeposit)).toString(),
+    it('Revert if a non-maintainer can withdraw bonded jFiat', async () => {
+      const amount = '1';
+      await truffleAssert.reverts(
+        debtToken.withdrawJFiat(amount, user2, {
+          from: user1,
+        }),
+        'Sender must be the maintainer',
       );
     });
   });
