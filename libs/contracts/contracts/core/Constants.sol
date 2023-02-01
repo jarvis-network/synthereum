@@ -25,6 +25,7 @@ library SynthereumInterfaces {
   bytes32 public constant BuybackProgramReceiver = 'BuybackProgramReceiver';
   bytes32 public constant LendingRewardsReceiver = 'LendingRewardsReceiver';
   bytes32 public constant JarvisToken = 'JarvisToken';
+  bytes32 public constant DebtTokenFactory = 'DebtTokenFactory';
 }
 
 library FactoryInterfaces {
