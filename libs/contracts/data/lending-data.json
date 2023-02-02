@@ -68,48 +68,31 @@
     "buybackProgramReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
     "lendingRewardsReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c"
   },
-  "97": {
-    "Compound": {
-      "modules": [],
-      "isEnabled": false
-    },
+  "42161": {
+    "Compound": [
+      {
+        "id": "midas",
+        "rewardsController": "0x0000000000000000000000000000000000000000",
+        "isEnabled": false
+      },
+      {
+        "id": "ovix",
+        "rewardsController": "0x0000000000000000000000000000000000000000",
+        "isEnabled": false
+      }
+    ],
     "AaveV3": {
-      "moneyManager": "",
+      "moneyManager": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
       "rewardsController": "0x0000000000000000000000000000000000000000",
-      "isEnabled": false
-    },
-    "SwapModules": {
-      "uniV2": false,
-      "balancer": false,
-      "collateral": ""
-    },
-    "commissionReceiver": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
-    "buybackProgramReceiver": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
-    "lendingRewardsReceiver": "0x0000000000000000000000000000000000000000"
-  },
-  "56": {
-    "Compound": {
-      "modules": [
-        {
-          "id": "Midas",
-          "comptroller": "0x31d76A64Bc8BbEffb601fac5884372DEF910F044",
-          "isEnabled": true
-        }
-      ],
       "isEnabled": true
     },
-    "AaveV3": {
-      "moneyManager": "",
-      "rewardsController": "0x0000000000000000000000000000000000000000",
-      "isEnabled": false
-    },
     "SwapModules": {
       "uniV2": false,
       "balancer": false,
-      "collateral": ""
+      "collateral": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
     },
-    "commissionReceiver": "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc",
-    "buybackProgramReceiver": "0x0000000000000000000000000000000000000000",
+    "commissionReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
+    "buybackProgramReceiver": "0xc31249ba48763df46388ba5c4e7565d62ed4801c",
     "lendingRewardsReceiver": "0x0000000000000000000000000000000000000000"
   }
 }
