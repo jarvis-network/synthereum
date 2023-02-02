@@ -67,7 +67,9 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
     view
     returns (address)
   {
-    return debtTokens[_tokenSymbol];
+    address debtTokenAddr = debtTokens[_tokenSymbol];
+    require(debtTokenAddr != address(0), 'Debt token not supported');
+    return debtTokenAddr;
   }
 
   /**

@@ -114,5 +114,11 @@ contract('Debt Toke Factory Contract', accounts => {
         'Debt token already created',
       );
     });
+    it('Can revert if tryying to get a not existing debt-token', async () => {
+      await truffleAssert.reverts(
+        debtTokenFactory.debtToken.call('jCHF'),
+        'Debt token not supported',
+      );
+    });
   });
 });
