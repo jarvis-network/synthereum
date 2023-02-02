@@ -1,0 +1,16 @@
+{
+  "80001": [
+    {
+      "name": "jEUR Debt Token",
+      "symbol": "jEUR-debt",
+      "syntheticToken": "0x02CBE6055F8aad745321f70d6aDD4711455c7F45",
+      "syntheticSymbol": "jEUR"
+    },
+    {
+      "name": "jGBP Debt Token",
+      "symbol": "jGBP-debt",
+      "syntheticToken": "0x915E1f55eC2dc1524101ef44d4a0EebFe10Bc6bc",
+      "syntheticSymbol": "jGBP"
+    }
+  ]
+}
