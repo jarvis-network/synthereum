@@ -36,27 +36,25 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
    * @param _tokenName Name of the debt-token
    * @param _tokenSymbol Symbol of the debt-token
    * @param _roles Admin and maintainer roles
-   * @return debtToken Address of the debt-token deployed
+   * @return debtTokenContract Address of the debt-token deployed
    */
   function createDebtToken(
     IStandardERC20 _jFiat,
     string memory _tokenName,
     string memory _tokenSymbol,
     Roles memory _roles
-  ) external onlyMaintainer nonReentrant returns (address debtToken) {
+  ) external onlyMaintainer nonReentrant returns (DebtToken debtTokenContract) {
     string memory symbol = _jFiat.symbol();
     require(
       syntheticTokens.add(symbol.stringToBytes32()),
       'Debt token already created'
     );
+    debtTokenContract = new DebtToken(_jFiat, _tokenName, _tokenSymbol, _roles);
+    address debtTokenAddr = address(debtTokenContract);
 
-    debtToken = address(
-      new DebtToken(_jFiat, _tokenName, _tokenSymbol, _roles)
-    );
+    debtTokens[symbol] = debtTokenAddr;
 
-    debtTokens[symbol] = debtToken;
-
-    emit DebtTokenCreated(address(_jFiat), debtToken);
+    emit DebtTokenCreated(address(_jFiat), debtTokenAddr);
   }
 
   /**
