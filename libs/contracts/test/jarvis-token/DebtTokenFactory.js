@@ -51,11 +51,40 @@ contract('Debt Toke Factory Contract', accounts => {
         return ev.jAsset == jFiat.address && ev.debtToken == debTokenAddress;
       });
       const jTokenSymbol = await jFiat.symbol.call();
+      let tokenSymbols = await debtTokenFactory.getSyntheticTokens.call();
+      assert.deepEqual(tokenSymbols, [jTokenSymbol], 'Wrong token symbols');
       assert.equal(
         debTokenAddress,
         await debtTokenFactory.debtToken.call(jTokenSymbol),
       );
       assert.notEqual(debTokenAddress, ZERO_ADDRESS);
+      jFiat = await TestnetSelfMintingERC20.new('Jarvis Euro', 'jEur', 18, {
+        from: accounts[0],
+      });
+      const secondJTokenSymbol = 'jGBP';
+      jFiatSecond = await TestnetSelfMintingERC20.new(
+        'Jarvis British Pound',
+        secondJTokenSymbol,
+        18,
+        {
+          from: accounts[0],
+        },
+      );
+      await debtTokenFactory.createDebtToken(
+        jFiatSecond.address,
+        'Debt Jarvis Synthetic British Pound',
+        'D-jGBP',
+        roles,
+        {
+          from: roles.maintainer,
+        },
+      );
+      tokenSymbols = await debtTokenFactory.getSyntheticTokens.call();
+      assert.deepEqual(
+        tokenSymbols,
+        [jTokenSymbol, secondJTokenSymbol],
+        'Wrong token symbols',
+      );
     });
     it('Can revert if sender is not the maintainer', async () => {
       await truffleAssert.reverts(

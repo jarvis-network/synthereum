@@ -2,6 +2,10 @@
 pragma solidity 0.8.9;
 
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {StringUtils} from '../../base/utils/StringUtils.sol';
 import {DebtToken} from '../DebtToken.sol';
 import {
   ReentrancyGuard
@@ -11,7 +15,13 @@ import {
 } from '../../common/roles/StandardAccessControlEnumerable.sol';
 
 contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
+  using EnumerableSet for EnumerableSet.Bytes32Set;
+  using StringUtils for string;
+  using StringUtils for bytes32;
+
   mapping(string => address) private debtTokens;
+
+  EnumerableSet.Bytes32Set private syntheticTokens;
 
   event DebtTokenCreated(address indexed jAsset, address indexed debtToken);
 
@@ -35,7 +45,10 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
     Roles memory _roles
   ) external onlyMaintainer nonReentrant returns (address debtToken) {
     string memory symbol = _jFiat.symbol();
-    require(debtTokens[symbol] == address(0), 'Debt token already created');
+    require(
+      syntheticTokens.add(symbol.stringToBytes32()),
+      'Debt token already created'
+    );
 
     debtToken = address(
       new DebtToken(_jFiat, _tokenName, _tokenSymbol, _roles)
@@ -46,11 +59,29 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
     emit DebtTokenCreated(address(_jFiat), debtToken);
   }
 
+  /**
+   * @notice Returns the address of the debt-token associated to a synthetic asset
+   * @param _tokenSymbol Synthetic asset symbol
+   * @return Address of the debt-token
+   */
   function debtToken(string calldata _tokenSymbol)
     external
     view
     returns (address)
   {
     return debtTokens[_tokenSymbol];
+  }
+
+  /**
+   * @notice Returns all the synthetic token symbol used
+   * @return List of all synthetic token symbol
+   */
+  function getSyntheticTokens() external view returns (string[] memory) {
+    uint256 numberOfSynthTokens = syntheticTokens.length();
+    string[] memory synthTokens = new string[](numberOfSynthTokens);
+    for (uint256 j = 0; j < numberOfSynthTokens; j++) {
+      synthTokens[j] = syntheticTokens.at(j).bytes32ToString();
+    }
+    return synthTokens;
   }
 }
