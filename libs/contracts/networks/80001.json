@@ -153,5 +153,10 @@
     "contractName": "MockRandomAggregator",
     "address": "0x038491a489e720D2dF8841D23651ed9DFAe21c71",
     "transactionHash": "0xd4feafe911566238ff86ff5baadc43ae490ab4e621cec9dc443c21947c5c672e"
+  },
+  {
+    "contractName": "DebtTokenFactory",
+    "address": "0xD0397d3A91627B3a1A75eFcBcA2e24E53eCB25D0",
+    "transactionHash": "0x6fa170bb3757b572f304d63fb9cfafb0f4f3bc6b591ca97cdcd990260c9610a3"
   }
 ]
