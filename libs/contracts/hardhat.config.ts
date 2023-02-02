@@ -90,6 +90,8 @@ addPublicNetwork(config, 43113);
 addPublicNetwork(config, 43114);
 addPublicNetwork(config, 420, process.env.OPTIMISM_GOERLI_PROJECT_ID!);
 addPublicNetwork(config, 10, process.env.OPTIMISM_PROJECT_ID!);
+addPublicNetwork(config, 421613, process.env.ARBITRUM_GOERLI_PROJECT_ID!);
+addPublicNetwork(config, 42161, process.env.ARBITRUM_PROJECT_ID!);
 
 // set hardat forking for public testnets
 if (process.env.FORKCHAINID) {

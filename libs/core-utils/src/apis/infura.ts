@@ -21,6 +21,10 @@ export function getInfuraEndpoint<Net extends Network>(
       ? 'optimism-goerli'
       : networkName === 'optimism'
       ? 'optimism-mainnet'
+      : networkName === 'arbitrumGoerli'
+      ? 'arbitrum-goerli'
+      : networkName === 'arbitrum'
+      ? 'arbitrum-mainnet'
       : networkName;
   return `${protocol}://${infuraNetworkName}.infura.io${
     protocol === 'wss' ? '/ws' : ''
