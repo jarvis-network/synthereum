@@ -25,6 +25,7 @@
     "migrate-pool": "yarn workspace @jarvis-network/synthereum-contracts migrate-pool",
     "add-selfMinting-derivative": "yarn workspace @jarvis-network/synthereum-contracts add-selfMinting-derivative",
     "add-fixedRateWrapper": "yarn workspace @jarvis-network/synthereum-contracts add-fixedRateWrapper",
+    "add-debtToken": "yarn workspace @jarvis-network/synthereum-contracts add-debtToken",
     "deploy:atomic-swap": "yarn workspace @jarvis-network/atomic-swap deploy",
     "deploy:yield-farming-storage": "yarn workspace @jarvis-network/yield-farming deploy-storage",
     "deploy:yield-farming-staking": "yarn workspace @jarvis-network/yield-farming deploy-elysianfields",
