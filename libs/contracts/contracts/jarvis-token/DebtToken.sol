@@ -2,6 +2,7 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {IDebtToken} from './interfaces/IDebtToken.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -17,21 +18,18 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
 
 contract DebtToken is
+  IDebtToken,
   ReentrancyGuard,
   StandardAccessControlEnumerable,
   ERC20Permit
 {
   using SafeERC20 for IERC20;
 
-  IERC20 public immutable jFiat;
+  IERC20 private immutable jFiat;
 
   uint256 private donatedAmount;
   uint256 private bondedAmount;
   uint256 private withdrawnAmount;
-
-  event Donated(address indexed user, uint256 amount);
-  event Bonded(address indexed user, uint256 amount);
-  event Withdrawn(uint256 amount, address indexed recipient);
 
   constructor(
     IERC20 _jFiat,
@@ -70,6 +68,7 @@ contract DebtToken is
 
   /**
    * @notice Allow maintainer to withdraw jFiat into a recipient
+   * @notice Only maintainer can call this function
    * @param _amount Amount of j-asset to withdraw
    * @param _recipient Address will receive j-asset
    */
@@ -83,18 +82,42 @@ contract DebtToken is
     emit Withdrawn(_amount, _recipient);
   }
 
+  /**
+   * @notice Returns address of the synthetic token associated to the debt token
+   * @return Address of the synthetic token
+   */
+  function jAsset() external view returns (address) {
+    return address(jFiat);
+  }
+
+  /**
+   * @notice Returns balance of the synthetic token holded by the debt-token
+   * @return Balance of the synthetic token holded
+   */
   function jFiatBalance() external view returns (uint256) {
     return jFiat.balanceOf(address(this));
   }
 
+  /**
+   * @notice Returns balance of the synthetic token donated by users
+   * @return Balance of the synthetic token donated
+   */
   function donated() external view returns (uint256) {
     return jFiat.balanceOf(address(this)) + withdrawnAmount - bondedAmount;
   }
 
+  /**
+   * @notice Returns balance of the synthetic token bonded by users
+   * @return Balance of the synthetic token bonded
+   */
   function bonded() external view returns (uint256) {
     return bondedAmount;
   }
 
+  /**
+   * @notice Returns balance of the synthetic token withdrawn by the maintainer
+   * @return Balance of the synthetic token withdrawn
+   */
   function withdrawn() external view returns (uint256) {
     return withdrawnAmount;
   }

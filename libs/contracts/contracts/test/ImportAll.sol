@@ -121,4 +121,5 @@ import '../lending-module/interfaces/ILendingModule.sol';
 import '../lending-module/interfaces/ILendingStorageManager.sol';
 import '../lending-module/interfaces/IRewardsController.sol';
 import '../jarvis-token/DebtToken.sol';
+import '../jarvis-token/interfaces/IDebtToken.sol';
 import '../jarvis-token/factories/DebtTokenFactory.sol';

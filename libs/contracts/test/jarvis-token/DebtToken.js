@@ -75,6 +75,11 @@ contract('Debt Token Contract', accounts => {
       await finalCheck(debtToken);
     });
     it('Allows to deposit jFiat as donation', async () => {
+      assert.equal(
+        jFiat.address,
+        await debtToken.jAsset.call(),
+        'Wrong j-asset',
+      );
       let userBalanceBefore = await jFiat.balanceOf.call(user1);
       let contractBalanceBefore = await jFiat.balanceOf.call(debtToken.address);
       let debtTokenBalanceBefore = await debtToken.balanceOf.call(user1);
