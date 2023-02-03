@@ -12,5 +12,13 @@
       "syntheticToken": "0x915E1f55eC2dc1524101ef44d4a0EebFe10Bc6bc",
       "syntheticSymbol": "jGBP"
     }
+  ],
+  "137": [
+    {
+      "name": "jCHF Debt Token",
+      "symbol": "jCHF-debt",
+      "syntheticToken": "0xbD1463F02f61676d53fd183C2B19282BFF93D099",
+      "syntheticSymbol": "jCHF"
+    }
   ]
 }
