@@ -108,6 +108,17 @@
       "isRewarded": true
     }
   },
+  "421613": {
+    "LiquidityPoolFactory": {
+      "version": 5,
+      "isEnabled": false
+    },
+    "MultiLpLiquidityPoolFactory": {
+      "version": 6,
+      "isEnabled": true,
+      "isRewarded": true
+    }
+  },
   "42161": {
     "LiquidityPoolFactory": {
       "version": 5,
