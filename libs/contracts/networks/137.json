@@ -173,5 +173,10 @@
     "contractName": "CreditLineController",
     "address": "0xA8Ee63DE17cd81626dB464485D2fcFC74615756c",
     "transactionHash": "0xecd22976fcdcc827ad145c2d602b850ad85922b218aef83bbab3d57dc9f391cb"
+  },
+  {
+    "contractName": "DebtTokenFactory",
+    "address": "0xd3A4c22e2d9d02A9f7438E0ECC480AB016127D2A",
+    "transactionHash": "0xc1901ad7b79e8ad20f0d528c7bb6b97a45e3d81ed1a704c98f7143f196450189"
   }
 ]
