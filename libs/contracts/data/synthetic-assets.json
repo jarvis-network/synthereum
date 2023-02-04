@@ -567,6 +567,17 @@
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
       "daoInterestShare": "200000000000000000",
       "jrtBuybackShare": "0"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic United States Dollar",
+      "syntheticSymbol": "jUSD",
+      "priceFeedIdentifier": "USDETH",
+      "overCollateralRequirement": "200000000000000000",
+      "liquidationReward": "200000000000000000",
+      "lendingId": "AaveV3",
+      "interestBearingToken": "0x0000000000000000000000000000000000000000",
+      "daoInterestShare": "200000000000000000",
+      "jrtBuybackShare": "0"
     }
   ]
 }
