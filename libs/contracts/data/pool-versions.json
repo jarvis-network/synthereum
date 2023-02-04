@@ -127,7 +127,7 @@
     "MultiLpLiquidityPoolFactory": {
       "version": 6,
       "isEnabled": true,
-      "isRewarded": false
+      "isRewarded": true
     }
   }
 }
