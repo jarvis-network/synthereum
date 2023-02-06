@@ -64,11 +64,8 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    * `tokenCurrency`.
    * @param numTokens is the number of tokens to be burnt.
    * @return amountWithdrawn The actual amount of collateral withdrawn.
-   * @return feeAmount incurred fees in collateral token.
    */
-  function redeem(uint256 numTokens)
-    external
-    returns (uint256 amountWithdrawn, uint256 feeAmount);
+  function redeem(uint256 numTokens) external returns (uint256 amountWithdrawn);
 
   /**
    * @notice Burns `numTokens` of `tokenCurrency` to decrease sponsors position size, without sending back collateral.
@@ -76,7 +73,7 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    * @dev Can only be called by token sponsor. This contract must be approved to spend `numTokens` of `tokenCurrency`.
    * @param numTokens is the number of tokens to be burnt.
    */
-  function repay(uint256 numTokens) external returns (uint256 daoFeeAmount);
+  function repay(uint256 numTokens) external;
 
   /**
    * @notice Liquidate sponsor position for an amount of synthetic tokens undercollateralized

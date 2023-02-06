@@ -446,27 +446,18 @@ contract('Synthereum CreditLine ', function (accounts) {
       sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
 
       // Check redeem return value and event.
-      expectedFeeAmount = calculateFeeAmount(
-        calculateCollateralValue(redeemTokens, toBN(startingPrice)),
-      );
 
-      const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
-      let amountWithdrawn = res.amountWithdrawn;
-      let redeemFee = res.feeAmount;
+      let amountWithdrawn = await creditLine.redeem.call(redeemTokens, {
+        from: sponsor,
+      });
 
-      let expectedWithdrawAmount = expectedSponsorCollateral.sub(
-        expectedFeeAmount,
-      );
+      let expectedWithdrawAmount = expectedSponsorCollateral;
       assert.equal(
         amountWithdrawn.toString(),
         expectedWithdrawAmount.toString(),
         'Wrong redeemed output collateral',
       );
-      assert.equal(
-        expectedFeeAmount.toString(),
-        redeemFee,
-        'Wrong redeem output fee',
-      );
+
       functionSig = web3.utils.sha3(redeemSig).substr(0, 10);
       functionParam = web3.eth.abi.encodeParameters(
         ['uint256'],
@@ -486,14 +477,13 @@ contract('Synthereum CreditLine ', function (accounts) {
       sponsorFinalBalance = await collateral.balanceOf.call(sponsor);
       assert.equal(
         sponsorFinalBalance.sub(sponsorInitialBalance).toString(),
-        expectedSponsorCollateral.sub(redeemFee).toString(),
+        expectedSponsorCollateral.toString(),
       );
       await checkBalances(
         expectedSponsorTokens,
         expectedSponsorCollateral,
-        redeemFee,
+        toBN(0),
       );
-      await checkFeeRecipients(redeemFee);
 
       // Periodic check for no excess collateral.
       await expectNoExcessCollateralToTrim();
@@ -590,13 +580,8 @@ contract('Synthereum CreditLine ', function (accounts) {
         networkId,
       );
 
-      let repayFeeAmount = calculateFeeAmount(
-        calculateCollateralValue(toBN(repayTokens), toBN(startingPrice)),
-      );
+      const expectedCollAmount = toBN(inputCollateral).sub(feeAmount);
 
-      const expectedCollAmount = toBN(inputCollateral)
-        .sub(feeAmount)
-        .sub(repayFeeAmount);
       assert.equal(
         expectedCollAmount.toString(),
         (await creditLine.getPositionData.call(sponsor))[0].toString(),
@@ -1389,28 +1374,17 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
     sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
 
-    // Check redeem return value and event.
-    expectedFeeAmount = calculateFeeAmount(
-      calculateCollateralValue(redeemTokens, toBN(startingPrice)),
-    );
+    let amountWithdrawn = await creditLine.redeem.call(redeemTokens, {
+      from: sponsor,
+    });
 
-    const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
-    let amountWithdrawn = res.amountWithdrawn;
-    let redeemFee = res.feeAmount;
-
-    let expectedWithdrawAmount = expectedSponsorCollateral.sub(
-      expectedFeeAmount,
-    );
+    let expectedWithdrawAmount = expectedSponsorCollateral;
     assert.equal(
       amountWithdrawn.toString(),
       expectedWithdrawAmount.toString(),
       'Wrong redeemed output collateral',
     );
-    assert.equal(
-      expectedFeeAmount.toString(),
-      redeemFee,
-      'Wrong redeem output fee',
-    );
+
     let redemptionResult = await creditLine.redeem(redeemTokens, {
       from: sponsor,
     });
@@ -1418,22 +1392,20 @@ contract('Synthereum CreditLine ', function (accounts) {
       return (
         ev.sponsor == sponsor &&
         ev.collateralAmount == expectedWithdrawAmount.toString() &&
-        ev.tokenAmount == redeemTokens.toString() &&
-        ev.feeAmount == expectedFeeAmount.toString()
+        ev.tokenAmount == redeemTokens.toString()
       );
     });
 
     sponsorFinalBalance = await collateral.balanceOf.call(sponsor);
     assert.equal(
       sponsorFinalBalance.sub(sponsorInitialBalance).toString(),
-      expectedSponsorCollateral.sub(redeemFee).toString(),
+      expectedSponsorCollateral.toString(),
     );
     await checkBalances(
       expectedSponsorTokens,
       expectedSponsorCollateral,
-      redeemFee,
+      toBN(0),
     );
-    await checkFeeRecipients(redeemFee);
 
     // Periodic check for no excess collateral.
     await expectNoExcessCollateralToTrim();
@@ -1471,9 +1443,6 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Redeem full.
     const redeemRemainingTokens = expectedSponsorTokens;
-    feeAmount = calculateFeeAmount(
-      calculateCollateralValue(redeemRemainingTokens, toBN(startingPrice)),
-    );
     await tokenCurrency.approve(creditLine.address, redeemRemainingTokens, {
       from: sponsor,
     });
@@ -1481,13 +1450,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     redemptionResult = await creditLine.redeem(redeemRemainingTokens, {
       from: sponsor,
     });
-    expectedNetSponsorCollateral = expectedSponsorCollateral.sub(feeAmount);
+    expectedNetSponsorCollateral = expectedSponsorCollateral;
     truffleAssert.eventEmitted(redemptionResult, 'Redeem', ev => {
       return (
         ev.sponsor == sponsor &&
         ev.collateralAmount == expectedNetSponsorCollateral.toString() &&
-        ev.tokenAmount == redeemRemainingTokens.toString() &&
-        ev.feeAmount == feeAmount.toString()
+        ev.tokenAmount == redeemRemainingTokens.toString()
       );
     });
     truffleAssert.eventEmitted(redemptionResult, 'EndedSponsorPosition', ev => {
@@ -1499,8 +1467,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       sponsorFinalBalance.sub(sponsorInitialBalance).toString(),
       expectedNetSponsorCollateral.toString(),
     );
-    await checkBalances(toBN('0'), toBN('0'), feeAmount);
-    await checkFeeRecipients(feeAmount);
+    await checkBalances(toBN('0'), toBN('0'), toBN('0'));
 
     // Periodic check for no excess collateral.
     await expectNoExcessCollateralToTrim();
@@ -1736,9 +1703,6 @@ contract('Synthereum CreditLine ', function (accounts) {
     const repayResult = await creditLine.repay(repayTokens, {
       from: sponsor,
     });
-    let repayFeeAmount = calculateFeeAmount(
-      calculateCollateralValue(toBN(repayTokens), toBN(startingPrice)),
-    );
 
     // Event is correctly emitted.
     truffleAssert.eventEmitted(repayResult, 'Repay', ev => {
@@ -1746,14 +1710,11 @@ contract('Synthereum CreditLine ', function (accounts) {
         ev.sponsor == sponsor &&
         ev.numTokensRepaid.toString() == repayTokens &&
         ev.newTokenCount.toString() ==
-          toBN(outputTokens).sub(toBN(repayTokens)).toString() &&
-        ev.feeAmount.toString() == repayFeeAmount.toString()
+          toBN(outputTokens).sub(toBN(repayTokens)).toString()
       );
     });
 
-    const expectedCollAmount = toBN(inputCollateral)
-      .sub(feeAmount)
-      .sub(repayFeeAmount);
+    const expectedCollAmount = toBN(inputCollateral).sub(feeAmount);
     assert.equal(
       expectedCollAmount.toString(),
       (await creditLine.getPositionData.call(sponsor))[0].toString(),

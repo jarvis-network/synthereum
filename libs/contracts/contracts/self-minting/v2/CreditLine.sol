@@ -79,14 +79,12 @@ contract CreditLine is
   event Redeem(
     address indexed sponsor,
     uint256 indexed collateralAmount,
-    uint256 indexed tokenAmount,
-    uint256 feeAmount
+    uint256 indexed tokenAmount
   );
   event Repay(
     address indexed sponsor,
     uint256 indexed numTokensRepaid,
-    uint256 indexed newTokenCount,
-    uint256 feeAmount
+    uint256 indexed newTokenCount
   );
   event EmergencyShutdown(
     address indexed caller,
@@ -233,24 +231,18 @@ contract CreditLine is
     override
     notEmergencyShutdown
     nonReentrant
-    returns (uint256 amountWithdrawn, uint256 feeAmount)
+    returns (uint256 amountWithdrawn)
   {
     PositionData storage positionData = _getPositionData(_msgSender());
 
-    (
-      FixedPoint.Unsigned memory collateralAmount,
-      FixedPoint.Unsigned memory uFeeAmount
-    ) =
-      positionData.redeem(
-        globalPositionData,
-        positionManagerData,
-        FixedPoint.Unsigned(numTokens),
-        feeStatus,
-        _msgSender()
-      );
-
-    amountWithdrawn = collateralAmount.rawValue;
-    feeAmount = uFeeAmount.rawValue;
+    amountWithdrawn = positionData
+      .redeem(
+      globalPositionData,
+      positionManagerData,
+      FixedPoint.Unsigned(numTokens),
+      _msgSender()
+    )
+      .rawValue;
   }
 
   function repay(uint256 numTokens)
@@ -258,19 +250,14 @@ contract CreditLine is
     override
     notEmergencyShutdown
     nonReentrant
-    returns (uint256 feeAmount)
   {
     PositionData storage positionData = _getPositionData(_msgSender());
-    feeAmount = (
-      positionData.repay(
-        globalPositionData,
-        positionManagerData,
-        FixedPoint.Unsigned(numTokens),
-        feeStatus,
-        _msgSender()
-      )
-    )
-      .rawValue;
+    positionData.repay(
+      globalPositionData,
+      positionManagerData,
+      FixedPoint.Unsigned(numTokens),
+      _msgSender()
+    );
   }
 
   function liquidate(address sponsor, uint256 maxTokensToLiquidate)

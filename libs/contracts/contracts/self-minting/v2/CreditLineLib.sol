@@ -48,8 +48,7 @@ library CreditLineLib {
   event Redeem(
     address indexed sponsor,
     uint256 indexed collateralAmount,
-    uint256 indexed tokenAmount,
-    uint256 feeAmount
+    uint256 indexed tokenAmount
   );
 
   event ClaimFee(
@@ -61,8 +60,7 @@ library CreditLineLib {
   event Repay(
     address indexed sponsor,
     uint256 indexed numTokensRepaid,
-    uint256 indexed newTokenCount,
-    uint256 feeAmount
+    uint256 indexed newTokenCount
   );
   event EmergencyShutdown(
     address indexed caller,
@@ -274,37 +272,16 @@ library CreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    ICreditLineStorage.FeeStatus storage feeStatus,
     address sponsor
-  )
-    external
-    returns (
-      FixedPoint.Unsigned memory amountWithdrawn,
-      FixedPoint.Unsigned memory feeAmount
-    )
-  {
+  ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     require(
       numTokens.isLessThanOrEqual(positionData.tokensOutstanding),
       'Invalid token amount'
     );
 
-    FixedPoint.Unsigned memory collateralRedeemed =
-      positionData.rawCollateral.mul(numTokens).div(
-        positionData.tokensOutstanding
-      );
-
-    FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
-
-    // Update fee status
-    feeAmount = calculateCollateralAmount(
-      numTokens,
-      priceRate,
-      getCollateralDecimals(positionManagerData.collateralToken)
-    )
-      .mul(
-      FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
+    amountWithdrawn = positionData.rawCollateral.mul(numTokens).div(
+      positionData.tokensOutstanding
     );
-    positionManagerData.updateFees(feeStatus, feeAmount);
 
     // If redemption returns all tokens the sponsor has then we can delete their position. Else, downsize.
     if (positionData.tokensOutstanding.isEqual(numTokens)) {
@@ -313,7 +290,7 @@ library CreditLineLib {
       // Decrement the sponsor's collateral and global collateral amounts.
       positionData._decrementCollateralBalances(
         globalPositionData,
-        collateralRedeemed
+        amountWithdrawn
       );
 
       // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
@@ -331,8 +308,6 @@ library CreditLineLib {
         .totalTokensOutstanding
         .sub(numTokens);
     }
-    // adjust the fees from collateral to withdraws
-    amountWithdrawn = collateralRedeemed.sub(feeAmount);
 
     // transfer collateral to user
     IERC20 collateralCurrency = positionManagerData.collateralToken;
@@ -349,12 +324,7 @@ library CreditLineLib {
       positionManagerData.tokenCurrency.burn(numTokens.rawValue);
     }
 
-    emit Redeem(
-      sponsor,
-      amountWithdrawn.rawValue,
-      numTokens.rawValue,
-      feeAmount.rawValue
-    );
+    emit Redeem(sponsor, amountWithdrawn.rawValue, numTokens.rawValue);
   }
 
   function repay(
@@ -362,9 +332,8 @@ library CreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    ICreditLineStorage.FeeStatus storage feeStatus,
     address msgSender
-  ) external returns (FixedPoint.Unsigned memory feeAmount) {
+  ) external {
     require(
       numTokens.isLessThanOrEqual(positionData.tokensOutstanding),
       'Invalid token amount'
@@ -378,22 +347,8 @@ library CreditLineLib {
       'Below minimum sponsor position'
     );
 
-    FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
-
-    // Update fee status
-    feeAmount = calculateCollateralAmount(
-      numTokens,
-      priceRate,
-      getCollateralDecimals(positionManagerData.collateralToken)
-    )
-      .mul(
-      FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
-    );
-    positionManagerData.updateFees(feeStatus, feeAmount);
-
     // update position
     positionData.tokensOutstanding = newTokenCount;
-    _decrementCollateralBalances(positionData, globalPositionData, feeAmount);
 
     // Update the totalTokensOutstanding after redemption.
     globalPositionData.totalTokensOutstanding = globalPositionData
@@ -408,12 +363,7 @@ library CreditLineLib {
     );
     positionManagerData.tokenCurrency.burn(numTokens.rawValue);
 
-    emit Repay(
-      msgSender,
-      numTokens.rawValue,
-      newTokenCount.rawValue,
-      feeAmount.rawValue
-    );
+    emit Repay(msgSender, numTokens.rawValue, newTokenCount.rawValue);
   }
 
   function liquidate(
