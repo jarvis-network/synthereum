@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
-
+import 'hardhat/console.sol';
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  Initializable
+} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
@@ -32,6 +35,7 @@ contract CreditLine is
   ICreditLine,
   ICreditLineStorage,
   ReentrancyGuard,
+  Initializable,
   ERC2771Context
 {
   using FixedPoint for FixedPoint.Unsigned;
@@ -53,14 +57,14 @@ contract CreditLine is
   //----------------------------------------
 
   // Maps sponsor addresses to their positions. Each sponsor can have only one position.
-  mapping(address => PositionData) private positions;
+  mapping(address => PositionData) internal positions;
   // uint256 tokenSponsorsCount; // each new token sponsor will be identified with an incremental uint
 
-  GlobalPositionData private globalPositionData;
+  GlobalPositionData internal globalPositionData;
 
-  PositionManagerData private positionManagerData;
+  PositionManagerData internal positionManagerData;
 
-  FeeStatus private feeStatus;
+  FeeStatus internal feeStatus;
 
   //----------------------------------------
   // Events
@@ -134,10 +138,15 @@ contract CreditLine is
   }
 
   //----------------------------------------
-  // Constructor
+  // Initialization
   //----------------------------------------
 
-  constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
+  function initialize(PositionManagerParams memory _positionManagerData)
+    external
+    override
+    nonReentrant
+    initializer
+  {
     positionManagerData.initialize(
       _positionManagerData.synthereumFinder,
       _positionManagerData.collateralToken,

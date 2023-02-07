@@ -20,6 +20,14 @@ import {
 
 interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   /**
+   * @notice Initialize creditLine
+   * @param _positionManagerData Params used for initialization (see PositionManagerParams struct)
+   */
+  function initialize(
+    ICreditLineStorage.PositionManagerParams memory _positionManagerData
+  ) external;
+
+  /**
    * @notice Transfers `collateralAmount` into the caller's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
    * at least `collateralAmount` of collateral token
