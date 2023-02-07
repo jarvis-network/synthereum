@@ -231,8 +231,8 @@ contract('Synthereum CreditLine ', function (accounts) {
     };
 
     synthereumManagerInstance = await SynthereumManager.deployed();
-
-    creditLine = await CreditLine.new(creditLineParams, {
+    creditLine = await CreditLine.new();
+    await creditLine.initialize(creditLineParams, {
       from: contractDeployer,
     });
     creditLineControllerInstance = await CreditLineControllerMock.new();
@@ -1083,9 +1083,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     };
 
     synthereumManagerInstance = await SynthereumManager.deployed();
-
+    const creditLine = await CreditLine.new();
     await truffleAssert.reverts(
-      CreditLine.new(creditLineParams, {
+      creditLine.initialize(creditLineParams, {
         from: contractDeployer,
       }),
       'Price identifier not supported',
@@ -1112,9 +1112,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     };
 
     synthereumManagerInstance = await SynthereumManager.deployed();
-
+    const creditLine = await CreditLine.new();
     await truffleAssert.reverts(
-      CreditLine.new(creditLineParams, {
+      creditLine.initialize(creditLineParams, {
         from: contractDeployer,
       }),
       'Synthetic token has more or less than 18 decimals',
@@ -1142,8 +1142,9 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
 
+    const creditLine = await CreditLine.new();
     await truffleAssert.reverts(
-      CreditLine.new(creditLineParams, {
+      creditLine.initialize(creditLineParams, {
         from: contractDeployer,
       }),
       'Collateral has more than 18 decimals',
