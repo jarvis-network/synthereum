@@ -17,6 +17,7 @@ import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {CreditLine} from './CreditLine.sol';
+import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
 
 /**
  * @title Self-Minting Contract creator.
@@ -24,6 +25,7 @@ import {CreditLine} from './CreditLine.sol';
  */
 contract CreditLineCreator {
   using FixedPoint for FixedPoint.Unsigned;
+  using Clones for address;
 
   struct Params {
     IStandardERC20 collateralToken;
@@ -42,6 +44,7 @@ contract CreditLineCreator {
 
   // Address of Synthereum Finder
   ISynthereumFinder public immutable synthereumFinder;
+  address immutable creditLineImplementation;
 
   //----------------------------------------
   // Constructor
@@ -53,6 +56,7 @@ contract CreditLineCreator {
    */
   constructor(address _synthereumFinder) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
+    creditLineImplementation = address(new CreditLine());
   }
 
   //----------------------------------------
@@ -93,7 +97,8 @@ contract CreditLineCreator {
       'Wrong synthetic token symbol'
     );
 
-    creditLine = new CreditLine(_convertParams(params));
+    creditLine = CreditLine(creditLineImplementation.clone());
+    creditLine.initialize(_convertParams(params));
 
     _setControllerValues(
       address(creditLine),

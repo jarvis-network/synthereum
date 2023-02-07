@@ -6,20 +6,14 @@ const {
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
-const {
-  encodeDerivative,
-  encodePoolOnChainPriceFeed,
-  encodeCreditLineDerivative,
-} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
-const { factory } = require('typescript');
+
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const SynthereumRegistry = artifacts.require('SynthereumRegistry');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumManager = artifacts.require('SynthereumManager');
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
-const TestnetERC20 = artifacts.require('TestnetERC20');
+
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const MockAggregator = artifacts.require('MockAggregator');
@@ -80,6 +74,7 @@ contract('Self-minting creator', function (accounts) {
     syntheticTokenAddress = syntheticToken.address;
     finder = await SynthereumFinder.deployed();
     synthereumFinderAddress = finder.address;
+
     const creditLineLib = await CreditLineLib.new();
     await CreditLineCreator.link(creditLineLib);
     creditLineCreatorInstance = await CreditLineCreator.new(
