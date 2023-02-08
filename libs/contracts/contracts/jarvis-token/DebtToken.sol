@@ -26,6 +26,7 @@ contract DebtToken is
   using SafeERC20 for IERC20;
 
   IERC20 private immutable jFiat;
+  uint256 private immutable capAmount;
 
   uint256 private donatedAmount;
   uint256 private bondedAmount;
@@ -33,11 +34,14 @@ contract DebtToken is
 
   constructor(
     IERC20 _jFiat,
+    uint256 _capAmount,
     string memory _tokenName,
     string memory _tokenSymbol,
     Roles memory _roles
   ) ERC20Permit(_tokenName) ERC20(_tokenName, _tokenSymbol) {
     jFiat = _jFiat;
+    require(_capAmount > 0, 'No cap set');
+    capAmount = _capAmount;
     _setAdmin(_roles.admin);
     _setMaintainer(_roles.maintainer);
   }
@@ -51,6 +55,10 @@ contract DebtToken is
     external
     nonReentrant
   {
+    require(
+      jFiat.balanceOf(address(this)) + withdrawnAmount + _amount <= capAmount,
+      'Cap supply reached'
+    );
     // pull user jFiat into this contract
     jFiat.safeTransferFrom(msg.sender, address(this), _amount);
 
@@ -88,6 +96,14 @@ contract DebtToken is
    */
   function jAsset() external view returns (address) {
     return address(jFiat);
+  }
+
+  /**
+   * @notice Returns the max amount of donated and bonded j-asset
+   * @return Max balance of donated and bonded j-asset
+   */
+  function cap() external view returns (uint256) {
+    return capAmount;
   }
 
   /**

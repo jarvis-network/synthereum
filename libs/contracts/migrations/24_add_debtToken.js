@@ -34,6 +34,7 @@ module.exports = async function (deployer, network, accounts) {
     txData.push({
       asset: asset.syntheticSymbol,
       synthToken: asset.syntheticToken,
+      cap: asset.capAmount,
       name: asset.name,
       symbol: asset.symbol,
     });
@@ -43,15 +44,22 @@ module.exports = async function (deployer, network, accounts) {
     log('   ------------------------------------- ');
 
     const gasEstimation = await debtTokenFactory.methods
-      .createDebtToken(txData[j].synthToken, txData[j].name, txData[j].symbol, {
-        admin: admin,
-        maintainer: maintainer,
-      })
+      .createDebtToken(
+        txData[j].synthToken,
+        txData[j].cap,
+        txData[j].name,
+        txData[j].symbol,
+        {
+          admin: admin,
+          maintainer: maintainer,
+        },
+      )
       .estimateGas({ from: maintainer });
     if (gasEstimation != undefined) {
       const tx = await debtTokenFactory.methods
         .createDebtToken(
           txData[j].synthToken,
+          txData[j].cap,
           txData[j].name,
           txData[j].symbol,
           { admin: admin, maintainer: maintainer },

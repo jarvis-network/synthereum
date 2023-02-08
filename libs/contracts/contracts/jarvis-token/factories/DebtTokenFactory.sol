@@ -33,6 +33,7 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
   /**
    * @notice Create a debt-token associated to synthetic asset
    * @param _jFiat Synthetic asset
+   * @param _capAmount Max balance of donated and bonded synthetic asset
    * @param _tokenName Name of the debt-token
    * @param _tokenSymbol Symbol of the debt-token
    * @param _roles Admin and maintainer roles
@@ -40,6 +41,7 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
    */
   function createDebtToken(
     IStandardERC20 _jFiat,
+    uint256 _capAmount,
     string memory _tokenName,
     string memory _tokenSymbol,
     Roles memory _roles
@@ -49,7 +51,13 @@ contract DebtTokenFactory is ReentrancyGuard, StandardAccessControlEnumerable {
       syntheticTokens.add(symbol.stringToBytes32()),
       'Debt token already created'
     );
-    debtTokenContract = new DebtToken(_jFiat, _tokenName, _tokenSymbol, _roles);
+    debtTokenContract = new DebtToken(
+      _jFiat,
+      _capAmount,
+      _tokenName,
+      _tokenSymbol,
+      _roles
+    );
     address debtTokenAddr = address(debtTokenContract);
 
     debtTokens[symbol] = debtTokenAddr;

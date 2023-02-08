@@ -28,6 +28,12 @@ interface IDebtToken {
   function jAsset() external view returns (address);
 
   /**
+   * @notice Returns the max amount of donated and bonded j-asset
+   * @return Max balance of donated and bonded j-asset
+   */
+  function cap() external view returns (uint256);
+
+  /**
    * @notice Returns balance of the synthetic token holded by the debt-token
    * @return Balance of the synthetic token holded
    */

@@ -4,12 +4,14 @@
       "name": "jEUR Debt Token",
       "symbol": "jEUR-debt",
       "syntheticToken": "0x02CBE6055F8aad745321f70d6aDD4711455c7F45",
+      "capAmount": "",
       "syntheticSymbol": "jEUR"
     },
     {
       "name": "jGBP Debt Token",
       "symbol": "jGBP-debt",
       "syntheticToken": "0x915E1f55eC2dc1524101ef44d4a0EebFe10Bc6bc",
+      "capAmount": "",
       "syntheticSymbol": "jGBP"
     }
   ],
@@ -18,6 +20,7 @@
       "name": "jCHF Debt Token",
       "symbol": "jCHF-debt",
       "syntheticToken": "0xbD1463F02f61676d53fd183C2B19282BFF93D099",
+      "capAmount": "",
       "syntheticSymbol": "jCHF"
     }
   ]
