@@ -5,6 +5,8 @@ import {BaseVaultStorage} from './BaseVault.sol';
 import {IPoolVault} from './interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
+import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
+import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {
   ERC20PermitUpgradeable
 } from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
@@ -29,6 +31,11 @@ contract Vault is
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
+  modifier onlyPoolFactory() {
+    SynthereumFactoryAccess._onlyPoolFactory(synthereumFinder);
+    _;
+  }
+
   constructor() public {
     _disableInitializers();
   }
@@ -37,12 +44,14 @@ contract Vault is
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
-    uint128 _overCollateralization
+    uint128 _overCollateralization,
+    ISynthereumFinder _finder
   ) external override nonReentrant initializer() {
     // vault initialisation
     pool = IPoolVault(_pool);
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
+    synthereumFinder = _finder;
 
     // // erc20 initialisation
     __ERC20_init(_lpTokenName, _lpTokenSymbol);
@@ -131,6 +140,14 @@ contract Vault is
     collateralAsset.safeTransfer(msg.sender, collateralOut);
 
     emit Withdraw(lpTokensAmount, collateralOut, rate);
+  }
+
+  function setReferencePool(address _newPool)
+    external
+    override
+    onlyPoolFactory
+  {
+    pool = IPoolVault(_newPool);
   }
 
   function getRate() external view override returns (uint256 rate) {

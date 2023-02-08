@@ -89,6 +89,7 @@ import '../core/registries/SelfMintingRegistry.sol';
 import '../core/registries/interfaces/IRegistry.sol';
 import '../core/registries/Registry.sol';
 import '../core/registries/PoolRegistry.sol';
+import '../core/registries/PublicVaultRegistry.sol';
 import '../central-bank/interfaces/IMoneyMarketManager.sol';
 import '../central-bank/interfaces/IJarvisBrrrrr.sol';
 import '../central-bank/interfaces/IJarvisBrrMoneyMarket.sol';

@@ -38,6 +38,8 @@ interface IVault {
     external
     returns (uint256 collateralOut);
 
+  function setReferencePool(address newPool) external;
+
   function getRate() external view returns (uint256 rate);
 
   function getDiscountedRate()
