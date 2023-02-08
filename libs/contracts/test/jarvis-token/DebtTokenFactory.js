@@ -19,6 +19,7 @@ contract('Debt Toke Factory Contract', accounts => {
   let user1 = accounts[4];
   const debtTokenName = 'Debt Jarvis Synthetic Euro';
   const debtTokenSymbol = 'D-jEUR';
+  let capAmount = toWei('1000');
 
   before(async () => {
     debtTokenFactory = await DebtTokenFactory.new(roles);
@@ -31,6 +32,7 @@ contract('Debt Toke Factory Contract', accounts => {
     it('Can deploy using the factory', async () => {
       const debTokenAddress = await debtTokenFactory.createDebtToken.call(
         jFiat.address,
+        capAmount,
         debtTokenName,
         debtTokenSymbol,
         roles,
@@ -40,6 +42,7 @@ contract('Debt Toke Factory Contract', accounts => {
       );
       let tx = await debtTokenFactory.createDebtToken(
         jFiat.address,
+        capAmount,
         debtTokenName,
         debtTokenSymbol,
         roles,
@@ -72,6 +75,7 @@ contract('Debt Toke Factory Contract', accounts => {
       );
       await debtTokenFactory.createDebtToken(
         jFiatSecond.address,
+        capAmount,
         'Debt Jarvis Synthetic British Pound',
         'D-jGBP',
         roles,
@@ -90,6 +94,7 @@ contract('Debt Toke Factory Contract', accounts => {
       await truffleAssert.reverts(
         debtTokenFactory.createDebtToken(
           jFiat.address,
+          capAmount,
           debtTokenName,
           debtTokenSymbol,
           roles,
@@ -104,6 +109,22 @@ contract('Debt Toke Factory Contract', accounts => {
       await truffleAssert.reverts(
         debtTokenFactory.createDebtToken(
           jFiat.address,
+          capAmount,
+          debtTokenName,
+          debtTokenSymbol,
+          roles,
+          {
+            from: roles.maintainer,
+          },
+        ),
+        'Debt token already created',
+      );
+    });
+    it('Can revert if cap amount passed is 0', async () => {
+      await truffleAssert.reverts(
+        debtTokenFactory.createDebtToken(
+          jFiat.address,
+          toWei('0'),
           debtTokenName,
           debtTokenSymbol,
           roles,

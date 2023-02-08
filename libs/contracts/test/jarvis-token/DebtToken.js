@@ -20,6 +20,7 @@ contract('Debt Token Contract', accounts => {
   let user1 = accounts[4];
   let user2 = accounts[5];
   let jrtAmount = toWei('50');
+  let capAmount = toWei('1000');
 
   before(async () => {
     jFiat = await TestnetSelfMintingERC20.new('Jarvis Euro', 'jEur', 18, {
@@ -27,6 +28,7 @@ contract('Debt Token Contract', accounts => {
     });
     debtToken = await DebtToken.new(
       jFiat.address,
+      capAmount,
       'Jarvis Debt Euro',
       'debt-JEur',
       roles,
@@ -153,6 +155,18 @@ contract('Debt Token Contract', accounts => {
       assert.equal(
         debtTokenBalanceAfter.toString(),
         toBN(debtTokenBalanceBefore).add(toBN(amount)).toString(),
+      );
+    });
+
+    it('Revert if deposit overcomes supply cap', async () => {
+      await truffleAssert.reverts(
+        debtToken.depositJFiat(capAmount, false, { from: user1 }),
+        'Cap supply reached',
+      );
+
+      await truffleAssert.reverts(
+        debtToken.depositJFiat(capAmount, true, { from: user1 }),
+        'Cap supply reached',
       );
     });
 
