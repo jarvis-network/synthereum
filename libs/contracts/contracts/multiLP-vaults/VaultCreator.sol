@@ -5,6 +5,7 @@ import {IVault} from './interfaces/IVault.sol';
 import {Vault} from './Vault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
+import {ITypology} from '../common/interfaces/ITypology.sol';
 import {
   TransparentUpgradeableProxy
 } from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
@@ -32,7 +33,7 @@ contract SynthereumMultiLPVaultCreator {
     address _pool,
     uint128 _overCollateralization
   ) public virtual returns (IVault vault) {
-    require(_pool != address(0), 'Bad pool');
+    require(isPool(_pool), 'Bad pool');
     require(bytes(_lpTokenName).length != 0, 'Missing LP token name');
     require(bytes(_lpTokenSymbol).length != 0, 'Missing LP token symbol');
     require(
@@ -98,5 +99,15 @@ contract SynthereumMultiLPVaultCreator {
       pool,
       overColl
     );
+  }
+
+  function isPool(address _pool) internal returns (bool) {
+    try ITypology(_pool).typology() returns (string memory typologyString) {
+      return
+        keccak256(abi.encodePacked(typologyString)) ==
+        keccak256(abi.encodePacked('POOL'));
+    } catch {
+      return false;
+    }
   }
 }
