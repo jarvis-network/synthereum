@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+
 interface IVault {
   event Deposit(
     uint256 netCollateralDeposited,
@@ -27,7 +29,8 @@ interface IVault {
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
     address _pool,
-    uint128 _overCollateralization
+    uint128 _overCollateralization,
+    ISynthereumFinder _finder
   ) external;
 
   function deposit(uint256 collateralAmount)
