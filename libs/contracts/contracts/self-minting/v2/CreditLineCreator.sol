@@ -44,7 +44,7 @@ contract CreditLineCreator {
 
   // Address of Synthereum Finder
   ISynthereumFinder public immutable synthereumFinder;
-  address immutable creditLineImplementation;
+  address public immutable creditLineImplementation;
 
   //----------------------------------------
   // Constructor
@@ -54,9 +54,9 @@ contract CreditLineCreator {
    * @notice Constructs the Perpetual contract.
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
    */
-  constructor(address _synthereumFinder) {
+  constructor(address _synthereumFinder, address _creditLineImplementation) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
-    creditLineImplementation = address(new CreditLine());
+    creditLineImplementation = _creditLineImplementation;
   }
 
   //----------------------------------------

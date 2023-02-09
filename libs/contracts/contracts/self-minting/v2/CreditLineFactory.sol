@@ -40,8 +40,11 @@ contract CreditLineFactory is
   /**
    * @notice Constructs the CreditLineFactory contract
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
+   * @param _creditLineImplementation CreditLine implementation address
    */
-  constructor(address _synthereumFinder) CreditLineCreator(_synthereumFinder) {
+  constructor(address _synthereumFinder, address _creditLineImplementation)
+    CreditLineCreator(_synthereumFinder, _creditLineImplementation)
+  {
     deploymentSignature = this.createSelfMintingDerivative.selector;
   }
 

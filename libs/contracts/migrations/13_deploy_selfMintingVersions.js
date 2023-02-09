@@ -2,6 +2,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumFactoryVersioning',
   'CreditLineLib',
+  'CreditLine',
   'CreditLineFactory',
 ]);
 
@@ -21,6 +22,7 @@ async function migrate(deployer, network, accounts) {
     SynthereumFinder,
     SynthereumFactoryVersioning,
     CreditLineLib,
+    CreditLine,
     CreditLineFactory,
   } = migrate.getContracts(artifacts);
 
@@ -64,10 +66,20 @@ async function migrate(deployer, network, accounts) {
     // Due to how truffle-plugin works, it statefully links it
     // and throws an error if its already linked. So we'll just ignore it...
     try {
-      await CreditLineFactory.link(creditLineLib);
+      await CreditLine.link(creditLineLib);
     } catch (e) {
       // Allow this to fail in the Buidler case.
     }
+
+    // deploy creditLine implementation
+    await deploy(web3, deployer, network, CreditLine, {
+      from: keys.deployer,
+    });
+    const creditLineImpl = await getExistingInstance(
+      web3,
+      CreditLine,
+      '@jarvis-network/synthereum-contracts',
+    );
 
     // Deploy self-minting factory
     await deploy(
@@ -76,6 +88,7 @@ async function migrate(deployer, network, accounts) {
       network,
       CreditLineFactory,
       synthereumFinder.options.address,
+      creditLineImpl.options.address,
       { from: keys.deployer },
     );
 

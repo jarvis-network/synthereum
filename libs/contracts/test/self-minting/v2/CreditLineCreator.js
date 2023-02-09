@@ -21,6 +21,7 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
 const CreditLineCreator = artifacts.require('CreditLineCreator');
+const CreditLine = artifacts.require('CreditLine');
 const CreditLineLib = artifacts.require('CreditLineLib');
 
 contract('Self-minting creator', function (accounts) {
@@ -76,9 +77,12 @@ contract('Self-minting creator', function (accounts) {
     synthereumFinderAddress = finder.address;
 
     const creditLineLib = await CreditLineLib.new();
-    await CreditLineCreator.link(creditLineLib);
+    // await CreditLineCreator.link(creditLineLib);
+    await CreditLine.link(creditLineLib);
+    const creditLineImpl = await CreditLine.new();
     creditLineCreatorInstance = await CreditLineCreator.new(
       synthereumFinderAddress,
+      creditLineImpl.address,
     );
 
     manager = (await SynthereumManager.deployed()).address;
