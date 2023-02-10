@@ -145,18 +145,8 @@
     "transactionHash": "0x1230ab2a0c286c36822c2ba3677954f2063daac2ab2a2af39c3a7e09e1a3681b"
   },
   {
-    "contractName": "MockRandomAggregator",
-    "address": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
-    "transactionHash": "0xe76fdfdd0a0da34880a71cc021b681baaebaf4cb308db4558c9a7169a91673e5"
-  },
-  {
-    "contractName": "MockRandomAggregator",
-    "address": "0x038491a489e720D2dF8841D23651ed9DFAe21c71",
-    "transactionHash": "0xd4feafe911566238ff86ff5baadc43ae490ab4e621cec9dc443c21947c5c672e"
-  },
-  {
     "contractName": "DebtTokenFactory",
-    "address": "0x01BeE6C4215bD1305ba67299473058675D6000Be",
-    "transactionHash": "0xae6452bc75c5320087791fdbc0ea912fb68348a3fbfca6764318a9498b101552"
+    "address": "0xa098af4C457604BB01d2129037556831b931b829",
+    "transactionHash": "0x32482e016feec6ba96b1c6aa5c1ca2c70179b7013db27d7ac96e161ca9bf3bd3"
   }
 ]
