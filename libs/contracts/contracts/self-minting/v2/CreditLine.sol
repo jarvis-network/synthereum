@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
-import 'hardhat/console.sol';
+
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  Initializable
-} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
@@ -13,19 +10,22 @@ import {
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {CreditLineLib} from './CreditLineLib.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  ERC2771Context
-} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {CreditLineLib} from './CreditLineLib.sol';
+import {
+  ERC2771Context
+} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
+import {
+  Initializable
+} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title
@@ -34,9 +34,9 @@ import {
 contract CreditLine is
   ICreditLine,
   ICreditLineStorage,
-  ReentrancyGuard,
+  ERC2771Context,
   Initializable,
-  ERC2771Context
+  ReentrancyGuard
 {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
@@ -144,8 +144,8 @@ contract CreditLine is
   function initialize(PositionManagerParams memory _positionManagerData)
     external
     override
-    nonReentrant
     initializer
+    nonReentrant
   {
     positionManagerData.initialize(
       _positionManagerData.synthereumFinder,
