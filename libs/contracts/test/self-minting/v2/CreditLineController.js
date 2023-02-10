@@ -225,69 +225,6 @@ contract('Self-minting controller', function (accounts) {
       });
     });
 
-    describe('Collateral Requirement', () => {
-      it('Set collateral requirement', async () => {
-        let collReq = await creditLineControllerInstance.getCollateralRequirement.call(
-          creditLine.address,
-        );
-        assert.equal(
-          collReq,
-          collateralRequirement,
-          'Wrong initial collateral req',
-        );
-        const newCollReq = toWei('1.3');
-        const updateTx = await creditLineControllerInstance.setCollateralRequirement(
-          [creditLine.address],
-          [newCollReq],
-          { from: maintainer },
-        );
-        collReq = await creditLineControllerInstance.getCollateralRequirement.call(
-          creditLine.address,
-        );
-        assert.equal(collReq, newCollReq, 'Wrong coll req after updte');
-        truffleAssert.eventEmitted(updateTx, 'SetCollateralRequirement', ev => {
-          return (
-            ev.selfMintingDerivative == creditLine.address &&
-            ev.collateralRequirement == collReq.toString()
-          );
-        });
-      });
-      it('Revert if no self-minting derivatives are passed', async () => {
-        await truffleAssert.reverts(
-          creditLineControllerInstance.setCollateralRequirement([], [], {
-            from: maintainer,
-          }),
-          'No self-minting derivatives passed',
-        );
-      });
-      it('Revert if different number of self-minting derivatives and collateral requirements', async () => {
-        const newCollReq = toWei('1000');
-        await truffleAssert.reverts(
-          creditLineControllerInstance.setCollateralRequirement(
-            [creditLine.address, accounts[7]],
-            [newCollReq],
-            {
-              from: maintainer,
-            },
-          ),
-          'Number of derivatives and overcollaterals must be the same',
-        );
-      });
-      it('Revert if try to set the same collateral requirement as existing', async () => {
-        const newCollReq = toWei('1.3');
-        await truffleAssert.reverts(
-          creditLineControllerInstance.setCollateralRequirement(
-            [creditLine.address],
-            [newCollReq],
-            {
-              from: maintainer,
-            },
-          ),
-          'Collateral requirement is the same',
-        );
-      });
-    });
-
     describe('Liquidation Reward', () => {
       it('Set liquidation reward', async () => {
         let liqRew = await creditLineControllerInstance.getLiquidationRewardPercentage.call(
@@ -551,7 +488,7 @@ contract('Self-minting controller', function (accounts) {
             [newWrongValue],
             { from: accounts[6] },
           ),
-          'Sender must be the maintainer or a self-minting factory',
+          'Sender must be the self-minting factory',
         );
         await truffleAssert.reverts(
           creditLineControllerInstance.setLiquidationRewardPercentage(
@@ -609,14 +546,6 @@ contract('Self-minting controller', function (accounts) {
             {
               from: maintainer,
             },
-          ),
-          'Self-minting derivative not registred',
-        );
-        await truffleAssert.reverts(
-          creditLineControllerInstance.setCollateralRequirement(
-            [notRegistredDerivative],
-            [collateralRequirement],
-            { from: maintainer },
           ),
           'Self-minting derivative not registred',
         );

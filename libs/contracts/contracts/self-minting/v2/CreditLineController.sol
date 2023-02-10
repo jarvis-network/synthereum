@@ -98,36 +98,17 @@ contract CreditLineController is
     if (hasRole(MAINTAINER_ROLE, msg.sender)) {
       _;
     } else {
-      ISynthereumFactoryVersioning factoryVersioning =
-        ISynthereumFactoryVersioning(
-          synthereumFinder.getImplementationAddress(
-            SynthereumInterfaces.FactoryVersioning
-          )
-        );
-      uint256 numberOfFactories =
-        factoryVersioning.numberOfFactoryVersions(
-          FactoryInterfaces.SelfMintingFactory
-        );
-      uint256 counter = 0;
-      for (uint8 i = 0; counter < numberOfFactories; i++) {
-        try
-          factoryVersioning.getFactoryVersion(
-            FactoryInterfaces.SelfMintingFactory,
-            i
-          )
-        returns (address factory) {
-          if (msg.sender == factory) {
-            _;
-            break;
-          } else {
-            counter++;
-          }
-        } catch {}
-      }
-      if (numberOfFactories == counter) {
-        revert('Sender must be the maintainer or a self-minting factory');
-      }
+      require(
+        _isSelfMintingFactory(),
+        'Sender must be the maintainer or a self-minting factory'
+      );
+      _;
     }
+  }
+
+  modifier onlySelfMintingFactory() {
+    require(_isSelfMintingFactory(), 'Sender must be the self-minting factory');
+    _;
   }
 
   //----------------------------------------
@@ -159,7 +140,7 @@ contract CreditLineController is
   function setCollateralRequirement(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata collateralRequirements
-  ) external override onlyMaintainerOrSelfMintingFactory nonReentrant {
+  ) external override onlySelfMintingFactory nonReentrant {
     require(
       selfMintingDerivatives.length > 0,
       'No self-minting derivatives passed'
@@ -456,5 +437,36 @@ contract CreditLineController is
       ),
       'Self-minting derivative not registred'
     );
+  }
+
+  function _isSelfMintingFactory() internal view returns (bool) {
+    ISynthereumFactoryVersioning factoryVersioning =
+      ISynthereumFactoryVersioning(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.FactoryVersioning
+        )
+      );
+    uint256 numberOfFactories =
+      factoryVersioning.numberOfFactoryVersions(
+        FactoryInterfaces.SelfMintingFactory
+      );
+    uint256 counter = 0;
+    for (uint8 i = 0; counter < numberOfFactories; i++) {
+      try
+        factoryVersioning.getFactoryVersion(
+          FactoryInterfaces.SelfMintingFactory,
+          i
+        )
+      returns (address factory) {
+        if (msg.sender == factory) {
+          return true;
+        } else {
+          counter++;
+        }
+      } catch {}
+    }
+    if (numberOfFactories == counter) {
+      return false;
+    }
   }
 }
