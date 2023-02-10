@@ -26,7 +26,15 @@ const data = require('../../data/test/lendingTestnet.json');
 const { toBN, toWei, toHex } = web3Utils;
 
 contract('Lending Vault', accounts => {
-  let vault, factoryVault, vaultImpl, pool, USDC, jSynth, lpToken, manager;
+  let vault,
+    factoryVault,
+    vaultImpl,
+    pool,
+    USDC,
+    jSynth,
+    lpToken,
+    manager,
+    finder;
   let networkId;
   let overCollateralization = toWei('0.1');
   let LPName = 'vault LP';
@@ -187,6 +195,7 @@ contract('Lending Vault', accounts => {
             LPSymbol,
             pool.address,
             overCollateralization,
+            finder.address,
           ),
           'Initializable: contract is already initialized',
         );

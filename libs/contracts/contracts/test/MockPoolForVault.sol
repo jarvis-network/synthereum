@@ -136,4 +136,8 @@ contract PoolMockForVault is IPoolVault {
   {}
 
   function version() external view returns (uint8 contractVersion) {}
+
+  function typology() external view returns (string memory typologyString) {
+    typologyString = 'POOL';
+  }
 }
