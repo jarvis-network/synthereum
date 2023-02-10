@@ -19,7 +19,7 @@ contract SynthereumPublicVaultRegistry is ReentrancyGuard {
   ISynthereumFinder public immutable synthereumFinder;
 
   mapping(address => bool) public isVault;
-  mapping(address => EnumerableSet.AddressSet) public poolToVaults;
+  mapping(address => EnumerableSet.AddressSet) internal poolToVaults;
 
   /**
    * @notice Check if the sender is the deployer
@@ -61,5 +61,20 @@ contract SynthereumPublicVaultRegistry is ReentrancyGuard {
   {
     require(poolToVaults[pool].remove(vault), 'Vault not registered');
     isVault[vault] = false;
+  }
+
+  /**
+   * @notice Returns all the vaults associated to a pool
+   * @param pool Pool address
+   * @return List of all vaults registered to the pool
+   */
+  function getVaults(address pool) external view returns (address[] memory) {
+    EnumerableSet.AddressSet storage vaultSet = poolToVaults[pool];
+    uint256 numberOfVaults = vaultSet.length();
+    address[] memory vaults = new address[](numberOfVaults);
+    for (uint256 j = 0; j < numberOfVaults; j++) {
+      vaults[j] = vaultSet.at(j);
+    }
+    return vaults;
   }
 }
