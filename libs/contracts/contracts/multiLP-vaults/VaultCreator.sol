@@ -54,7 +54,8 @@ contract SynthereumMultiLPVaultCreator {
             _lpTokenName,
             _lpTokenSymbol,
             _pool,
-            _overCollateralization
+            _overCollateralization,
+            synthereumFinder
           )
         )
       );
@@ -97,7 +98,8 @@ contract SynthereumMultiLPVaultCreator {
       name,
       symbol,
       pool,
-      overColl
+      overColl,
+      synthereumFinder
     );
   }
 
