@@ -1,4 +1,4 @@
-const web3Utils = require('web3-utils');
+const rolesConfig = require('../data/roles.json');
 const synthereumConfig = require('../data/synthereum-config.json');
 const {
   getExistingInstance,
@@ -29,6 +29,10 @@ module.exports = async function (deployer, network, accounts) {
     : toNetworkId(network);
   global.web3 = web3;
 
+  const maintainer = process.env.FORKCHAINID
+    ? accounts[1]
+    : rolesConfig[networkId]?.maintainer ?? accounts[1];
+
   const synthereumDeployer = await getExistingInstance(
     web3,
     SynthereumDeployer,
@@ -54,7 +58,7 @@ module.exports = async function (deployer, network, accounts) {
           synthereumConfig[networkId].excessTokenBeneficiary,
           creditLineDerivativeVersion,
           selfMintingData[networkId][0].fee,
-          selfMintingData[networkId][0].liquidationPct,
+          asset.liquidationReward,
           asset.capMintAmount,
         );
       }
