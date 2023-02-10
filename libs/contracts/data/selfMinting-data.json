@@ -35,5 +35,16 @@
       },
       "liquidationPct": "600000000000000000"
     }
+  ],
+  "137": [
+    {
+      "version": 2,
+      "collateralAddress": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+      "fee": {
+        "feePercentage": 0.005,
+        "feeRecipients": ["0x2709fa6FA31BD336455d4F96DdFC505b3ACA5A68"],
+        "feeProportions": [1]
+      }
+    }
   ]
 }
