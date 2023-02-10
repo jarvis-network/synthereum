@@ -85,21 +85,6 @@
     "transactionHash": "0x8dad845bbcfb808547f3ef7ec8b2d40f7fa78d4a4d4bdd01ac33f0b87d6a9afa"
   },
   {
-    "contractName": "CreditLineLib",
-    "address": "0x78D636BE7FFa4F84195065333Ef429fF4A8F3b0D",
-    "transactionHash": "0x2eaaeb4a051dadac132117106f622aa354b134536084b7a5102c0df514c61ddb"
-  },
-  {
-    "contractName": "CreditLineFactory",
-    "address": "0x61527A5e5368955a5dF6aB76dA54ce254D982e7C",
-    "transactionHash": "0x195642b49825c34e885c4069386046677dfd4db1b2a64c4053b40e1d15e6de66"
-  },
-  {
-    "contractName": "CreditLineController",
-    "address": "0xA84956405f678439D9589340bb8806d4008c5FaF",
-    "transactionHash": "0x94217610e3d3367b99f80092f61c4b67749d9d140c841a07e16790d8026c5273"
-  },
-  {
     "contractName": "SynthereumChainlinkPriceFeed",
     "address": "0xc20723d17C44469d38BD534A491ce85644f906f5",
     "transactionHash": "0x82a2ad75caadf9a44ac272a5d316807ec72130ce7351a7ca2c4580c5348455cf"
@@ -148,5 +133,25 @@
     "contractName": "DebtTokenFactory",
     "address": "0xa098af4C457604BB01d2129037556831b931b829",
     "transactionHash": "0x32482e016feec6ba96b1c6aa5c1ca2c70179b7013db27d7ac96e161ca9bf3bd3"
+  },
+  {
+    "contractName": "CreditLineLib",
+    "address": "0x4fAf32A7Ec0d0f7b5D457fbAF75E0AB379e3F6A3",
+    "transactionHash": "0xefeaee2b652fcc62d253ab778039c21918dfdb159c8a4f01c366baa16472a6d6"
+  },
+  {
+    "contractName": "CreditLine",
+    "address": "0xDFDa01967b8e41918d510041a1A3a318c6F3759f",
+    "transactionHash": "0x8ca7a0ed994bf2e3002c55f0161c86c0fe1b88b6241d4d7f9d19a935410c1723"
+  },
+  {
+    "contractName": "CreditLineFactory",
+    "address": "0xb4F12F7412f5719b055eD996a2f34fD048458E1a",
+    "transactionHash": "0x6728829082c2b28d1928560121e4843458c6a43bf9d5db5d10de162011a8a07b"
+  },
+  {
+    "contractName": "CreditLineController",
+    "address": "0xBF8828deC33a173A7AE758254fAFC85fDf71cb14",
+    "transactionHash": "0x35ee786a2d3cba0ba48b2be19abf2a46192401488640c54aadd70a1fe1cbb6aa"
   }
 ]
