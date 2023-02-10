@@ -12,7 +12,7 @@ abstract contract BaseVaultStorage {
   IMintableBurnableERC20 internal lpToken; // vault LP token
   IPoolVault internal pool; // reference pool
   IERC20 internal collateralAsset; // reference pool collateral token
-  ISynthereumFinder immutable synthereumFinder;
+  ISynthereumFinder internal synthereumFinder;
 
   uint128 internal overCollateralization; // overcollateralization of the vault position
   bool internal isLpActive; // dictates if first deposit on pool or not
