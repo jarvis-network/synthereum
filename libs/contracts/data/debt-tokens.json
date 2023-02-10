@@ -4,14 +4,14 @@
       "name": "jEUR Debt Token",
       "symbol": "jEUR-debt",
       "syntheticToken": "0x02CBE6055F8aad745321f70d6aDD4711455c7F45",
-      "capAmount": "",
+      "capAmount": "100000000000000000000000",
       "syntheticSymbol": "jEUR"
     },
     {
       "name": "jGBP Debt Token",
       "symbol": "jGBP-debt",
       "syntheticToken": "0x915E1f55eC2dc1524101ef44d4a0EebFe10Bc6bc",
-      "capAmount": "",
+      "capAmount": "200000000000000000000000",
       "syntheticSymbol": "jGBP"
     }
   ],
