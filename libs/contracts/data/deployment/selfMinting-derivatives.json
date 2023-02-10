@@ -37,8 +37,7 @@
     "SelfMintingDerivative": 2,
     "SynthToken": {
       "jEUR": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c",
-      "jGOLD": "0x192ef3fff1708456d3a1f21354fa8d6bfd86b45c",
-      "jBRL": "0xf2f77FE7b8e66571E0fca7104c4d670BF1C8d722"
+      "jUSD": "0xc948ee9a0687c292ac4d8c1e2557ad652d6baf44"
     }
   }
 }

@@ -101,25 +101,11 @@
     {
       "syntheticName": "Jarvis Synthetic Euro",
       "syntheticSymbol": "jEUR",
-      "priceFeedIdentifier": "EURUSD",
-      "collateralRequirement": "1050000000000000000",
+      "priceFeedIdentifier": "EURETH",
+      "collateralRequirement": "1250000000000000000",
       "overCollateralRequirement": "25000000000000000",
       "minSponsorTokens": "10000000000000000000",
       "capMintAmount": "50000000000000000000000",
-      "liquidationReward": "500000000000000000",
-      "lendingId": "AaveV3",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "600000000000000000",
-      "jrtBuybackShare": "700000000000000000"
-    },
-    {
-      "syntheticName": "Jarvis Synthetic Gold",
-      "syntheticSymbol": "jGOLD",
-      "priceFeedIdentifier": "XAUUSD",
-      "collateralRequirement": "1150000000000000000",
-      "overCollateralRequirement": "50000000000000000",
-      "minSponsorTokens": "5000000000000000",
-      "capMintAmount": "25000000000000000000",
       "liquidationReward": "200000000000000000",
       "lendingId": "AaveV3",
       "interestBearingToken": "0x0000000000000000000000000000000000000000",
@@ -127,18 +113,13 @@
       "jrtBuybackShare": "700000000000000000"
     },
     {
-      "syntheticName": "Jarvis Synthetic Brazilian Real",
-      "syntheticSymbol": "jBRL",
-      "priceFeedIdentifier": "BRLUSD",
-      "collateralRequirement": "1150000000000000000",
-      "overCollateralRequirement": "50000000000000000",
-      "minSponsorTokens": "50000000000000000000",
-      "capMintAmount": "250000000000000000000000",
-      "liquidationReward": "200000000000000000",
-      "lendingId": "AaveV3",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "600000000000000000",
-      "jrtBuybackShare": "700000000000000000"
+      "syntheticName": "Jarvis Synthetic United States Dollar",
+      "syntheticSymbol": "jUSD",
+      "priceFeedIdentifier": "USDETH",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "50000000000000000000000",
+      "liquidationReward": "200000000000000000"
     }
   ],
   "97": [
