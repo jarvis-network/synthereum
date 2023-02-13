@@ -22,6 +22,7 @@
     "test:polygon": "MIGRATION_TYPE=all FORKCHAINID=137 BLOCK=38031371 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/core/**/*.js ./test/jarvis-token/**/*.js ./test/lending-module/**/*.js  ./test/oracle/**/*.js ./test/pool/**/*.js ./test/self-minting/**/*.js ./test/token/**/*.js ./test/utils/**/*.js",
     "test:optimism": "MIGRATION_TYPE=all FORKCHAINID=10 BLOCK=22130400 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/pool/v6/multi-lp-liquidity-pool.js",
     "coverage": "MIGRATION_TYPE=all FORKCHAINID=137 BLOCK=26774970 NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
+    "storage-layout": "hardhat check",
     "deploy": "hardhat deploy",
     "verify": "hardhat verify"
   },
@@ -45,6 +46,7 @@
     "globby": "^11.0.3",
     "hardhat-deploy-ethers": "^0.3.0-beta.10",
     "hardhat-gas-reporter": "^1.0.4",
+    "hardhat-storage-layout": "0.1.7",
     "rmrf": "^2.0.3",
     "secp256k1": "^4.0.2",
     "string.prototype.replaceall": "^1.0.5",

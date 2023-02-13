@@ -4,6 +4,8 @@ import { resolve } from 'path';
 
 import 'hardhat-deploy-ethers';
 
+import 'hardhat-storage-layout';
+
 import {
   addPublicNetwork,
   setForkingUrl,

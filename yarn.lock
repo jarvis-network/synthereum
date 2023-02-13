@@ -3453,6 +3453,7 @@ __metadata:
     globby: ^11.0.3
     hardhat-deploy-ethers: ^0.3.0-beta.10
     hardhat-gas-reporter: ^1.0.4
+    hardhat-storage-layout: 0.1.7
     rmrf: ^2.0.3
     secp256k1: ^4.0.2
     string.prototype.replaceall: ^1.0.5
@@ -10908,6 +10909,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"console-table-printer@npm:^2.9.0":
+  version: 2.11.1
+  resolution: "console-table-printer@npm:2.11.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fconsole-table-printer%2F-%2Fconsole-table-printer-2.11.1.tgz"
+  dependencies:
+    simple-wcswidth: ^1.0.1
+  checksum: 1c5ec6c5edb8f454ac78ce2708c96b29986db4c1f369b32acc1931f87658a65984a8cf8731ca548dea670ff04119c740a7d658eeba9633d0202983c71d957096
+  languageName: node
+  linkType: hard
+
 "constant-case@npm:^2.0.0":
   version: 2.0.0
   resolution: "constant-case@npm:2.0.0"
@@ -16424,6 +16434,17 @@ __metadata:
   peerDependencies:
     hardhat: ^2.0.2
   checksum: c8c1d79bfbb6956cabbe5563e0f40c3bb7f2227a3c278f9afe73bc8f44125440e1b1f7ab60f5280b93ed8ae8f748dad73d7bbca892074f5f1edf026394c8ee09
+  languageName: node
+  linkType: hard
+
+"hardhat-storage-layout@npm:0.1.7":
+  version: 0.1.7
+  resolution: "hardhat-storage-layout@npm:0.1.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fhardhat-storage-layout%2F-%2Fhardhat-storage-layout-0.1.7.tgz"
+  dependencies:
+    console-table-printer: ^2.9.0
+  peerDependencies:
+    hardhat: ^2.0.3
+  checksum: 8d27d6b16c1ebdffa032ba6b99c61996df4601dcbaf7d770c474806b492a56de9d21b4190086ab40f50a3a1f2e9851cc81034a9cfd2e21368941977324f96fd4
   languageName: node
   linkType: hard
 
@@ -25267,6 +25288,13 @@ __metadata:
   dependencies:
     is-arrayish: ^0.3.1
   checksum: a7f3f2ab5c76c4472d5c578df892e857323e452d9f392e1b5cf74b74db66e6294a1e1b8b390b519fa1b96b5b613f2a37db6cffef52c3f1f8f3c5ea64eb2d54c0
+  languageName: node
+  linkType: hard
+
+"simple-wcswidth@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "simple-wcswidth@npm:1.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsimple-wcswidth%2F-%2Fsimple-wcswidth-1.0.1.tgz"
+  checksum: dc5bf4cb131d9c386825d1355add2b1ecc408b37dc2c2334edd7a1a4c9f527e6b594dedcdbf6d949bce2740c3a332e39af1183072a2d068e40d9e9146067a37f
   languageName: node
   linkType: hard
 
