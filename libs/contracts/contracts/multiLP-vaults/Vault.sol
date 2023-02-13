@@ -6,7 +6,9 @@ import {IPoolVault} from './interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
+import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   ERC20PermitUpgradeable
 } from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
@@ -20,12 +22,16 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {
+  ContextUpgradeable
+} from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
 
 contract Vault is
   BaseVaultStorage,
   IVault,
   ERC20Upgradeable,
   ERC20PermitUpgradeable,
+  ERC2771Context,
   ReentrancyGuard
 {
   using SafeERC20 for IERC20;
@@ -66,13 +72,14 @@ contract Vault is
     require(collateralAmount > 0, 'Zero amount');
 
     // transfer collateral - checks balance
-    collateralAsset.transferFrom(msg.sender, address(this), collateralAmount);
+    collateralAsset.transferFrom(_msgSender(), address(this), collateralAmount);
 
     // approve pool to pull collateral
     collateralAsset.safeApprove(address(pool), collateralAmount);
 
     // retrieve updated vault position on pool
     IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
+    address sender = _msgSender();
 
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
@@ -93,7 +100,7 @@ contract Vault is
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
-      _mint(msg.sender, lpTokensOut);
+      _mint(sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
@@ -108,7 +115,7 @@ contract Vault is
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
 
-      _mint(msg.sender, lpTokensOut);
+      _mint(sender, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
@@ -129,15 +136,16 @@ contract Vault is
     // calculate rate and amount of collateral to withdraw
     uint256 rate = calculateRate(vaultCollateralAmount);
     uint256 collateralEquivalent = rate.mul(lpTokensAmount);
+    address sender = _msgSender();
 
     // Burn LP tokens of user
-    _burn(msg.sender, lpTokensAmount);
+    _burn(sender, lpTokensAmount);
 
     // withdraw collateral from pool
     (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
 
     // transfer to user the net collateral out
-    collateralAsset.safeTransfer(msg.sender, collateralOut);
+    collateralAsset.safeTransfer(sender, collateralOut);
 
     emit Withdraw(lpTokensAmount, collateralOut, rate);
   }
@@ -237,5 +245,44 @@ contract Vault is
     // discount = collateralDeficit / collateralExpected
     // discounted rate = rate - (rate * discount)
     discountedRate = rate - rate.mul(collateralDeficit.div(collateralExpected));
+  }
+
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override
+    returns (bool)
+  {
+    try
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.TrustedForwarder
+      )
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  function _msgSender()
+    internal
+    view
+    override(ERC2771Context, ContextUpgradeable)
+    returns (address sender)
+  {
+    return ERC2771Context._msgSender();
+  }
+
+  function _msgData()
+    internal
+    view
+    override(ERC2771Context, ContextUpgradeable)
+    returns (bytes calldata)
+  {
+    return ERC2771Context._msgData();
   }
 }
