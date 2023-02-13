@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
+import {IPublicVaultRegistry} from './interfaces/IPublicVaultRegistry.sol';
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
 import {
@@ -13,7 +14,10 @@ import {
 /**
  * @title Register and track all the vaults deployed and pool links
  */
-contract SynthereumPublicVaultRegistry is ReentrancyGuard {
+contract SynthereumPublicVaultRegistry is
+  IPublicVaultRegistry,
+  ReentrancyGuard
+{
   using EnumerableSet for EnumerableSet.AddressSet;
 
   ISynthereumFinder public immutable synthereumFinder;
