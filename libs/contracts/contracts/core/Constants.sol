@@ -9,6 +9,7 @@ library SynthereumInterfaces {
   bytes32 public constant PoolRegistry = 'PoolRegistry';
   bytes32 public constant SelfMintingRegistry = 'SelfMintingRegistry';
   bytes32 public constant FixedRateRegistry = 'FixedRateRegistry';
+  bytes32 public constant VaultRegistry = 'VaultRegistry';
   bytes32 public constant FactoryVersioning = 'FactoryVersioning';
   bytes32 public constant Manager = 'Manager';
   bytes32 public constant TokenFactory = 'TokenFactory';

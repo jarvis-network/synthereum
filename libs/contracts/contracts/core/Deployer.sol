@@ -28,6 +28,9 @@ import {
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {IVaultFactory} from '../multiLP-vaults/interfaces/IVaultFactory.sol';
 import {IVault} from '../multiLP-vaults/interfaces/IVault.sol';
+import {
+  IPublicVaultRegistry
+} from './registries/interfaces/IPublicVaultRegistry.sol';
 
 contract SynthereumDeployer is
   ISynthereumDeployer,
@@ -359,6 +362,16 @@ contract SynthereumDeployer is
       _pool,
       _overCollateralization
     );
+
+    // register vault
+    IPublicVaultRegistry vaultRegistry =
+      IPublicVaultRegistry(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.VaultRegistry
+        )
+      );
+
+    vaultRegistry.registerVault(_pool, address(vault));
 
     emit PublicVaultDeployed(address(vault));
   }
