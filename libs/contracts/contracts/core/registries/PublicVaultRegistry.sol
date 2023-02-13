@@ -42,6 +42,7 @@ contract SynthereumPublicVaultRegistry is ReentrancyGuard {
    */
   function registerVault(address pool, address vault)
     external
+    override
     onlyDeployer
     nonReentrant
   {
@@ -51,15 +52,11 @@ contract SynthereumPublicVaultRegistry is ReentrancyGuard {
 
   /**
    * @notice Allow the deployer to unregister a vault
-   * @param pool Address of the pool
+   * @notice Only a registered pool can call this one to remove his own registered vaults
    * @param vault Address of the vault to unregister
    */
-  function removeVault(address pool, address vault)
-    external
-    onlyDeployer
-    nonReentrant
-  {
-    require(poolToVaults[pool].remove(vault), 'Vault not registered');
+  function removeVault(address vault) external override nonReentrant {
+    require(poolToVaults[msg.sender].remove(vault), 'Vault not registered');
     isVault[vault] = false;
   }
 
