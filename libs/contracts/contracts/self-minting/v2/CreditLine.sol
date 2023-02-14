@@ -20,9 +20,7 @@ import {CreditLineLib} from './CreditLineLib.sol';
 import {
   ERC2771Context
 } from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
-import {
-  Initializable
-} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
+import {Initializable} from '../../base/utils/Initializable.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -135,6 +133,10 @@ contract CreditLine is
       'Position has no collateral'
     );
     _;
+  }
+
+  constructor() {
+    _disableInitializers();
   }
 
   //----------------------------------------

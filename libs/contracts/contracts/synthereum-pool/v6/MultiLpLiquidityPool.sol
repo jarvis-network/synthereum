@@ -97,6 +97,10 @@ contract SynthereumMultiLpLiquidityPool is
     storageParams.isInitialized = true;
   }
 
+  constructor() {
+    storageParams.isInitialized = true;
+  }
+
   /**
    * @notice Initialize pool
    * @param _params Params used for initialization (see InitializationParams struct)
