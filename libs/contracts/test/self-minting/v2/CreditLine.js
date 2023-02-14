@@ -232,6 +232,11 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
     creditLine = await CreditLine.new();
+    await network.provider.send('hardhat_setStorageAt', [
+      creditLine.address,
+      '0x0',
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+    ]);
     await creditLine.initialize(creditLineParams, {
       from: contractDeployer,
     });
@@ -1084,6 +1089,11 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
     const creditLine = await CreditLine.new();
+    await network.provider.send('hardhat_setStorageAt', [
+      creditLine.address,
+      '0x0',
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+    ]);
     await truffleAssert.reverts(
       creditLine.initialize(creditLineParams, {
         from: contractDeployer,
@@ -1113,6 +1123,11 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
     const creditLine = await CreditLine.new();
+    await network.provider.send('hardhat_setStorageAt', [
+      creditLine.address,
+      '0x0',
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+    ]);
     await truffleAssert.reverts(
       creditLine.initialize(creditLineParams, {
         from: contractDeployer,
@@ -1143,11 +1158,37 @@ contract('Synthereum CreditLine ', function (accounts) {
     synthereumManagerInstance = await SynthereumManager.deployed();
 
     const creditLine = await CreditLine.new();
+    await network.provider.send('hardhat_setStorageAt', [
+      creditLine.address,
+      '0x0',
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+    ]);
     await truffleAssert.reverts(
       creditLine.initialize(creditLineParams, {
         from: contractDeployer,
       }),
       'Collateral has more than 18 decimals',
+    );
+  });
+
+  it('Reverts initialize of implementation instance', async () => {
+    let creditLineParams = {
+      collateralToken: collateral.address,
+      syntheticToken: tokenCurrency.address,
+      priceFeedIdentifier,
+      minSponsorTokens: { rawValue: minSponsorTokens.toString() },
+      excessTokenBeneficiary: beneficiary,
+      version: 2,
+      synthereumFinder: synthereumFinderInstance.address,
+    };
+
+    creditLineImplInstance = await CreditLine.deployed();
+
+    await truffleAssert.reverts(
+      creditLineImplInstance.initialize(creditLineParams, {
+        from: contractDeployer,
+      }),
+      'Initializable: contract is already initialized',
     );
   });
 

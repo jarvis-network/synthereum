@@ -551,6 +551,25 @@ contract('MultiLPLiquidityPool', function (accounts) {
         'Wrong fee percentage',
       );
     });
+    it('Can revert if trying initialize implementation', async () => {
+      poolContractImpl = await SynthereumMultiLpLiquidityPool.deployed();
+      const InitializationParams = {
+        finder: syntheFinderAddress,
+        version: poolVersion,
+        collateralToken: collateralAddress,
+        syntheticToken: ZERO_ADDRESS,
+        roles: roles,
+        fee: feePercentageWei,
+        priceIdentifier: priceIdenitiferBytes,
+        overCollateralRequirement: overCollateralRequirement,
+        liquidationReward: liquidationReward,
+        lendingModuleId: lendingId,
+      };
+      await truffleAssert.reverts(
+        poolContractImpl.initialize(InitializationParams),
+        'Pool already initialized',
+      );
+    });
     it('Can revert if trying to re-initialize pool', async () => {
       await deployer.deployPool(poolVersion, poolDataPayload, {
         from: maintainer,
