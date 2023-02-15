@@ -6,34 +6,18 @@ import {IPoolVault} from './interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
-import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {
-  ERC20PermitUpgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
-import {
-  ERC20Upgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
   ContextUpgradeable
 } from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
 
-contract Vault is
-  BaseVaultStorage,
-  IVault,
-  ERC20Upgradeable,
-  ERC20PermitUpgradeable,
-  ERC2771Context,
-  ReentrancyGuard
-{
+contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
