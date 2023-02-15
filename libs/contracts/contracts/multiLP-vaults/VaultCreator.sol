@@ -107,14 +107,12 @@ contract SynthereumMultiLPVaultCreator {
         )
       );
     ISynthereumDeployment callingContract = ISynthereumDeployment(_pool);
-    require(
+    return
       registry.isDeployed(
         callingContract.syntheticTokenSymbol(),
         callingContract.collateralToken(),
         callingContract.version(),
-        msg.sender
-      ),
-      'Calling contract not registered'
-    );
+        _pool
+      );
   }
 }
