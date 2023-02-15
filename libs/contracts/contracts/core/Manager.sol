@@ -17,9 +17,7 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  SynthereumMultiLPVaultFactory
-} from '../multiLP-vaults/VaultFactory.sol';
+import {IVaultFactory} from '../multiLP-vaults/interfaces/IVaultFactory.sol';
 import {
   TransparentUpgradeableProxy
 } from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
@@ -217,8 +215,8 @@ contract SynthereumManager is
   {
     require(vaults.length == params.length, 'Mismatch');
 
-    SynthereumMultiLPVaultFactory vaultFactory =
-      SynthereumMultiLPVaultFactory(
+    IVaultFactory vaultFactory =
+      IVaultFactory(
         synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.VaultFactory
         )

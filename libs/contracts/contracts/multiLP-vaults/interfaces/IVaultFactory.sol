@@ -18,4 +18,19 @@ interface IVaultFactory {
     address _pool,
     uint128 _overCollateralization
   ) external returns (IVault vault);
+
+  /**
+   * @notice Encodes the initialise call with its parameters
+   * @param encodedParams Abi encoded parameters
+   * @return encodedCall Bytes encoding of initialise call
+   */
+  function encodeInitialiseCall(bytes memory encodedParams)
+    external
+    returns (bytes memory encodedCall);
+
+  /**
+   * @notice Returns the address of deployed vault implementation
+   * @return implementation deployed vault implementation
+   */
+  function vaultImplementation() external returns (address implementation);
 }

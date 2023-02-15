@@ -5,13 +5,14 @@ import {IVault} from './interfaces/IVault.sol';
 import {Vault} from './Vault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {ITypology} from '../common/interfaces/ITypology.sol';
+import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
+import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {
   TransparentUpgradeableProxy
 } from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
 
 contract SynthereumMultiLPVaultCreator {
-  address public immutable vaultImplementation;
+  address internal immutable vaultImpl;
   ISynthereumFinder immutable synthereumFinder;
 
   event CreatedVault(address indexed vaultAddress, address indexed deployer);
@@ -24,7 +25,7 @@ contract SynthereumMultiLPVaultCreator {
     require(_vaultImplementation != address(0), 'Bad vault implementation');
     require(_finder != address(0), 'Bad finder');
     synthereumFinder = ISynthereumFinder(_finder);
-    vaultImplementation = _vaultImplementation;
+    vaultImpl = _vaultImplementation;
   }
 
   function createVault(
@@ -45,7 +46,7 @@ contract SynthereumMultiLPVaultCreator {
     address vaultProxy =
       address(
         new TransparentUpgradeableProxy(
-          vaultImplementation,
+          vaultImpl,
           synthereumFinder.getImplementationAddress(
             SynthereumInterfaces.Manager
           ),
@@ -65,14 +66,8 @@ contract SynthereumMultiLPVaultCreator {
     emit CreatedVault(vaultProxy, msg.sender);
   }
 
-  function encodeParams(
-    string memory _lpTokenName,
-    string memory _lpTokenSymbol,
-    address _pool,
-    uint128 _overCollateralization
-  ) public returns (bytes memory encoded) {
-    return
-      abi.encode(_lpTokenName, _lpTokenSymbol, _pool, _overCollateralization);
+  function vaultImplementation() public virtual returns (address) {
+    return vaultImpl;
   }
 
   function decodeParams(bytes memory encodedParams)
@@ -89,6 +84,7 @@ contract SynthereumMultiLPVaultCreator {
 
   function encodeInitialiseCall(bytes memory encodedParams)
     public
+    virtual
     returns (bytes memory encodedCall)
   {
     (string memory name, string memory symbol, address pool, uint128 overColl) =
@@ -104,12 +100,21 @@ contract SynthereumMultiLPVaultCreator {
   }
 
   function isPool(address _pool) internal returns (bool) {
-    try ITypology(_pool).typology() returns (string memory typologyString) {
-      return
-        keccak256(abi.encodePacked(typologyString)) ==
-        keccak256(abi.encodePacked('POOL'));
-    } catch {
-      return false;
-    }
+    ISynthereumRegistry registry =
+      ISynthereumRegistry(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.PoolRegistry
+        )
+      );
+    ISynthereumDeployment callingContract = ISynthereumDeployment(_pool);
+    require(
+      registry.isDeployed(
+        callingContract.syntheticTokenSymbol(),
+        callingContract.collateralToken(),
+        callingContract.version(),
+        msg.sender
+      ),
+      'Calling contract not registered'
+    );
   }
 }

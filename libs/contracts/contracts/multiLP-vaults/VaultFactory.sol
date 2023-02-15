@@ -11,11 +11,13 @@ import {
 import {SynthereumMultiLPVaultCreator} from './VaultCreator.sol';
 import {FactoryConditions} from '../common/FactoryConditions.sol';
 import {IVault} from './interfaces/IVault.sol';
+import {IVaultFactory} from './interfaces/IVaultFactory.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract SynthereumMultiLPVaultFactory is
+  IVaultFactory,
   IDeploymentSignature,
   ReentrancyGuard,
   FactoryConditions,
@@ -47,7 +49,7 @@ contract SynthereumMultiLPVaultFactory is
     uint128 _overCollateralization
   )
     public
-    override
+    override(IVaultFactory, SynthereumMultiLPVaultCreator)
     nonReentrant
     onlyDeployer(synthereumFinder)
     returns (IVault vault)
@@ -58,5 +60,21 @@ contract SynthereumMultiLPVaultFactory is
       _pool,
       _overCollateralization
     );
+  }
+
+  function encodeInitialiseCall(bytes memory encodedParams)
+    public
+    override(IVaultFactory, SynthereumMultiLPVaultCreator)
+    returns (bytes memory encodedCall)
+  {
+    encodedCall = super.encodeInitialiseCall(encodedParams);
+  }
+
+  function vaultImplementation()
+    public
+    override(IVaultFactory, SynthereumMultiLPVaultCreator)
+    returns (address implementation)
+  {
+    implementation = super.vaultImplementation();
   }
 }
