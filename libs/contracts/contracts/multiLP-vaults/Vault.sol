@@ -7,15 +7,10 @@ import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {SynthereumInterfaces} from '../core/Constants.sol';
-import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  ContextUpgradeable
-} from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
 
 contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
@@ -36,7 +31,7 @@ contract Vault is IVault, BaseVaultStorage {
     address _pool,
     uint128 _overCollateralization,
     ISynthereumFinder _finder
-  ) external override nonReentrant initializer() {
+  ) external override initializer nonReentrant {
     // vault initialisation
     pool = IPoolVault(_pool);
     collateralAsset = pool.collateralToken();
@@ -229,44 +224,5 @@ contract Vault is IVault, BaseVaultStorage {
     // discount = collateralDeficit / collateralExpected
     // discounted rate = rate - (rate * discount)
     discountedRate = rate - rate.mul(collateralDeficit.div(collateralExpected));
-  }
-
-  function isTrustedForwarder(address forwarder)
-    public
-    view
-    override
-    returns (bool)
-  {
-    try
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.TrustedForwarder
-      )
-    returns (address trustedForwarder) {
-      if (forwarder == trustedForwarder) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-  }
-
-  function _msgSender()
-    internal
-    view
-    override(ERC2771Context, ContextUpgradeable)
-    returns (address sender)
-  {
-    return ERC2771Context._msgSender();
-  }
-
-  function _msgData()
-    internal
-    view
-    override(ERC2771Context, ContextUpgradeable)
-    returns (bytes calldata)
-  {
-    return ERC2771Context._msgData();
   }
 }
