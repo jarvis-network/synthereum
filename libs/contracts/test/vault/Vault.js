@@ -20,6 +20,7 @@ const PoolMock = artifacts.require('PoolMockForVault');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const Manager = artifacts.require('SynthereumManager');
 const Proxy = artifacts.require('TransparentUpgradeableProxy');
+const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
 
 const data = require('../../data/test/lendingTestnet.json');
 
@@ -48,6 +49,7 @@ contract('Lending Vault', accounts => {
   let collateralAllocation = toWei('50', 'gwei');
   let priceIdentifier = toHex('jEUR/USDC');
   const maintainer = accounts[1];
+  const poolRegistryInterface = web3Utils.stringToHex('PoolRegistry');
 
   const getUSDC = async (recipient, collateralAmount) => {
     let NativeWrapperAddr = data[networkId].NativeWrapper;
@@ -101,10 +103,23 @@ contract('Lending Vault', accounts => {
         from: accounts[0],
       },
     );
+    await finder.changeImplementationAddress(
+      web3Utils.utf8ToHex('Deployer'),
+      accounts[0],
+      { from: maintainer },
+    );
 
     vaultImpl = await Vault.new();
 
     factoryVault = await VaultFactory.new(vaultImpl.address, finder.address);
+
+    let registry = await SynthereumPoolRegistry.new(finder.address);
+    await finder.changeImplementationAddress(
+      poolRegistryInterface,
+      registry.address,
+      { from: maintainer },
+    );
+    await registry.register('jEUR', USDC.address, '6', pool.address);
 
     // mint collateral to user
     await getUSDC(user1, collateralAllocation);
@@ -118,12 +133,6 @@ contract('Lending Vault', accounts => {
   describe('Deployment and initialisation', () => {
     describe('Factory contract', async () => {
       before(async () => {
-        await finder.changeImplementationAddress(
-          web3Utils.utf8ToHex('Deployer'),
-          accounts[0],
-          { from: maintainer },
-        );
-
         let collateralWhiteListInstance = await SynthereumCollateralWhitelist.deployed();
         await collateralWhiteListInstance.addToWhitelist(USDC.address, {
           from: maintainer,

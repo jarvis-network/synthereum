@@ -135,7 +135,9 @@ contract PoolMockForVault is IPoolVault {
     returns (ISynthereumFinder finder)
   {}
 
-  function version() external view returns (uint8 contractVersion) {}
+  function version() external view returns (uint8 contractVersion) {
+    contractVersion = 6;
+  }
 
   function typology() external view returns (string memory typologyString) {
     typologyString = 'POOL';
