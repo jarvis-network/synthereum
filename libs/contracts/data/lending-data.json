@@ -59,6 +59,10 @@
       "rewardsController": "0x929EC64c34a17401F460460D4B9390518E5B473e",
       "isEnabled": true
     },
+    "Compound": {
+      "modules": [],
+      "isEnabled": false
+    },
     "SwapModules": {
       "uniV2": false,
       "balancer": false,
