@@ -229,7 +229,8 @@ contract('Lending Vault', accounts => {
         // deposit
         let collateralDeposit = toWei('5', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user1 });
-        let tx = await vault.deposit(collateralDeposit, { from: user1 });
+        let tx = await vault.deposit(collateralDeposit, user1, { from: user1 });
+        console.log(tx);
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -284,7 +285,7 @@ contract('Lending Vault', accounts => {
         // deposit
         let collateralDeposit = toWei('10', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user2 });
-        let tx = await vault.deposit(collateralDeposit, { from: user2 });
+        let tx = await vault.deposit(collateralDeposit, user2, { from: user2 });
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -363,7 +364,7 @@ contract('Lending Vault', accounts => {
 
         let collateralDeposit = toWei('10', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user3 });
-        let tx = await vault.deposit(collateralDeposit, { from: user3 });
+        let tx = await vault.deposit(collateralDeposit, user3, { from: user3 });
 
         let expectedLPOut = toBN(collateralDeposit)
           .mul(toBN(Math.pow(10, 18)))
@@ -417,7 +418,7 @@ contract('Lending Vault', accounts => {
 
       it('Rejects with 0 amount', async () => {
         await truffleAssert.reverts(
-          vault.deposit(0, { from: user1 }),
+          vault.deposit(0, user1, { from: user1 }),
           'Zero amount',
         );
       });
@@ -493,7 +494,7 @@ contract('Lending Vault', accounts => {
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         await USDC.approve(vault.address, purchaseAmount, { from: user4 });
-        let tx = await vault.deposit(purchaseAmount, { from: user4 });
+        let tx = await vault.deposit(purchaseAmount, user4, { from: user4 });
 
         let expectedLPOut = toBN(purchaseAmount)
           .mul(toBN(Math.pow(10, 18)))
@@ -598,7 +599,7 @@ contract('Lending Vault', accounts => {
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         await USDC.approve(vault.address, purchaseAmount, { from: user5 });
-        let tx = await vault.deposit(purchaseAmount, { from: user5 });
+        let tx = await vault.deposit(purchaseAmount, user5, { from: user5 });
 
         // the output is maxCollateral discounted + the remaining on regular rate
         let remainingCollateral = toBN(purchaseAmount).sub(
@@ -689,7 +690,7 @@ contract('Lending Vault', accounts => {
         .mul(LPInput)
         .div(toBN(Math.pow(10, 18)));
 
-      let tx = await vault.withdraw(LPInput, { from: user1 });
+      let tx = await vault.withdraw(LPInput, user1, { from: user1 });
 
       // check event
       truffleAssert.eventEmitted(tx, 'Withdraw', ev => {
@@ -723,7 +724,7 @@ contract('Lending Vault', accounts => {
 
     it('Rejects with zero amount', async () => {
       await truffleAssert.reverts(
-        vault.withdraw(0, { from: user1 }),
+        vault.withdraw(0, user1, { from: user1 }),
         'Zero amount',
       );
     });

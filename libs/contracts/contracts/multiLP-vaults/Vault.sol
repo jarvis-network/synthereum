@@ -43,9 +43,10 @@ contract Vault is IVault, BaseVaultStorage {
     __ERC20Permit_init(_lpTokenName);
   }
 
-  function deposit(uint256 collateralAmount)
+  function deposit(uint256 collateralAmount, address recipient)
     external
     override
+    nonReentrant
     returns (uint256 lpTokensOut)
   {
     require(collateralAmount > 0, 'Zero amount');
@@ -79,7 +80,7 @@ contract Vault is IVault, BaseVaultStorage {
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
-      _mint(sender, lpTokensOut);
+      _mint(recipient, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
@@ -94,16 +95,17 @@ contract Vault is IVault, BaseVaultStorage {
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
 
-      _mint(sender, lpTokensOut);
+      _mint(recipient, lpTokensOut);
 
       // log event
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
     }
   }
 
-  function withdraw(uint256 lpTokensAmount)
+  function withdraw(uint256 lpTokensAmount, address recipient)
     external
     override
+    nonReentrant
     returns (uint256 collateralOut)
   {
     require(lpTokensAmount > 0, 'Zero amount');
@@ -124,7 +126,7 @@ contract Vault is IVault, BaseVaultStorage {
     (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
 
     // transfer to user the net collateral out
-    collateralAsset.safeTransfer(sender, collateralOut);
+    collateralAsset.safeTransfer(recipient, collateralOut);
 
     emit Withdraw(lpTokensAmount, collateralOut, rate);
   }

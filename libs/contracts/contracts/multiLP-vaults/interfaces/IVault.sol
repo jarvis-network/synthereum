@@ -35,11 +35,11 @@ interface IVault {
     ISynthereumFinder _finder
   ) external;
 
-  function deposit(uint256 collateralAmount)
+  function deposit(uint256 collateralAmount, address recipient)
     external
     returns (uint256 lpTokensOut);
 
-  function withdraw(uint256 lpTokensAmount)
+  function withdraw(uint256 lpTokensAmount, address recipient)
     external
     returns (uint256 collateralOut);
 
