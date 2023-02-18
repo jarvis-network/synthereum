@@ -33,7 +33,7 @@
   },
   "56": {
     "collateralAddress": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-    "excessTokenBeneficiary": ""
+    "excessTokenBeneficiary": "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc"
   },
   "100": {
     "collateralAddress": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
