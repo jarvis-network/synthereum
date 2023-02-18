@@ -40,5 +40,11 @@
       "version": 2,
       "isEnabled": true
     }
+  },
+  "56": {
+    "CreditLineFactory": {
+      "version": 2,
+      "isEnabled": true
+    }
   }
 }

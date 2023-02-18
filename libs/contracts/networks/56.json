@@ -118,5 +118,30 @@
     "contractName": "CompoundModule",
     "address": "0x888169768B1FD58e3fc360790BA3B7e6df4Ab140",
     "transactionHash": "0xc1d491215149a0f51181282f57ceb8eeed3b97bce346cc5705fbb2d65a428bcd"
+  },
+  {
+    "contractName": "SelfMintingRegistry",
+    "address": "0xBD8FdDa057de7e0162b7A386BeC253844B5E07A5",
+    "transactionHash": "0x42fe1cf6e103484ac81bc7b4e78507ae9474290d715b099836f651f40bef3b2c"
+  },
+  {
+    "contractName": "CreditLineLib",
+    "address": "0xf844826e986a2ad77Bf24a491Fe1D8b9ef2d3B03",
+    "transactionHash": "0x7e6f4a5c7be26c20c3d1011b3ba1dc3a125ef56c82ab71b1e645e6c477eb24d0"
+  },
+  {
+    "contractName": "CreditLine",
+    "address": "0xE1f0e22DE16842498634B08C68f8a7a4716fBf87",
+    "transactionHash": "0xbcffa0ac74523304fdf36aac2ebf3a813e1b32aab0183e8d4039ec30f3ead12c"
+  },
+  {
+    "contractName": "CreditLineFactory",
+    "address": "0x40FEd316F640fe2A1527d87718Ea44aFF1138706",
+    "transactionHash": "0xb15f601675d9c022fb47e6ae70c3c59068414ff113d56c0c20e3efb12351e650"
+  },
+  {
+    "contractName": "CreditLineController",
+    "address": "0xC687c60106200b45c0A09c46FB117820207765f2",
+    "transactionHash": "0xcae8674286e93874f2995d9a529c850c36967910193cd25ce8913f5d81a459a9"
   }
 ]
