@@ -73,4 +73,12 @@ interface ISynthereumManager {
     address[] memory vaults,
     address[] memory admins
   ) external;
+
+  /**
+   * @notice Retrieves address of the proxy implementation contract
+   * @return address of implementer
+   */
+  function getCurrentVaultImplementation(address vaultProxy)
+    external
+    returns (address);
 }

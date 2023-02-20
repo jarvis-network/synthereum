@@ -262,6 +262,7 @@ contract SynthereumManager is
    */
   function getCurrentVaultImplementation(address vaultProxy)
     external
+    override
     returns (address)
   {
     return TransparentUpgradeableProxy(payable(vaultProxy)).implementation();
