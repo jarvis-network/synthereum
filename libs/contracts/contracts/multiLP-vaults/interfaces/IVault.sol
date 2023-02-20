@@ -35,28 +35,66 @@ interface IVault {
     ISynthereumFinder _finder
   ) external;
 
+  /**
+   * @notice Deposits collateral into the vault
+   * @param collateralAmount amount of collateral units
+   * @param recipient address receiving the LP token
+   * @return lpTokensOut amount of LP tokens received as output
+   */
   function deposit(uint256 collateralAmount, address recipient)
     external
     returns (uint256 lpTokensOut);
 
+  /**
+   * @notice Withdraw collateral from vault
+   * @param lpTokensAmount amount of LP token units
+   * @param recipient address receiving the collateral
+   * @return collateralOut amount of collateral received
+   */
   function withdraw(uint256 lpTokensAmount, address recipient)
     external
     returns (uint256 collateralOut);
 
+  /**
+   * @notice Sets an address to be reference pool the vault is using
+   * @notice Only pool factory can call this method
+   * @param newPool address of the pool
+   */
   function setReferencePool(address newPool) external;
 
+  /**
+   * @notice Return current LP vault rate against collateral
+   * @return rate Vault rate
+   */
   function getRate() external view returns (uint256 rate);
 
+  /**
+   * @notice Return current LP vault discounted rate against collateral
+   * @return discountedRate Vault discounted rate
+   * @return maxCollateralDiscounted max amount of collateral units at discount
+   */
   function getDiscountedRate()
     external
     view
     returns (uint256 discountedRate, uint256 maxCollateralDiscounted);
 
+  /**
+   * @notice Return the vault reference pool
+   * @param poolAddress address of the pool
+   */
   function getPool() external view returns (address poolAddress);
 
+  /**
+   * @notice Return the vault collateral token
+   * @param collateral collateral token
+   */
   function getPoolCollateral() external view returns (address collateral);
 
-  function getOvercollateralisation()
+  /**
+   * @notice Return the vault overcollateralization factor
+   * @param overcollateral overcollateralization factor
+   */
+  function getOvercollateralization()
     external
     view
     returns (uint128 overcollateral);

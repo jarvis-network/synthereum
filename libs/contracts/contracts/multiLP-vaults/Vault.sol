@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 import {BaseVaultStorage} from './BaseVault.sol';
 import {IPoolVault} from './interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
+import {IStandardERC20} from '../base/interfaces/IStandardERC20.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
@@ -58,12 +59,13 @@ contract Vault is IVault, BaseVaultStorage {
     collateralAsset.safeApprove(address(pool), collateralAmount);
 
     // retrieve updated vault position on pool
-    IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
+    IPoolVault.LPInfo memory vaultPosition;
     address sender = _msgSender();
 
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
     if (isLpActive) {
+      vaultPosition = pool.positionLPInfo(address(this));
       (netCollateralDeposited, ) = pool.addLiquidity(collateralAmount);
     } else {
       netCollateralDeposited = pool.activateLP(
@@ -74,9 +76,9 @@ contract Vault is IVault, BaseVaultStorage {
       emit LPActivated(collateralAmount, overCollateralization);
     }
 
-    if (vaultPosition.isOvercollateralized) {
+    if (vaultPosition.utilization < PreciseUnitMath.PRECISE_UNIT) {
       // calculate rate
-      uint256 rate = calculateRate(vaultPosition.actualCollateralAmount);
+      (uint256 rate, ) = calculateRate(vaultPosition.actualCollateralAmount);
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
@@ -115,8 +117,11 @@ contract Vault is IVault, BaseVaultStorage {
       (pool.positionLPInfo(address(this))).actualCollateralAmount;
 
     // calculate rate and amount of collateral to withdraw
-    uint256 rate = calculateRate(vaultCollateralAmount);
-    uint256 collateralEquivalent = rate.mul(lpTokensAmount);
+    (uint256 rate, uint256 totSupply) = calculateRate(vaultCollateralAmount);
+    uint256 collateralEquivalent =
+      lpTokensAmount == totSupply
+        ? vaultCollateralAmount
+        : lpTokensAmount.mul(rate);
     address sender = _msgSender();
 
     // Burn LP tokens of user
@@ -140,7 +145,7 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   function getRate() external view override returns (uint256 rate) {
-    rate = calculateRate(
+    (rate, ) = calculateRate(
       (pool.positionLPInfo(address(this))).actualCollateralAmount
     );
   }
@@ -177,7 +182,7 @@ contract Vault is IVault, BaseVaultStorage {
     collateral = address(collateralAsset);
   }
 
-  function getOvercollateralisation()
+  function getOvercollateralization()
     external
     view
     override
@@ -189,14 +194,14 @@ contract Vault is IVault, BaseVaultStorage {
   function calculateRate(uint256 positionCollateralAmount)
     internal
     view
-    returns (uint256 rate)
+    returns (uint256 rate, uint256 totalSupplyLPTokens)
   {
     // get LP tokens total supply
-    uint256 totalSupplyLPTokens = totalSupply();
+    totalSupplyLPTokens = totalSupply();
 
     // calculate rate
     rate = totalSupplyLPTokens == 0
-      ? PreciseUnitMath.PRECISE_UNIT
+      ? 10**IStandardERC20(address(collateralAsset)).decimals()
       : positionCollateralAmount.div(totalSupplyLPTokens);
   }
 
@@ -210,7 +215,7 @@ contract Vault is IVault, BaseVaultStorage {
     )
   {
     // get regular rate
-    rate = calculateRate(vaultPosition.actualCollateralAmount);
+    (rate, ) = calculateRate(vaultPosition.actualCollateralAmount);
 
     // collateralExpected = numTokens * price * overcollateralization
     // from LPInfo -> utilization * actualCollateralAmount
