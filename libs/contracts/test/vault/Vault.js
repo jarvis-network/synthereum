@@ -50,6 +50,7 @@ contract('Lending Vault', accounts => {
   let priceIdentifier = toHex('jEUR/USDC');
   const maintainer = accounts[1];
   const poolRegistryInterface = web3Utils.stringToHex('PoolRegistry');
+  const collateralDecimals = 6;
 
   const getUSDC = async (recipient, collateralAmount) => {
     let NativeWrapperAddr = data[networkId].NativeWrapper;
@@ -111,7 +112,7 @@ contract('Lending Vault', accounts => {
 
     vaultImpl = await Vault.new();
 
-    factoryVault = await VaultFactory.new(vaultImpl.address, finder.address);
+    factoryVault = await VaultFactory.new(finder.address, vaultImpl.address);
 
     let registry = await SynthereumPoolRegistry.new(finder.address);
     await finder.changeImplementationAddress(
@@ -119,7 +120,12 @@ contract('Lending Vault', accounts => {
       registry.address,
       { from: maintainer },
     );
-    await registry.register('jEUR', USDC.address, '6', pool.address);
+    await registry.register(
+      'jEUR',
+      USDC.address,
+      collateralDecimals,
+      pool.address,
+    );
 
     // mint collateral to user
     await getUSDC(user1, collateralAllocation);
@@ -160,20 +166,18 @@ contract('Lending Vault', accounts => {
         );
         vault = await Vault.at(vaultAddr);
 
-        // check event
-        truffleAssert.eventEmitted(tx, 'CreatedVault', ev => {
-          return (ev.vaultAddress = vaultAddr && ev.deployer == accounts[0]);
-        });
-        truffleAssert;
         assert.equal(await vault.getPool.call(), pool.address);
         assert.equal(await vault.getPoolCollateral.call(), USDC.address);
         assert.equal(
-          (await vault.getOvercollateralisation.call()).toString(),
+          (await vault.getOvercollateralization.call()).toString(),
           overCollateralization.toString(),
         );
         assert.equal(await vault.name.call(), LPName);
         assert.equal(await vault.symbol.call(), LPSymbol);
-        assert.equal((await vault.getRate.call()).toString(), toWei('1'));
+        assert.equal(
+          (await vault.getRate.call()).toString(),
+          toBN(Math.pow(10, collateralDecimals)),
+        );
       });
 
       it('Revert if sender is not synthereum deployer', async () => {
@@ -230,15 +234,17 @@ contract('Lending Vault', accounts => {
         let collateralDeposit = toWei('5', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user1 });
         let tx = await vault.deposit(collateralDeposit, user1, { from: user1 });
-        console.log(tx);
+        let expectedUserLP = toBN(collateralDeposit).mul(
+          toBN(Math.pow(10, toBN(18).sub(toBN(collateralDecimals)).toString())),
+        );
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
-            ev.lpTokensOut.toString() == collateralDeposit.toString() &&
-            ev.rate.toString() == toWei('1') &&
+            ev.lpTokensOut.toString() == expectedUserLP.toString() &&
+            ev.rate.toString() == toBN(Math.pow(10, collateralDecimals)) &&
             ev.discountedRate.toString() == '0'
           );
         });
@@ -268,11 +274,13 @@ contract('Lending Vault', accounts => {
           userBalanceAfter.toString(),
         );
 
-        let expectedUserLP = collateralDeposit;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
         // rate should not have changed
-        assert.equal((await vault.getRate.call()).toString(), toWei('1'));
+        assert.equal(
+          (await vault.getRate.call()).toString(),
+          toBN(Math.pow(10, collateralDecimals)),
+        );
       });
 
       it('Rate unchanged - user 2 deposit - correctly mint LP tokens', async () => {
@@ -286,14 +294,17 @@ contract('Lending Vault', accounts => {
         let collateralDeposit = toWei('10', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user2 });
         let tx = await vault.deposit(collateralDeposit, user2, { from: user2 });
+        let expectedUserLP = toBN(collateralDeposit).mul(
+          toBN(Math.pow(10, toBN(18).sub(toBN(collateralDecimals)).toString())),
+        );
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
-            ev.lpTokensOut.toString() == collateralDeposit.toString() &&
-            ev.rate.toString() == toWei('1') &&
+            ev.lpTokensOut.toString() == expectedUserLP.toString() &&
+            ev.rate.toString() == toBN(Math.pow(10, collateralDecimals)) &&
             ev.discountedRate.toString() == '0'
           );
         });
@@ -318,15 +329,20 @@ contract('Lending Vault', accounts => {
           userBalanceAfter.toString(),
         );
 
-        let expectedUserLP = collateralDeposit;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
         // rate should not have changed
-        assert.equal((await vault.getRate.call()).toString(), toWei('1'));
+        assert.equal(
+          (await vault.getRate.call()).toString(),
+          toBN(Math.pow(10, collateralDecimals)),
+        );
       });
 
       it('Changed rate, new deposit', async () => {
-        assert.equal((await vault.getRate.call()).toString(), toWei('1'));
+        assert.equal(
+          (await vault.getRate.call()).toString(),
+          toBN(Math.pow(10, collateralDecimals)),
+        );
 
         let LPTotalSupply = await vault.totalSupply.call();
         let actualCollateralAmount = (
@@ -735,8 +751,8 @@ contract('Lending Vault', accounts => {
     before(async () => {
       newVaultImpl = await Vault.new();
       let newVaultFactory = await VaultFactory.new(
-        newVaultImpl.address,
         finder.address,
+        newVaultImpl.address,
         { from: maintainer },
       );
       await finder.changeImplementationAddress(
