@@ -26,4 +26,11 @@ interface IPublicVaultRegistry {
    * @return List of all vaults registered to the pool
    */
   function getVaults(address pool) external view returns (address[] memory);
+
+  /**
+   * @notice Checks if an address is a registered vault
+   * @param vault Vault address
+   * @return Boolean
+   */
+  function isVaultSupported(address vault) external view returns (bool);
 }

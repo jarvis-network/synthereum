@@ -22,8 +22,8 @@ contract SynthereumPublicVaultRegistry is
 
   ISynthereumFinder public immutable synthereumFinder;
 
-  mapping(address => bool) public isVault;
-  mapping(address => EnumerableSet.AddressSet) internal poolToVaults;
+  mapping(address => bool) private isVault;
+  mapping(address => EnumerableSet.AddressSet) private poolToVaults;
 
   /**
    * @notice Check if the sender is the deployer
@@ -69,7 +69,12 @@ contract SynthereumPublicVaultRegistry is
    * @param pool Pool address
    * @return List of all vaults registered to the pool
    */
-  function getVaults(address pool) external view returns (address[] memory) {
+  function getVaults(address pool)
+    external
+    view
+    override
+    returns (address[] memory)
+  {
     EnumerableSet.AddressSet storage vaultSet = poolToVaults[pool];
     uint256 numberOfVaults = vaultSet.length();
     address[] memory vaults = new address[](numberOfVaults);
@@ -77,5 +82,19 @@ contract SynthereumPublicVaultRegistry is
       vaults[j] = vaultSet.at(j);
     }
     return vaults;
+  }
+
+  /**
+   * @notice Checks if an address is a registered vault
+   * @param vault Vault address
+   * @return Boolean
+   */
+  function isVaultSupported(address vault)
+    external
+    view
+    override
+    returns (bool)
+  {
+    return isVault[vault];
   }
 }
