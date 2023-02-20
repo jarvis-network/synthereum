@@ -1,13 +1,8 @@
 pragma solidity 0.8.9;
 
-import {IStandardERC20} from '../base/interfaces/IStandardERC20.sol';
 import {
   IDeploymentSignature
 } from '../core/interfaces/IDeploymentSignature.sol';
-import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import {SynthereumMultiLPVaultCreator} from './VaultCreator.sol';
 import {FactoryConditions} from '../common/FactoryConditions.sol';
 import {IVault} from './interfaces/IVault.sol';
@@ -26,10 +21,11 @@ contract SynthereumMultiLPVaultFactory is
   bytes4 public immutable override deploymentSignature;
 
   /**
+   * @param _synthereumFinder Address of the synthereum finder
    * @param _vaultImplementation Address of the deployed vault implementation used for EIP1167
    */
-  constructor(address _vaultImplementation, address _synthereumFinder)
-    SynthereumMultiLPVaultCreator(_vaultImplementation, _synthereumFinder)
+  constructor(address _synthereumFinder, address _vaultImplementation)
+    SynthereumMultiLPVaultCreator(_synthereumFinder, _vaultImplementation)
   {
     deploymentSignature = this.createVault.selector;
   }
@@ -50,8 +46,8 @@ contract SynthereumMultiLPVaultFactory is
   )
     public
     override(IVaultFactory, SynthereumMultiLPVaultCreator)
-    nonReentrant
     onlyDeployer(synthereumFinder)
+    nonReentrant
     returns (IVault vault)
   {
     vault = super.createVault(
@@ -62,6 +58,11 @@ contract SynthereumMultiLPVaultFactory is
     );
   }
 
+  /**
+   * @notice ABI Encodes vault initialise method to construct a vault during deployment
+   * @param encodedParams ABI encoded parameters for constructor
+   * @return encodedCall Encoded function call with parameters
+   */
   function encodeInitialiseCall(bytes memory encodedParams)
     public
     override(IVaultFactory, SynthereumMultiLPVaultCreator)
@@ -70,6 +71,10 @@ contract SynthereumMultiLPVaultFactory is
     encodedCall = super.encodeInitialiseCall(encodedParams);
   }
 
+  /**
+   * @notice Returns address of deployed vault implementation the factory is using
+   * @return implementation Vault implementation
+   */
   function vaultImplementation()
     public
     override(IVaultFactory, SynthereumMultiLPVaultCreator)

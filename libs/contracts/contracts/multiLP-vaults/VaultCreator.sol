@@ -2,7 +2,6 @@
 pragma solidity 0.8.9;
 
 import {IVault} from './interfaces/IVault.sol';
-import {Vault} from './Vault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
@@ -15,19 +14,26 @@ contract SynthereumMultiLPVaultCreator {
   address internal immutable vaultImpl;
   ISynthereumFinder immutable synthereumFinder;
 
-  event CreatedVault(address indexed vaultAddress, address indexed deployer);
-
   /**
    * @notice Constructs the Vault contract.
+   * @param _finder Address of the synthereum finder
    * @param _vaultImplementation Address of the deployed vault implementation used for proxy
    */
-  constructor(address _vaultImplementation, address _finder) {
+  constructor(address _finder, address _vaultImplementation) {
     require(_vaultImplementation != address(0), 'Bad vault implementation');
     require(_finder != address(0), 'Bad finder');
     synthereumFinder = ISynthereumFinder(_finder);
     vaultImpl = _vaultImplementation;
   }
 
+  /**
+   * @notice Deploy a vault
+   * @param _lpTokenName name of the LP token representing a share in the vault
+   * @param _lpTokenSymbol symbol of the LP token representing a share in the vault
+   * @param _pool address of MultiLP pool the vault interacts with
+   * @param _overCollateralization over collateral requirement of the vault position in the pool
+   * @return vault Deployed vault
+   */
   function createVault(
     string memory _lpTokenName,
     string memory _lpTokenSymbol,
@@ -62,26 +68,21 @@ contract SynthereumMultiLPVaultCreator {
       );
 
     vault = IVault(vaultProxy);
-
-    emit CreatedVault(vaultProxy, msg.sender);
   }
 
+  /**
+   * @notice Returns address of deployed vault implementation the factory is using
+   * @return implementation Vault implementation
+   */
   function vaultImplementation() public virtual returns (address) {
     return vaultImpl;
   }
 
-  function decodeParams(bytes memory encodedParams)
-    public
-    returns (
-      string memory,
-      string memory,
-      address,
-      uint128
-    )
-  {
-    return abi.decode(encodedParams, (string, string, address, uint128));
-  }
-
+  /**
+   * @notice ABI Encodes vault initialise method to construct a vault during deployment
+   * @param encodedParams ABI encoded parameters for constructor
+   * @return encodedCall Encoded function call with parameters
+   */
   function encodeInitialiseCall(bytes memory encodedParams)
     public
     virtual
@@ -99,6 +100,31 @@ contract SynthereumMultiLPVaultCreator {
     );
   }
 
+  /**
+   * @notice Decodes constructor parameters into proper types
+   * @param encodedParams ABI encoded parameters for constructor
+   * @return LPTokenName string of LP token name
+   * @return LPTokenSymbol string of LP token symbol
+   * @return pool address of the reference synthereum pool
+   * @return overcollateralization uint128 Overcollateralization factor of the vault as LP
+   */
+  function decodeParams(bytes memory encodedParams)
+    internal
+    returns (
+      string memory,
+      string memory,
+      address,
+      uint128
+    )
+  {
+    return abi.decode(encodedParams, (string, string, address, uint128));
+  }
+
+  /**
+   * @notice Checks if address is a deployed and valid synthereum pool
+   * @param _pool address of the pool to check
+   * @return bool
+   */
   function isPool(address _pool) internal returns (bool) {
     ISynthereumRegistry registry =
       ISynthereumRegistry(
