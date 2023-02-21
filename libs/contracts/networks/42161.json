@@ -83,5 +83,35 @@
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x185bB0B7744a14CD336827fB94392f151e99400c",
     "transactionHash": "0xfd467cc5c8b50468f9259dfcc49b26189c824cbfe4c5263ef4a6fa9df3b8467c"
+  },
+  {
+    "contractName": "SynthereumFixedRateRegistry",
+    "address": "0xa0534D5119A10507e28577a555310104c77449F4",
+    "transactionHash": "0x42b0d2279298a567c4d20957b065d51f56c34686b14159d561216274b4828066"
+  },
+  {
+    "contractName": "SelfMintingRegistry",
+    "address": "0x58741E9137a8aF31955D42AEc99a1aD4771EeC23",
+    "transactionHash": "0xff20677577118b3e3e9811659e2232aee3c075b973fc88fd0e085f4356180871"
+  },
+  {
+    "contractName": "CreditLineLib",
+    "address": "0xaE1efb214F43806ed7017Ed1E6f288Df2f3d2459",
+    "transactionHash": "0x6969b148842a867fc8af7bfe924f71adbe0b9c739ad7b0386250dc3b012f29bc"
+  },
+  {
+    "contractName": "CreditLine",
+    "address": "0x8730671642c5f0a75779B3aA7bb459f5ccFE3424",
+    "transactionHash": "0xb6ea9a1237540ef3c7b9b70bf05e3c6c24fdbc07f74eb3de5d2012ee0d82a020"
+  },
+  {
+    "contractName": "CreditLineFactory",
+    "address": "0xE76b6e86Cedd9f44957fE0e7729E2C6b4E009b13",
+    "transactionHash": "0x55180af5bad7829ee97a7106b8b2d302a5e1e2ccf32e0a6cfadcad5a84049a73"
+  },
+  {
+    "contractName": "CreditLineController",
+    "address": "0x689359561355Ef829bB6D30a9c5b0E98c544CB11",
+    "transactionHash": "0x35cd9ee09a6f35e008cb392993734f3cf116a3eba5b3e8a8ff44d996f7fb656b"
   }
 ]
