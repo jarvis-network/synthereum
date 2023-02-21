@@ -48,8 +48,6 @@ contract CreditLine is
 
   string public constant override typology = 'SELF-MINTING';
 
-  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
-
   //----------------------------------------
   // Storage
   //----------------------------------------
@@ -310,7 +308,7 @@ contract CreditLine is
   function settleEmergencyShutdown()
     external
     override
-    isEmergencyShutdown()
+    isEmergencyShutdown
     nonReentrant
     returns (uint256 amountWithdrawn)
   {
@@ -498,7 +496,7 @@ contract CreditLine is
     external
     view
     override
-    isEmergencyShutdown()
+    isEmergencyShutdown
     returns (uint256 price)
   {
     price = positionManagerData.emergencyShutdownPrice.rawValue;
@@ -508,7 +506,7 @@ contract CreditLine is
     external
     view
     override
-    isEmergencyShutdown()
+    isEmergencyShutdown
     returns (uint256 time)
   {
     time = positionManagerData.emergencyShutdownTimestamp;
