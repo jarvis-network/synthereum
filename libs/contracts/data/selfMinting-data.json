@@ -68,5 +68,16 @@
         "feeProportions": [1]
       }
     }
+  ],
+  "42161": [
+    {
+      "version": 2,
+      "collateralAddress": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+      "fee": {
+        "feePercentage": 0.005,
+        "feeRecipients": ["0x39BAFa9F4c4DcE3Eac9333cEB7FEeC03C9DD4682"],
+        "feeProportions": [1]
+      }
+    }
   ]
 }
