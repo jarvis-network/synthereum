@@ -87,7 +87,7 @@ contract SynthereumDeployer is
 
   event FixedRateRemoved(address fixedRate);
 
-  event PublicVaultDeployed(address vault);
+  event PublicVaultDeployed(address vault, address pool);
 
   //----------------------------------------
   // Modifiers
@@ -373,7 +373,7 @@ contract SynthereumDeployer is
 
     vaultRegistry.registerVault(_pool, address(vault));
 
-    emit PublicVaultDeployed(address(vault));
+    emit PublicVaultDeployed(address(vault), _pool);
   }
 
   //----------------------------------------
