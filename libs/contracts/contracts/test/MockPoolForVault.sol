@@ -57,6 +57,7 @@ contract PoolMockForVault is IPoolVault {
     );
     position.actualCollateralAmount += _collateralAmount;
     collateralDeposited = _collateralAmount;
+    newLpCollateralAmount = position.actualCollateralAmount;
   }
 
   function removeLiquidity(uint256 _collateralAmount)
@@ -94,6 +95,10 @@ contract PoolMockForVault is IPoolVault {
 
   function setUtilization(uint256 utilization) external {
     position.utilization = utilization;
+  }
+
+  function setCoverage(uint256 coverage) external {
+    position.coverage = coverage;
   }
 
   function positionLPInfo(address _lp)

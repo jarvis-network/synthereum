@@ -220,7 +220,7 @@ contract('Lending Vault', accounts => {
     describe('Over collateralised scenario', async () => {
       before(async () => {
         // mock set position being overcollateralised
-        await pool.setPositionOvercollateralised(true);
+        await pool.setCoverage(toWei('1.15'));
       });
 
       it('First deposit - activates LP and correctly deposit', async () => {
@@ -440,16 +440,17 @@ contract('Lending Vault', accounts => {
       });
     });
     describe('Under-collateralised scenario (above liquidation below collateral requirement)', () => {
+      let underCollatCoverage = toWei('1.07');
+
       before(async () => {
         // mock set position being under collateral requirement
-        await pool.setPositionOvercollateralised(false);
+        await pool.setCoverage(underCollatCoverage);
       });
       after(async () => {
         // at the end of this suite the position is overcollateralised
-        await pool.setPositionOvercollateralised(true);
+        await pool.setCoverage(toWei('1.15'));
       });
 
-      let mockUtilization;
       it('Correctly provides rate at discount', async () => {
         let currentRegularRate = await vault.getRate.call();
         let actualCollateralAmount = (
@@ -457,15 +458,9 @@ contract('Lending Vault', accounts => {
         ).actualCollateralAmount;
 
         // mock set collateral expected to be 2.5% above actual collateral on position
-        let collateralExpected = toBN(actualCollateralAmount).add(
-          toBN(actualCollateralAmount).divn(40),
-        );
-        mockUtilization = toBN(collateralExpected)
-          .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(actualCollateralAmount));
-
-        // mock set the utilization
-        await pool.setUtilization(mockUtilization);
+        let collateralExpected = toBN(actualCollateralAmount)
+          .mul(toBN(overCollateralization))
+          .div(toBN(underCollatCoverage).sub(toBN(toWei('1'))));
 
         let expectedCollateralDeficit = collateralExpected.sub(
           toBN(actualCollateralAmount),
@@ -559,7 +554,7 @@ contract('Lending Vault', accounts => {
         ).actualCollateralAmount;
 
         // the discount should have diluted the regular rate
-        expectedNewRegularRate = toBN(actualCollateralAmount)
+        let expectedNewRegularRate = toBN(actualCollateralAmount)
           .mul(toBN(Math.pow(10, 18)))
           .div(toBN(LPTotalSupplyAfter));
         let newRegularRate = await vault.getRate.call();
@@ -569,9 +564,10 @@ contract('Lending Vault', accounts => {
         );
 
         // discount should be less on less collateral
-        let newCollateralExpected = toBN(mockUtilization)
-          .mul(toBN(actualCollateralAmount))
-          .div(toBN(Math.pow(10, 18)));
+        let newCollateralExpected = toBN(actualCollateralAmount)
+          .mul(toBN(overCollateralization))
+          .div(toBN(underCollatCoverage).sub(toBN(toWei('1'))));
+
         let expectedNewCollateralDeficit = newCollateralExpected.sub(
           toBN(actualCollateralAmount),
         );
