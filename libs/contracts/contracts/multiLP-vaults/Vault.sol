@@ -12,7 +12,6 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import 'hardhat/console.sol';
 
 contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
@@ -84,7 +83,7 @@ contract Vault is IVault, BaseVaultStorage {
     }
 
     if (
-      vaultPosition.coverage >
+      vaultPosition.coverage >=
       PreciseUnitMath.PRECISE_UNIT + overCollateralization
     ) {
       // calculate rate
@@ -173,7 +172,7 @@ contract Vault is IVault, BaseVaultStorage {
 
     // return zeros if not in discount state
     if (
-      vaultPosition.coverage >
+      vaultPosition.coverage >=
       PreciseUnitMath.PRECISE_UNIT + overCollateralization
     ) {
       return (0, 0);
@@ -238,10 +237,11 @@ contract Vault is IVault, BaseVaultStorage {
     (rate, ) = calculateRate(actualCollateralAmount);
 
     // collateralExpected = numTokens * price * overcollateralization
-    // from LPInfo -> utilization * actualCollateralAmount
-    // (numTokens * price * overCollateralization / actualCollateralAmount) * actualCollateralAmount
+    // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;
     uint256 collateralExpected =
-      vaultPosition.utilization.mul(actualCollateralAmount);
+      (actualCollateralAmount).mul(overCollateralization).div(
+        vaultPosition.coverage - PreciseUnitMath.PRECISE_UNIT
+      );
 
     // collateral deficit = collateralExpected - actualCollateral
     collateralDeficit = collateralExpected - actualCollateralAmount;
