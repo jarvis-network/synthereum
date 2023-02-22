@@ -12,6 +12,7 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import 'hardhat/console.sol';
 
 contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
@@ -53,32 +54,42 @@ contract Vault is IVault, BaseVaultStorage {
     require(collateralAmount > 0, 'Zero amount');
 
     // transfer collateral - checks balance
-    collateralAsset.transferFrom(_msgSender(), address(this), collateralAmount);
+    address sender = _msgSender();
+    collateralAsset.transferFrom(sender, address(this), collateralAmount);
 
     // approve pool to pull collateral
     collateralAsset.safeApprove(address(pool), collateralAmount);
 
     // retrieve updated vault position on pool
     IPoolVault.LPInfo memory vaultPosition;
-    address sender = _msgSender();
 
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
+    uint256 actualCollateralAmount;
+
     if (isLpActive) {
       vaultPosition = pool.positionLPInfo(address(this));
-      (netCollateralDeposited, ) = pool.addLiquidity(collateralAmount);
+      (netCollateralDeposited, actualCollateralAmount) = pool.addLiquidity(
+        collateralAmount
+      );
     } else {
       netCollateralDeposited = pool.activateLP(
         collateralAmount,
         overCollateralization
       );
+      actualCollateralAmount = netCollateralDeposited;
       isLpActive = true;
+      vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       emit LPActivated(collateralAmount, overCollateralization);
     }
 
-    if (vaultPosition.utilization < PreciseUnitMath.PRECISE_UNIT) {
+    if (
+      vaultPosition.coverage >
+      PreciseUnitMath.PRECISE_UNIT + overCollateralization
+    ) {
       // calculate rate
-      (uint256 rate, ) = calculateRate(vaultPosition.actualCollateralAmount);
+      (uint256 rate, ) =
+        calculateRate(actualCollateralAmount - netCollateralDeposited);
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited.div(rate);
@@ -89,7 +100,10 @@ contract Vault is IVault, BaseVaultStorage {
     } else {
       // calculate rate and discounted rate
       (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
-        calculateDiscountedRate(vaultPosition);
+        calculateDiscountedRate(
+          vaultPosition,
+          actualCollateralAmount - netCollateralDeposited
+        );
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited > maxCollateralAtDiscount
@@ -122,10 +136,9 @@ contract Vault is IVault, BaseVaultStorage {
       lpTokensAmount == totSupply
         ? vaultCollateralAmount
         : lpTokensAmount.mul(rate);
-    address sender = _msgSender();
 
     // Burn LP tokens of user
-    _burn(sender, lpTokensAmount);
+    _burn(_msgSender(), lpTokensAmount);
 
     // withdraw collateral from pool
     (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
@@ -159,13 +172,17 @@ contract Vault is IVault, BaseVaultStorage {
     IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
 
     // return zeros if not in discount state
-    if (vaultPosition.isOvercollateralized) {
+    if (
+      vaultPosition.coverage >
+      PreciseUnitMath.PRECISE_UNIT + overCollateralization
+    ) {
       return (0, 0);
     }
 
     // otherwise calculate discount
     (, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
-      vaultPosition
+      vaultPosition,
+      vaultPosition.actualCollateralAmount
     );
   }
 
@@ -205,7 +222,10 @@ contract Vault is IVault, BaseVaultStorage {
       : positionCollateralAmount.div(totalSupplyLPTokens);
   }
 
-  function calculateDiscountedRate(IPoolVault.LPInfo memory vaultPosition)
+  function calculateDiscountedRate(
+    IPoolVault.LPInfo memory vaultPosition,
+    uint256 actualCollateralAmount
+  )
     internal
     view
     returns (
@@ -215,18 +235,16 @@ contract Vault is IVault, BaseVaultStorage {
     )
   {
     // get regular rate
-    (rate, ) = calculateRate(vaultPosition.actualCollateralAmount);
+    (rate, ) = calculateRate(actualCollateralAmount);
 
     // collateralExpected = numTokens * price * overcollateralization
     // from LPInfo -> utilization * actualCollateralAmount
     // (numTokens * price * overCollateralization / actualCollateralAmount) * actualCollateralAmount
     uint256 collateralExpected =
-      vaultPosition.utilization.mul(vaultPosition.actualCollateralAmount);
+      vaultPosition.utilization.mul(actualCollateralAmount);
 
     // collateral deficit = collateralExpected - actualCollateral
-    collateralDeficit =
-      collateralExpected -
-      vaultPosition.actualCollateralAmount;
+    collateralDeficit = collateralExpected - actualCollateralAmount;
 
     // discount = collateralDeficit / collateralExpected
     // discounted rate = rate - (rate * discount)
