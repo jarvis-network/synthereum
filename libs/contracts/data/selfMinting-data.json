@@ -27,7 +27,7 @@
   "80001": [
     {
       "version": 2,
-      "collateralAddress": "0xdEe897d5E6eaA6365F293c37cB3fA8335B9B8f3F",
+      "collateralAddress": "0x2b7D8FB31676Ab02DA37a124Acfa726125b1B95b",
       "fee": {
         "feePercentage": 0.00165,
         "feeRecipients": ["0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"],

@@ -66,8 +66,23 @@
       "aggregator": "0x7d7356bF6Ee5CDeC22B216581E48eCC700D0497A",
       "intermediatePairs": []
     },
+    "USDEUR": {
+      "type": 1,
+      "aggregator": "0x7d7356bF6Ee5CDeC22B216581E48eCC700D0497A",
+      "intermediatePairs": []
+    },
+    "EUREUR": {
+      "type": 2,
+      "aggregator": "",
+      "intermediatePairs": ["EURUSD", "USDEUR"]
+    },
     "CHFUSD": {
       "type": 0,
+      "aggregator": "",
+      "intermediatePairs": []
+    },
+    "USDCHF": {
+      "type": 1,
       "aggregator": "",
       "intermediatePairs": []
     },
