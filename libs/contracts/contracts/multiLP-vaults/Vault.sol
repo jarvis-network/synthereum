@@ -2,7 +2,7 @@
 pragma solidity 0.8.9;
 
 import {BaseVaultStorage} from './BaseVault.sol';
-import {IPoolVault} from './interfaces/IPoolVault.sol';
+import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {IStandardERC20} from '../base/interfaces/IStandardERC20.sol';
 import {IVault} from './interfaces/IVault.sol';

@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 import {
   IMintableBurnableERC20
 } from '../tokens/interfaces/IMintableBurnableERC20.sol';
-import {IPoolVault} from './interfaces/IPoolVault.sol';
+import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';

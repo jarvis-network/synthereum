@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
-import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {
+  ISynthereumDeployment
+} from '../../../common/interfaces/IDeployment.sol';
 import {
   IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 interface IPoolVault is ISynthereumDeployment {

@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
 import {PoolMock} from './PoolMock.sol';
-import {IPoolVault} from '../multiLP-vaults/interfaces/IPoolVault.sol';
+import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 
 contract PoolMockForVault is IPoolVault {
