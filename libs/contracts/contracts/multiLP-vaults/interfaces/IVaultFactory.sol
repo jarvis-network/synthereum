@@ -3,6 +3,9 @@ pragma solidity 0.8.9;
 
 import {IVault} from './IVault.sol';
 
+/**
+ * @title Provides interface for Public vault factory
+ */
 interface IVaultFactory {
   /**
    * @notice Deploy a public vault

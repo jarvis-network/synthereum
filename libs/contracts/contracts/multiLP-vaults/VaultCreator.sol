@@ -110,6 +110,7 @@ contract SynthereumMultiLPVaultCreator {
    */
   function decodeParams(bytes memory encodedParams)
     internal
+    pure
     returns (
       string memory,
       string memory,
@@ -125,7 +126,7 @@ contract SynthereumMultiLPVaultCreator {
    * @param _pool address of the pool to check
    * @return bool
    */
-  function isPool(address _pool) internal returns (bool) {
+  function isPool(address _pool) internal view returns (bool) {
     ISynthereumRegistry registry =
       ISynthereumRegistry(
         synthereumFinder.getImplementationAddress(

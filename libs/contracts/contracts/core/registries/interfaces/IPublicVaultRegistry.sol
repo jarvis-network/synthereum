@@ -21,6 +21,14 @@ interface IPublicVaultRegistry {
   function removeVault(address vault) external;
 
   /**
+   * @notice Allow to move vaults from an old pool to a new pol migrated
+   * @notice Only deployer can call this function
+   * @param oldPool Address of the old pool
+   * @param newPool Address of the new pool
+   */
+  function migrateVaults(address oldPool, address newPool) external;
+
+  /**
    * @notice Returns all the vaults associated to a pool
    * @param pool Pool address
    * @return List of all vaults registered to the pool

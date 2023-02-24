@@ -3,6 +3,9 @@ pragma solidity 0.8.9;
 
 import {IPublicVaultRegistry} from './interfaces/IPublicVaultRegistry.sol';
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
+import {
+  IVaultMigration
+} from '../../multiLP-vaults/interfaces/IVaultMigration.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
 import {
   ReentrancyGuard
@@ -55,6 +58,28 @@ contract SynthereumPublicVaultRegistry is
   }
 
   /**
+   * @notice Allow to move vaults from an old pool to a new pol migrated
+   * @notice Only deployer can call this function
+   * @param oldPool Address of the old pool
+   * @param newPool Address of the new pool
+   */
+  function migrateVaults(address oldPool, address newPool)
+    external
+    override
+    onlyDeployer
+    nonReentrant
+  {
+    EnumerableSet.AddressSet storage vaultSet = poolToVaults[oldPool];
+    EnumerableSet.AddressSet storage newVaultSet = poolToVaults[newPool];
+    address[] memory poolVaults = vaultSet.values();
+    for (uint256 j = 0; j < poolVaults.length; j++) {
+      vaultSet.remove(poolVaults[j]);
+      require(newVaultSet.add(poolVaults[j]), 'Vault already registered');
+      IVaultMigration(poolVaults[j]).setReferencePool(newPool);
+    }
+  }
+
+  /**
    * @notice Allow the deployer to unregister a vault
    * @notice Only a registered pool can call this one to remove his own registered vaults
    * @param vault Address of the vault to unregister
@@ -75,13 +100,7 @@ contract SynthereumPublicVaultRegistry is
     override
     returns (address[] memory)
   {
-    EnumerableSet.AddressSet storage vaultSet = poolToVaults[pool];
-    uint256 numberOfVaults = vaultSet.length();
-    address[] memory vaults = new address[](numberOfVaults);
-    for (uint256 j = 0; j < numberOfVaults; j++) {
-      vaults[j] = vaultSet.at(j);
-    }
-    return vaults;
+    return poolToVaults[pool].values();
   }
 
   /**

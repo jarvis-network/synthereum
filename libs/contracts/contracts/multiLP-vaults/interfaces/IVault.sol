@@ -2,8 +2,12 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {IVaultMigration} from './IVaultMigration.sol';
 
-interface IVault {
+/**
+ * @title Provides interface for Public vault
+ */
+interface IVault is IVaultMigration {
   event Deposit(
     uint256 netCollateralDeposited,
     uint256 lpTokensOut,
@@ -54,13 +58,6 @@ interface IVault {
   function withdraw(uint256 lpTokensAmount, address recipient)
     external
     returns (uint256 collateralOut);
-
-  /**
-   * @notice Sets an address to be reference pool the vault is using
-   * @notice Only pool factory can call this method
-   * @param newPool address of the pool
-   */
-  function setReferencePool(address newPool) external;
 
   /**
    * @notice Return current LP vault rate against collateral

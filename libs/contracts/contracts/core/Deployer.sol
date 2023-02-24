@@ -192,6 +192,8 @@ contract SynthereumDeployer is
       oldPool.version(),
       address(oldPool)
     );
+    getPublicVaultRegistry().migrateVaults(address(oldPool), address(pool));
+
     emit PoolMigrated(address(_migrationPool), _poolVersion, address(pool));
     emit PoolRemoved(address(oldPool));
   }
@@ -629,6 +631,22 @@ contract SynthereumDeployer is
     fixedRateRegistry = ISynthereumRegistry(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.FixedRateRegistry
+      )
+    );
+  }
+
+  /**
+   * @notice Get public-vault registry contract from the finder
+   * @return publicVaultRegistry Registry of public vault contract
+   */
+  function getPublicVaultRegistry()
+    internal
+    view
+    returns (IPublicVaultRegistry publicVaultRegistry)
+  {
+    publicVaultRegistry = IPublicVaultRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.VaultRegistry
       )
     );
   }

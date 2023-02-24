@@ -12,17 +12,22 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
 
 contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
-  modifier onlyPoolFactory() {
-    SynthereumFactoryAccess._onlyPoolFactory(synthereumFinder);
+  modifier onlyVaultRegistry() {
+    address vaultRegistry =
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.VaultRegistry
+      );
+    require(msg.sender == vaultRegistry, 'Sender must be vault registry');
     _;
   }
 
-  constructor() public {
+  constructor() {
     _disableInitializers();
   }
 
@@ -151,7 +156,7 @@ contract Vault is IVault, BaseVaultStorage {
   function setReferencePool(address _newPool)
     external
     override
-    onlyPoolFactory
+    onlyVaultRegistry
   {
     pool = IPoolVault(_newPool);
   }
