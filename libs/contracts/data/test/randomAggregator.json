@@ -1,0 +1,58 @@
+{
+  "80001": {
+    "CHFUSD": {
+      "initialPrice": "1.0175",
+      "maxSpread": "0.00000003472"
+    },
+    "GBPUSD": {
+      "initialPrice": "1.1828",
+      "maxSpread": "0.00000003472"
+    }
+  },
+  "420": {
+    "EURUSD": {
+      "initialPrice": "1.0140",
+      "maxSpread": "0.00000003472"
+    }
+  },
+  "97": {
+    "EURUSD": {
+      "initialPrice": "1.07",
+      "maxSpread": "0.00000000868"
+    },
+    "GBPUSD": {
+      "initialPrice": "1.22",
+      "maxSpread": "0.00000000868"
+    },
+    "NGNUSD": {
+      "initialPrice": "0.0022",
+      "maxSpread": "0.00000000868"
+    }
+  },
+  "3": {
+    "EURUSD": {
+      "initialPrice": "1.14",
+      "maxSpread": "0.00000000868"
+    },
+    "GBPUSD": {
+      "initialPrice": "1.36",
+      "maxSpread": "0.00000000868"
+    }
+  },
+  "77": {
+    "EURUSD": {
+      "initialPrice": "1.1256",
+      "maxSpread": "0.00000000868"
+    },
+    "GBPUSD": {
+      "initialPrice": "1.323",
+      "maxSpread": "0.00000000868"
+    }
+  },
+  "43113": {
+    "EURUSD": {
+      "initialPrice": "1.0547",
+      "maxSpread": "0.00000003472"
+    }
+  }
+}

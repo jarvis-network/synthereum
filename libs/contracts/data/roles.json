@@ -60,6 +60,10 @@
     "maintainer": "0x685723B9dC89BDF28BA5F98F9A8c0aC899bD6E77",
     "liquidityProvider": "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
   },
+  "43113": {
+    "admin": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
+    "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486"
+  },
   "43114": {
     "admin": "0x20c7ec810e723c8c486b9345b1A6D23e615c946c",
     "maintainer": "0xe3F130DcECF408bCc679e4FE269FbcDE6aC86d17",

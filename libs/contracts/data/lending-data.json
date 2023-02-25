@@ -125,14 +125,25 @@
       "moneyManager": "",
       "rewardsController": "",
       "isEnabled": false
+    }
+  },
+  "43113": {
+    "Compound": {
+      "modules": [],
+      "isEnabled": false
+    },
+    "AaveV3": {
+      "moneyManager": "0xf319Bb55994dD1211bC34A7A26A336C6DD0B1b00",
+      "rewardsController": "0xe39e0498cB9df939b992f935f95936eAEdA7431c",
+      "isEnabled": true
     },
     "SwapModules": {
       "uniV2": false,
       "balancer": false,
-      "collateral": ""
+      "collateral": "0x6a17716Ce178e84835cfA73AbdB71cb455032456"
     },
-    "commissionReceiver": "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc",
-    "buybackProgramReceiver": "",
-    "lendingRewardsReceiver": ""
+    "commissionReceiver": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
+    "buybackProgramReceiver": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
+    "lendingRewardsReceiver": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5"
   }
 }
