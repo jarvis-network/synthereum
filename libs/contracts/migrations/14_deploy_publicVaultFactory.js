@@ -5,6 +5,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
 ]);
 
 async function migrate(deployer, network, accounts) {
+  const rolesConfig = require('../data/roles.json');
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
@@ -29,14 +30,11 @@ async function migrate(deployer, network, accounts) {
     SynthereumFinder,
     '@jarvis-network/synthereum-contracts',
   );
-  const admin = process.env.FORKCHAINID
-    ? accounts[0]
-    : rolesConfig[networkId]?.admin ?? accounts[0];
+
   const maintainer = process.env.FORKCHAINID
     ? accounts[1]
     : rolesConfig[networkId]?.maintainer ?? accounts[1];
 
-  const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
 
   // deploy vault implementation
