@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
+pragma solidity 0.8.9;
+
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ILendingManager} from '../lending-module/interfaces/ILendingManager.sol';
 import {ILendingStorageManager} from '../lending-module/interfaces/ILendingStorageManager.sol';

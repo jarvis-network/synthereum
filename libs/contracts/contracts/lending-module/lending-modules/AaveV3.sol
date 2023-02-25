@@ -114,9 +114,9 @@ contract AaveV3Module is ILendingModule {
   function totalTransfer(
     address _oldPool,
     address _newPool,
-    address _collateral,
+    address,
     address _interestToken,
-    bytes calldata _extraArgs
+    bytes calldata
   )
     external
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
@@ -129,13 +129,12 @@ contract AaveV3Module is ILendingModule {
   /**
    * @notice Claim the rewards associated to the bearing tokens of the caller(pool)
    * @param _lendingArgs encoded args needed by the specific implementation
-   * @param _collateral Address of the collateral of the pool
    * @param _bearingToken Address of the bearing token of the pool
    * @param _recipient address to which send rewards
    */
   function claimRewards(
     bytes calldata _lendingArgs,
-    address _collateral,
+    address,
     address _bearingToken,
     address _recipient
   ) external {
@@ -151,7 +150,7 @@ contract AaveV3Module is ILendingModule {
   function getUpdatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
-    bytes calldata _extraArgs
+    bytes calldata
   ) external view override returns (uint256 totalInterest) {
     (totalInterest, ) = calculateGeneratedInterest(
       _poolAddress,
@@ -164,7 +163,7 @@ contract AaveV3Module is ILendingModule {
   function getAccumulatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
-    bytes calldata _extraArgs
+    bytes calldata
   ) external view override returns (uint256 totalInterest) {
     (totalInterest, ) = calculateGeneratedInterest(
       _poolAddress,
@@ -187,18 +186,18 @@ contract AaveV3Module is ILendingModule {
 
   function collateralToInterestToken(
     uint256 _collateralAmount,
-    address _collateral,
-    address _interestToken,
-    bytes calldata _extraArgs
+    address,
+    address,
+    bytes calldata
   ) external pure override returns (uint256 interestTokenAmount) {
     interestTokenAmount = _collateralAmount;
   }
 
   function interestTokenToCollateral(
     uint256 _interestTokenAmount,
-    address _collateral,
-    address _interestToken,
-    bytes calldata _extraArgs
+    address,
+    address,
+    bytes calldata
   ) external pure override returns (uint256 collateralAmount) {
     collateralAmount = _interestTokenAmount;
   }

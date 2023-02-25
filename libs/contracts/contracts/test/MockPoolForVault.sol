@@ -101,7 +101,7 @@ contract PoolMockForVault is IPoolVault {
     position.coverage = coverage;
   }
 
-  function positionLPInfo(address _lp)
+  function positionLPInfo(address)
     external
     view
     override
@@ -140,11 +140,11 @@ contract PoolMockForVault is IPoolVault {
     returns (ISynthereumFinder finder)
   {}
 
-  function version() external view returns (uint8 contractVersion) {
+  function version() external pure returns (uint8 contractVersion) {
     contractVersion = 6;
   }
 
-  function typology() external view returns (string memory typologyString) {
+  function typology() external pure returns (string memory typologyString) {
     typologyString = 'POOL';
   }
 }

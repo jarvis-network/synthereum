@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {IVault} from './interfaces/IVault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {SynthereumInterfaces} from '../core/Constants.sol';
 import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
+import {IVault} from './interfaces/IVault.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   TransparentUpgradeableProxy
 } from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';

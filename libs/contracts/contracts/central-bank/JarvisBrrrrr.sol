@@ -86,7 +86,7 @@ contract JarvisBrrrrr is
     bytes32 contractNameHex = _contractName.stringToBytes32();
     require(contractNameHex != 0x00, 'No name passed');
     try synthereumFinder.getImplementationAddress(contractNameHex) returns (
-      address contractAddress
+      address
     ) {
       require(
         accessWhitelist.add(contractNameHex),

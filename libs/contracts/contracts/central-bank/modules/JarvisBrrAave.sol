@@ -17,7 +17,7 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     IMintableBurnableERC20 _jSynthAsset,
     uint256 _amount,
     bytes calldata _extraArgs,
-    bytes calldata _implementationArgs
+    bytes calldata
   ) external override returns (uint256 tokensOut) {
     require(_jSynthAsset.balanceOf(address(this)) >= _amount, 'Wrong balance');
     (address moneyMarket, IERC20 interestToken) = interestBearingToken(
@@ -44,7 +44,7 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     IMintableBurnableERC20 _jSynthAsset,
     uint256 _aTokensAmount,
     bytes calldata _extraArgs,
-    bytes calldata _implementationArgs
+    bytes calldata
   ) external override returns (uint256 jSynthOut) {
     (address moneyMarket, IERC20 interestToken) = interestBearingToken(
       address(_jSynthAsset),
@@ -73,7 +73,7 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
   function getTotalBalance(
     address _jSynth,
     bytes calldata _args,
-    bytes calldata _implementationArgs
+    bytes calldata
   ) external view override returns (uint256 totalJSynth) {
     (, IERC20 interestToken) = interestBearingToken(_jSynth, _args);
     totalJSynth = interestToken.balanceOf(msg.sender);

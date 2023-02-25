@@ -1,15 +1,16 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {
-  IDeploymentSignature
-} from '../core/interfaces/IDeploymentSignature.sol';
-import {SynthereumMultiLPVaultCreator} from './VaultCreator.sol';
-import {FactoryConditions} from '../common/FactoryConditions.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {IVaultFactory} from './interfaces/IVaultFactory.sol';
 import {
+  IDeploymentSignature
+} from '../core/interfaces/IDeploymentSignature.sol';
+import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {FactoryConditions} from '../common/FactoryConditions.sol';
+import {SynthereumMultiLPVaultCreator} from './VaultCreator.sol';
 
 contract SynthereumMultiLPVaultFactory is
   IVaultFactory,

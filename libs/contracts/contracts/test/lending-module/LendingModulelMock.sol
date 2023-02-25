@@ -48,7 +48,7 @@ contract LendingModulelMock is ILendingModule {
 
   function withdraw(
     ILendingStorageManager.PoolStorage calldata poolData,
-    address pool,
+    address,
     bytes memory lendingArgs,
     uint256 bearingTokensAmount,
     address recipient
@@ -83,9 +83,9 @@ contract LendingModulelMock is ILendingModule {
   function totalTransfer(
     address oldPool,
     address newPool,
-    address collateral,
+    address,
     address interestToken,
-    bytes memory extraArgs
+    bytes memory
   )
     external
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
@@ -114,29 +114,29 @@ contract LendingModulelMock is ILendingModule {
     bytes memory extraArgs
   ) external view override returns (uint256 totalInterest) {}
 
-  function getInterestBearingToken(address collateral, bytes memory args)
+  function getInterestBearingToken(address, bytes memory)
     external
-    view
+    pure
     override
-    returns (address token)
+    returns (address)
   {
     revert('No bearing token to be calculated');
   }
 
   function collateralToInterestToken(
     uint256 collateralAmount,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    address,
+    address,
+    bytes memory
   ) external pure override returns (uint256 interestTokenAmount) {
     interestTokenAmount = collateralAmount;
   }
 
   function interestTokenToCollateral(
     uint256 interestTokenAmount,
-    address collateral,
-    address interestToken,
-    bytes memory extraArgs
+    address,
+    address,
+    bytes memory
   ) external pure override returns (uint256 collateralAmount) {
     collateralAmount = interestTokenAmount;
   }

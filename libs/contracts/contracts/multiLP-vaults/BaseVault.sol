@@ -1,27 +1,27 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   IMintableBurnableERC20
 } from '../tokens/interfaces/IMintableBurnableERC20.sol';
-import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
-import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  ERC20PermitUpgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
 import {
   ContextUpgradeable
 } from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
+import {ERC2771Context} from '../common/ERC2771Context.sol';
+import {
+  ReentrancyGuardUpgradeable
+} from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import {
+  ERC20PermitUpgradeable
+} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
 
 abstract contract BaseVaultStorage is
   ERC2771Context,
-  ReentrancyGuard,
+  ReentrancyGuardUpgradeable,
   ERC20PermitUpgradeable
 {
   ISynthereumFinder internal synthereumFinder;

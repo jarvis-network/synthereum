@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {BaseVaultStorage} from './BaseVault.sol';
-import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
-import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
-import {IStandardERC20} from '../base/interfaces/IStandardERC20.sol';
-import {IVault} from './interfaces/IVault.sol';
-import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {IStandardERC20} from '../base/interfaces/IStandardERC20.sol';
+import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
+import {IVault} from './interfaces/IVault.sol';
+import {SynthereumInterfaces} from '../core/Constants.sol';
+import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {SynthereumInterfaces} from '../core/Constants.sol';
+import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
+import {BaseVaultStorage} from './BaseVault.sol';
 
 contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
@@ -44,7 +44,8 @@ contract Vault is IVault, BaseVaultStorage {
     overCollateralization = _overCollateralization;
     synthereumFinder = _finder;
 
-    // // erc20 initialisation
+    // // reentrancy and erc20 initialisation
+    __ReentrancyGuard_init();
     __ERC20_init(_lpTokenName, _lpTokenSymbol);
     __ERC20Permit_init(_lpTokenName);
   }
@@ -153,12 +154,12 @@ contract Vault is IVault, BaseVaultStorage {
     emit Withdraw(lpTokensAmount, collateralOut, rate);
   }
 
-  function setReferencePool(address _newPool)
+  function setReferencePool(address newPool)
     external
     override
     onlyVaultRegistry
   {
-    pool = IPoolVault(_newPool);
+    pool = IPoolVault(newPool);
   }
 
   function getRate() external view override returns (uint256 rate) {

@@ -16,7 +16,7 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   function deposit(
     IMintableBurnableERC20 _jSynthAsset,
     uint256 _amount,
-    bytes calldata _extraArgs,
+    bytes calldata,
     bytes calldata _implementationArgs
   ) external override returns (uint256 tokensOut) {
     require(_jSynthAsset.balanceOf(address(this)) >= _amount, 'Wrong balance');
@@ -37,9 +37,9 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   }
 
   function withdraw(
-    IMintableBurnableERC20 _jSynthAsset,
+    IMintableBurnableERC20,
     uint256 _jSynthAmount,
-    bytes calldata _extraArgs,
+    bytes calldata,
     bytes calldata _implementationArgs
   ) external override returns (uint256 jSynthOut) {
     address cTokenAddr = abi.decode(_implementationArgs, (address));
@@ -53,8 +53,8 @@ contract JarvisBrrCompound is IJarvisBrrMoneyMarket {
   }
 
   function getTotalBalance(
-    address _jSynth,
-    bytes calldata _args,
+    address,
+    bytes calldata,
     bytes calldata _implementationArgs
   ) external override returns (uint256 totalJSynth) {
     ICErc20 cToken = ICErc20(abi.decode(_implementationArgs, (address)));

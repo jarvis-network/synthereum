@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity 0.8.9;
+
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ILendingModule} from '../interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
@@ -118,9 +121,9 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   function totalTransfer(
     address _oldPool,
     address _newPool,
-    address _collateral,
+    address,
     address _interestToken,
-    bytes calldata _extraArgs
+    bytes calldata
   )
     external
     override
@@ -141,9 +144,9 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
 
   function claimRewards(
     bytes calldata,
-    address _collateral,
-    address _bearingToken,
-    address _recipient
+    address,
+    address,
+    address
   ) external virtual override {
     revert('Claim rewards not supported');
   }
@@ -151,7 +154,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   function getUpdatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
-    bytes calldata _extraArgs
+    bytes calldata
   ) external override returns (uint256 totalInterest) {
     // instantiate cToken
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
@@ -169,7 +172,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   function getAccumulatedInterest(
     address _poolAddress,
     ILendingStorageManager.PoolStorage calldata _poolData,
-    bytes calldata _extraArgs
+    bytes calldata
   ) external view override returns (uint256 totalInterest) {
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
@@ -221,7 +224,7 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     uint256 _interestTokenAmount,
     address,
     address _interestToken,
-    bytes calldata _extraArgs
+    bytes calldata
   ) external view override returns (uint256 collateralAmount) {
     uint256 excMantissa = ICompoundToken(_interestToken).exchangeRateStored();
     Exp memory exchangeRate = Exp({mantissa: excMantissa});

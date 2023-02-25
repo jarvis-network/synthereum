@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {IPublicVaultRegistry} from './interfaces/IPublicVaultRegistry.sol';
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
 import {
   IVaultMigration
 } from '../../multiLP-vaults/interfaces/IVaultMigration.sol';
+import {IPublicVaultRegistry} from './interfaces/IPublicVaultRegistry.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title Register and track all the vaults deployed and pool links
