@@ -16,7 +16,13 @@ async function migrate(deployer, network, accounts) {
     getKeysForNetwork,
     deploy,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
+  const {
+    toNetworkId,
+  } = require('@jarvis-network/core-utils/dist/eth/networks');
 
+  const networkId = process.env.FORKCHAINID
+    ? process.env.FORKCHAINID
+    : toNetworkId(network);
   const maintainer = process.env.FORKCHAINID
     ? accounts[1]
     : rolesConfig[networkId]?.maintainer ?? accounts[1];
