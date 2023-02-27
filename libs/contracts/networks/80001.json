@@ -136,22 +136,22 @@
   },
   {
     "contractName": "CreditLineLib",
-    "address": "0x4fAf32A7Ec0d0f7b5D457fbAF75E0AB379e3F6A3",
-    "transactionHash": "0xefeaee2b652fcc62d253ab778039c21918dfdb159c8a4f01c366baa16472a6d6"
+    "address": "0xC63f16DF2594f136812691BE295A6BD7aA1ccC78",
+    "transactionHash": "0xafa26678432dfb9312e8cf74b677269637e35d0bc054f5ccf50d9ab454703ffc"
   },
   {
     "contractName": "CreditLine",
-    "address": "0xDFDa01967b8e41918d510041a1A3a318c6F3759f",
-    "transactionHash": "0x8ca7a0ed994bf2e3002c55f0161c86c0fe1b88b6241d4d7f9d19a935410c1723"
+    "address": "0xA26CEd2c04540841D6F2470194f27960422d5874",
+    "transactionHash": "0x49157e7092d025b8b730479b70e7dc2daadaf64bfe8cdaaed844876862e2f21a"
   },
   {
     "contractName": "CreditLineFactory",
-    "address": "0xb4F12F7412f5719b055eD996a2f34fD048458E1a",
-    "transactionHash": "0x6728829082c2b28d1928560121e4843458c6a43bf9d5db5d10de162011a8a07b"
+    "address": "0x330DebB5014Ec388f6A3460E0156c0A3a82fAe36",
+    "transactionHash": "0x9897d1049891298d7c51434ddc5b8ba228c9f5832fbb2c9f0242b3f8cffd742e"
   },
   {
     "contractName": "CreditLineController",
-    "address": "0xBF8828deC33a173A7AE758254fAFC85fDf71cb14",
-    "transactionHash": "0x35ee786a2d3cba0ba48b2be19abf2a46192401488640c54aadd70a1fe1cbb6aa"
+    "address": "0x6763f433B92328685bA8430Ee2428fBEB2FAAaD9",
+    "transactionHash": "0x2bc642658f10ba18da26bec0d855234b96d0147ec15eaec66240c96f6107c54f"
   }
 ]
