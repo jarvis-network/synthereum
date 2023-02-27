@@ -66,30 +66,25 @@
       "aggregator": "0x7d7356bF6Ee5CDeC22B216581E48eCC700D0497A",
       "intermediatePairs": []
     },
-    "USDEUR": {
-      "type": 1,
-      "aggregator": "0x7d7356bF6Ee5CDeC22B216581E48eCC700D0497A",
-      "intermediatePairs": []
-    },
-    "EUREUR": {
-      "type": 2,
-      "aggregator": "",
-      "intermediatePairs": ["EURUSD", "USDEUR"]
-    },
     "CHFUSD": {
       "type": 0,
-      "aggregator": "",
+      "aggregator": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
       "intermediatePairs": []
     },
     "USDCHF": {
       "type": 1,
-      "aggregator": "",
+      "aggregator": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
       "intermediatePairs": []
     },
     "GBPUSD": {
       "type": 0,
       "aggregator": "",
       "intermediatePairs": []
+    },
+    "EURCHF": {
+      "type": 2,
+      "aggregator": "",
+      "intermediatePairs": ["EURUSD", "USDCHF"]
     }
   },
   "3": {
