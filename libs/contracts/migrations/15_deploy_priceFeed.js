@@ -106,7 +106,9 @@ async function migrate(deployer, network, accounts) {
         asset: asset,
         pair: web3.utils.utf8ToHex(asset),
         aggregator: pairs[networkId][asset].aggregator,
-        intermediateIds: pairs[networkId][asset].intermediatePairs,
+        intermediateIds: pairs[networkId][asset].intermediatePairs.map(pair =>
+          web3.utils.utf8ToHex(pair),
+        ),
       });
     });
   }
