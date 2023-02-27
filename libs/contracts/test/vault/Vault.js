@@ -21,6 +21,7 @@ const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const Manager = artifacts.require('SynthereumManager');
 const Proxy = artifacts.require('TransparentUpgradeableProxy');
 const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
+const VaultRegistry = artifacts.require('SynthereumPublicVaultRegistry');
 
 const data = require('../../data/test/lendingTestnet.json');
 
@@ -35,6 +36,8 @@ contract('Lending Vault', accounts => {
     jSynth,
     lpToken,
     manager,
+    registry,
+    vaultRegistry,
     finder;
   let networkId;
   let overCollateralization = toWei('0.1');
@@ -111,10 +114,10 @@ contract('Lending Vault', accounts => {
     );
 
     vaultImpl = await Vault.new();
-
     factoryVault = await VaultFactory.new(finder.address, vaultImpl.address);
+    vaultRegistry = await VaultRegistry.deployed();
 
-    let registry = await SynthereumPoolRegistry.new(finder.address);
+    registry = await SynthereumPoolRegistry.new(finder.address);
     await finder.changeImplementationAddress(
       poolRegistryInterface,
       registry.address,
@@ -793,6 +796,112 @@ contract('Lending Vault', accounts => {
       let actual = await proxy.admin.call({ from: newAdmin });
       assert.equal(actual, newAdmin);
       // new admin should the only one now that can call getAdmin from proxy
+    });
+  });
+
+  describe('Register/Unregister', async () => {
+    let pool1, pool2;
+    let deployer = accounts[5];
+    before(async () => {
+      pool1 = await PoolMock.new(
+        1,
+        USDC.address,
+        'jEUR',
+        jSynth.address,
+        priceIdentifier,
+        {
+          from: accounts[0],
+        },
+      );
+      pool2 = await PoolMock.new(
+        1,
+        USDC.address,
+        'jEUR',
+        jSynth.address,
+        priceIdentifier,
+        {
+          from: accounts[0],
+        },
+      );
+      await registry.register(
+        'jEUR',
+        USDC.address,
+        collateralDecimals,
+        pool1.address,
+      );
+      await registry.register(
+        'jEUR',
+        USDC.address,
+        collateralDecimals,
+        pool2.address,
+      );
+      await finder.changeImplementationAddress(toHex('Deployer'), deployer, {
+        from: accounts[1],
+      });
+    });
+
+    it('Only deployer can register a new vault and pool', async () => {
+      await vaultRegistry.registerVault(pool1.address, vault.address, {
+        from: deployer,
+      });
+      let actualVaults = await vaultRegistry.getVaults(pool1.address);
+
+      assert.equal(actualVaults.length, 1);
+      assert.equal(actualVaults[0], vault.address);
+
+      await truffleAssert.reverts(
+        vaultRegistry.registerVault(pool1.address, vault.address),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Cannot register the same pair two times', async () => {
+      await truffleAssert.reverts(
+        vaultRegistry.registerVault(pool1.address, vault.address, {
+          from: deployer,
+        }),
+        'Vault already registered',
+      );
+    });
+
+    it('Only a pool is able to remove his mapped vault', async () => {
+      await pool1.removeVaultFromRegistry(vaultRegistry.address, vault.address);
+      let actualVaults = await vaultRegistry.getVaults(pool1.address);
+
+      assert.equal(actualVaults.length, 0);
+
+      // reverts if another address tries to remove
+      await truffleAssert.reverts(
+        vaultRegistry.removeVault(vault.address),
+        'Vault not registered',
+      );
+    });
+
+    it('Only deployer can migrate data when migrating a pool', async () => {
+      await vaultRegistry.registerVault(pool1.address, vault.address, {
+        from: deployer,
+      });
+      let actualVaults = await vaultRegistry.getVaults(pool1.address);
+      assert.equal(actualVaults.length, 1);
+      assert.equal(actualVaults[0], vault.address);
+      assert.equal(await vault.getPool(), pool.address);
+
+      await vaultRegistry.migrateVaults(pool1.address, pool2.address, {
+        from: deployer,
+      });
+      actualVaults = await vaultRegistry.getVaults(pool1.address);
+      assert.equal(actualVaults.length, 0);
+
+      actualVaults = await vaultRegistry.getVaults(pool2.address);
+      assert.equal(actualVaults.length, 1);
+      assert.equal(actualVaults[0], vault.address);
+
+      assert.equal(await vault.getPool(), pool2.address);
+
+      // reverts if another address tries to migrate
+      await truffleAssert.reverts(
+        vaultRegistry.migrateVaults(pool1.address, pool2.address),
+        'Sender must be Synthereum deployer',
+      );
     });
   });
 });

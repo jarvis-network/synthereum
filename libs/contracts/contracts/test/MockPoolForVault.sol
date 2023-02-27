@@ -6,6 +6,9 @@ import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
 import {PoolMock} from './PoolMock.sol';
 import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {
+  IPublicVaultRegistry
+} from '../core/registries/interfaces/IPublicVaultRegistry.sol';
 
 contract PoolMockForVault is IPoolVault {
   IPoolVault.LPInfo public position; // vault position
@@ -146,5 +149,9 @@ contract PoolMockForVault is IPoolVault {
 
   function typology() external pure returns (string memory typologyString) {
     typologyString = 'POOL';
+  }
+
+  function removeVaultFromRegistry(address registry, address vault) external {
+    IPublicVaultRegistry(registry).removeVault(vault);
   }
 }
