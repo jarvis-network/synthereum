@@ -59,14 +59,9 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURCHF",
       "collateralRequirement": "1050000000000000000",
-      "overCollateralRequirement": "50000000000000000",
       "minSponsorTokens": "10000000000000000000",
       "capMintAmount": "1000000000000000000000000",
-      "liquidationReward": "700000000000000000",
-      "lendingId": "AaveV3",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "600000000000000000",
-      "jrtBuybackShare": "800000000000000000"
+      "liquidationReward": "600000000000000000"
     }
   ],
   "137": [
