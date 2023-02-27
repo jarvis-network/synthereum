@@ -56,7 +56,6 @@ const SynthereumSyntheticTokenPermitFactory = artifacts.require(
 const SynthereumTrustedForwarder = artifacts.require(
   'SynthereumTrustedForwarder',
 );
-const PoolMock = artifacts.require('PoolMockForVault');
 const {
   encodeMultiLpLiquidityPool,
   encodeMultiLpLiquidityPoolMigration,
@@ -1434,17 +1433,12 @@ contract('Deployer', function (accounts) {
   describe('Should deploy a public vault', () => {
     let pool;
     beforeEach(async () => {
-      deployerInstance = await SynthereumDeployer.deployed();
-      pool = await PoolMock.new(
-        1,
-        collateralAddress,
-        'jEUR',
-        syntheticTokenAddress,
-        web3Utils.toHex(priceFeedIdentifier),
-        {
-          from: accounts[0],
-        },
-      );
+      pool = await deployerInstance.deployPool.call(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
     });
     it('Correctly deploy public vault', async () => {
       let lpName = 'test';
@@ -1454,7 +1448,7 @@ contract('Deployer', function (accounts) {
       let address = await deployerInstance.deployPublicVault.call(
         lpName,
         lpSymbol,
-        pool.address,
+        pool,
         collateralRequirement,
         { from: maintainer },
       );
@@ -1464,7 +1458,7 @@ contract('Deployer', function (accounts) {
       let tx = await deployerInstance.deployPublicVault(
         lpName,
         lpSymbol,
-        pool.address,
+        pool,
         collateralRequirement,
         { from: maintainer },
       );
@@ -1479,7 +1473,7 @@ contract('Deployer', function (accounts) {
         deployerInstance.deployPublicVault(
           lpName,
           lpSymbol,
-          pool.address,
+          pool,
           collateralRequirement,
           { from: accounts[8] },
         ),

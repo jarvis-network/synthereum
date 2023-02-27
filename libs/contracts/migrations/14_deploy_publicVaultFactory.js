@@ -54,8 +54,8 @@ async function migrate(deployer, network, accounts) {
     deployer,
     network,
     SynthereumMultiLPVaultFactory,
-    vaultImpl.options.address,
     synthereumFinder.options.address,
+    vaultImpl.options.address,
     { from: keys.deployer },
   );
 
