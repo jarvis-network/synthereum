@@ -70,7 +70,6 @@ contract('Deployer', function (accounts) {
   let lendingId = 'AaveV3';
   let daoInterestShare = web3.utils.toWei('0.1');
   let jrtBuybackShare = web3.utils.toWei('0.6');
-  let syntheticTokenAddress = ZERO_ADDRESS;
   let collateralRequirement = web3Utils.toWei('1.1');
   let minSponsorTokens = web3Utils.toWei('1');
   let excessBeneficiary = accounts[4];
