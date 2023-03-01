@@ -105,100 +105,95 @@
     }
   },
   "137": {
-    "EURUSD": {
-      "type": 0,
-      "aggregator": "0x73366Fe0AA0Ded304479862808e02506FE556a98",
+    "USDMATIC": {
+      "type": 1,
+      "aggregator": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
       "intermediatePairs": []
     },
-    "CHFUSD": {
-      "type": 0,
+    "USDBTC": {
+      "type": 1,
+      "aggregator": "0xc907E116054Ad103354f2D350FD2514433D57F6f",
+      "intermediatePairs": []
+    },
+    "USDCHF": {
+      "type": 1,
       "aggregator": "0xc76f762CedF0F78a439727861628E0fdfE1e70c2",
       "intermediatePairs": []
     },
-    "GBPUSD": {
-      "type": 0,
-      "aggregator": "0x099a2540848573e94fb1Ca0Fa420b00acbBc845a",
-      "intermediatePairs": []
-    },
-    "PHPUSD": {
-      "type": 0,
-      "aggregator": "0x218231089Bebb2A31970c3b77E96eCfb3BA006D1",
-      "intermediatePairs": []
-    },
-    "SGDUSD": {
-      "type": 0,
-      "aggregator": "0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299",
-      "intermediatePairs": []
-    },
-    "CADUSD": {
-      "type": 0,
+    "USDCAD": {
+      "type": 1,
       "aggregator": "0xACA44ABb8B04D07D883202F99FA5E3c53ed57Fb5",
       "intermediatePairs": []
     },
-    "JPYUSD": {
-      "type": 0,
-      "aggregator": "0xD647a6fC9BC6402301583C91decC5989d8Bc382D",
+    "USDGBP": {
+      "type": 1,
+      "aggregator": "0x099a2540848573e94fb1Ca0Fa420b00acbBc845a",
       "intermediatePairs": []
     },
-    "SEKUSD": {
-      "type": 0,
-      "aggregator": "0xbd92B4919ae82be8473859295dEF0e778A626302",
+    "USDBRL": {
+      "type": 1,
+      "aggregator": "0xB90DA3ff54C3ED09115abf6FbA0Ff4645586af2c",
       "intermediatePairs": []
     },
-    "AUDUSD": {
-      "type": 0,
-      "aggregator": "0x062Df9C4efd2030e243ffCc398b652e8b8F95C6f",
-      "intermediatePairs": []
-    },
-    "COPUSD": {
-      "type": 0,
-      "aggregator": "0xDe6302Dfa0ac45B2B1b1a23304469DA630b2F59B",
-      "intermediatePairs": []
-    },
-    "CNYUSD": {
-      "type": 0,
-      "aggregator": "0x04bB437Aa63E098236FA47365f0268547f6EAB32",
-      "intermediatePairs": []
-    },
-    "NZDUSD": {
-      "type": 0,
-      "aggregator": "0xa302a0B8a499fD0f00449df0a490DedE21105955",
-      "intermediatePairs": []
-    },
-    "PLNUSD": {
-      "type": 0,
-      "aggregator": "0xB34BCE11040702f71c11529D00179B2959BcE6C0",
-      "intermediatePairs": []
-    },
-    "MXNUSD": {
-      "type": 0,
+    "USDMXN": {
+      "type": 1,
       "aggregator": "0x171b16562EA3476F5C61d1b8dad031DbA0768545",
       "intermediatePairs": []
     },
-    "KRWUSD": {
-      "type": 0,
-      "aggregator": "0x24B820870F726dA9B0D83B0B28a93885061dbF50",
+    "USDSGD": {
+      "type": 1,
+      "aggregator": "0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299",
       "intermediatePairs": []
     },
-    "NGNUSD": {
-      "type": 0,
-      "aggregator": "0x0df812C4D675d155815B1216cE1da9e68f1b7050",
-      "intermediatePairs": []
-    },
-    "XAUUSD": {
-      "type": 0,
+    "USDXAU": {
+      "type": 1,
       "aggregator": "0x0C466540B2ee1a31b441671eac0ca886e051E410",
       "intermediatePairs": []
     },
-    "TRYUSD": {
-      "type": 0,
-      "aggregator": "0xd78325DcA0F90F0FFe53cCeA1B02Bb12E1bf8FdB",
-      "intermediatePairs": []
+    "EURMATIC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDMATIC"]
     },
-    "BRLUSD": {
-      "type": 0,
-      "aggregator": "0xB90DA3ff54C3ED09115abf6FbA0Ff4645586af2c",
-      "intermediatePairs": []
+    "EURBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBTC"]
+    },
+    "EURCHF": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDCHF"]
+    },
+    "EURCAD": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDCAD"]
+    },
+    "EURGBP": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDGBP"]
+    },
+    "EURBRL": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBRL"]
+    },
+    "EURMXN": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDMXN"]
+    },
+    "EURSGD": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDSGD"]
+    },
+    "EURXAU": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDXAU"]
     }
   },
   "56": {
