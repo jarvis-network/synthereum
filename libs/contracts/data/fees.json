@@ -115,5 +115,8 @@
       "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
     ],
     "feeProportions": [50, 50]
+  },
+  "43113": {
+    "feePercentage": 0.001
   }
 }

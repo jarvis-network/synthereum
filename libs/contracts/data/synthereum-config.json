@@ -50,5 +50,8 @@
   },
   "42161": {
     "excessTokenBeneficiary": "0x39BAFa9F4c4DcE3Eac9333cEB7FEeC03C9DD4682"
+  },
+  "43113": {
+    "collateralAddress": "0x6a17716Ce178e84835cfA73AbdB71cb455032456"
   }
 }
