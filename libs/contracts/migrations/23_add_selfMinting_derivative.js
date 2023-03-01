@@ -48,7 +48,7 @@ module.exports = async function (deployer, network, accounts) {
       if (deployment[networkId].SelfMintingDerivative === 2) {
         creditLineDerivativeVersion = selfMintingData[networkId][0].version;
         creditLineDerivativePayload = encodeCreditLineDerivative(
-          selfMintingData[networkId][0].collateralAddress,
+          asset.collateralAddress,
           asset.priceFeedIdentifier,
           asset.syntheticName,
           asset.syntheticSymbol,
