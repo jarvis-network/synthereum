@@ -68,25 +68,92 @@
     {
       "syntheticName": "Jarvis Synthetic Euro",
       "syntheticSymbol": "jEUR",
-      "priceFeedIdentifier": "EURETH",
-      "collateralRequirement": "1250000000000000000",
-      "overCollateralRequirement": "25000000000000000",
-      "minSponsorTokens": "10000000000000000000",
-      "capMintAmount": "50000000000000000000000",
-      "liquidationReward": "200000000000000000",
-      "lendingId": "AaveV3",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "600000000000000000",
-      "jrtBuybackShare": "700000000000000000"
+      "priceFeedIdentifier": "EURMATIC",
+      "collateralAddress": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "collateralRequirement": "1500000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "100000000000000000"
     },
     {
-      "syntheticName": "Jarvis Synthetic United States Dollar",
-      "syntheticSymbol": "jUSD",
-      "priceFeedIdentifier": "USDETH",
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURBTC",
+      "collateralAddress": "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
       "collateralRequirement": "1250000000000000000",
-      "minSponsorTokens": "10000000000000000000",
-      "capMintAmount": "50000000000000000000000",
+      "minSponsorTokens": "500000000000000000",
+      "capMintAmount": "25000000000000000000000",
       "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURXAU",
+      "collateralAddress": "0x192ef3fff1708456d3a1f21354fa8d6bfd86b45c",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURMXN",
+      "collateralAddress": "0xbd1fe73e1f12bd2bc237de9b626f056f21f86427",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURBRL",
+      "collateralAddress": "0xf2f77FE7b8e66571E0fca7104c4d670BF1C8d722",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURCAD",
+      "collateralAddress": "0x8ca194A3b22077359b5732DE53373D4afC11DeE3",
+      "collateralRequirement": "1100000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "300000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURCHF",
+      "collateralAddress": "0xbD1463F02f61676d53fd183C2B19282BFF93D099",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURGBP",
+      "collateralAddress": "0x767058F11800FBA6A682E73A6e79ec5eB74Fac8c",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURSGD",
+      "collateralAddress": "0xa926db7a4cc0cb1736d5ac60495ca8eb7214b503",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
     }
   ],
   "97": [

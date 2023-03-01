@@ -34,8 +34,7 @@
     "isEnabled": true,
     "SelfMintingDerivative": 2,
     "SynthToken": {
-      "jEUR": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c",
-      "jUSD": "0xc948ee9a0687c292ac4d8c1e2557ad652d6baf44"
+      "jEUR": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
     }
   },
   "10": {
