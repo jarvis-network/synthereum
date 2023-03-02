@@ -1,6 +1,6 @@
 const rolesConfig = require('../data/roles.json');
 const { artifacts } = require('hardhat');
-const VaultFactory = artifacts.require('VaultFactory');
+const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const {
   getExistingInstance,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
@@ -17,9 +17,9 @@ module.exports = async function (deployer, network, accounts) {
     : toNetworkId(network);
   global.web3 = web3;
 
-  const vaultFactory = await getExistingInstance(
+  const synthereumDeployer = await getExistingInstance(
     web3,
-    VaultFactory,
+    SynthereumDeployer,
     '@jarvis-network/synthereum-contracts',
   );
 
@@ -39,8 +39,8 @@ module.exports = async function (deployer, network, accounts) {
     log(`   Deploying '${txData[j].pool}' vault`);
     log('   ------------------------------------- ');
 
-    const gasEstimation = await vaultFactory.methods
-      .createVault(
+    const gasEstimation = await synthereumDeployer.methods
+      .deployPublicVault(
         txData[j].name,
         txData[j].symbol,
         txData[j].pool,
@@ -48,8 +48,8 @@ module.exports = async function (deployer, network, accounts) {
       )
       .estimateGas({ from: maintainer });
     if (gasEstimation != undefined) {
-      const tx = await vaultFactory.methods
-        .createVault(
+      const tx = await synthereumDeployer.methods
+        .deployPublicVault(
           txData[j].name,
           txData[j].symbol,
           txData[j].pool,
