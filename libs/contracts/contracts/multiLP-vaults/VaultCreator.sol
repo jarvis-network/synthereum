@@ -10,7 +10,7 @@ import {
   TransparentUpgradeableProxy
 } from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
 
-contract SynthereumMultiLPVaultCreator {
+contract SynthereumVaultCreator {
   address internal immutable vaultImpl;
   ISynthereumFinder immutable synthereumFinder;
 

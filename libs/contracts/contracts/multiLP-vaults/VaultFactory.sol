@@ -10,14 +10,14 @@ import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {FactoryConditions} from '../common/FactoryConditions.sol';
-import {SynthereumMultiLPVaultCreator} from './VaultCreator.sol';
+import {SynthereumVaultCreator} from './VaultCreator.sol';
 
-contract SynthereumMultiLPVaultFactory is
+contract SynthereumVaultFactory is
   IVaultFactory,
   IDeploymentSignature,
   ReentrancyGuard,
   FactoryConditions,
-  SynthereumMultiLPVaultCreator
+  SynthereumVaultCreator
 {
   bytes4 public immutable override deploymentSignature;
 
@@ -26,7 +26,7 @@ contract SynthereumMultiLPVaultFactory is
    * @param _vaultImplementation Address of the deployed vault implementation used for EIP1167
    */
   constructor(address _synthereumFinder, address _vaultImplementation)
-    SynthereumMultiLPVaultCreator(_synthereumFinder, _vaultImplementation)
+    SynthereumVaultCreator(_synthereumFinder, _vaultImplementation)
   {
     deploymentSignature = this.createVault.selector;
   }
@@ -46,7 +46,7 @@ contract SynthereumMultiLPVaultFactory is
     uint128 _overCollateralization
   )
     public
-    override(IVaultFactory, SynthereumMultiLPVaultCreator)
+    override(IVaultFactory, SynthereumVaultCreator)
     onlyDeployer(synthereumFinder)
     nonReentrant
     returns (IVault vault)
@@ -66,7 +66,7 @@ contract SynthereumMultiLPVaultFactory is
    */
   function encodeInitialiseCall(bytes memory encodedParams)
     public
-    override(IVaultFactory, SynthereumMultiLPVaultCreator)
+    override(IVaultFactory, SynthereumVaultCreator)
     returns (bytes memory encodedCall)
   {
     encodedCall = super.encodeInitialiseCall(encodedParams);
@@ -78,7 +78,7 @@ contract SynthereumMultiLPVaultFactory is
    */
   function vaultImplementation()
     public
-    override(IVaultFactory, SynthereumMultiLPVaultCreator)
+    override(IVaultFactory, SynthereumVaultCreator)
     returns (address implementation)
   {
     implementation = super.vaultImplementation();

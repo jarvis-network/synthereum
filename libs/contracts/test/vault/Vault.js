@@ -14,7 +14,7 @@ const SynthereumIdentifierWhitelist = artifacts.require(
 const TestnetSelfMintingERC20 = artifacts.require('MintableBurnableERC20');
 const IUniswapRouter = artifacts.require('IUniswapV2Router02');
 
-const VaultFactory = artifacts.require('SynthereumMultiLPVaultFactory');
+const VaultFactory = artifacts.require('SynthereumVaultFactory');
 const Vault = artifacts.require('Vault');
 const PoolMock = artifacts.require('PoolMockForVault');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');

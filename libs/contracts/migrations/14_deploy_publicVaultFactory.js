@@ -1,5 +1,5 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
-  'SynthereumMultiLPVaultFactory',
+  'SynthereumVaultFactory',
   'Vault',
   'SynthereumFinder',
 ]);
@@ -10,7 +10,7 @@ async function migrate(deployer, network, accounts) {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const {
-    SynthereumMultiLPVaultFactory,
+    SynthereumVaultFactory,
     Vault,
     SynthereumFinder,
   } = migrate.getContracts(artifacts);
@@ -53,7 +53,7 @@ async function migrate(deployer, network, accounts) {
     web3,
     deployer,
     network,
-    SynthereumMultiLPVaultFactory,
+    SynthereumVaultFactory,
     synthereumFinder.options.address,
     vaultImpl.options.address,
     { from: keys.deployer },
@@ -61,7 +61,7 @@ async function migrate(deployer, network, accounts) {
 
   const factory = await getExistingInstance(
     web3,
-    SynthereumMultiLPVaultFactory,
+    SynthereumVaultFactory,
     '@jarvis-network/synthereum-contracts',
   );
 
