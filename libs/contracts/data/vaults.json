@@ -12,5 +12,31 @@
       "pool": "",
       "overCollateralization": ""
     }
+  ],
+  "43113": [
+    {
+      "name": "Synthereum USDC-jEUR 110% Vault",
+      "symbol": "USDC-jEUR-110-vLP",
+      "pool": "0x3af8E992506Ac6211036972B9F6426dEC90bF4d4",
+      "overCollateralization": "100000000000000000"
+    },
+    {
+      "name": "Synthereum USDC-jEUR 115% Vault",
+      "symbol": "USDC-jEUR-115-vLP",
+      "pool": "0x3af8E992506Ac6211036972B9F6426dEC90bF4d4",
+      "overCollateralization": "150000000000000000"
+    },
+    {
+      "name": "Synthereum USDC-jEUR 120% Vault",
+      "symbol": "USDC-jEUR-120-vLP",
+      "pool": "0x3af8E992506Ac6211036972B9F6426dEC90bF4d4",
+      "overCollateralization": "200000000000000000"
+    },
+    {
+      "name": "Synthereum USDC-jEUR 150% Vault",
+      "symbol": "USDC-jEUR-150-vLP",
+      "pool": "0x3af8E992506Ac6211036972B9F6426dEC90bF4d4",
+      "overCollateralization": "500000000000000000"
+    }
   ]
 }
