@@ -81,13 +81,13 @@
   },
   {
     "contractName": "Vault",
-    "address": "0x5eE998c40F70c15cb59bbc3049e022e2E52F5158",
-    "transactionHash": "0xb5009c00a0fb97ecb98a5d433d4ef888ed3383547491fa03ce9f2ee9efffd398"
+    "address": "0xfaa6229B087Da78cAEBb29799D9a8A74Ec1ea237",
+    "transactionHash": "0x025c96d8d0df3c27f818db6714caa3cc2f8233666913e40a94d827169042e631"
   },
   {
-    "contractName": "SynthereumMultiLPVaultFactory",
-    "address": "0x804A40d12FdeD71D41cD69a0054d371a80Cc84da",
-    "transactionHash": "0xadd6fba75e589234d6b869b733438ba8fd19123e83d7a159f169cf2abcd5f361"
+    "contractName": "SynthereumVaultFactory",
+    "address": "0x2ff9a432E0985803E3Bb8167935c20BBBB2dEE66",
+    "transactionHash": "0xcab8247442f0f1276fe3dd490bdb977df873dd944791a833154ed416de27637f"
   },
   {
     "contractName": "SynthereumChainlinkPriceFeed",
