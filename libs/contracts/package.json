@@ -19,7 +19,7 @@
     "add-fixedRateWrapper": "MIGRATION_TYPE=add_fixedRateWrapper hardhat test ./test/correct-migration.js",
     "add-debtToken": "MIGRATION_TYPE=add_debtToken hardhat test ./test/correct-migration.js",
     "test": "yarn test:polygon && yarn test:optimism",
-    "test:polygon": "MIGRATION_TYPE=all FORKCHAINID=137 BLOCK=38031371 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/core/**/*.js ./test/jarvis-token/**/*.js ./test/lending-module/**/*.js  ./test/oracle/**/*.js ./test/pool/**/*.js ./test/self-minting/**/*.js ./test/token/**/*.js ./test/utils/**/*.js",
+    "test:polygon": "MIGRATION_TYPE=all FORKCHAINID=137 BLOCK=38031371 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/core/**/*.js ./test/jarvis-token/**/*.js ./test/lending-module/**/*.js  ./test/oracle/**/*.js ./test/pool/**/*.js ./test/self-minting/**/*.js ./test/token/**/*.js ./test/utils/**/*.js ./test/vault/**/*.js",
     "test:optimism": "MIGRATION_TYPE=all FORKCHAINID=10 BLOCK=22130400 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/pool/v6/multi-lp-liquidity-pool.js",
     "coverage": "MIGRATION_TYPE=all FORKCHAINID=137 BLOCK=26774970 NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "storage-layout": "hardhat check",
