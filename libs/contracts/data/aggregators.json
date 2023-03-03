@@ -105,95 +105,70 @@
     }
   },
   "137": {
-    "USDMATIC": {
-      "type": 1,
-      "aggregator": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
+    "ETHUSD": {
+      "type": 0,
+      "aggregator": "0xF9680D99D6C9589e2a93a78A04A279e509205945",
       "intermediatePairs": []
     },
-    "USDBTC": {
+    "USDETH": {
       "type": 1,
-      "aggregator": "0xc907E116054Ad103354f2D350FD2514433D57F6f",
+      "aggregator": "0xF9680D99D6C9589e2a93a78A04A279e509205945",
       "intermediatePairs": []
     },
-    "USDCHF": {
+    "BRLETH": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDETH"]
+    },
+    "BRLBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDBTC"]
+    },
+    "BRLMATIC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDMATIC"]
+    },
+    "BRLXAU": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDXAU"]
+    },
+    "BRLMXN": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDMXN"]
+    },
+    "USDEUR": {
       "type": 1,
-      "aggregator": "0xc76f762CedF0F78a439727861628E0fdfE1e70c2",
+      "aggregator": "0x73366Fe0AA0Ded304479862808e02506FE556a98",
       "intermediatePairs": []
     },
-    "USDCAD": {
-      "type": 1,
-      "aggregator": "0xACA44ABb8B04D07D883202F99FA5E3c53ed57Fb5",
-      "intermediatePairs": []
-    },
-    "USDGBP": {
-      "type": 1,
-      "aggregator": "0x099a2540848573e94fb1Ca0Fa420b00acbBc845a",
-      "intermediatePairs": []
-    },
-    "USDBRL": {
-      "type": 1,
-      "aggregator": "0xB90DA3ff54C3ED09115abf6FbA0Ff4645586af2c",
-      "intermediatePairs": []
-    },
-    "USDMXN": {
-      "type": 1,
-      "aggregator": "0x171b16562EA3476F5C61d1b8dad031DbA0768545",
-      "intermediatePairs": []
-    },
-    "USDSGD": {
-      "type": 1,
-      "aggregator": "0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299",
-      "intermediatePairs": []
-    },
-    "USDXAU": {
-      "type": 1,
-      "aggregator": "0x0C466540B2ee1a31b441671eac0ca886e051E410",
-      "intermediatePairs": []
-    },
-    "EURMATIC": {
+    "BRLEUR": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDMATIC"]
+      "intermediatePairs": ["BRLUSD", "USDEUR"]
     },
-    "EURBTC": {
+    "BRLCHF": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDBTC"]
+      "intermediatePairs": ["BRLUSD", "USDCHF"]
     },
-    "EURCHF": {
+    "BRLGBP": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDCHF"]
+      "intermediatePairs": ["BRLUSD", "USDGBP"]
     },
-    "EURCAD": {
+    "BRLSGD": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDCAD"]
+      "intermediatePairs": ["BRLUSD", "USDSGD"]
     },
-    "EURGBP": {
+    "BRLCAD": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDGBP"]
-    },
-    "EURBRL": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDBRL"]
-    },
-    "EURMXN": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDMXN"]
-    },
-    "EURSGD": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDSGD"]
-    },
-    "EURXAU": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["EURUSD", "USDXAU"]
+      "intermediatePairs": ["BRLUSD", "USDCAD"]
     }
   },
   "56": {
