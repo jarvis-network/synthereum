@@ -12,7 +12,17 @@
     "EURCAD",
     "EURCHF",
     "EURGBP",
-    "EURSGD"
+    "EURSGD",
+    "BRLETH",
+    "BRLBTC",
+    "BRLMATIC",
+    "BRLXAU",
+    "BRLMXN",
+    "BRLEUR",
+    "BRLCHF",
+    "BRLGBP",
+    "BRLSGD",
+    "BRLCAD"
   ],
   "56": ["EURUSD", "GBPUSD", "CHFUSD", "NGNUSD"],
   "97": ["EURUSD", "GBPUSD", "NGNUSD"],
