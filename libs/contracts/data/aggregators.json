@@ -242,6 +242,36 @@
       "type": 0,
       "aggregator": "0x3626369857A10CcC6cc3A6e4f5C2f5984a519F20",
       "intermediatePairs": []
+    },
+    "USDETH": {
+      "type": 1,
+      "aggregator": "0x13e3Ee699D1909E989722E753853AE30b17e08c5",
+      "intermediatePairs": []
+    },
+    "EURETH": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDETH"]
+    },
+    "USDBTC": {
+      "type": 1,
+      "aggregator": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593",
+      "intermediatePairs": []
+    },
+    "EURBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBTC"]
+    },
+    "USDOP": {
+      "type": 1,
+      "aggregator": "0x0D276FC14719f9292D5C1eA2198673d1f4269246",
+      "intermediatePairs": []
+    },
+    "EUROP": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDOP"]
     }
   },
   "421613": {},
