@@ -105,70 +105,60 @@
     }
   },
   "137": {
-    "ETHUSD": {
+    "MXNUSD": {
       "type": 0,
-      "aggregator": "0xF9680D99D6C9589e2a93a78A04A279e509205945",
+      "aggregator": "0x171b16562EA3476F5C61d1b8dad031DbA0768545",
       "intermediatePairs": []
     },
-    "USDETH": {
-      "type": 1,
-      "aggregator": "0xF9680D99D6C9589e2a93a78A04A279e509205945",
-      "intermediatePairs": []
-    },
-    "BRLETH": {
+    "MXNETH": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDETH"]
+      "intermediatePairs": ["MXNUSD", "USDETH"]
     },
-    "BRLBTC": {
+    "MXNBTC": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDBTC"]
+      "intermediatePairs": ["MXNUSD", "USDBTC"]
     },
-    "BRLMATIC": {
+    "MXNMATIC": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDMATIC"]
+      "intermediatePairs": ["MXNUSD", "USDMATIC"]
     },
-    "BRLXAU": {
+    "MXNXAU": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDXAU"]
+      "intermediatePairs": ["MXNUSD", "USDXAU"]
     },
-    "BRLMXN": {
+    "MXNBRL": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDMXN"]
+      "intermediatePairs": ["MXNUSD", "USDBRL"]
     },
-    "USDEUR": {
-      "type": 1,
-      "aggregator": "0x73366Fe0AA0Ded304479862808e02506FE556a98",
-      "intermediatePairs": []
-    },
-    "BRLEUR": {
+    "MXNEUR": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDEUR"]
+      "intermediatePairs": ["MXNUSD", "USDEUR"]
     },
-    "BRLCHF": {
+    "MXNCHF": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDCHF"]
+      "intermediatePairs": ["MXNUSD", "USDCHF"]
     },
-    "BRLGBP": {
+    "MXNGBP": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDGBP"]
+      "intermediatePairs": ["MXNUSD", "USDGBP"]
     },
-    "BRLSGD": {
+    "MXNSGD": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDSGD"]
+      "intermediatePairs": ["MXNUSD", "USDSGD"]
     },
-    "BRLCAD": {
+    "MXNCAD": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["BRLUSD", "USDCAD"]
+      "intermediatePairs": ["MXNUSD", "USDCAD"]
     }
   },
   "56": {
