@@ -45,5 +45,5 @@
   "420": ["EURUSD"],
   "10": ["EURUSD", "EURETH", "EURBTC", "EUROP"],
   "421613": [],
-  "42161": ["EURUSD", "USDETH"]
+  "42161": ["EURUSD", "USDETH", "EURETH", "EURBTC"]
 }
