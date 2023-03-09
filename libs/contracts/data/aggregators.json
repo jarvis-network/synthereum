@@ -275,6 +275,21 @@
       "type": 1,
       "aggregator": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
       "intermediatePairs": []
+    },
+    "EURETH": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDETH"]
+    },
+    "USDBTC": {
+      "type": 1,
+      "aggregator": "0x6ce185860a4963106506C203335A2910413708e9",
+      "intermediatePairs": []
+    },
+    "EURBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBTC"]
     }
   }
 }
