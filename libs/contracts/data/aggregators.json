@@ -162,40 +162,130 @@
     }
   },
   "56": {
-    "EURUSD": {
-      "type": 0,
-      "aggregator": "0x0bf79F617988C472DcA68ff41eFe1338955b9A80",
-      "intermediatePairs": []
-    },
-    "CHFUSD": {
-      "type": 0,
-      "aggregator": "0x964261740356cB4aaD0C3D2003Ce808A4176a46d",
-      "intermediatePairs": []
-    },
-    "GBPUSD": {
-      "type": 0,
-      "aggregator": "0x8FAf16F710003E538189334541F5D4a391Da46a0",
-      "intermediatePairs": []
-    },
-    "BRLUSD": {
-      "type": 0,
-      "aggregator": "0x5cb1Cb3eA5FB46de1CE1D0F3BaDB3212e8d8eF48",
-      "intermediatePairs": []
-    },
-    "BNBUSD": {
-      "type": 0,
+    "USDBNB": {
+      "type": 1,
       "aggregator": "0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE",
       "intermediatePairs": []
     },
-    "BUSDUSD": {
-      "type": 0,
-      "aggregator": "0xcBb98864Ef56E9042e7d2efef76141f15731B82f",
-      "intermediatePairs": []
+    "EURBNB": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBNB"]
     },
-    "ETHUSD": {
-      "type": 0,
+    "USDETH": {
+      "type": 1,
       "aggregator": "0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e",
       "intermediatePairs": []
+    },
+    "EURETH": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDETH"]
+    },
+    "USDBTC": {
+      "type": 1,
+      "aggregator": "0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf",
+      "intermediatePairs": []
+    },
+    "EURBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBTC"]
+    },
+    "USDBRL": {
+      "type": 1,
+      "aggregator": "0x5cb1Cb3eA5FB46de1CE1D0F3BaDB3212e8d8eF48",
+      "intermediatePairs": []
+    },
+    "EURBRL": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDBRL"]
+    },
+    "USDCHF": {
+      "type": 1,
+      "aggregator": "0x964261740356cB4aaD0C3D2003Ce808A4176a46d",
+      "intermediatePairs": []
+    },
+    "EURCHF": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDCHF"]
+    },
+    "USDGBP": {
+      "type": 1,
+      "aggregator": "0x8FAf16F710003E538189334541F5D4a391Da46a0",
+      "intermediatePairs": []
+    },
+    "EURGBP": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["EURUSD", "USDGBP"]
+    },
+    "CHFBNB": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["CHFUSD", "USDBNB"]
+    },
+    "CHFETH": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["CHFUSD", "USDETH"]
+    },
+    "CHFBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["CHFUSD", "USDBTC"]
+    },
+    "CHFBRL": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["CHFUSD", "USDBRL"]
+    },
+    "USDEUR": {
+      "type": 1,
+      "aggregator": "0x0bf79F617988C472DcA68ff41eFe1338955b9A80",
+      "intermediatePairs": []
+    },
+    "CHFEUR": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["CHFUSD", "USDEUR"]
+    },
+    "CHFGBP": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["CHFUSD", "USDGBP"]
+    },
+    "BRLCHF": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDCHF"]
+    },
+    "BRLGBP": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDGBP"]
+    },
+    "BRLBNB": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDBNB"]
+    },
+    "BRLETH": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDETH"]
+    },
+    "BRLBTC": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDBTC"]
+    },
+    "BRLEUR": {
+      "type": 2,
+      "aggregator": "0x0000000000000000000000000000000000000000",
+      "intermediatePairs": ["BRLUSD", "USDEUR"]
     }
   },
   "97": {},
