@@ -224,32 +224,194 @@
   ],
   "56": [
     {
-      "syntheticName": "Jarvis Synthetic Brazilian Real",
-      "syntheticSymbol": "jBRL",
-      "priceFeedIdentifier": "BRLUSD",
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURBNB",
+      "collateralAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURETH",
+      "collateralAddress": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+      "collateralRequirement": "1200000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURBTC",
+      "collateralAddress": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURBRL",
+      "collateralAddress": "0x316622977073bbc3df32e7d2a9b3c77596a0a603",
       "collateralRequirement": "1150000000000000000",
-      "overCollateralRequirement": "50000000000000000",
-      "minSponsorTokens": "50000000000000000000",
-      "capMintAmount": "250000000000000000000000",
-      "liquidationReward": "200000000000000000",
-      "lendingId": "Midas",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "200000000000000000",
-      "jrtBuybackShare": "0"
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURCHF",
+      "collateralAddress": "0x7c869b5A294b1314E985283d01C702B62224a05f",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURGBP",
+      "collateralAddress": "0x048e9b1ddf9ebbb224812372280e94ccac443f9e",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURUSD",
+      "collateralAddress": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
       "syntheticSymbol": "jCHF",
-      "priceFeedIdentifier": "CHFUSD",
+      "priceFeedIdentifier": "CHFBNB",
+      "collateralAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFETH",
+      "collateralAddress": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+      "collateralRequirement": "1200000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFBTC",
+      "collateralAddress": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFBRL",
+      "collateralAddress": "0x316622977073bbc3df32e7d2a9b3c77596a0a603",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFEUR",
+      "collateralAddress": "0x23b8683ff98f9e4781552dfe6f12aa32814924e8",
       "collateralRequirement": "1050000000000000000",
-      "overCollateralRequirement": "25000000000000000",
-      "minSponsorTokens": "10000000000000000000",
-      "capMintAmount": "50000000000000000000000",
-      "liquidationReward": "500000000000000000",
-      "lendingId": "Midas",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
-      "daoInterestShare": "200000000000000000",
-      "jrtBuybackShare": "0"
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFGBP",
+      "collateralAddress": "0x048e9b1ddf9ebbb224812372280e94ccac443f9e",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "5000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLCHF",
+      "collateralAddress": "0x7c869b5a294b1314e985283d01c702b62224a05f",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "250000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLGBP",
+      "collateralAddress": "0x048e9b1ddf9ebbb224812372280e94ccac443f9e",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "250000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLBNB",
+      "collateralAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "collateralRequirement": "1300000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "250000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLETH",
+      "collateralAddress": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+      "collateralRequirement": "1200000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "250000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLBTC",
+      "collateralAddress": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+      "collateralRequirement": "1300000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "250000000000000000000000",
+      "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Brazilian Real",
+      "syntheticSymbol": "jBRL",
+      "priceFeedIdentifier": "BRLEUR",
+      "collateralAddress": "0x23b8683ff98f9e4781552dfe6f12aa32814924e8",
+      "collateralRequirement": "1150000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "250000000000000000000000",
+      "liquidationReward": "200000000000000000"
     }
   ],
   "100": [
