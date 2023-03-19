@@ -109,5 +109,30 @@
     "commissionReceiver": "0x39BAFa9F4c4DcE3Eac9333cEB7FEeC03C9DD4682",
     "buybackProgramReceiver": "",
     "lendingRewardsReceiver": ""
+  },
+  "56": {
+    "Compound": {
+      "modules": [
+        {
+          "id": "Midas",
+          "comptroller": "0x2a0188C6A4CCf32234d0F76C826BcEeA23156e59",
+          "isEnabled": true
+        }
+      ],
+      "isEnabled": true
+    },
+    "AaveV3": {
+      "moneyManager": "",
+      "rewardsController": "",
+      "isEnabled": false
+    },
+    "SwapModules": {
+      "uniV2": false,
+      "balancer": false,
+      "collateral": ""
+    },
+    "commissionReceiver": "0x38329F26a075D53324EFd6e5F53869354Fa1cfBc",
+    "buybackProgramReceiver": "",
+    "lendingRewardsReceiver": ""
   }
 }
