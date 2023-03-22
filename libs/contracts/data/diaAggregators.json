@@ -1,0 +1,13 @@
+{
+  "42": {
+    "EUR-USD": {
+      "aggregator": ""
+    },
+    "CHF-USD": {
+      "aggregator": ""
+    },
+    "GBP-USD": {
+      "aggregator": ""
+    }
+  }
+}

@@ -1,12 +1,23 @@
 {
   "80001": {
+    "EURUSD": {
+      "initialPrice": "1.0000",
+      "maxSpread": "0.00000003472",
+      "oracle": "chainlink"
+    },
     "CHFUSD": {
       "initialPrice": "1.0175",
-      "maxSpread": "0.00000003472"
+      "maxSpread": "0.00000003472",
+      "oracle": "chainlink"
     },
     "GBPUSD": {
       "initialPrice": "1.1828",
-      "maxSpread": "0.00000003472"
+      "maxSpread": "0.00000003472",
+      "oracle": "chainlink"
+    },
+    "NGN-USD": {
+      "initialPrice": "0.0022",
+      "oracle": "dia"
     }
   },
   "420": {
@@ -17,36 +28,43 @@
   },
   "97": {
     "EURUSD": {
-      "initialPrice": "1.07",
-      "maxSpread": "0.00000000868"
+      "initialPrice": "1.1281",
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     },
     "GBPUSD": {
-      "initialPrice": "1.22",
-      "maxSpread": "0.00000000868"
+      "initialPrice": "1.3449",
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     },
     "NGNUSD": {
-      "initialPrice": "0.0022",
-      "maxSpread": "0.00000000868"
+      "initialPrice": "0.00243404",
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     }
   },
   "3": {
     "EURUSD": {
       "initialPrice": "1.14",
-      "maxSpread": "0.00000000868"
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     },
     "GBPUSD": {
       "initialPrice": "1.36",
-      "maxSpread": "0.00000000868"
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     }
   },
   "77": {
     "EURUSD": {
       "initialPrice": "1.1256",
-      "maxSpread": "0.00000000868"
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     },
     "GBPUSD": {
       "initialPrice": "1.323",
-      "maxSpread": "0.00000000868"
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
     }
   }
 }

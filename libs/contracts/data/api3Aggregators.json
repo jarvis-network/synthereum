@@ -1,0 +1,13 @@
+{
+  "42": {
+    "EURUSD": {
+      "server": ""
+    },
+    "CHFUSD": {
+      "server": ""
+    },
+    "GBPUSD": {
+      "server": ""
+    }
+  }
+}
