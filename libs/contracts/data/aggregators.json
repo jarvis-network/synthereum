@@ -105,60 +105,35 @@
     }
   },
   "137": {
-    "MXNUSD": {
-      "type": 0,
-      "aggregator": "0x171b16562EA3476F5C61d1b8dad031DbA0768545",
+    "ETHWSTETH": {
+      "type": 1,
+      "aggregator": "0x10f964234cae09cB6a9854B56FF7D4F38Cda5E6a",
       "intermediatePairs": []
     },
-    "MXNETH": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDETH"]
+    "WSTETHETH": {
+      "type": 0,
+      "aggregator": "0x10f964234cae09cB6a9854B56FF7D4F38Cda5E6a",
+      "intermediatePairs": []
     },
-    "MXNBTC": {
+    "WSTETHUSD": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDBTC"]
+      "intermediatePairs": ["WSTETHETH", "ETHUSD"]
     },
-    "MXNMATIC": {
+    "EURWSTETH": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDMATIC"]
+      "intermediatePairs": ["EURUSD", "USDETH", "ETHWSTETH"]
     },
-    "MXNXAU": {
+    "BRLWSTETH": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDXAU"]
+      "intermediatePairs": ["BRLUSD", "USDETH", "ETHWSTETH"]
     },
-    "MXNBRL": {
+    "MXNWSTETH": {
       "type": 2,
       "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDBRL"]
-    },
-    "MXNEUR": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDEUR"]
-    },
-    "MXNCHF": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDCHF"]
-    },
-    "MXNGBP": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDGBP"]
-    },
-    "MXNSGD": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDSGD"]
-    },
-    "MXNCAD": {
-      "type": 2,
-      "aggregator": "0x0000000000000000000000000000000000000000",
-      "intermediatePairs": ["MXNUSD", "USDCAD"]
+      "intermediatePairs": ["MXNUSD", "USDETH", "ETHWSTETH"]
     }
   },
   "56": {

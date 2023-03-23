@@ -33,7 +33,10 @@
     "MXNGBP",
     "MXNSGD",
     "MXNCAD",
-    "MXNUSD"
+    "MXNUSD",
+    "BRLWSTETH",
+    "MXNWSTETH",
+    "EURWSTETH"
   ],
   "56": [
     "EURUSD",
