@@ -1,8 +1,0 @@
-{
-  "43113": {
-    "lpTokenName": "jEUR-LP",
-    "lpTokenSymbol": "jEUR-LP",
-    "pool": "0x825a3644491B09702E1A68954cf40bFB0f01A8Ac",
-    "overcollateralisation": "50000000000000000"
-  }
-}
