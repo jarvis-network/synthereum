@@ -69,7 +69,7 @@
   "250": ["EURUSD"],
   "43114": ["CHFUSD"],
   "420": ["EURUSD"],
-  "10": ["EURUSD", "EURETH", "EURBTC", "EUROP"],
+  "10": ["EURUSD", "EURETH", "EURBTC", "EUROP", "EURWSTETH"],
   "421613": [],
   "42161": ["EURUSD", "USDETH", "EURETH", "EURBTC"]
 }
