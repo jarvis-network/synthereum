@@ -86,6 +86,7 @@ contract('Lending Vault', accounts => {
   before(async () => {
     networkId = await web3.eth.net.getId();
     USDC = await TestnetSelfMintingERC20.at(data[networkId].USDC);
+    console.log('HHEYT', await USDC.decimals.call().toString());
     // lpToken = await TestnetSelfMintingERC20.new(LPName, LPSymbol, 18, {
     //   from: accounts[0],
     // });
@@ -179,7 +180,7 @@ contract('Lending Vault', accounts => {
         assert.equal(await vault.symbol.call(), LPSymbol);
         assert.equal(
           (await vault.getRate.call()).toString(),
-          toBN(Math.pow(10, collateralDecimals)),
+          toBN(Math.pow(10, 18)),
         );
       });
 
@@ -243,11 +244,12 @@ contract('Lending Vault', accounts => {
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+          console.log(ev.rate.toString());
           return (
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
             ev.lpTokensOut.toString() == expectedUserLP.toString() &&
-            ev.rate.toString() == toBN(Math.pow(10, collateralDecimals)) &&
+            ev.rate.toString() == toBN(Math.pow(10, 18)) &&
             ev.discountedRate.toString() == '0'
           );
         });
@@ -280,10 +282,7 @@ contract('Lending Vault', accounts => {
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
         // rate should not have changed
-        assert.equal(
-          (await vault.getRate.call()).toString(),
-          toBN(Math.pow(10, collateralDecimals)),
-        );
+        assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
       });
 
       it('Rate unchanged - user 2 deposit - correctly mint LP tokens', async () => {
@@ -307,7 +306,7 @@ contract('Lending Vault', accounts => {
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
             ev.lpTokensOut.toString() == expectedUserLP.toString() &&
-            ev.rate.toString() == toBN(Math.pow(10, collateralDecimals)) &&
+            ev.rate.toString() == toBN(Math.pow(10, 18)) &&
             ev.discountedRate.toString() == '0'
           );
         });
@@ -335,17 +334,11 @@ contract('Lending Vault', accounts => {
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
         // rate should not have changed
-        assert.equal(
-          (await vault.getRate.call()).toString(),
-          toBN(Math.pow(10, collateralDecimals)),
-        );
+        assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
       });
 
       it('Changed rate, new deposit', async () => {
-        assert.equal(
-          (await vault.getRate.call()).toString(),
-          toBN(Math.pow(10, collateralDecimals)),
-        );
+        assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
 
         let LPTotalSupply = await vault.totalSupply.call();
         let actualCollateralAmount = (
@@ -367,7 +360,8 @@ contract('Lending Vault', accounts => {
         );
         expectedRate = toBN(expectedRate)
           .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(LPTotalSupply));
+          .div(toBN(LPTotalSupply))
+          .mul(toBN(Math.pow(10, 12)));
 
         assert.equal(
           (await vault.getRate.call()).toString(),
@@ -387,10 +381,12 @@ contract('Lending Vault', accounts => {
 
         let expectedLPOut = toBN(collateralDeposit)
           .mul(toBN(Math.pow(10, 18)))
-          .div(expectedRate);
+          .div(expectedRate)
+          .mul(toBN(Math.pow(10, 12)));
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+          console.log('AH', expectedLPOut.toString());
           return (
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
@@ -512,9 +508,11 @@ contract('Lending Vault', accounts => {
 
         let expectedLPOut = toBN(purchaseAmount)
           .mul(toBN(Math.pow(10, 18)))
-          .div(discountedRate);
+          .div(discountedRate)
+          .mul(toBN(Math.pow(10, 12)));
 
         // check event
+        console.log(currentRegularRate.toString());
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
             ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
@@ -559,7 +557,9 @@ contract('Lending Vault', accounts => {
         // the discount should have diluted the regular rate
         let expectedNewRegularRate = toBN(actualCollateralAmount)
           .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(LPTotalSupplyAfter));
+          .div(toBN(LPTotalSupplyAfter))
+          .mul(toBN(Math.pow(10, 12)));
+
         let newRegularRate = await vault.getRate.call();
         assert.equal(
           newRegularRate.toString(),
@@ -628,6 +628,7 @@ contract('Lending Vault', accounts => {
             .mul(toBN(Math.pow(10, 18)))
             .div(currentRegularRate),
         );
+        expectedLPOut = expectedLPOut.mul(toBN(Math.pow(10, 12)));
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -674,7 +675,9 @@ contract('Lending Vault', accounts => {
         // the discount should have diluted the regular rate
         expectedNewRegularRate = toBN(actualCollateralAmount)
           .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(LPTotalSupplyAfter));
+          .div(toBN(LPTotalSupplyAfter))
+          .mul(toBN(Math.pow(10, 12)));
+
         let newRegularRate = await vault.getRate.call();
         assert.equal(
           newRegularRate.toString(),
@@ -696,14 +699,17 @@ contract('Lending Vault', accounts => {
 
       let expectedRate = toBN(actualCollateralAmount)
         .mul(toBN(Math.pow(10, 18)))
-        .div(totalSupplyLPBefore);
+        .div(totalSupplyLPBefore)
+        .mul(toBN(Math.pow(10, 12)));
+
       let currentRate = await vault.getRate.call();
       assert.equal(expectedRate.toString(), currentRate.toString());
 
       let LPInput = userLPBefore.divn(2);
       let expectedCollateralOut = currentRate
         .mul(LPInput)
-        .div(toBN(Math.pow(10, 18)));
+        .div(toBN(Math.pow(10, 18)))
+        .div(toBN(Math.pow(10, 12)));
 
       let tx = await vault.withdraw(LPInput, user1, { from: user1 });
 

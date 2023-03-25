@@ -30,6 +30,7 @@ abstract contract BaseVaultStorage is
 
   uint128 internal overCollateralization; // overcollateralization of the vault position
   bool internal isLpActive; // dictates if first deposit on pool or not
+  uint256 internal collateralDecimals; // decimal unit of the collateral
 
   function isTrustedForwarder(address forwarder)
     public

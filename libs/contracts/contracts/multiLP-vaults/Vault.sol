@@ -43,6 +43,7 @@ contract Vault is IVault, BaseVaultStorage {
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
     synthereumFinder = _finder;
+    collateralDecimals = IStandardERC20(address(collateralAsset)).decimals();
 
     // // reentrancy and erc20 initialisation
     __ReentrancyGuard_init();
@@ -77,6 +78,9 @@ contract Vault is IVault, BaseVaultStorage {
       (netCollateralDeposited, actualCollateralAmount) = pool.addLiquidity(
         collateralAmount
       );
+      if (totalSupply() == 0) {
+        vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
+      }
     } else {
       netCollateralDeposited = pool.activateLP(
         collateralAmount,
@@ -97,7 +101,9 @@ contract Vault is IVault, BaseVaultStorage {
         calculateRate(actualCollateralAmount - netCollateralDeposited);
 
       // mint LP tokens to user
-      lpTokensOut = netCollateralDeposited.div(rate);
+      lpTokensOut =
+        netCollateralDeposited.div(rate) *
+        10**(18 - collateralDecimals);
       _mint(recipient, lpTokensOut);
 
       // log event
@@ -115,6 +121,8 @@ contract Vault is IVault, BaseVaultStorage {
         ? maxCollateralAtDiscount.div(discountedRate) +
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
+
+      lpTokensOut = lpTokensOut * 10**(18 - collateralDecimals);
 
       _mint(recipient, lpTokensOut);
 
@@ -140,7 +148,7 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 collateralEquivalent =
       lpTokensAmount == totSupply
         ? vaultCollateralAmount
-        : lpTokensAmount.mul(rate);
+        : lpTokensAmount.mul(rate) / 10**(18 - collateralDecimals);
 
     // Burn LP tokens of user
     _burn(_msgSender(), lpTokensAmount);
@@ -223,8 +231,9 @@ contract Vault is IVault, BaseVaultStorage {
 
     // calculate rate
     rate = totalSupplyLPTokens == 0
-      ? 10**IStandardERC20(address(collateralAsset)).decimals()
-      : positionCollateralAmount.div(totalSupplyLPTokens);
+      ? PreciseUnitMath.PRECISE_UNIT
+      : positionCollateralAmount.div(totalSupplyLPTokens) *
+        10**(18 - collateralDecimals);
   }
 
   function calculateDiscountedRate(
