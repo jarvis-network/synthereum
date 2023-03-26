@@ -1,4 +1,4 @@
-FROM node:16.13.1-alpine as base
+FROM node:16.13.0-alpine as base
 RUN apk add coreutils bash jq g++ git make python3 linux-headers eudev-dev libusb-dev
 WORKDIR /src
 
@@ -10,5 +10,7 @@ RUN OUTDIR='/out' scripts/ci/gather_files_for_yarn_install.bash
 # ------------- Builder image with all NPM dependencies installed ------------ #
 FROM base as install
 COPY --from=yarn_lock /out .
-RUN yarn install --immutable
+
+RUN yarn set version 3.1.1
+RUN YARN_CHECKSUM_BEHAVIOR=update yarn install
 RUN mkdir -p /out
