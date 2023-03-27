@@ -118,7 +118,8 @@ contract Vault is IVault, BaseVaultStorage {
       (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
         calculateDiscountedRate(
           vaultPosition,
-          actualCollateralAmount - netCollateralDeposited
+          actualCollateralAmount - netCollateralDeposited,
+          totalSupply
         );
 
       // mint LP tokens to user
@@ -202,7 +203,8 @@ contract Vault is IVault, BaseVaultStorage {
     // otherwise calculate discount
     (, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
       vaultPosition,
-      vaultPosition.actualCollateralAmount
+      vaultPosition.actualCollateralAmount,
+      totalSupply()
     );
   }
 
@@ -246,7 +248,8 @@ contract Vault is IVault, BaseVaultStorage {
 
   function calculateDiscountedRate(
     IPoolVault.LPInfo memory vaultPosition,
-    uint256 actualCollateralAmount
+    uint256 actualCollateralAmount,
+    uint256 totalSupply
   )
     internal
     view
@@ -257,7 +260,7 @@ contract Vault is IVault, BaseVaultStorage {
     )
   {
     // get regular rate
-    rate = calculateRate(actualCollateralAmount, totalSupply());
+    rate = calculateRate(actualCollateralAmount, totalSupply);
 
     // collateralExpected = numTokens * price * overcollateralization
     // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;
