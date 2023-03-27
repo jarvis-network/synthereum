@@ -27,10 +27,11 @@ abstract contract BaseVaultStorage is
   ISynthereumFinder internal synthereumFinder;
   IPoolVault internal pool; // reference pool
   IERC20 internal collateralAsset; // reference pool collateral token
+  uint8 internal collateralDecimals; // decimal unit of the collateral
 
-  uint128 internal overCollateralization; // overcollateralization of the vault position
   bool internal isLpActive; // dictates if first deposit on pool or not
-  uint256 internal collateralDecimals; // decimal unit of the collateral
+  uint8 internal version; // version of the vault
+  uint128 internal overCollateralization; // overcollateralization of the vault position
 
   function isTrustedForwarder(address forwarder)
     public

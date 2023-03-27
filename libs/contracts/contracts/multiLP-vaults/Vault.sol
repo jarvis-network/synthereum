@@ -28,6 +28,7 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   constructor() {
+    version = 1;
     _disableInitializers();
   }
 
@@ -44,6 +45,7 @@ contract Vault is IVault, BaseVaultStorage {
     overCollateralization = _overCollateralization;
     synthereumFinder = _finder;
     collateralDecimals = IStandardERC20(address(collateralAsset)).decimals();
+    version = 1;
 
     // // reentrancy and erc20 initialisation
     __ReentrancyGuard_init();
@@ -60,8 +62,7 @@ contract Vault is IVault, BaseVaultStorage {
     require(collateralAmount > 0, 'Zero amount');
 
     // transfer collateral - checks balance
-    address sender = _msgSender();
-    collateralAsset.transferFrom(sender, address(this), collateralAmount);
+    collateralAsset.transferFrom(_msgSender(), address(this), collateralAmount);
 
     // approve pool to pull collateral
     collateralAsset.safeApprove(address(pool), collateralAmount);
