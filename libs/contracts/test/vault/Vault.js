@@ -181,6 +181,7 @@ contract('Lending Vault', accounts => {
           (await vault.getRate.call()).toString(),
           toBN(Math.pow(10, 18)),
         );
+        assert.equal((await vault.getVersion.call()).toString(), '1');
       });
 
       it('Revert if sender is not synthereum deployer', async () => {
