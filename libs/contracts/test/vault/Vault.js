@@ -86,7 +86,6 @@ contract('Lending Vault', accounts => {
   before(async () => {
     networkId = await web3.eth.net.getId();
     USDC = await TestnetSelfMintingERC20.at(data[networkId].USDC);
-    console.log('HHEYT', await USDC.decimals.call().toString());
     // lpToken = await TestnetSelfMintingERC20.new(LPName, LPSymbol, 18, {
     //   from: accounts[0],
     // });
@@ -244,7 +243,6 @@ contract('Lending Vault', accounts => {
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
-          console.log(ev.rate.toString());
           return (
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
@@ -386,7 +384,6 @@ contract('Lending Vault', accounts => {
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
-          console.log('AH', expectedLPOut.toString());
           return (
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
@@ -512,7 +509,6 @@ contract('Lending Vault', accounts => {
           .mul(toBN(Math.pow(10, 12)));
 
         // check event
-        console.log(currentRegularRate.toString());
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
             ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
@@ -774,7 +770,6 @@ contract('Lending Vault', accounts => {
       );
       assert.equal(vaultImplAct, vaultImpl.address);
 
-      //  console.log("L", userLPBalanceBefore.toString());
       await manager.upgradePublicVault([vault.address], [Buffer.from([])], {
         from: maintainer,
       });
