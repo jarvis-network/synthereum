@@ -73,13 +73,14 @@ contract Vault is IVault, BaseVaultStorage {
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
     uint256 actualCollateralAmount;
+    uint256 totalSupply = totalSupply();
 
     if (isLpActive) {
       vaultPosition = pool.positionLPInfo(address(this));
       (netCollateralDeposited, actualCollateralAmount) = pool.addLiquidity(
         collateralAmount
       );
-      if (totalSupply() == 0) {
+      if (totalSupply == 0) {
         vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       }
     } else {
@@ -98,8 +99,11 @@ contract Vault is IVault, BaseVaultStorage {
       PreciseUnitMath.PRECISE_UNIT + overCollateralization
     ) {
       // calculate rate
-      (uint256 rate, ) =
-        calculateRate(actualCollateralAmount - netCollateralDeposited);
+      uint256 rate =
+        calculateRate(
+          actualCollateralAmount - netCollateralDeposited,
+          totalSupply
+        );
 
       // mint LP tokens to user
       lpTokensOut =
@@ -145,7 +149,8 @@ contract Vault is IVault, BaseVaultStorage {
       (pool.positionLPInfo(address(this))).actualCollateralAmount;
 
     // calculate rate and amount of collateral to withdraw
-    (uint256 rate, uint256 totSupply) = calculateRate(vaultCollateralAmount);
+    uint256 totSupply = totalSupply();
+    uint256 rate = calculateRate(vaultCollateralAmount, totSupply);
     uint256 collateralEquivalent =
       lpTokensAmount == totSupply
         ? vaultCollateralAmount
@@ -172,8 +177,9 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   function getRate() external view override returns (uint256 rate) {
-    (rate, ) = calculateRate(
-      (pool.positionLPInfo(address(this))).actualCollateralAmount
+    rate = calculateRate(
+      (pool.positionLPInfo(address(this))).actualCollateralAmount,
+      totalSupply()
     );
   }
 
@@ -200,6 +206,10 @@ contract Vault is IVault, BaseVaultStorage {
     );
   }
 
+  function getVersion() external view override returns (uint256) {
+    return version;
+  }
+
   function getPool() external view override returns (address poolAddress) {
     poolAddress = address(pool);
   }
@@ -222,18 +232,15 @@ contract Vault is IVault, BaseVaultStorage {
     overcollateral = overCollateralization;
   }
 
-  function calculateRate(uint256 positionCollateralAmount)
+  function calculateRate(uint256 positionCollateralAmount, uint256 totalSupply)
     internal
     view
-    returns (uint256 rate, uint256 totalSupplyLPTokens)
+    returns (uint256 rate)
   {
-    // get LP tokens total supply
-    totalSupplyLPTokens = totalSupply();
-
     // calculate rate
-    rate = totalSupplyLPTokens == 0
+    rate = totalSupply == 0
       ? PreciseUnitMath.PRECISE_UNIT
-      : positionCollateralAmount.div(totalSupplyLPTokens) *
+      : positionCollateralAmount.div(totalSupply) *
         10**(18 - collateralDecimals);
   }
 
@@ -250,7 +257,7 @@ contract Vault is IVault, BaseVaultStorage {
     )
   {
     // get regular rate
-    (rate, ) = calculateRate(actualCollateralAmount);
+    rate = calculateRate(actualCollateralAmount, totalSupply());
 
     // collateralExpected = numTokens * price * overcollateralization
     // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;

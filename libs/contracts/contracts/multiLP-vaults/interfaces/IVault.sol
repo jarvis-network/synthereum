@@ -76,6 +76,12 @@ interface IVault is IVaultMigration {
     returns (uint256 discountedRate, uint256 maxCollateralDiscounted);
 
   /**
+   * @notice Return the vault version
+   * @param version version of the vault
+   */
+  function getVersion() external view returns (uint256 version);
+
+  /**
    * @notice Return the vault reference pool
    * @param poolAddress address of the pool
    */
