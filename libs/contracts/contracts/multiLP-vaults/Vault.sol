@@ -74,6 +74,7 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 netCollateralDeposited;
     uint256 actualCollateralAmount;
     uint256 totalSupply = totalSupply();
+    uint128 overCollateralFactor = overCollateralization;
 
     if (isLpActive) {
       vaultPosition = pool.positionLPInfo(address(this));
@@ -86,17 +87,17 @@ contract Vault is IVault, BaseVaultStorage {
     } else {
       netCollateralDeposited = pool.activateLP(
         collateralAmount,
-        overCollateralization
+        overCollateralFactor
       );
       actualCollateralAmount = netCollateralDeposited;
       isLpActive = true;
       vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
-      emit LPActivated(collateralAmount, overCollateralization);
+      emit LPActivated(collateralAmount, overCollateralFactor);
     }
     uint256 scalingValue = scalingFactor();
     if (
       vaultPosition.coverage >=
-      PreciseUnitMath.PRECISE_UNIT + overCollateralization
+      PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
     ) {
       // calculate rate
       uint256 rate =
@@ -119,7 +120,8 @@ contract Vault is IVault, BaseVaultStorage {
           vaultPosition,
           actualCollateralAmount - netCollateralDeposited,
           totalSupply,
-          scalingValue
+          scalingValue,
+          overCollateralFactor
         );
 
       // mint LP tokens to user
@@ -195,9 +197,10 @@ contract Vault is IVault, BaseVaultStorage {
     IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
 
     // return zeros if not in discount state
+    uint128 overCollateralFactor = overCollateralization;
     if (
       vaultPosition.coverage >=
-      PreciseUnitMath.PRECISE_UNIT + overCollateralization
+      PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
     ) {
       return (0, 0);
     }
@@ -207,7 +210,8 @@ contract Vault is IVault, BaseVaultStorage {
       vaultPosition,
       vaultPosition.actualCollateralAmount,
       totalSupply(),
-      scalingFactor()
+      scalingFactor(),
+      overCollateralFactor
     );
   }
 
@@ -237,11 +241,15 @@ contract Vault is IVault, BaseVaultStorage {
     overcollateral = overCollateralization;
   }
 
+  function scalingFactor() internal view returns (uint256) {
+    return 10**(18 - collateralDecimals);
+  }
+
   function calculateRate(
     uint256 positionCollateralAmount,
     uint256 totalSupply,
     uint256 scalingValue
-  ) internal view returns (uint256 rate) {
+  ) internal pure returns (uint256 rate) {
     // calculate rate
     rate = totalSupply == 0
       ? PreciseUnitMath.PRECISE_UNIT
@@ -252,10 +260,11 @@ contract Vault is IVault, BaseVaultStorage {
     IPoolVault.LPInfo memory vaultPosition,
     uint256 actualCollateralAmount,
     uint256 totalSupply,
-    uint256 scalingValue
+    uint256 scalingValue,
+    uint256 overCollateralFactor
   )
     internal
-    view
+    pure
     returns (
       uint256 rate,
       uint256 discountedRate,
@@ -268,7 +277,7 @@ contract Vault is IVault, BaseVaultStorage {
     // collateralExpected = numTokens * price * overcollateralization
     // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;
     uint256 collateralExpected =
-      (actualCollateralAmount).mul(overCollateralization).div(
+      (actualCollateralAmount).mul(overCollateralFactor).div(
         vaultPosition.coverage - PreciseUnitMath.PRECISE_UNIT
       );
 
@@ -278,9 +287,5 @@ contract Vault is IVault, BaseVaultStorage {
     // discount = collateralDeficit / collateralExpected
     // discounted rate = rate - (rate * discount)
     discountedRate = rate - rate.mul(collateralDeficit.div(collateralExpected));
-  }
-
-  function scalingFactor() internal view returns (uint256) {
-    return 10**(18 - collateralDecimals);
   }
 }
