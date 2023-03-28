@@ -105,6 +105,8 @@
   "43113": {
     "isEnabled": true,
     "Pool": 6,
-    "SynthToken": {}
+    "SynthToken": {
+      "jEUR": "0x56e1ac5cef5ce7989878eaba24ecae6afdd605d6"
+    }
   }
 }
