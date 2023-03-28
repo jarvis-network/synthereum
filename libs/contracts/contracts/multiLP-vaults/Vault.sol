@@ -93,7 +93,7 @@ contract Vault is IVault, BaseVaultStorage {
       vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       emit LPActivated(collateralAmount, overCollateralization);
     }
-
+    uint256 scalingValue = scalingFactor();
     if (
       vaultPosition.coverage >=
       PreciseUnitMath.PRECISE_UNIT + overCollateralization
@@ -102,12 +102,12 @@ contract Vault is IVault, BaseVaultStorage {
       uint256 rate =
         calculateRate(
           actualCollateralAmount - netCollateralDeposited,
-          totalSupply
+          totalSupply,
+          scalingValue
         );
 
       // mint LP tokens to user
-      lpTokensOut = (netCollateralDeposited * 10**(18 - collateralDecimals))
-        .div(rate);
+      lpTokensOut = (netCollateralDeposited * scalingValue).div(rate);
       _mint(recipient, lpTokensOut);
 
       // log event
@@ -118,20 +118,16 @@ contract Vault is IVault, BaseVaultStorage {
         calculateDiscountedRate(
           vaultPosition,
           actualCollateralAmount - netCollateralDeposited,
-          totalSupply
+          totalSupply,
+          scalingValue
         );
 
       // mint LP tokens to user
       lpTokensOut = netCollateralDeposited > maxCollateralAtDiscount
-        ? (maxCollateralAtDiscount * 10**(18 - collateralDecimals)).div(
-          discountedRate
-        ) +
-          ((netCollateralDeposited - maxCollateralAtDiscount) *
-            10**(18 - collateralDecimals))
+        ? (maxCollateralAtDiscount * scalingValue).div(discountedRate) +
+          ((netCollateralDeposited - maxCollateralAtDiscount) * scalingValue)
             .div(rate)
-        : (netCollateralDeposited * 10**(18 - collateralDecimals)).div(
-          discountedRate
-        );
+        : (netCollateralDeposited * scalingValue).div(discountedRate);
 
       _mint(recipient, lpTokensOut);
 
@@ -154,11 +150,13 @@ contract Vault is IVault, BaseVaultStorage {
 
     // calculate rate and amount of collateral to withdraw
     uint256 totSupply = totalSupply();
-    uint256 rate = calculateRate(vaultCollateralAmount, totSupply);
+    uint256 scalingValue = scalingFactor();
+    uint256 rate =
+      calculateRate(vaultCollateralAmount, totSupply, scalingValue);
     uint256 collateralEquivalent =
       lpTokensAmount == totSupply
         ? vaultCollateralAmount
-        : lpTokensAmount.mul(rate) / 10**(18 - collateralDecimals);
+        : lpTokensAmount.mul(rate) / scalingValue;
 
     // Burn LP tokens of user
     _burn(_msgSender(), lpTokensAmount);
@@ -183,7 +181,8 @@ contract Vault is IVault, BaseVaultStorage {
   function getRate() external view override returns (uint256 rate) {
     rate = calculateRate(
       (pool.positionLPInfo(address(this))).actualCollateralAmount,
-      totalSupply()
+      totalSupply(),
+      scalingFactor()
     );
   }
 
@@ -207,7 +206,8 @@ contract Vault is IVault, BaseVaultStorage {
     (, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
       vaultPosition,
       vaultPosition.actualCollateralAmount,
-      totalSupply()
+      totalSupply(),
+      scalingFactor()
     );
   }
 
@@ -237,23 +237,22 @@ contract Vault is IVault, BaseVaultStorage {
     overcollateral = overCollateralization;
   }
 
-  function calculateRate(uint256 positionCollateralAmount, uint256 totalSupply)
-    internal
-    view
-    returns (uint256 rate)
-  {
+  function calculateRate(
+    uint256 positionCollateralAmount,
+    uint256 totalSupply,
+    uint256 scalingValue
+  ) internal view returns (uint256 rate) {
     // calculate rate
     rate = totalSupply == 0
       ? PreciseUnitMath.PRECISE_UNIT
-      : (positionCollateralAmount * 10**(18 - collateralDecimals)).div(
-        totalSupply
-      );
+      : (positionCollateralAmount * scalingValue).div(totalSupply);
   }
 
   function calculateDiscountedRate(
     IPoolVault.LPInfo memory vaultPosition,
     uint256 actualCollateralAmount,
-    uint256 totalSupply
+    uint256 totalSupply,
+    uint256 scalingValue
   )
     internal
     view
@@ -264,7 +263,7 @@ contract Vault is IVault, BaseVaultStorage {
     )
   {
     // get regular rate
-    rate = calculateRate(actualCollateralAmount, totalSupply);
+    rate = calculateRate(actualCollateralAmount, totalSupply, scalingValue);
 
     // collateralExpected = numTokens * price * overcollateralization
     // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;
@@ -279,5 +278,9 @@ contract Vault is IVault, BaseVaultStorage {
     // discount = collateralDeficit / collateralExpected
     // discounted rate = rate - (rate * discount)
     discountedRate = rate - rate.mul(collateralDeficit.div(collateralExpected));
+  }
+
+  function scalingFactor() internal view returns (uint256) {
+    return 10**(18 - collateralDecimals);
   }
 }
