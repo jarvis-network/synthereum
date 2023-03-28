@@ -106,9 +106,8 @@ contract Vault is IVault, BaseVaultStorage {
         );
 
       // mint LP tokens to user
-      lpTokensOut =
-        netCollateralDeposited.div(rate) *
-        10**(18 - collateralDecimals);
+      lpTokensOut = (netCollateralDeposited * 10**(18 - collateralDecimals))
+        .div(rate);
       _mint(recipient, lpTokensOut);
 
       // log event
@@ -123,12 +122,12 @@ contract Vault is IVault, BaseVaultStorage {
         );
 
       // mint LP tokens to user
+      lpTokensOut = lpTokensOut * 10**(18 - collateralDecimals);
+
       lpTokensOut = netCollateralDeposited > maxCollateralAtDiscount
         ? maxCollateralAtDiscount.div(discountedRate) +
           (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
         : netCollateralDeposited.div(discountedRate);
-
-      lpTokensOut = lpTokensOut * 10**(18 - collateralDecimals);
 
       _mint(recipient, lpTokensOut);
 
@@ -242,8 +241,9 @@ contract Vault is IVault, BaseVaultStorage {
     // calculate rate
     rate = totalSupply == 0
       ? PreciseUnitMath.PRECISE_UNIT
-      : positionCollateralAmount.div(totalSupply) *
-        10**(18 - collateralDecimals);
+      : (positionCollateralAmount * 10**(18 - collateralDecimals)).div(
+        totalSupply
+      );
   }
 
   function calculateDiscountedRate(
