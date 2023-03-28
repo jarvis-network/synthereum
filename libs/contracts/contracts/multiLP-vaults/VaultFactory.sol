@@ -66,6 +66,7 @@ contract SynthereumVaultFactory is
    */
   function encodeInitialiseCall(bytes memory encodedParams)
     public
+    view
     override(IVaultFactory, SynthereumVaultCreator)
     returns (bytes memory encodedCall)
   {
@@ -78,6 +79,7 @@ contract SynthereumVaultFactory is
    */
   function vaultImplementation()
     public
+    view
     override(IVaultFactory, SynthereumVaultCreator)
     returns (address implementation)
   {

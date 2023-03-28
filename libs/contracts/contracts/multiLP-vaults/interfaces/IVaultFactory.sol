@@ -29,11 +29,12 @@ interface IVaultFactory {
    */
   function encodeInitialiseCall(bytes memory encodedParams)
     external
+    view
     returns (bytes memory encodedCall);
 
   /**
    * @notice Returns the address of deployed vault implementation
    * @return implementation deployed vault implementation
    */
-  function vaultImplementation() external returns (address implementation);
+  function vaultImplementation() external view returns (address implementation);
 }

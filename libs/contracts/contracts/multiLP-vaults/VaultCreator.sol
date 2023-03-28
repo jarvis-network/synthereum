@@ -74,7 +74,7 @@ contract SynthereumVaultCreator {
    * @notice Returns address of deployed vault implementation the factory is using
    * @return implementation Vault implementation
    */
-  function vaultImplementation() public virtual returns (address) {
+  function vaultImplementation() public view virtual returns (address) {
     return vaultImpl;
   }
 
@@ -85,6 +85,7 @@ contract SynthereumVaultCreator {
    */
   function encodeInitialiseCall(bytes memory encodedParams)
     public
+    view
     virtual
     returns (bytes memory encodedCall)
   {
