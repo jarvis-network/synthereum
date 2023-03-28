@@ -122,12 +122,16 @@ contract Vault is IVault, BaseVaultStorage {
         );
 
       // mint LP tokens to user
-      lpTokensOut = lpTokensOut * 10**(18 - collateralDecimals);
-
       lpTokensOut = netCollateralDeposited > maxCollateralAtDiscount
-        ? maxCollateralAtDiscount.div(discountedRate) +
-          (netCollateralDeposited - maxCollateralAtDiscount).div(rate)
-        : netCollateralDeposited.div(discountedRate);
+        ? (maxCollateralAtDiscount * 10**(18 - collateralDecimals)).div(
+          discountedRate
+        ) +
+          ((netCollateralDeposited - maxCollateralAtDiscount) *
+            10**(18 - collateralDecimals))
+            .div(rate)
+        : (netCollateralDeposited * 10**(18 - collateralDecimals)).div(
+          discountedRate
+        );
 
       _mint(recipient, lpTokensOut);
 

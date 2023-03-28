@@ -359,8 +359,8 @@ contract('Lending Vault', accounts => {
         );
         expectedRate = toBN(expectedRate)
           .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(LPTotalSupply))
-          .mul(toBN(Math.pow(10, 12)));
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupply));
 
         assert.equal(
           (await vault.getRate.call()).toString(),
@@ -380,8 +380,8 @@ contract('Lending Vault', accounts => {
 
         let expectedLPOut = toBN(collateralDeposit)
           .mul(toBN(Math.pow(10, 18)))
-          .div(expectedRate)
-          .mul(toBN(Math.pow(10, 12)));
+          .mul(toBN(Math.pow(10, 12)))
+          .div(expectedRate);
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -506,8 +506,8 @@ contract('Lending Vault', accounts => {
 
         let expectedLPOut = toBN(purchaseAmount)
           .mul(toBN(Math.pow(10, 18)))
-          .div(discountedRate)
-          .mul(toBN(Math.pow(10, 12)));
+          .mul(toBN(Math.pow(10, 12)))
+          .div(discountedRate);
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -554,8 +554,8 @@ contract('Lending Vault', accounts => {
         // the discount should have diluted the regular rate
         let expectedNewRegularRate = toBN(actualCollateralAmount)
           .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(LPTotalSupplyAfter))
-          .mul(toBN(Math.pow(10, 12)));
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupplyAfter));
 
         let newRegularRate = await vault.getRate.call();
         assert.equal(
@@ -619,13 +619,14 @@ contract('Lending Vault', accounts => {
         );
         let expectedLPOut = toBN(maxCollateralAtDiscount)
           .mul(toBN(Math.pow(10, 18)))
+          .mul(toBN(Math.pow(10, 12)))
           .div(discountedRate);
         expectedLPOut = expectedLPOut.add(
           remainingCollateral
             .mul(toBN(Math.pow(10, 18)))
+            .mul(toBN(Math.pow(10, 12)))
             .div(currentRegularRate),
         );
-        expectedLPOut = expectedLPOut.mul(toBN(Math.pow(10, 12)));
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -672,8 +673,8 @@ contract('Lending Vault', accounts => {
         // the discount should have diluted the regular rate
         expectedNewRegularRate = toBN(actualCollateralAmount)
           .mul(toBN(Math.pow(10, 18)))
-          .div(toBN(LPTotalSupplyAfter))
-          .mul(toBN(Math.pow(10, 12)));
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupplyAfter));
 
         let newRegularRate = await vault.getRate.call();
         assert.equal(
@@ -696,8 +697,8 @@ contract('Lending Vault', accounts => {
 
       let expectedRate = toBN(actualCollateralAmount)
         .mul(toBN(Math.pow(10, 18)))
-        .div(totalSupplyLPBefore)
-        .mul(toBN(Math.pow(10, 12)));
+        .mul(toBN(Math.pow(10, 12)))
+        .div(totalSupplyLPBefore);
 
       let currentRate = await vault.getRate.call();
       assert.equal(expectedRate.toString(), currentRate.toString());
