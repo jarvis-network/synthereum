@@ -2,28 +2,3 @@
 * @PetarKirov
 
 ### Allow everyone to edit root files and docs
-/* @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/docs/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-
-### ... except CODEOWNERS
-/CODEOWNERS @PetarKirov
-
-### Packages
-
-/apps/frontend/ @PetarKirov @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/apps/borrowing/ @PetarKirov @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/apps/claim/ @PetarKirov @dimitar.nestorov
-
-/apps/validator/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
-/packages/keeper-bot/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
-
-/apps/cli/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/libs/web3-utils/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/libs/contracts/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/libs/ui/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/libs/toolkit/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/packages/balance-notify/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-
-/libs/contracts/contracts/ @Aleione
-/libs/contracts/migrations/ @Aleione
-/libs/contracts/data/ @Aleione

@@ -75,63 +75,6 @@ installing the software listed above.
         yarn
         ```
 
-    3. Build all libraries and applications:
-
-        ```sh
-        yarn build:all
-        ```
-
-        Or just part that you're interested in (including its dependencies):
-
-        * Frontend:
-
-            ```sh
-            yarn build frontend
-            ```
-
-        * Borrowing:
-
-            ```sh
-            yarn build borrowing
-            ```
-
-        * Claim:
-
-            ```sh
-            yarn build claim
-            ```
-
-        * CLI utils:
-
-            ```sh
-            yarn build cli
-            ```
-
-    4. Start it:
-
-        * Jarvis Exchange DApp:
-
-            ```sh
-            yarn start frontend
-            ```
-
-        * Jarvis Borrowing (Self Minting) DApp:
-
-            ```sh
-            yarn start borrowing
-            ```
-
-        * Jarvis Claim JRT DApp:
-
-            ```sh
-            yarn start claim
-            ```
-
-        * CLI utils:
-
-            ```sh
-            yarn start:cli
-            ```
 
 </details>
 
@@ -139,29 +82,16 @@ installing the software listed above.
 
 ```txt
 jarvis-network/exchange/mono-repo/
-├── apps/                    | source code | applications
-│   ├── borrowing/           | source code | Jarvis Borrowing DApp
-│   ├── claim/               | source code | Jarvis Claim DApp
-│   ├── cli/                 | source code | CLI utilities for interacting with contracts
-│   ├── frontend/            | source code | Jarvis Exchange DApp
-│   ├── validator/           | source code | double tx based mint/redeem/exchange validator (Synthereum V1)
-│   └── validator-meta-tx/   | source code | meta-tx based mint/redeem/exchange validator (Synthereum V2)
 ├── libs/                    | source code | libraries (on which the applications depend)
 │   ├── contracts/           | source code | Synthereum Solidity implementation
 │   ├── core-utils/          | source code | @jarvis-network/core-utils - core utility library
-│   ├── toolkit/             | source code | @jarvis-network/app-toolkit - reusable frontend code
-│   ├── ui/                  | source code | @jarvis-network/ui - implements reusable React.js UI components
-│   └── validator-lib/       | source code | @jarvis-network/validator-lib
+│   └── hardhat-utils/       | source code | @jarvis-network/hardhat-utils
 │
 ├── scripts/                 | scripts | development utility scripts
-│   ├── build_frontend.bash
 │   ├── check_commit_range.bash
 │   ├── ci_test_affected.bash
 │   ├── prepare-release.bash
 │   └── repo-cleanup-post-part-1-of-nx.dev-changes.bash
-│
-├── helm/                    | helm | Helm deployment Charts
-│   └── validator            | helm
 │
 ├── README.md                | docs | this file
 ├── LICENSE                  | docs | MIT license

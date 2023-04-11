@@ -152,8 +152,5 @@ result
 
 dist/
 
-# Frontend assets
-apps/frontend/public/assets
-
 # Local Netlify folder
 .netlify

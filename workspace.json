@@ -3,20 +3,8 @@
   "cli": {
     "defaultCollection": "@nrwl/node"
   },
-  "defaultProject": "frontend",
-  "generators": {
-    "@nrwl/react": {
-      "application": {
-        "babel": true
-      }
-    },
-    "@nrwl/next": {
-      "application": {
-        "style": "@emotion/styled",
-        "linter": "eslint"
-      }
-    }
-  },
+  "defaultProject": "contracts",
+  "generators": {},
   "projects": {
     "core-utils": {
       "root": "libs/core-utils",
