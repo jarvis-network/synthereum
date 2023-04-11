@@ -49,7 +49,7 @@
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
     "help": "nx help",
-    "init:commitizen": "commitizen init @jarvis-network/cz-ccgls --yarn --dev --exact --force",
+    "init:commitizen": "commitizen init @jarvisnetwork/cz-ccgls --yarn --dev --exact --force",
     "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' start",
     "start:validator-old": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
     "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build"
@@ -92,7 +92,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/@jarvis-network/cz-ccgls"
+      "path": "./node_modules/@jarvisnetwork/cz-ccgls"
     },
     "cz-ccgls": {
       "useEmojis": true,
@@ -167,7 +167,7 @@
     "@babel/preset-typescript": "7.12.13",
     "@commitlint/config-conventional": "^11.0.0",
     "@emotion/babel-plugin": "11.2.0",
-    "@jarvis-network/cz-ccgls": "^0.3.2",
+    "@jarvisnetwork/cz-ccgls": "0.3.3",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
     "@nrwl/cli": "12.3.4",

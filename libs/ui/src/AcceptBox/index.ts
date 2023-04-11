@@ -1,1 +1,0 @@
-export { AcceptBox } from './AcceptBox';

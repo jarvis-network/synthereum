@@ -52,43 +52,9 @@
     "sol2ts-code-gen": {
       "tags": []
     },
-    "subgraph": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
-    "ui": {
-      "tags": []
-    },
     "contracts": {
       "tags": [],
       "implicitDependencies": ["crypto-utils"]
-    },
-    "synthereum-ts": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
-    "toolkit": {
-      "tags": [],
-      "implicitDependencies": ["synthereum-ts"]
-    },
-    "frontend": {
-      "tags": [],
-      "implicitDependencies": ["toolkit"]
-    },
-    "borrowing": {
-      "tags": [],
-      "implicitDependencies": ["toolkit"]
-    },
-    "claim": {
-      "tags": [],
-      "implicitDependencies": ["ui", "toolkit", "contracts"]
-    },
-    "cli": {
-      "tags": [],
-      "implicitDependencies": ["synthereum-ts"]
-    },
-    "examples": {
-      "tags": []
     },
     "hardhat-utils": {
       "tags": []
@@ -102,20 +68,6 @@
     },
     "jrt-investors": {
       "tags": []
-    },
-    "synthereum-config": {
-      "tags": []
-    },
-    "meta-tx-lib": {
-      "tags": []
-    },
-    "burner-wallet": {
-      "tags": [],
-      "implicitDependencies": ["toolkit"]
-    },
-    "burner-wallet-e2e": {
-      "tags": [],
-      "implicitDependencies": ["burner-wallet"]
     }
   },
   "workspaceLayout": {
