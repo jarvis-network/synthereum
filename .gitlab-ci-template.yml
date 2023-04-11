@@ -19,43 +19,10 @@ variables:
   parallel:
     matrix:
       - TARGET:
-          [contracts, atomic-swap, yield-farming, jrt-investors, crypto-utils]
+          [contracts,  yield-farming, jrt-investors, crypto-utils]
   script:
     - yarn test $TARGET
   rules:
     - if: $CI_MERGE_REQUEST_ID
 
-🧱 cli:build:
-  script:
-    - yarn build cli
-  rules:
-    - if: $CI_MERGE_REQUEST_ID
 
-💄 deploy:chromatic:
-  script:
-    - yarn nx build-storybook ui
-    - yarn nx deploy-chromatic ui
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_MERGE_REQUEST_ID
-      changes:
-        - libs/ui/*
-
-🚀:
-  variables:
-    NETLIFY_AUTH_TOKEN: '$NETLIFY_AUTH_TOKEN'
-  parallel:
-    matrix:
-      - TARGET: frontend
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_FRONTEND'
-      - TARGET: borrowing
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BORROWING'
-      - TARGET: claim
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_CLAIM'
-      - TARGET: burner-wallet
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BURNER_WALLET'
-  script:
-    - yarn build $TARGET
-    - yarn netlify deploy --dir "/src/apps/$TARGET/out" --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN" --debug
-  rules:
-    - if: $CI_MERGE_REQUEST_ID
