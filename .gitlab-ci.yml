@@ -59,4 +59,4 @@ security scan:
     - *yarn_install_tree_hash
     - docker pull "$IMAGE"
     - docker run --rm -v/var/run/docker.sock:/var/run/docker.sock
-      aquasec/trivy image --severity CRITICAL --timeout 5m "$IMAGE"
+      aquasec/trivy image --severity CRITICAL --timeout 15m "$IMAGE"
