@@ -3441,7 +3441,6 @@ __metadata:
     "@jarvis-network/crypto-utils": "*"
     "@jarvis-network/hardhat-utils": "*"
     "@jarvis-network/sol2ts-code-gen": "*"
-    "@nomiclabs/hardhat-ethers": ^2.0.1
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@solidity-parser/parser": ^0.13.2
@@ -3452,6 +3451,7 @@ __metadata:
     child-process-promise: ^2.2.1
     fs-extra: ^10.0.0
     globby: ^11.0.3
+    hardhat-deploy-ethers: ^0.3.0-beta.10
     hardhat-gas-reporter: ^1.0.4
     rmrf: ^2.0.3
     secp256k1: ^4.0.2
@@ -16329,6 +16329,16 @@ __metadata:
   version: 2.1.0
   resolution: "hard-rejection@npm:2.1.0"
   checksum: 7baaf80a0c7fff4ca79687b4060113f1529589852152fa935e6787a2bc96211e784ad4588fb3048136ff8ffc9dfcf3ae385314a5b24db32de20bea0d1597f9dc
+  languageName: node
+  linkType: hard
+
+"hardhat-deploy-ethers@npm:^0.3.0-beta.10":
+  version: 0.3.0-beta.13
+  resolution: "hardhat-deploy-ethers@npm:0.3.0-beta.13::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fhardhat-deploy-ethers%2F-%2Fhardhat-deploy-ethers-0.3.0-beta.13.tgz"
+  peerDependencies:
+    ethers: ^5.0.0
+    hardhat: ^2.0.0
+  checksum: 45206bf8d088cda08822ecf79d73e4027d8a4777cc23c3ef94568e316c45b8597130d72826fb2417edd32fe4b3dc54097161bef577663769b5c47b8262b983bb
   languageName: node
   linkType: hard
 

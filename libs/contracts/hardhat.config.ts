@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { resolve } from 'path';
 
-import '@nomiclabs/hardhat-ethers';
+import 'hardhat-deploy-ethers';
 
 import {
   addPublicNetwork,
