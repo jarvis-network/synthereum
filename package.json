@@ -156,7 +156,7 @@
     "@nrwl/tao": "12.3.4",
     "@nrwl/workspace": "12.3.4",
     "@openzeppelin/contracts": "*",
-    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "@openzeppelin/contracts-upgradeable": "4.8.2",
     "@types/bunyan": "^1.8.6",
     "@types/chai": "^4.2.14",
     "@types/chalk-pipe": "^2.0.0",
