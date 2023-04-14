@@ -106,6 +106,37 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
     assert.equal(assertion, true);
   };
 
+  const initializeLendingProtocol = async lendingId => {
+    if (lendingId == 'venus') {
+      const aggregators = [
+        '0x97371dF4492605486e23Da797fA68e55Fc38a13f',
+        '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
+        '0xc907E116054Ad103354f2D350FD2514433D57F6f',
+        '0x4746DeC9e833A82EC7C2C1356372CcF2cfcD2F3D',
+        '0xF9680D99D6C9589e2a93a78A04A279e509205945',
+        '0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7',
+        '0x0A6513e40db6EB1b165753AD52E80663aeA50545',
+        '0xd8d483d813547CfB624b8Dc33a00F2fcbCd2D428',
+        '0x5d37E4b374E6907de8Fc7fb33EE3b0af403C7403',
+        '0x73366Fe0AA0Ded304479862808e02506FE556a98',
+      ];
+      for (let j = 0; j < aggregators.length; j++) {
+        const slot = web3.utils.soliditySha3(
+          web3.utils.hexToNumberString(aggregators[j]),
+          3,
+        );
+        await network.provider.send('hardhat_setStorageAt', [
+          '0x1c312b14c129EabC4796b0165A2c470b659E5f01',
+          slot.replace('0x0', '0x'),
+          web3.utils.padLeft(
+            web3.utils.numberToHex(web3.utils.toBN(web3.utils.toWei('1'))),
+            64,
+          ),
+        ]);
+      }
+    }
+  };
+
   before(async () => {
     networkId = await web3.eth.net.getId();
     finder = await SynthereumFinder.deployed();
@@ -182,6 +213,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       jrtShare,
       { from: maintainer },
     );
+
+    await initializeLendingProtocol('venus');
   });
 
   // beforeEach(async () => {
