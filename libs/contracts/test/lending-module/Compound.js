@@ -525,7 +525,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       // check tokens have moved correctly
       assert.equal(
         userUSDCAfter.toString(),
-        userUSDCBefore.add(toBN(returnValues.tokensOut)).toString(),
+        userUSDCBefore.add(toBN(returnValues.tokensTransferred)).toString(),
       );
       assert.equal(userCUSDCBefore.toString(), userCUSDCAfter.toString());
       assert.equal(
