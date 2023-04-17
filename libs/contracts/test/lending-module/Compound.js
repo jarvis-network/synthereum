@@ -270,15 +270,14 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       await USDCInstance.approve(poolMock.address, amountFirstDeposit, {
         from: user,
       });
-      let returnValues = await poolMock.deposit.call(amountFirstDeposit, USDC, {
-        from: user,
-      });
+
       let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
       );
-      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
 
       await poolMock.deposit(amountFirstDeposit, USDC, { from: user });
+      let exchangeRate = await cUSDC.exchangeRateStored.call();
+      let returnValues = await poolMock.storageValues.call();
       let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
       );
@@ -307,7 +306,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       );
 
       // exact rate can't be retrieved
-      let assertion = expectedCUSDCOut.gt(returnValues.tokensTransferred);
+      let assertion = expectedCUSDCOut.eq(returnValues.tokensTransferred);
       assert.equal(assertion, true);
       assert.equal(returnValues.poolInterest.toString(), '0');
       assert.equal(returnValues.daoInterest.toString(), '0');
@@ -319,7 +318,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       );
       assert.equal(userCUSDCBefore.toString(), userCUSDCAfter.toString());
 
-      assertion = poolCUSDCBefore.add(expectedCUSDCOut).gt(poolCUSDCAfter);
+      assertion = poolCUSDCBefore.add(expectedCUSDCOut).eq(poolCUSDCAfter);
       assert.equal(assertion, true);
       assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
@@ -347,11 +346,6 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         from: user,
       });
 
-      let returnValues = await poolMock.deposit.call(amountDeposit, USDC, {
-        from: user,
-      });
-      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
-
       let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
 
       await repay(accounts[3]);
@@ -362,6 +356,9 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
       await poolMock.deposit(amountDeposit, USDC, { from: user });
+      let exchangeRate = await cUSDC.exchangeRateStored.call();
+      let returnValues = await poolMock.storageValues.call();
+
       let poolCUSDCAfter = await cUSDC.balanceOf.call(poolMock.address);
       let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
@@ -422,7 +419,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         userUSDCBefore.sub(toBN(amountDeposit)).toString(),
       );
       assert.equal(userCUSDCBefore.toString(), userCUSDCAfter.toString());
-      assertion = poolCUSDCBefore.add(expectedCUSDCOut).gt(poolCUSDCAfter);
+      assertion = poolCUSDCBefore.add(expectedCUSDCOut).eq(poolCUSDCAfter);
       assert.equal(assertion, true);
       assert.equal(poolUSDCBefore.toString(), poolUSDCAfter.toString());
 
@@ -482,17 +479,6 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
 
-      // withdraw
-      let returnValues = await poolMock.withdraw.call(
-        amountWithdraw,
-        user,
-        cUSDC.address,
-        {
-          from: user,
-        },
-      );
-      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
-
       let poolCUSDCBefore = await cUSDC.balanceOf.call(poolMock.address);
       let poolUnderlyingBefore = await cUSDC.balanceOfUnderlying.call(
         poolMock.address,
@@ -500,6 +486,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       await poolMock.withdraw(amountWithdraw, user, cUSDC.address, {
         from: user,
       });
+      let exchangeRate = await cUSDC.exchangeRateStored.call();
+      let returnValues = await poolMock.storageValues.call();
       await repay(accounts[3]);
 
       let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
@@ -511,16 +499,12 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
 
-      let USDCOut = toBN(amountWithdraw)
-        .mul(exchangeRate)
-        .div(toBN(Math.pow(10, 18)));
-
       let userUSDCAfter = await USDCInstance.balanceOf.call(user);
       let userCUSDCAfter = await cUSDC.balanceOf.call(user);
       let poolUSDCAfter = await USDCInstance.balanceOf.call(poolMock.address);
 
       let expectedInterest = poolUnderlyingAfter
-        .add(toBN(USDCOut))
+        .add(toBN(returnValues.tokensOut))
         .sub(toBN(poolStorageBefore.collateralDeposited));
 
       let expectedDaoInterest = expectedInterest
@@ -529,12 +513,6 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
       let expectedPoolInterest = expectedInterest.sub(expectedDaoInterest);
 
-      // check return values to pool
-      assert.equal(returnValues.tokensOut.toString(), USDCOut.toString());
-      assert.equal(
-        returnValues.tokensTransferred.toString(),
-        USDCOut.toString(),
-      );
       assertWeiDifference(
         returnValues.poolInterest.toString(),
         expectedPoolInterest.toString(),
@@ -617,7 +595,6 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         commissionReceiver,
         { from: maintainer },
       );
-      let exchangeRate = await cUSDC.exchangeRateCurrent.call();
       let commissionUSDCBefore = await USDCInstance.balanceOf.call(
         commissionReceiver,
       );
@@ -632,6 +609,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       let tx = await proxy.batchClaimCommission([poolMock.address], [amount], {
         from: maintainer,
       });
+      let exchangeRate = await cUSDC.exchangeRateStored.call();
 
       truffleAssert.eventEmitted(tx, 'BatchCommissionClaim', ev => {
         return (
@@ -937,11 +915,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
         poolMock.address,
       );
 
-      // call updateAccumulatedInterest to trigger interest split update
-      let returnValues = await poolMock.updateAccumulatedInterest.call({
-        from: user,
-      });
       await poolMock.updateAccumulatedInterest({ from: user });
+      let returnValues = await poolMock.storageValues.call();
       let poolStorage = await storageManager.getPoolStorage.call(
         poolMock.address,
       );
@@ -974,7 +949,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       // check tokens have moved correctly
       assert.equal(
         poolUnderlyingAfter.toString(),
-        poolUnderlyingBefore
+        returnValues.prevTotalCollateral
           .add(toBN(returnValues.poolInterest))
           .add(toBN(returnValues.daoInterest))
           .toString(),
@@ -1054,18 +1029,13 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
 
         // call migration from pool
         let amount = await cUSDC.balanceOf.call(poolMock.address);
-        let returnValues = await poolMock.migrateLendingModule.call(
-          cUSDC.address,
-          'new',
-          cUSDC.address,
-          amount,
-        );
         await poolMock.migrateLendingModule(
           cUSDC.address,
           'new',
           cUSDC.address,
           amount,
         );
+        let returnValues = await poolMock.migrationValues.call();
 
         let poolUnderlyingAfter = await cUSDC.balanceOfUnderlying.call(
           poolMock.address,
@@ -1093,6 +1063,7 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
           returnValues.actualTotalCollateral.toString(),
           toBN(poolUnderlyingAfter)
             .sub(toBN(expectedDaoInterest))
+            .sub(toBN(expectedPoolInterest))
             .sub(toBN(poolStorageBefore.unclaimedDaoCommission))
             .sub(toBN(poolStorageBefore.unclaimedDaoJRT))
             .toString(),

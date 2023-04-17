@@ -68,6 +68,8 @@ contract PoolLendingMock is ISynthereumDeployment {
   IERC20 synthToken;
   ILendingManager proxy;
   ILendingStorageManager storageManager;
+  ILendingManager.ReturnValues public storageValues;
+  ILendingManager.MigrateReturnValues public migrationValues;
 
   constructor(
     address collateral,
@@ -103,40 +105,50 @@ contract PoolLendingMock is ISynthereumDeployment {
 
   function deposit(uint256 amount, address token)
     external
-    returns (ILendingManager.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory values)
   {
     IERC20(token).safeTransferFrom(msg.sender, address(proxy), amount);
-    return proxy.deposit(amount);
+    values = proxy.deposit(amount);
+    storageValues = values;
+    return values;
   }
 
   function depositShouldRevert(uint256 amount)
     external
-    returns (ILendingManager.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory values)
   {
-    return proxy.deposit(amount);
+    values = proxy.deposit(amount);
+    storageValues = values;
+    return values;
   }
 
   function updateAccumulatedInterest()
     external
-    returns (ILendingManager.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory values)
   {
-    return proxy.updateAccumulatedInterest();
+    values = proxy.updateAccumulatedInterest();
+    storageValues = values;
+    return values;
   }
 
   function withdraw(
     uint256 amount,
     address recipient,
     address token
-  ) external returns (ILendingManager.ReturnValues memory) {
+  ) external returns (ILendingManager.ReturnValues memory values) {
     IERC20(token).transfer(address(proxy), amount);
-    return proxy.withdraw(amount, recipient);
+    values = proxy.withdraw(amount, recipient);
+    storageValues = values;
+    return values;
   }
 
   function withdrawShouldRevert(uint256 amount, address recipient)
     external
-    returns (ILendingManager.ReturnValues memory)
+    returns (ILendingManager.ReturnValues memory values)
   {
-    return proxy.withdraw(amount, recipient);
+    values = proxy.withdraw(amount, recipient);
+    storageValues = values;
+    return values;
   }
 
   function transferToLendingManager(uint256 bearingAmount)
@@ -155,14 +167,15 @@ contract PoolLendingMock is ISynthereumDeployment {
     string memory newLendingModuleID,
     address newInterestBearingToken,
     uint256 interestTokenAmount
-  ) external returns (ILendingManager.MigrateReturnValues memory) {
+  ) external returns (ILendingManager.MigrateReturnValues memory values) {
     IERC20(interestToken).transfer(address(proxy), interestTokenAmount);
-    return
-      proxy.migrateLendingModule(
-        newLendingModuleID,
-        newInterestBearingToken,
-        interestTokenAmount
-      );
+    values = proxy.migrateLendingModule(
+      newLendingModuleID,
+      newInterestBearingToken,
+      interestTokenAmount
+    );
+    migrationValues = values;
+    return values;
   }
 
   function migrateTotalFunds(address _recipient)
