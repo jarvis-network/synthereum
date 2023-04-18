@@ -552,7 +552,10 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if trying initialize implementation', async () => {
-      poolContractImpl = await SynthereumMultiLpLiquidityPool.deployed();
+      const hasRewards = networkId == 10 ? true : false;
+      poolContractImpl = hasRewards
+        ? await SynthereumMultiLpLiquidityPoolWithRewards.deployed()
+        : await SynthereumMultiLpLiquidityPool.deployed();
       const InitializationParams = {
         finder: syntheFinderAddress,
         version: poolVersion,
