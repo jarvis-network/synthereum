@@ -35,7 +35,7 @@ const SynthereumMultiLpLiquidityPool = artifacts.require(
 const SynthereumLiquidityPoolFactory = artifacts.require(
   'SynthereumLiquidityPoolFactory',
 );
-const CreditLineLib = artifacts.require('CreditLineLib');
+const CreditLine = artifacts.require('CreditLine');
 const CreditLineFactory = artifacts.require('CreditLineFactory');
 const CreditLineController = artifacts.require('CreditLineController');
 const SynthereumFixedRateWrapper = artifacts.require(
@@ -791,9 +791,10 @@ contract('Deployer', function (accounts) {
         creditLineController.address,
         { from: maintainer },
       );
-      const creditLinelLib = await CreditLineLib.deployed();
-      await CreditLineFactory.link(creditLinelLib);
-      const wrongFactory = await CreditLineFactory.new(newFinder.address);
+      const wrongFactory = await CreditLineFactory.new(
+        newFinder.address,
+        (await CreditLine.deployed()).address,
+      );
       await factoryVersioningInstance.setFactory(
         web3.utils.stringToHex('SelfMintingFactory'),
         2,
