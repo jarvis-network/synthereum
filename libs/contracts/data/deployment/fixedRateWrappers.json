@@ -26,5 +26,12 @@
       "jSGD": "0xa926db7a4CC0cb1736D5ac60495ca8Eb7214B503",
       "jTRY": "0x2A227fc77Bb2cf8f1881a04eCC8fA01EC57EC9fc"
     }
+  },
+  "100": {
+    "isEnabled": true,
+    "FixedRateWrapper": 1,
+    "SynthToken": {
+      "jEUR": "0x9fB1d52596c44603198fB0aee434fac3a679f702"
+    }
   }
 }

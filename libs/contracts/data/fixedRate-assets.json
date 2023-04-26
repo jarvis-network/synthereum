@@ -54,5 +54,13 @@
       "rate": "655957000000000000000",
       "collateralAddress": "0x23b8683Ff98F9E4781552DFE6f12Aa32814924e8"
     }
+  ],
+  "100": [
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "rate": "1000000000000000000",
+      "collateralAddress": "0xcB444e90D8198415266c6a2724b7900fb12FC56E"
+    }
   ]
 }

@@ -6,8 +6,8 @@
   },
   {
     "contractName": "SynthereumDeployer",
-    "address": "0x02c72Fc6C231eE0f0e313c966e2da5cb7a52B503",
-    "transactionHash": "0x79ae036f0f670e4c035f36167c649d72cc54bc8bc384335f197f4c6795776ae8"
+    "address": "0x36E574D0E3a212340129642170E5F876eE85Db12",
+    "transactionHash": "0xe06dda52a580f4f4259f7c1aec45903ed0280aa50bc96f7423e1ec533111e5ec"
   },
   {
     "contractName": "SynthereumPoolRegistry",
@@ -58,5 +58,15 @@
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x57D5b113B8D5E7c85A89B47CA12d5B5f2d420665",
     "transactionHash": "0x714865a267d34b6b95b4e02078a789faf865f0de833914d8d5d9052d64f8939f"
+  },
+  {
+    "contractName": "SynthereumFixedRateRegistry",
+    "address": "0x42CeaC642c3135883bDD5F369cB5662C4135A7f8",
+    "transactionHash": "0xddf84d015cbe6abf5794c9f322a8c808a831dca09a45f31ed1f18d2d895352b9"
+  },
+  {
+    "contractName": "SynthereumFixedRateFactory",
+    "address": "0xf3255422f8E5861F43536FFA3589EcdcE86E3e11",
+    "transactionHash": "0x323a58a0952d0d7c2ff888c221eb06ec926eedeaf8e62140201326083b16f47c"
   }
 ]
