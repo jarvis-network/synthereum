@@ -1,0 +1,19 @@
+{
+  "80001": {
+    "EURUSD": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    },
+    "CHFUSD": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    },
+    "USDCHF": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    }
+  }
+}

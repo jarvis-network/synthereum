@@ -72,33 +72,21 @@
   },
   "80001": {
     "EURUSD": {
-      "type": 0,
+      "type": 1,
       "aggregator": "0x7d7356bF6Ee5CDeC22B216581E48eCC700D0497A",
       "intermediatePairs": [],
       "convertionMetricUnit": 0
     },
     "CHFUSD": {
-      "type": 0,
-      "aggregator": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
-      "intermediatePairs": [],
-      "convertionMetricUnit": 0
-    },
-    "USDCHF": {
       "type": 1,
       "aggregator": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
       "intermediatePairs": [],
       "convertionMetricUnit": 0
     },
-    "GBPUSD": {
-      "type": 0,
-      "aggregator": "",
-      "intermediatePairs": [],
-      "convertionMetricUnit": 0
-    },
-    "EURCHF": {
+    "USDCHF": {
       "type": 2,
-      "aggregator": "",
-      "intermediatePairs": ["EURUSD", "USDCHF"],
+      "aggregator": "0xddDf19b692eDfCcD84052D74b2F53a6222F6E74F",
+      "intermediatePairs": [],
       "convertionMetricUnit": 0
     }
   },
