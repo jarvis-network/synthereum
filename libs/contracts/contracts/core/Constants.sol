@@ -26,7 +26,6 @@ library SynthereumInterfaces {
   bytes32 public constant LendingRewardsReceiver = 'LendingRewardsReceiver';
   bytes32 public constant JarvisToken = 'JarvisToken';
   bytes32 public constant DebtTokenFactory = 'DebtTokenFactory';
-  bytes32 public constant OracleRouter = 'OracleRouter';
 }
 
 library FactoryInterfaces {

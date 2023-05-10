@@ -12,6 +12,9 @@ library PreciseUnitMath {
   // The number One in precise units.
   uint256 internal constant PRECISE_UNIT = 10**18;
 
+  // The number One in precise units multiplied for 10^18.
+  uint256 internal constant DOUBLE_PRECISE_UNIT = 10**36;
+
   // Max unsigned integer value
   uint256 internal constant MAX_UINT_256 = type(uint256).max;
 

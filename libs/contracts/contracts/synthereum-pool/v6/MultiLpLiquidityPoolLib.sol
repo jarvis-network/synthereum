@@ -7,9 +7,7 @@ import {
   IMintableBurnableERC20
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumPriceFeed
-} from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {ISynthereumPriceFeed} from '../../oracle/interfaces/IPriceFeed.sol';
 import {
   ILendingManager
 } from '../../lending-module/interfaces/ILendingManager.sol';

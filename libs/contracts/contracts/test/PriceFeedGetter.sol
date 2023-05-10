@@ -2,13 +2,13 @@
 pragma solidity 0.8.9;
 
 import {
-  ISynthereumChainlinkPriceFeed
-} from '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
+  ISynthereumPriceFeedImplementation
+} from '../oracle/implementations/interfaces/IPriceFeedImplementation.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract PriceFeedGetter {
   string public constant typology = 'POOL';
-  ISynthereumChainlinkPriceFeed public priceFeed;
+  ISynthereumPriceFeedImplementation public priceFeed;
 
   string private symbol;
   IERC20 private token;
@@ -20,7 +20,7 @@ contract PriceFeedGetter {
     IERC20 _token,
     uint8 _poolVersion
   ) {
-    priceFeed = ISynthereumChainlinkPriceFeed(_priceFeed);
+    priceFeed = ISynthereumPriceFeedImplementation(_priceFeed);
     symbol = _symbol;
     token = _token;
     poolVersion = _poolVersion;

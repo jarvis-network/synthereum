@@ -3,9 +3,7 @@ pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumPriceFeed
-} from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {ISynthereumPriceFeed} from '../../oracle/interfaces/IPriceFeed.sol';
 import {
   ILendingManager
 } from '../../lending-module/interfaces/ILendingManager.sol';

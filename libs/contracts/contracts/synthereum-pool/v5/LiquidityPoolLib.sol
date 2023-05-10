@@ -16,9 +16,7 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumRegistry
 } from '../../core/registries/interfaces/IRegistry.sol';
-import {
-  ISynthereumPriceFeed
-} from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {ISynthereumPriceFeed} from '../../oracle/interfaces/IPriceFeed.sol';
 import {
   ISynthereumLiquidityPoolGeneral
 } from './interfaces/ILiquidityPoolGeneral.sol';
