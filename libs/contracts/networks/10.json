@@ -118,5 +118,10 @@
     "contractName": "AaveV3Module",
     "address": "0xC687c60106200b45c0A09c46FB117820207765f2",
     "transactionHash": "0xab6b8f6b9ed38fe8c45706ff7c2fb91c5b1b2a9c16b6a4ba2b79eebd917243b0"
+  },
+  {
+    "contractName": "JarvisBrrrrr",
+    "address": "0x58741E9137a8aF31955D42AEc99a1aD4771EeC23",
+    "transactionHash": "0xbc29959d9650516922edf6fba33f4cac41a106a8e0b4dbd4534fa3a01e8eb1c8"
   }
 ]
