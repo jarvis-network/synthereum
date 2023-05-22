@@ -7,38 +7,37 @@ const { toBN, toWei, toHex } = web3Utils;
 
 const { artifacts } = require('hardhat');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const DiaPriceFeed = artifacts.require('SynthereumDiaPriceFeed');
-const MockDiaOracle = artifacts.require('DIAOracleV2');
+const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
 const PoolMock = artifacts.require('PoolMock');
+const AggregatorV3Interface = artifacts.require('AggregatorV3Interface');
+const MockAggregator = artifacts.require('MockAggregator');
 
-contract('Synthereum DIA price feed', accounts => {
+contract('Synthereum Chainlink price feed', accounts => {
   let finderInstance, router;
   let admin = accounts[0];
   let maintainer = accounts[1];
   let general = accounts[2];
 
-  describe('DIA Provider', async () => {
-    let finderInstance, diaInstance, server, serverAddress;
+  describe('Chainlink Provider', async () => {
+    let finderInstance, chainlinkInstance, server, serverAddress;
     let priceIdentifier = 'MATIC/USD';
     let priceIdentifierHex = web3Utils.padRight(
       web3Utils.toHex('MATIC/USD'),
       64,
     );
-    let value = toWei('0.0997', 'gwei');
+    let value = toWei('0.997');
     let time;
 
     before(async () => {
       finderInstance = await SynthereumFinder.deployed();
-      diaInstance = await DiaPriceFeed.deployed();
-      server = await MockDiaOracle.new();
-      serverAddress = server.address;
-      time = (await web3.eth.getBlock('latest')).timestamp;
-      await server.setValue(priceIdentifierHex, value, time);
+      chainlinkInstance = await ChainlinkPriceFeed.deployed();
+      serverAddress = '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0'; //Matic/usd aggregator
+      server = await AggregatorV3Interface.at(serverAddress);
     });
 
     describe('Should register a pair', async () => {
       it('Can register a price feed server', async () => {
-        const tx = await diaInstance.setPair(
+        const tx = await chainlinkInstance.setPair(
           priceIdentifier,
           1,
           serverAddress,
@@ -57,10 +56,10 @@ contract('Synthereum DIA price feed', accounts => {
             ev.extraData == null
           );
         });
-        const pairFromString = await diaInstance.methods['pair(string)'](
+        const pairFromString = await chainlinkInstance.methods['pair(string)'](
           priceIdentifier,
         );
-        const pairFromHex = await diaInstance.methods['pair(bytes32)'](
+        const pairFromHex = await chainlinkInstance.methods['pair(bytes32)'](
           priceIdentifierHex,
         );
         assert.equal(
@@ -68,10 +67,10 @@ contract('Synthereum DIA price feed', accounts => {
           JSON.stringify(pairFromHex),
           'wrong pairs',
         );
-        const isSupportedFromString = await diaInstance.methods[
+        const isSupportedFromString = await chainlinkInstance.methods[
           'isPriceSupported(string)'
         ](priceIdentifier);
-        const isSupportedFromHex = await diaInstance.methods[
+        const isSupportedFromHex = await chainlinkInstance.methods[
           'isPriceSupported(bytes32)'
         ](priceIdentifierHex);
         assert.equal(
@@ -87,15 +86,22 @@ contract('Synthereum DIA price feed', accounts => {
       });
       it('Can revert if not type passed', async () => {
         await truffleAssert.reverts(
-          diaInstance.setPair(priceIdentifier, 0, serverAddress, 0, '0x', {
-            from: maintainer,
-          }),
+          chainlinkInstance.setPair(
+            priceIdentifier,
+            0,
+            serverAddress,
+            0,
+            '0x',
+            {
+              from: maintainer,
+            },
+          ),
           'No type passed',
         );
       });
       it('Can revert if not type passed', async () => {
         await truffleAssert.reverts(
-          diaInstance.setPair(priceIdentifier, 1, accounts[3], 0, '0x', {
+          chainlinkInstance.setPair(priceIdentifier, 1, accounts[3], 0, '0x', {
             from: maintainer,
           }),
           'Source is not a contract',
@@ -103,9 +109,16 @@ contract('Synthereum DIA price feed', accounts => {
       });
       it('Can revert if sender is not the maintainer', async () => {
         await truffleAssert.reverts(
-          diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', {
-            from: general,
-          }),
+          chainlinkInstance.setPair(
+            priceIdentifier,
+            1,
+            serverAddress,
+            0,
+            '0x',
+            {
+              from: general,
+            },
+          ),
           'Sender must be the maintainer',
         );
       });
@@ -113,33 +126,40 @@ contract('Synthereum DIA price feed', accounts => {
 
     describe('Should remove a pair', async () => {
       before(async () => {
-        await diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', {
-          from: maintainer,
-        });
-        const isSupportedFromHex = await diaInstance.methods[
+        await chainlinkInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          {
+            from: maintainer,
+          },
+        );
+        const isSupportedFromHex = await chainlinkInstance.methods[
           'isPriceSupported(bytes32)'
         ](priceIdentifierHex);
         assert.equal(isSupportedFromHex, true, 'wrong supported');
       });
       it('Can remove a pair', async () => {
-        const tx = await diaInstance.removePair(priceIdentifier, {
+        const tx = await chainlinkInstance.removePair(priceIdentifier, {
           from: maintainer,
         });
         truffleAssert.eventEmitted(tx, 'RemovePair', ev => {
           return ev.priceIdentifier == priceIdentifierHex;
         });
         await truffleAssert.reverts(
-          diaInstance.methods['pair(string)'](priceIdentifier),
+          chainlinkInstance.methods['pair(string)'](priceIdentifier),
           'Pair not supported',
         );
         await truffleAssert.reverts(
-          diaInstance.methods['pair(bytes32)'](priceIdentifierHex),
+          chainlinkInstance.methods['pair(bytes32)'](priceIdentifierHex),
           'Pair not supported',
         );
-        const isSupportedFromString = await diaInstance.methods[
+        const isSupportedFromString = await chainlinkInstance.methods[
           'isPriceSupported(string)'
         ](priceIdentifier);
-        const isSupportedFromHex = await diaInstance.methods[
+        const isSupportedFromHex = await chainlinkInstance.methods[
           'isPriceSupported(bytes32)'
         ](priceIdentifierHex);
         assert.equal(
@@ -151,7 +171,7 @@ contract('Synthereum DIA price feed', accounts => {
       });
       it('Can revert if pair not supported', async () => {
         await truffleAssert.reverts(
-          diaInstance.removePair('CHF/USD', {
+          chainlinkInstance.removePair('CHF/USD', {
             from: maintainer,
           }),
           'Price identifier does not exist',
@@ -159,7 +179,7 @@ contract('Synthereum DIA price feed', accounts => {
       });
       it('Can revert if sender is not the maintainer', async () => {
         await truffleAssert.reverts(
-          diaInstance.removePair(priceIdentifier, {
+          chainlinkInstance.removePair(priceIdentifier, {
             from: general,
           }),
           'Sender must be the maintainer',
@@ -169,13 +189,11 @@ contract('Synthereum DIA price feed', accounts => {
 
     describe('Should get a price', async () => {
       let value;
-      let expectedValue;
+      let decimals;
       let poolMock;
       before(async () => {
-        value = web3Utils.toWei('0.15', 'gwei');
-        expectedValue = web3Utils.toWei('1.5');
-        const timestmp = (await web3.eth.getBlock('latest')).timestamp;
-        await server.setValue(priceIdentifier, value, timestmp);
+        value = (await server.latestRoundData.call())[1];
+        decimals = await server.decimals.call();
         poolMock = await PoolMock.new(1, ZERO_ADDRESS, '', ZERO_ADDRESS);
         await finderInstance.changeImplementationAddress(
           web3Utils.stringToHex('PriceFeed'),
@@ -184,17 +202,24 @@ contract('Synthereum DIA price feed', accounts => {
         );
       });
       it('Can get latest standard price', async () => {
-        await diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', {
-          from: maintainer,
-        });
-        const priceFromString = await diaInstance.methods[
+        await chainlinkInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          {
+            from: maintainer,
+          },
+        );
+        const priceFromString = await chainlinkInstance.methods[
           'getLatestPrice(string)'
         ](priceIdentifier);
         const priceFromHex = await poolMock.getRate(
-          diaInstance.address,
+          chainlinkInstance.address,
           priceIdentifierHex,
         );
-        const priceFromHexOffchain = await diaInstance.methods[
+        const priceFromHexOffchain = await chainlinkInstance.methods[
           'getLatestPrice(bytes32)'
         ](priceIdentifierHex);
         assert.equal(
@@ -207,15 +232,18 @@ contract('Synthereum DIA price feed', accounts => {
           priceFromHexOffchain.toString(),
           'Different prices',
         );
+        const result = web3Utils
+          .toBN(value)
+          .mul(web3Utils.toBN(Math.pow(10, 18 - decimals)));
         assert.equal(
-          expectedValue.toString(),
+          result.toString(),
           priceFromHex.toString(),
           'Different price value',
         );
       });
       it('Can get latest standard price with conversion unit', async () => {
         const conversionUnit = web3Utils.toWei('1.5');
-        await diaInstance.setPair(
+        await chainlinkInstance.setPair(
           priceIdentifier,
           1,
           serverAddress,
@@ -225,10 +253,14 @@ contract('Synthereum DIA price feed', accounts => {
             from: maintainer,
           },
         );
-        const priceFromString = await diaInstance.methods[
+        const priceFromString = await chainlinkInstance.methods[
           'getLatestPrice(string)'
         ](priceIdentifier);
-        const result = web3Utils.toWei('1');
+        const result = web3Utils
+          .toBN(value)
+          .mul(web3Utils.toBN(Math.pow(10, 18 - decimals)))
+          .mul(web3Utils.toBN(web3Utils.toWei('1')))
+          .div(web3Utils.toBN(conversionUnit));
         assert.equal(
           priceFromString.toString(),
           result.toString(),
@@ -236,14 +268,21 @@ contract('Synthereum DIA price feed', accounts => {
         );
       });
       it('Can get latest reverse price', async () => {
-        await diaInstance.setPair(priceIdentifier, 2, serverAddress, 0, '0x', {
-          from: maintainer,
-        });
-        const priceFromString = await diaInstance.methods[
+        await chainlinkInstance.setPair(
+          priceIdentifier,
+          2,
+          serverAddress,
+          0,
+          '0x',
+          {
+            from: maintainer,
+          },
+        );
+        const priceFromString = await chainlinkInstance.methods[
           'getLatestPrice(string)'
         ](priceIdentifier);
         const priceFromHex = await poolMock.getRate(
-          diaInstance.address,
+          chainlinkInstance.address,
           priceIdentifierHex,
         );
         assert.equal(
@@ -253,7 +292,11 @@ contract('Synthereum DIA price feed', accounts => {
         );
         const result = web3Utils
           .toBN(web3Utils.toWei(web3Utils.toWei('1').toString()))
-          .div(web3Utils.toBN(expectedValue));
+          .div(
+            web3Utils
+              .toBN(value)
+              .mul(web3Utils.toBN(Math.pow(10, 18 - decimals))),
+          );
         assert.equal(
           result.toString(),
           priceFromHex.toString(),
@@ -262,7 +305,7 @@ contract('Synthereum DIA price feed', accounts => {
       });
       it('Can get latest reverse price with conversion unit', async () => {
         const conversionUnit = web3Utils.toWei('1.5');
-        await diaInstance.setPair(
+        await chainlinkInstance.setPair(
           priceIdentifier,
           2,
           serverAddress,
@@ -272,11 +315,11 @@ contract('Synthereum DIA price feed', accounts => {
             from: maintainer,
           },
         );
-        const priceFromString = await diaInstance.methods[
+        const priceFromString = await chainlinkInstance.methods[
           'getLatestPrice(string)'
         ](priceIdentifier);
         const priceFromHex = await poolMock.getRate(
-          diaInstance.address,
+          chainlinkInstance.address,
           priceIdentifierHex,
         );
         assert.equal(
@@ -284,7 +327,11 @@ contract('Synthereum DIA price feed', accounts => {
           priceFromHex.toString(),
           'Different prices',
         );
-        const convertedResult = web3Utils.toWei('1');
+        const convertedResult = web3Utils
+          .toBN(value)
+          .mul(web3Utils.toBN(Math.pow(10, 18 - decimals)))
+          .mul(web3Utils.toBN(web3Utils.toWei('1')))
+          .div(web3Utils.toBN(conversionUnit));
         const result = web3Utils
           .toBN(web3Utils.toWei(web3Utils.toWei('1').toString()))
           .div(web3Utils.toBN(convertedResult));
@@ -294,10 +341,37 @@ contract('Synthereum DIA price feed', accounts => {
           'Different price value',
         );
       });
+      it('Can revert if price is negative', async () => {
+        const mockServer = await MockAggregator.new(8, -100);
+        await chainlinkInstance.setPair(
+          priceIdentifier,
+          1,
+          mockServer.address,
+          0,
+          '0x',
+          {
+            from: maintainer,
+          },
+        );
+        await truffleAssert.reverts(
+          chainlinkInstance.methods['getLatestPrice(string)'](priceIdentifier),
+          'Negative value',
+        );
+        await chainlinkInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          {
+            from: maintainer,
+          },
+        );
+      });
       it('Can revert if identifier not supported', async () => {
         const wrongIdentifier = 'CHFUSD';
         await truffleAssert.reverts(
-          diaInstance.methods['getLatestPrice(string)'](wrongIdentifier),
+          chainlinkInstance.methods['getLatestPrice(string)'](wrongIdentifier),
           'Pair not supported',
         );
       });
@@ -309,13 +383,16 @@ contract('Synthereum DIA price feed', accounts => {
           ZERO_ADDRESS,
         );
         await truffleAssert.reverts(
-          tempMockPool.getRate(diaInstance.address, priceIdentifierHex),
+          tempMockPool.getRate(chainlinkInstance.address, priceIdentifierHex),
           'Only price-feed',
         );
       });
       it('Can revert if price is get from string by a contract', async () => {
         await truffleAssert.reverts(
-          poolMock.getRateFromString(diaInstance.address, priceIdentifierHex),
+          poolMock.getRateFromString(
+            chainlinkInstance.address,
+            priceIdentifierHex,
+          ),
           'Only off-chain call',
         );
       });

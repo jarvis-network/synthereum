@@ -4,6 +4,13 @@ pragma solidity 0.8.9;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
 
+interface IPriceFeedExtended is ISynthereumPriceFeed {
+  function getLatestPrice(string calldata _priceIdentifier)
+    external
+    view
+    returns (uint256 price);
+}
+
 contract PoolMock {
   uint8 private poolVersion;
   IERC20 private collateralCurrency;
@@ -44,5 +51,13 @@ contract PoolMock {
     returns (uint256)
   {
     return ISynthereumPriceFeed(priceFeed).getLatestPrice(identifier);
+  }
+
+  function getRateFromString(address priceFeed, string calldata identifier)
+    external
+    view
+    returns (uint256)
+  {
+    return IPriceFeedExtended(priceFeed).getLatestPrice(identifier);
   }
 }
