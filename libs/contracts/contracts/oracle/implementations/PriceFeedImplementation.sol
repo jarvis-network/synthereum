@@ -210,7 +210,7 @@ abstract contract SynthereumPriceFeedImplementation is
    * @notice Get last price for a given price identifier
    * @notice Only synthereum price-feed and off-chain calls can call this function
    * @param _priceId HexName of price identifier
-   * @return price Oracle price
+   * @return Oracle price
    */
   function getLatestPrice(bytes32 _priceId)
     external
@@ -218,25 +218,25 @@ abstract contract SynthereumPriceFeedImplementation is
     virtual
     override
     onlyPriceFeed
-    returns (uint256 price)
+    returns (uint256)
   {
-    price = _getLatestPrice(_priceId);
+    return _getLatestPrice(_priceId);
   }
 
   /**
    * @notice Get last price for a given price identifier
    * @notice This function can be called just for off-chain use
    * @param _priceId Name of price identifier
-   * @return price Oracle price
+   * @return Oracle price
    */
   function getLatestPrice(string calldata _priceId)
     external
     view
     virtual
     onlyCall
-    returns (uint256 price)
+    returns (uint256)
   {
-    price = _getLatestPrice(_priceId.stringToBytes32());
+    return _getLatestPrice(_priceId.stringToBytes32());
   }
 
   //----------------------------------------
@@ -245,15 +245,15 @@ abstract contract SynthereumPriceFeedImplementation is
   /**
    * @notice Get the pair data for a given pair identifier, revert if not supported
    * @param _identifier HexName of the pair identifier
-   * @return pair Pair data
+   * @return pairData Pair data
    */
   function _pair(bytes32 _identifier)
     internal
     view
-    returns (PairData memory pair)
+    returns (PairData memory pairData)
   {
-    pair = pairs[_identifier];
-    require(pair.priceType != Type.UNSUPPORTED, 'Pair not supported');
+    pairData = pairs[_identifier];
+    require(pairData.priceType != Type.UNSUPPORTED, 'Pair not supported');
   }
 
   /**
@@ -293,17 +293,17 @@ abstract contract SynthereumPriceFeedImplementation is
    * @param _source Source contract from which get the price
    * @param _conversionUnit Conversion rate
    * @param _extraData Extra data of the pair for getting info
-   * @return price 18 decimals scaled price of the pair
+   * @return 18 decimals scaled price of the pair
    */
   function _getStandardPrice(
     bytes32 _priceId,
     address _source,
     uint256 _conversionUnit,
     bytes memory _extraData
-  ) internal view virtual returns (uint256 price) {
+  ) internal view virtual returns (uint256) {
     (uint256 unscaledPrice, uint8 decimals) =
       _getOracleLatestRoundPrice(_priceId, _source, _extraData);
-    price = _getScaledValue(unscaledPrice, decimals, _conversionUnit);
+    return _getScaledValue(unscaledPrice, decimals, _conversionUnit);
   }
 
   /**
@@ -312,17 +312,17 @@ abstract contract SynthereumPriceFeedImplementation is
    * @param _source Source contract from which get the price
    * @param _conversionUnit Conversion rate
    * @param _extraData Extra data of the pair for getting info
-   * @return price 18 decimals scaled price of the pair
+   * @return 18 decimals scaled price of the pair
    */
   function _getReversePrice(
     bytes32 _priceId,
     address _source,
     uint256 _conversionUnit,
     bytes memory _extraData
-  ) internal view virtual returns (uint256 price) {
+  ) internal view virtual returns (uint256) {
     (uint256 unscaledPrice, uint8 decimals) =
       _getOracleLatestRoundPrice(_priceId, _source, _extraData);
-    price =
+    return
       PreciseUnitMath.DOUBLE_PRECISE_UNIT /
       _getScaledValue(unscaledPrice, decimals, _conversionUnit);
   }
@@ -365,14 +365,14 @@ abstract contract SynthereumPriceFeedImplementation is
    * @notice Covert the price to a different metric unit - example troyounce to grams
    * @param _price Scaled price before convertion
    * @param _conversionUnit The metric unit convertion rate
-   * @return convertedPrice Price after conversion
+   * @return Price after conversion
    */
   function _convertMetricUnitPrice(uint256 _price, uint256 _conversionUnit)
     internal
     pure
     virtual
-    returns (uint256 convertedPrice)
+    returns (uint256)
   {
-    convertedPrice = _price.div(_conversionUnit);
+    return _price.div(_conversionUnit);
   }
 }

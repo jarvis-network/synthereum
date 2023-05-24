@@ -312,57 +312,53 @@ contract SynthereumPriceFeed is
   /**
    * @notice Return if a price identifier is supported
    * @param _priceId HexName of price identifier
-   * @return isSupported True fi supported, otherwise false
+   * @return True fi supported, otherwise false
    */
-  function isPriceSupported(bytes32 _priceId)
-    external
-    view
-    returns (bool isSupported)
-  {
-    isSupported = _isPriceSupported(_priceId);
+  function isPriceSupported(bytes32 _priceId) external view returns (bool) {
+    return _isPriceSupported(_priceId);
   }
 
   /**
    * @notice Return if a price identifier is supported
    * @param _priceId Name of price identifier
-   * @return isSupported True fi supported, otherwise false
+   * @return True fi supported, otherwise false
    */
   function isPriceSupported(string calldata _priceId)
     external
     view
-    returns (bool isSupported)
+    returns (bool)
   {
-    isSupported = _isPriceSupported(_priceId.stringToBytes32());
+    return _isPriceSupported(_priceId.stringToBytes32());
   }
 
   /**
    * @notice Get last price for a given price identifier
    * @notice Only registered pools, registered self-minting derivatives and off-chain calls can call this function
    * @param _priceId HexName of price identifier
-   * @return price Oracle price
+   * @return Oracle price
    */
   function getLatestPrice(bytes32 _priceId)
     external
     view
     onlyPoolsOrSelfMinting
-    returns (uint256 price)
+    returns (uint256)
   {
-    price = _getLatestPrice(_priceId);
+    return _getLatestPrice(_priceId);
   }
 
   /**
    * @notice Get last price for a given price identifier
    * @notice This function can be called just for off-chain use
    * @param _priceId Name of price identifier
-   * @return price Oracle price
+   * @return Oracle price
    */
   function getLatestPrice(string calldata _priceId)
     external
     view
     onlyCall
-    returns (uint256 price)
+    returns (uint256)
   {
-    price = _getLatestPrice(_priceId.stringToBytes32());
+    return _getLatestPrice(_priceId.stringToBytes32());
   }
 
   /**
@@ -473,23 +469,25 @@ contract SynthereumPriceFeed is
   /**
    * @notice Get the pair data for a given pair identifier, revert if not supported
    * @param _identifier HexName of the pair identifier
-   * @return pair Pair data
+   * @return Pair data
    */
   function _pair(bytes32 _identifier)
     internal
     view
-    returns (PairOutput memory pair)
+    returns (PairOutput memory)
   {
     Pair storage pairHex = pairs[_identifier];
-    pair.priceType = pairHex.priceType;
-    require(pair.priceType != Type.UNSUPPORTED, 'Pair not supported');
-    pair.oracle = pairHex.oracle.bytes32ToString();
+    PairOutput memory pairData;
+    pairData.priceType = pairHex.priceType;
+    require(pairData.priceType != Type.UNSUPPORTED, 'Pair not supported');
+    pairData.oracle = pairHex.oracle.bytes32ToString();
     uint256 intermediatePairsNumber = pairHex.intermediatePairs.length;
-    pair.intermediatePairs = new string[](intermediatePairsNumber);
+    pairData.intermediatePairs = new string[](intermediatePairsNumber);
     for (uint256 j = 0; j < intermediatePairsNumber; j++) {
-      pair.intermediatePairs[j] = pairHex.intermediatePairs[j]
+      pairData.intermediatePairs[j] = pairHex.intermediatePairs[j]
         .bytes32ToString();
     }
+    return pairData;
   }
 
   /**
@@ -526,21 +524,18 @@ contract SynthereumPriceFeed is
   /**
    * @notice Get last price for a given price identifier
    * @param _priceId HexName of price identifier
-   * @return price Oracle price
+   * @return Oracle price
    */
-  function _getLatestPrice(bytes32 _priceId)
-    internal
-    view
-    returns (uint256 price)
-  {
+  function _getLatestPrice(bytes32 _priceId) internal view returns (uint256) {
     Type priceType = pairs[_priceId].priceType;
     if (priceType == Type.STANDARD) {
-      price = _getStandardPrice(
-        _priceId,
-        oracleToImplementation[pairs[_priceId].oracle]
-      );
+      return
+        _getStandardPrice(
+          _priceId,
+          oracleToImplementation[pairs[_priceId].oracle]
+        );
     } else if (priceType == Type.COMPUTED) {
-      price = _getComputedPrice(pairs[_priceId].intermediatePairs);
+      return _getComputedPrice(pairs[_priceId].intermediatePairs);
     } else {
       revert('Pair not supported');
     }
@@ -550,14 +545,14 @@ contract SynthereumPriceFeed is
    * @notice Retrieve the price of a given standard pair
    * @param _priceId HexName of price identifier
    * @param _oracleImpl Synthereum implementation of the oracle
-   * @return price 18 decimals scaled price of the pair
+   * @return 18 decimals scaled price of the pair
    */
   function _getStandardPrice(bytes32 _priceId, address _oracleImpl)
     internal
     view
-    returns (uint256 price)
+    returns (uint256)
   {
-    price = ISynthereumPriceFeed(_oracleImpl).getLatestPrice(_priceId);
+    return ISynthereumPriceFeed(_oracleImpl).getLatestPrice(_priceId);
   }
 
   /**
