@@ -42,6 +42,24 @@ contract PoolRegistryMock {
   }
 
   /**
+   * @notice Allow the deployer to unregister an element
+   * @param syntheticTokenSymbol Symbol of the syntheticToken
+   * @param collateralToken Collateral ERC20 token of the element deployed
+   * @param version Version of the element deployed
+   * @param element Address of the element deployed
+   */
+  function unregister(
+    string calldata syntheticTokenSymbol,
+    IERC20 collateralToken,
+    uint8 version,
+    address element
+  ) external {
+    symbolToElements[syntheticTokenSymbol][collateralToken][version].remove(
+      element
+    );
+  }
+
+  /**
    * @notice Returns if a particular element exists or not
    * @param syntheticTokenSymbol Synthetic token symbol of the element
    * @param collateralToken ERC20 contract of collateral currency
