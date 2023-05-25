@@ -26,6 +26,7 @@ const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const CreditLine = artifacts.require('CreditLine');
 const CreditLineLib = artifacts.require('CreditLineLib');
 const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
@@ -109,15 +110,24 @@ contract('Self-minting controller', function (accounts) {
     });
 
     mockAggregator = await MockAggregator.new(8, 140000000);
+    priceFeed = await SynthereumPriceFeed.deployed();
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setPair(
-      0,
-      utf8ToHex(priceFeedIdentifier),
-      mockAggregator.address,
-      [],
-      0,
-      { from: roles.maintainer },
+    await priceFeed.addOracle(
+      'chainlink',
+      synthereumChainlinkPriceFeed.address,
+      { from: maintainer },
     );
+    await synthereumChainlinkPriceFeed.setPair(
+      priceFeedIdentifier,
+      1,
+      mockAggregator.address,
+      0,
+      '0x',
+      { from: maintainer },
+    );
+    await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {
+      from: maintainer,
+    });
 
     await tokenCurrency.grantRole(
       ZERO_ADDRESS,

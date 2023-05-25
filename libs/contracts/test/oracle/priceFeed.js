@@ -14,6 +14,7 @@ const PoolRegistryMock = artifacts.require('PoolRegistryMock');
 const PriceFeed = artifacts.require('SynthereumPriceFeed');
 const DIAOracleV2 = artifacts.require('DIAOracleV2');
 const SynthereumDiaPriceFeed = artifacts.require('SynthereumDiaPriceFeed');
+const oracle = require('../../data/test/oracle.json');
 
 contract('Synthereum price feed', accounts => {
   let finderInstance, priceFeed;
@@ -33,14 +34,16 @@ contract('Synthereum price feed', accounts => {
   let diaPrice;
   let diaServer;
   let diaOracle;
+  let networkId;
 
   before(async () => {
+    networkId = await web3.eth.net.getId();
     finderInstance = await SynthereumFinder.deployed();
     priceFeed = await PriceFeed.deployed();
     chainlinkImpl = await ChainlinkPriceFeed.deployed();
     priceIdentifier = 'MATICUSD';
     priceIdentifierHex = web3Utils.padRight(web3Utils.toHex('MATICUSD'), 64);
-    chainlinkServer = '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0';
+    chainlinkServer = oracle[networkId].chainlinkServer;
     await chainlinkImpl.setPair(priceIdentifier, 1, chainlinkServer, 0, '0x', {
       from: maintainer,
     });

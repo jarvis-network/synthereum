@@ -16,6 +16,7 @@ const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 const SynthereumLiquidityPoolLib = artifacts.require(
   'SynthereumLiquidityPoolLib',
 );
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
@@ -176,8 +177,17 @@ contract('LiquidityPool', function (accounts) {
   };
 
   before(async () => {
+    finderInstance = await SynthereumFinder.deployed();
+    finder = finderInstance.address;
     liquidityPoolLibInstance = await SynthereumLiquidityPoolLib.new();
     await SynthereumLiquidityPool.link(liquidityPoolLibInstance);
+    priceFeedInstance = await SynthereumPriceFeed.deployed();
+    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    await priceFeedInstance.addOracle(
+      'chainlink',
+      synthereumChainlinkPriceFeed.address,
+      { from: maintainer },
+    );
   });
 
   beforeEach(async () => {
@@ -190,22 +200,22 @@ contract('LiquidityPool', function (accounts) {
       { from: admin },
     );
     syntheticToken = synthTokenInstance.address;
-    finderInstance = await SynthereumFinder.deployed();
-    finder = finderInstance.address;
-    priceFeedInstance = await SynthereumChainlinkPriceFeed.deployed();
     aggregatorInstance = await MockAggregator.new(
       8,
       web3Utils.toWei('120', 'mwei'),
     );
     aggregatorInstanceAddress = aggregatorInstance.address;
-    await priceFeedInstance.setPair(
-      0,
-      priceIdentifier,
+    await synthereumChainlinkPriceFeed.setPair(
+      'EUR/USD',
+      1,
       aggregatorInstanceAddress,
-      [],
       0,
+      '0x',
       { from: maintainer },
     );
+    await priceFeedInstance.setPair('EUR/USD', 1, 'chainlink', [], {
+      from: maintainer,
+    });
     params = {
       finder,
       version,
@@ -903,14 +913,17 @@ contract('LiquidityPool', function (accounts) {
       destSynthTokenAddress = destSynthTokenInstance.address;
       destAggregatorInstance = await MockAggregator.new(8, destRate);
       destAggregatorAddress = destAggregatorInstance.address;
-      await priceFeedInstance.setPair(
-        0,
-        destPriceFeedIdentifier,
+      await synthereumChainlinkPriceFeed.setPair(
+        'GBP/USD',
+        1,
         destAggregatorAddress,
-        [],
         0,
+        '0x',
         { from: maintainer },
       );
+      await priceFeedInstance.setPair('GBP/USD', 1, 'chainlink', [], {
+        from: maintainer,
+      });
       const destParams = {
         finder,
         version,
@@ -3802,14 +3815,17 @@ contract('LiquidityPool', function (accounts) {
       destSynthTokenAddress = destSynthTokenInstance.address;
       destAggregatorInstance = await MockAggregator.new(8, destRate);
       destAggregatorAddress = destAggregatorInstance.address;
-      await priceFeedInstance.setPair(
-        0,
-        destPriceFeedIdentifier,
+      await synthereumChainlinkPriceFeed.setPair(
+        'GBP/USD',
+        1,
         destAggregatorAddress,
-        [],
         0,
+        '0x',
         { from: maintainer },
       );
+      await priceFeedInstance.setPair('GBP/USD', 1, 'chainlink', [], {
+        from: maintainer,
+      });
       const wrongParams = {
         finder,
         version,
@@ -4194,14 +4210,17 @@ contract('LiquidityPool', function (accounts) {
       const destSynthTokenAddress = destSynthTokenInstance.address;
       const destAggregatorInstance = await MockAggregator.new(8, destRate);
       const destAggregatorAddress = destAggregatorInstance.address;
-      await priceFeedInstance.setPair(
-        0,
-        destPriceFeedIdentifier,
+      await synthereumChainlinkPriceFeed.setPair(
+        'GBP/USD',
+        1,
         destAggregatorAddress,
-        [],
         0,
+        '0x',
         { from: maintainer },
       );
+      await priceFeedInstance.setPair('GBP/USD', 1, 'chainlink', [], {
+        from: maintainer,
+      });
       const destParams = {
         finder,
         version,

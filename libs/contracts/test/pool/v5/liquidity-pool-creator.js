@@ -19,6 +19,7 @@ const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
 const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
@@ -89,15 +90,24 @@ contract('LiquidityPoolCreator', function (accounts) {
         { from: maintainer },
       );
       mockAggregator = await MockAggregator.new(8, 140000000);
+      priceFeed = await SynthereumPriceFeed.deployed();
       synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-      await synthereumChainlinkPriceFeed.setPair(
-        0,
-        web3.utils.utf8ToHex(identifier),
-        mockAggregator.address,
-        [],
-        0,
+      await priceFeed.addOracle(
+        'chainlink',
+        synthereumChainlinkPriceFeed.address,
         { from: maintainer },
       );
+      await synthereumChainlinkPriceFeed.setPair(
+        identifier,
+        1,
+        mockAggregator.address,
+        0,
+        '0x',
+        { from: maintainer },
+      );
+      await priceFeed.setPair(identifier, 1, 'chainlink', [], {
+        from: maintainer,
+      });
     });
     it('Can deploy a new liquidity pool with new synthetic token', async () => {
       const params = {

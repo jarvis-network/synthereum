@@ -38,6 +38,7 @@ const CreditLineFactory = artifacts.require('CreditLineFactory');
 const CreditLineController = artifacts.require('CreditLineController');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
@@ -106,15 +107,24 @@ contract('Factories', function (accounts) {
     networkId = await web3.eth.net.getId();
     collateralAddress = PoolV6Data[networkId].collateral;
     mockAggregator = await MockAggregator.new(8, 120000000);
+    priceFeed = await SynthereumPriceFeed.deployed();
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setPair(
-      0,
-      web3.utils.utf8ToHex(priceFeedIdentifier),
-      mockAggregator.address,
-      [],
-      0,
+    await priceFeed.addOracle(
+      'chainlink',
+      synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    await synthereumChainlinkPriceFeed.setPair(
+      priceFeedIdentifier,
+      1,
+      mockAggregator.address,
+      0,
+      '0x',
+      { from: maintainer },
+    );
+    await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {
+      from: maintainer,
+    });
     collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
     await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
       from: maintainer,

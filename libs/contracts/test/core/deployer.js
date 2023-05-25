@@ -46,6 +46,7 @@ const SynthereumFixedRateFactory = artifacts.require(
 );
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
@@ -105,6 +106,7 @@ contract('Deployer', function (accounts) {
   let identifierWhitelistInstance;
   let factoryVersioningInstance;
   let mockAggregator;
+  let priceFeed;
   let synthereumChainlinkPriceFeed;
   let tokenFactory;
   let forwarderInstance;
@@ -115,15 +117,24 @@ contract('Deployer', function (accounts) {
     const networkId = await web3.eth.net.getId();
     collateralAddress = PoolV6Data[networkId].collateral;
     mockAggregator = await MockAggregator.new(8, 120000000);
+    priceFeed = await SynthereumPriceFeed.deployed();
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setPair(
-      0,
-      web3.utils.utf8ToHex(priceIdentifier),
-      mockAggregator.address,
-      [],
-      0,
+    await priceFeed.addOracle(
+      'chainlink',
+      synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    await synthereumChainlinkPriceFeed.setPair(
+      priceIdentifier,
+      1,
+      mockAggregator.address,
+      0,
+      '0x',
+      { from: maintainer },
+    );
+    await priceFeed.setPair(priceIdentifier, 1, 'chainlink', [], {
+      from: maintainer,
+    });
     collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
     await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
       from: maintainer,
@@ -638,12 +649,21 @@ contract('Deployer', function (accounts) {
       ).address;
       mockAggregator = await MockAggregator.new(8, 140000000);
       await synthereumChainlinkPriceFeed.setPair(
-        0,
-        web3.utils.utf8ToHex(selfMintingPriceFeedIdentifier),
+        selfMintingPriceFeedIdentifier,
+        1,
         mockAggregator.address,
-        [],
         0,
+        '0x',
         { from: maintainer },
+      );
+      await priceFeed.setPair(
+        selfMintingPriceFeedIdentifier,
+        1,
+        'chainlink',
+        [],
+        {
+          from: maintainer,
+        },
       );
       await collateralWhitelistInstance.addToWhitelist(
         selfMintingCollateralAddress,
@@ -874,11 +894,21 @@ contract('Deployer', function (accounts) {
       ).address;
       mockAggregator = await MockAggregator.new(8, 140000000);
       await synthereumChainlinkPriceFeed.setPair(
-        0,
-        web3.utils.utf8ToHex(selfMintingPriceFeedIdentifier),
+        selfMintingPriceFeedIdentifier,
+        1,
         mockAggregator.address,
-        [],
+        0,
+        '0x',
         { from: maintainer },
+      );
+      await priceFeed.setPair(
+        selfMintingPriceFeedIdentifier,
+        1,
+        'chainlink',
+        [],
+        {
+          from: maintainer,
+        },
       );
       await collateralWhitelistInstance.addToWhitelist(
         selfMintingCollateralAddress,

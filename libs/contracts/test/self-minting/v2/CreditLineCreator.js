@@ -17,6 +17,7 @@ const SynthereumFactoryVersioning = artifacts.require(
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
@@ -95,15 +96,24 @@ contract('Self-minting creator', function (accounts) {
       { from: roles.maintainer },
     );
     mockAggregator = await MockAggregator.new(8, 140000000);
+    priceFeed = await SynthereumPriceFeed.deployed();
     synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
-    await synthereumChainlinkPriceFeed.setPair(
-      0,
-      priceFeedIdentifier,
-      mockAggregator.address,
-      [],
-      0,
+    await priceFeed.addOracle(
+      'chainlink',
+      synthereumChainlinkPriceFeed.address,
       { from: roles.maintainer },
     );
+    await synthereumChainlinkPriceFeed.setPair(
+      'EURUSD',
+      1,
+      mockAggregator.address,
+      0,
+      '0x',
+      { from: roles.maintainer },
+    );
+    await priceFeed.setPair('EURUSD', 1, 'chainlink', [], {
+      from: roles.maintainer,
+    });
   });
   describe('Deploy self-minting derivative', async () => {
     it('Can deploy', async () => {

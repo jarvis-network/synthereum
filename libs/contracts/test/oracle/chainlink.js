@@ -11,10 +11,9 @@ const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
 const PoolMock = artifacts.require('PoolMock');
 const AggregatorV3Interface = artifacts.require('AggregatorV3Interface');
 const MockAggregator = artifacts.require('MockAggregator');
+const oracle = require('../../data/test/oracle.json');
 
 contract('Synthereum Chainlink price feed', accounts => {
-  let finderInstance, router;
-  let admin = accounts[0];
   let maintainer = accounts[1];
   let general = accounts[2];
 
@@ -25,13 +24,13 @@ contract('Synthereum Chainlink price feed', accounts => {
       web3Utils.toHex('MATIC/USD'),
       64,
     );
-    let value = toWei('0.997');
-    let time;
+    let networkId;
 
     before(async () => {
+      networkId = await web3.eth.net.getId();
       finderInstance = await SynthereumFinder.deployed();
       chainlinkInstance = await ChainlinkPriceFeed.deployed();
-      serverAddress = '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0'; //Matic/usd aggregator
+      serverAddress = oracle[networkId].chainlinkServer; //Matic/usd aggregator
       server = await AggregatorV3Interface.at(serverAddress);
     });
 

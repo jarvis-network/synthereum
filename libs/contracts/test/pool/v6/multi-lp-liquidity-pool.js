@@ -19,6 +19,7 @@ const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
+const SynthereumPriceFeed = artifacts.require('SynthereumPriceFeed');
 const SynthereumMultiLpLiquidityPool = artifacts.require(
   'SynthereumMultiLpLiquidityPool',
 );
@@ -55,7 +56,6 @@ contract('MultiLPLiquidityPool', function (accounts) {
   let collateralWhiteListInstance;
   let identifierWhiteListInstance;
   let priceFeedContract;
-  let chainlinkAggregator;
   let managerContract;
   let syntTokenContract;
   let syntTokenAddress;
@@ -73,6 +73,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   let genericSender;
   let lendingId;
   let selectedLendingId;
+  let orcaleContract;
   const admin = accounts[0];
   const maintainer = accounts[1];
   const roles = {
@@ -136,7 +137,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
   };
 
   const setPoolPrice = async price => {
-    const orcaleContract = await MockOnChainOracle.new(18);
+    orcaleContract = await MockOnChainOracle.new(18);
     await orcaleContract.setPrice(
       priceIdenitiferBytes,
       web3.utils.toWei(price),
@@ -457,11 +458,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
     syntheFinderAddress = synthFinder.address;
     deployer = await SynthereumDeployer.deployed();
     managerContract = await SynthereumManager.deployed();
-    priceFeedContract = await SynthereumChainlinkPriceFeed.deployed();
+    priceFeedContract = await SynthereumPriceFeed.deployed();
     factoryVersioningContract = await SynthereumFactoryVersioning.deployed();
-    chainlinkAggregator = await priceFeedContract.getAggregator.call(
-      priceIdenitiferBytes,
-    );
     poolDataPayload = encodeMultiLpLiquidityPool(
       poolVersion,
       collateralAddress,
@@ -502,9 +500,15 @@ contract('MultiLPLiquidityPool', function (accounts) {
   });
 
   beforeEach(async () => {
+    await setPoolPrice('1.1');
     poolAddress = await deployer.deployPool.call(poolVersion, poolDataPayload, {
       from: maintainer,
     });
+  });
+
+  afterEach(async () => {
+    totalCollateral = web3.utils.toBN('0');
+    await resetOracle();
   });
 
   describe('Should initialize pool', async () => {
@@ -709,21 +713,14 @@ contract('MultiLPLiquidityPool', function (accounts) {
       );
     });
     it('Can revert if price feed is not supported', async () => {
-      const aggregator = await priceFeedContract.getAggregator.call(
-        priceIdenitiferBytes,
-      );
-      await priceFeedContract.removePair(priceIdenitiferBytes, {
-        from: maintainer,
-      });
+      await resetOracle();
       await truffleAssert.reverts(
         deployer.deployPool(poolVersion, poolDataPayload, {
           from: maintainer,
         }),
         'Price identifier not supported',
       );
-      await priceFeedContract.setPair(0, priceIdenitiferBytes, aggregator, [], {
-        from: maintainer,
-      });
+      await setPoolPrice('1.1');
     });
   });
 
@@ -822,7 +819,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         LPs[0],
         web3.utils.toBN(prevBalance).sub(LPsCollateral[0]),
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -873,7 +870,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         }
         await network.provider.send('evm_increaseTime', [3600]);
       }
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -1049,7 +1046,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         receiver,
         web3.utils.toBN(prevReceiverBalance).add(tokensMinted),
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkTotalSupply(
@@ -1160,7 +1157,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       await collateralContract.approve(poolAddress, collateralAmount, {
         from: sender,
       });
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const mintReturnValues = await calculateFeeAndSynthAssetForMint(
@@ -1319,10 +1316,12 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
 
     it('Can redeem', async () => {
+      console.log(mintTokens.toString());
       const tokensAmount = web3.utils.toBN(web3.utils.toWei('100.3567459'));
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
+      console.log(price.toString());
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
         feePercentageWei,
         tokensAmount,
@@ -1393,7 +1392,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       console.log('Gas used for redeem tx: ', redeemTx.receipt.gasUsed);
     });
     it('Can redeem all synthetic tokens', async () => {
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
@@ -1492,7 +1491,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
     it('Can revert if collateral received less than minimum set', async () => {
       const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
@@ -1651,7 +1650,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         true,
         'Wrong added collateral',
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -1767,7 +1766,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       let result = await poolContract.positionLPInfo.call(lp);
       const prevCollDeposited = result[0];
       const maxCapacity = result[3];
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const retValues = await calculateFeeAndCollateralForRedeem(
@@ -1864,7 +1863,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const maxCapacity = result[3];
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const retValues = await calculateFeeAndCollateralForRedeem(
@@ -1883,7 +1882,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     it('Can revert if trying to remove with final position below overcollateralization level', async () => {
       const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const collateralToWithdraw = web3.utils
@@ -1995,7 +1994,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         result[2].toString(),
         'Wrong overCollateral',
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -2046,7 +2045,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const lp = LPs[getRandomInt(0, lpNumber)];
       let result = await poolContract.positionLPInfo.call(lp);
       const tokens = result[1];
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const retValues = await calculateFeeAndCollateralForRedeem(
@@ -2128,7 +2127,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
             .toBN(overCollateralRequirement)
             .add(web3.utils.toBN(Math.pow(10, 18).toString())),
         );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2234,7 +2233,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
             .toBN(overCollateralRequirement)
             .add(web3.utils.toBN(Math.pow(10, 18).toString())),
         );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2348,7 +2347,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
             .toBN(overCollateralRequirement)
             .add(web3.utils.toBN(Math.pow(10, 18).toString())),
         );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2376,7 +2375,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
             .toBN(overCollateralRequirement)
             .add(web3.utils.toBN(Math.pow(10, 18).toString())),
         );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2503,7 +2502,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
           'Wrong interest splitting',
         );
       }
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -2560,7 +2559,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const actualUserValue = web3.utils
         .toBN(totCollateral)
         .sub(web3.utils.toBN(totalLPColl));
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2690,7 +2689,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const actualUserValue = web3.utils
         .toBN(totCollateral)
         .sub(web3.utils.toBN(totalLPColl));
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2791,7 +2790,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
     it('Can revert if one or more Lps are undercapitalized', async () => {
       const lessColl = await getLessCollateralizedLP(poolContract, LPs);
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -2876,7 +2875,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         [claimAmount],
         { from: maintainer },
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -3104,7 +3103,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         actualFactory,
         { from: maintainer },
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -3288,7 +3287,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const mintResult = await poolContract.getMintTradeInfo.call(
         collateralAmount,
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const mintReturnValues = await calculateFeeAndSynthAssetForMint(
@@ -3383,7 +3382,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       const redeemResult = await poolContract.getRedeemTradeInfo.call(
         inputTokens,
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
@@ -3507,7 +3506,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         lendingInfo,
         { from: maintainer },
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -3574,7 +3573,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         lendingInfo,
         { from: maintainer },
       );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       await checkGlobalData(
@@ -3764,7 +3763,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         tokensMinted = web3.utils.toBN(ev.mintvalues[3].toString());
         return true;
       });
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const exceedingAmount = collateralAmount
@@ -3810,7 +3809,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       });
       const mintTokens = await poolContract.totalSyntheticTokens.call();
       const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
@@ -3893,7 +3892,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         collateralAdded = ev.collateralDeposited.toString();
         return true;
       });
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       lendingId = 'mock';
@@ -3943,7 +3942,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       let result = await poolContract.positionLPInfo.call(lp);
       const prevCollDeposited = result[0];
       const maxCapacity = result[3];
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const retValues = await calculateFeeAndCollateralForRedeem(
@@ -4021,7 +4020,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
             .toBN(overCollateralRequirement)
             .add(web3.utils.toBN(Math.pow(10, 18).toString())),
         );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
@@ -4189,7 +4188,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         tokensMinted = web3.utils.toBN(ev.mintvalues[3].toString());
         return true;
       });
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const exceedingAmount = collateralAmount
@@ -4235,7 +4234,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       });
       const mintTokens = await poolContract.totalSyntheticTokens.call();
       const tokensAmount = web3.utils.toBN(web3.utils.toWei('100'));
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const redeemReturnValues = await calculateFeeAndCollateralForRedeem(
@@ -4323,7 +4322,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
         collateralAdded = ev.collateralDeposited.toString();
         return true;
       });
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const exceedingAmount = collateralAmount
@@ -4378,7 +4377,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
       let result = await poolContract.positionLPInfo.call(lp);
       const prevCollDeposited = result[0];
       const maxCapacity = result[3];
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const retValues = await calculateFeeAndCollateralForRedeem(
@@ -4461,7 +4460,7 @@ contract('MultiLPLiquidityPool', function (accounts) {
             .toBN(overCollateralRequirement)
             .add(web3.utils.toBN(Math.pow(10, 18).toString())),
         );
-      const price = await priceFeedContract.getLatestPrice.call(
+      const price = await orcaleContract.getLatestPrice.call(
         priceIdenitiferBytes,
       );
       const newPrice = web3.utils
