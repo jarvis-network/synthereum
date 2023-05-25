@@ -4,7 +4,6 @@ module.exports = {
     '@openzeppelin',
     '@uma',
     'contracts/test/',
-    'contracts/base/',
     'contracts/common/',
   ],
   measureStatementCoverage: false,
