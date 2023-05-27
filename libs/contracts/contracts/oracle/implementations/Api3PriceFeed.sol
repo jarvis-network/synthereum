@@ -21,6 +21,41 @@ contract SynthereumApi3PriceFeed is SynthereumPriceFeedImplementation {
     SynthereumPriceFeedImplementation(_synthereumFinder, _roles)
   {}
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+  /**
+   * @notice Add support for a API3 pair
+   * @notice Only maintainer can call this function
+   * @param _priceId Name of the pair identifier
+   * @param _kind Type of the pair (standard or reversed)
+   * @param _source Contract from which get the price
+   * @param _conversionUnit Conversion factor to be applied on price get from source (if 0 no conversion)
+   * @param _extraData Extra-data needed for getting the price from source
+   */
+  function setPair(
+    string calldata _priceId,
+    Type _kind,
+    address _source,
+    uint256 _conversionUnit,
+    bytes calldata _extraData,
+    uint64 _maxSpread
+  ) public override {
+    super.setPair(
+      _priceId,
+      _kind,
+      _source,
+      _conversionUnit,
+      _extraData,
+      _maxSpread
+    );
+    require(_maxSpread > 0, 'Max spread can not be dynamic');
+  }
+
+  //----------------------------------------
+  // Internal view functions
+  //----------------------------------------
+  /**
   /**
    * @notice Get last API3 oracle price for an input source
    * @param _priceIdentifier Price feed identifier
@@ -39,5 +74,20 @@ contract SynthereumApi3PriceFeed is SynthereumPriceFeedImplementation {
     require(unconvertedPrice >= 0, 'Negative value');
     price = uint256(uint224(unconvertedPrice));
     decimals = 18;
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier from API3
+   * @param _priceId HexName of price identifier
+   * @param _source Source contract from which get the price
+   * @param _extraData Extra data of the pair for getting info
+   * @return Max spread
+   */
+  function _getDynamicMaxSpread(
+    bytes32 _priceId,
+    address _source,
+    bytes memory _extraData
+  ) internal view virtual override returns (uint64) {
+    revert('Dynamic max spread not supported');
   }
 }

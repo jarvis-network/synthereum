@@ -401,6 +401,33 @@ contract SynthereumPriceFeed is
     return prices;
   }
 
+  /**
+   * @notice Get the max update spread for a given price identifier
+   * @param _priceId HexName of price identifier
+   * @return Max spread
+   */
+  function getMaxSpread(bytes32 _priceId)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return _getMaxSpread(_priceId);
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier
+   * @param _priceId Name of price identifier
+   * @return Max spread
+   */
+  function getMaxSpread(string calldata _priceId)
+    external
+    view
+    returns (uint256)
+  {
+    return _getMaxSpread(_priceId.stringToBytes32());
+  }
+
   //----------------------------------------
   // Internal view functions
   //----------------------------------------
@@ -566,9 +593,61 @@ contract SynthereumPriceFeed is
     returns (uint256 price)
   {
     price = PreciseUnitMath.PRECISE_UNIT;
-    for (uint8 i = 0; i < _intermediatePairs.length; i++) {
-      uint256 intermediatePrice = _getLatestPrice(_intermediatePairs[i]);
-      price = price.mul(intermediatePrice);
+    for (uint256 i = 0; i < _intermediatePairs.length; i++) {
+      price = price.mul(_getLatestPrice(_intermediatePairs[i]));
     }
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier
+   * @param _priceId HexName of price identifier
+   * @return Max spread
+   */
+  function _getMaxSpread(bytes32 _priceId) internal view returns (uint256) {
+    Type priceType = pairs[_priceId].priceType;
+    if (priceType == Type.STANDARD) {
+      return
+        _getStandardMaxSpread(
+          _priceId,
+          oracleToImplementation[pairs[_priceId].oracle]
+        );
+    } else if (priceType == Type.COMPUTED) {
+      return _getComputedMaxSpread(pairs[_priceId].intermediatePairs);
+    } else {
+      revert('Pair not supported');
+    }
+  }
+
+  /**
+   * @notice Get the max update spread for a given standard price identifier
+   * @param _oracleImpl Synthereum implementation of the oracle
+   * @return Max spread
+   */
+  function _getStandardMaxSpread(bytes32 _priceId, address _oracleImpl)
+    internal
+    view
+    returns (uint256)
+  {
+    return uint256(ISynthereumPriceFeed(_oracleImpl).getMaxSpread(_priceId));
+  }
+
+  /**
+   * @notice Get the max update spread for a given computed price identifier
+   * @param _intermediatePairs Path with pair HexNames
+   * @return price 18 decimals scaled price of the pair
+   */
+  function _getComputedMaxSpread(bytes32[] memory _intermediatePairs)
+    internal
+    view
+    returns (uint256)
+  {
+    uint256 reducedValue = PreciseUnitMath.PRECISE_UNIT;
+    for (uint256 i = 0; i < _intermediatePairs.length; i++) {
+      reducedValue = reducedValue.mul(
+        PreciseUnitMath.PRECISE_UNIT -
+          uint256(_getMaxSpread(_intermediatePairs[i]))
+      );
+    }
+    return PreciseUnitMath.PRECISE_UNIT - reducedValue;
   }
 }

@@ -29,6 +29,7 @@ abstract contract SynthereumPriceFeedImplementation is
   struct PairData {
     Type priceType;
     address source;
+    uint64 maxSpread;
     uint256 conversionUnit;
     bytes extraData;
   }
@@ -47,7 +48,8 @@ abstract contract SynthereumPriceFeedImplementation is
     Type kind,
     address source,
     uint256 conversionUnit,
-    bytes extraData
+    bytes extraData,
+    uint64 maxSpread
   );
 
   event RemovePair(bytes32 indexed priceIdentifier);
@@ -86,7 +88,7 @@ abstract contract SynthereumPriceFeedImplementation is
   }
 
   //----------------------------------------
-  // External functions
+  // Public functions
   //----------------------------------------
   /**
    * @notice Add support for a pair
@@ -102,28 +104,36 @@ abstract contract SynthereumPriceFeedImplementation is
     Type _kind,
     address _source,
     uint256 _conversionUnit,
-    bytes calldata _extraData
-  ) external virtual onlyMaintainer {
+    bytes calldata _extraData,
+    uint64 _maxSpread
+  ) public virtual onlyMaintainer {
+    bytes32 priceIdentifierHex = _priceId.stringToBytes32();
+    require(priceIdentifierHex != 0x0, 'Null identifier');
     if (_kind == Type.NORMAL || _kind == Type.REVERSE) {
       require(_source.isContract(), 'Source is not a contract');
     } else {
       revert('No type passed');
     }
+    require(
+      _maxSpread < PreciseUnitMath.PRECISE_UNIT,
+      'Spread must be less than 100%'
+    );
 
-    bytes32 _priceIdentifierHex = _priceId.stringToBytes32();
-    pairs[_priceIdentifierHex] = PairData(
+    pairs[priceIdentifierHex] = PairData(
       _kind,
       _source,
+      _maxSpread,
       _conversionUnit,
       _extraData
     );
 
     emit SetPair(
-      _priceIdentifierHex,
+      priceIdentifierHex,
       _kind,
       _source,
       _conversionUnit,
-      _extraData
+      _extraData,
+      _maxSpread
     );
   }
 
@@ -132,22 +142,18 @@ abstract contract SynthereumPriceFeedImplementation is
    * @notice Only maintainer can call this function
    * @param _priceId Name of the pair identifier
    */
-  function removePair(string calldata _priceId)
-    external
-    virtual
-    onlyMaintainer
-  {
+  function removePair(string calldata _priceId) public virtual onlyMaintainer {
     bytes32 priceIdentifierHex = _priceId.stringToBytes32();
     require(
       pairs[priceIdentifierHex].priceType != Type.UNSUPPORTED,
-      'Price identifier does not exist'
+      'Price identifier not supported'
     );
     delete pairs[priceIdentifierHex];
     emit RemovePair(priceIdentifierHex);
   }
 
   //----------------------------------------
-  // External view functions
+  // Public view functions
   //----------------------------------------
   /**
    * @notice Get the pair data for a given pair identifier, revert if not supported
@@ -155,7 +161,7 @@ abstract contract SynthereumPriceFeedImplementation is
    * @return Pair data
    */
   function pair(bytes32 _identifier)
-    external
+    public
     view
     virtual
     returns (PairData memory)
@@ -169,7 +175,7 @@ abstract contract SynthereumPriceFeedImplementation is
    * @return Pair data
    */
   function pair(string calldata _identifier)
-    external
+    public
     view
     virtual
     returns (PairData memory)
@@ -183,7 +189,7 @@ abstract contract SynthereumPriceFeedImplementation is
    * @return isSupported True fi supporteed, otherwise false
    */
   function isPriceSupported(bytes32 _priceId)
-    external
+    public
     view
     virtual
     override
@@ -198,7 +204,7 @@ abstract contract SynthereumPriceFeedImplementation is
    * @return isSupported True fi supported, otherwise false
    */
   function isPriceSupported(string calldata _priceId)
-    external
+    public
     view
     virtual
     returns (bool)
@@ -213,7 +219,7 @@ abstract contract SynthereumPriceFeedImplementation is
    * @return Oracle price
    */
   function getLatestPrice(bytes32 _priceId)
-    external
+    public
     view
     virtual
     override
@@ -230,13 +236,42 @@ abstract contract SynthereumPriceFeedImplementation is
    * @return Oracle price
    */
   function getLatestPrice(string calldata _priceId)
-    external
+    public
     view
     virtual
     onlyCall
     returns (uint256)
   {
     return _getLatestPrice(_priceId.stringToBytes32());
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier
+   * @param _priceId HexName of price identifier
+   * @return Max spread
+   */
+  function getMaxSpread(bytes32 _priceId)
+    public
+    view
+    virtual
+    override
+    returns (uint64)
+  {
+    return _getMaxSpread(_priceId);
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier
+   * @param _priceId Name of price identifier
+   * @return Max spread
+   */
+  function getMaxSpread(string calldata _priceId)
+    public
+    view
+    virtual
+    returns (uint64)
+  {
+    return _getMaxSpread(_priceId.stringToBytes32());
   }
 
   //----------------------------------------
@@ -250,6 +285,7 @@ abstract contract SynthereumPriceFeedImplementation is
   function _pair(bytes32 _identifier)
     internal
     view
+    virtual
     returns (PairData memory pairData)
   {
     pairData = pairs[_identifier];
@@ -340,6 +376,42 @@ abstract contract SynthereumPriceFeedImplementation is
     address _source,
     bytes memory _extraData
   ) internal view virtual returns (uint256 price, uint8 decimals);
+
+  /**
+   * @notice Get the max update spread for a given price identifier
+   * @param _priceId HexName of price identifier
+   * @return Max spread
+   */
+  function _getMaxSpread(bytes32 _priceId)
+    internal
+    view
+    virtual
+    returns (uint64)
+  {
+    PairData storage pairData = pairs[_priceId];
+    require(
+      pairData.priceType != Type.UNSUPPORTED,
+      'Price identifier not supported'
+    );
+    uint64 pairMaxSpread = pairData.maxSpread;
+    return
+      pairMaxSpread != 0
+        ? pairMaxSpread
+        : _getDynamicMaxSpread(_priceId, pairData.source, pairData.extraData);
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier dinamically
+   * @param _priceId HexName of price identifier
+   * @param _source Source contract from which get the price
+   * @param _extraData Extra data of the pair for getting info
+   * @return Max spread
+   */
+  function _getDynamicMaxSpread(
+    bytes32 _priceId,
+    address _source,
+    bytes memory _extraData
+  ) internal view virtual returns (uint64);
 
   //----------------------------------------
   // Internal pure functions
