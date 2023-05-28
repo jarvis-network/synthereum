@@ -16,6 +16,7 @@ contract('Synthereum DIA price feed', accounts => {
   let admin = accounts[0];
   let maintainer = accounts[1];
   let general = accounts[2];
+  let maxSpread;
 
   describe('DIA Provider', async () => {
     let finderInstance, diaInstance, server, serverAddress;
@@ -34,6 +35,7 @@ contract('Synthereum DIA price feed', accounts => {
       serverAddress = server.address;
       time = (await web3.eth.getBlock('latest')).timestamp;
       await server.setValue(priceIdentifierHex, value, time);
+      maxSpread = web3.utils.toWei('0.001');
     });
 
     describe('Should register a pair', async () => {
@@ -44,6 +46,7 @@ contract('Synthereum DIA price feed', accounts => {
           serverAddress,
           0,
           '0x',
+          maxSpread,
           {
             from: maintainer,
           },
@@ -81,31 +84,88 @@ contract('Synthereum DIA price feed', accounts => {
         );
         assert.equal(pairFromHex[0], 1, 'wrong type');
         assert.equal(pairFromHex[1], serverAddress, 'wrong server');
-        assert.equal(pairFromHex[2], 0, 'wrong conversion unit');
-        assert.equal(pairFromHex[3], '0x', 'wrong extra-data');
+        assert.equal(pairFromHex[2], maxSpread, 'wrong max spread');
+        assert.equal(pairFromHex[3], 0, 'wrong conversion unit');
+        assert.equal(pairFromHex[4], '0x', 'wrong extra-data');
         assert.equal(isSupportedFromHex, true, 'wrong supported');
       });
-      it('Can revert if not type passed', async () => {
+      it('Can revert if no idenitfier passed ', async () => {
         await truffleAssert.reverts(
-          diaInstance.setPair(priceIdentifier, 0, serverAddress, 0, '0x', {
+          diaInstance.setPair('', 0, serverAddress, 0, '0x', maxSpread, {
             from: maintainer,
           }),
+          'Null identifier',
+        );
+      });
+      it('Can revert if no type passed', async () => {
+        await truffleAssert.reverts(
+          diaInstance.setPair(
+            priceIdentifier,
+            0,
+            serverAddress,
+            0,
+            '0x',
+            maxSpread,
+            {
+              from: maintainer,
+            },
+          ),
           'No type passed',
         );
       });
-      it('Can revert if not type passed', async () => {
+      it('Can revert if source is not a contract', async () => {
         await truffleAssert.reverts(
-          diaInstance.setPair(priceIdentifier, 1, accounts[3], 0, '0x', {
+          diaInstance.setPair(
+            priceIdentifier,
+            1,
+            accounts[3],
+            0,
+            '0x',
+            maxSpread,
+            {
+              from: maintainer,
+            },
+          ),
+          'Source is not a contract',
+        );
+      });
+      it('Can revert if max spread is more or equal to 100%', async () => {
+        await truffleAssert.reverts(
+          diaInstance.setPair(
+            priceIdentifier,
+            1,
+            serverAddress,
+            0,
+            '0x',
+            web3Utils.toWei('1'),
+            {
+              from: maintainer,
+            },
+          ),
+          'Spread must be less than 100%',
+        );
+      });
+      it('Can revert if max spread is 0', async () => {
+        await truffleAssert.reverts(
+          diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', 0, {
             from: maintainer,
           }),
-          'Source is not a contract',
+          'Max spread can not be dynamic',
         );
       });
       it('Can revert if sender is not the maintainer', async () => {
         await truffleAssert.reverts(
-          diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', {
-            from: general,
-          }),
+          diaInstance.setPair(
+            priceIdentifier,
+            1,
+            serverAddress,
+            0,
+            '0x',
+            maxSpread,
+            {
+              from: general,
+            },
+          ),
           'Sender must be the maintainer',
         );
       });
@@ -113,9 +173,17 @@ contract('Synthereum DIA price feed', accounts => {
 
     describe('Should remove a pair', async () => {
       before(async () => {
-        await diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', {
-          from: maintainer,
-        });
+        await diaInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          maxSpread,
+          {
+            from: maintainer,
+          },
+        );
         const isSupportedFromHex = await diaInstance.methods[
           'isPriceSupported(bytes32)'
         ](priceIdentifierHex);
@@ -154,7 +222,7 @@ contract('Synthereum DIA price feed', accounts => {
           diaInstance.removePair('CHF/USD', {
             from: maintainer,
           }),
-          'Price identifier does not exist',
+          'Price identifier not supported',
         );
       });
       it('Can revert if sender is not the maintainer', async () => {
@@ -184,9 +252,17 @@ contract('Synthereum DIA price feed', accounts => {
         );
       });
       it('Can get latest standard price', async () => {
-        await diaInstance.setPair(priceIdentifier, 1, serverAddress, 0, '0x', {
-          from: maintainer,
-        });
+        await diaInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          maxSpread,
+          {
+            from: maintainer,
+          },
+        );
         const priceFromString = await diaInstance.methods[
           'getLatestPrice(string)'
         ](priceIdentifier);
@@ -221,6 +297,7 @@ contract('Synthereum DIA price feed', accounts => {
           serverAddress,
           conversionUnit,
           '0x',
+          maxSpread,
           {
             from: maintainer,
           },
@@ -236,9 +313,17 @@ contract('Synthereum DIA price feed', accounts => {
         );
       });
       it('Can get latest reverse price', async () => {
-        await diaInstance.setPair(priceIdentifier, 2, serverAddress, 0, '0x', {
-          from: maintainer,
-        });
+        await diaInstance.setPair(
+          priceIdentifier,
+          2,
+          serverAddress,
+          0,
+          '0x',
+          maxSpread,
+          {
+            from: maintainer,
+          },
+        );
         const priceFromString = await diaInstance.methods[
           'getLatestPrice(string)'
         ](priceIdentifier);
@@ -268,6 +353,7 @@ contract('Synthereum DIA price feed', accounts => {
           serverAddress,
           conversionUnit,
           '0x',
+          maxSpread,
           {
             from: maintainer,
           },
@@ -317,6 +403,79 @@ contract('Synthereum DIA price feed', accounts => {
         await truffleAssert.reverts(
           poolMock.getRateFromString(diaInstance.address, priceIdentifierHex),
           'Only off-chain call',
+        );
+      });
+    });
+
+    describe('Should get a max spread', async () => {
+      it('Can get max spread', async () => {
+        await diaInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          maxSpread,
+          {
+            from: maintainer,
+          },
+        );
+        const maxSpreadFromString = await diaInstance.methods[
+          'getMaxSpread(string)'
+        ](priceIdentifier);
+        const maxSpreadFromHex = await diaInstance.methods[
+          'getMaxSpread(bytes32)'
+        ](priceIdentifierHex);
+        assert.equal(
+          maxSpreadFromString.toString(),
+          maxSpreadFromHex.toString(),
+          'Different spreads',
+        );
+        await diaInstance.removePair(priceIdentifier, {
+          from: maintainer,
+        });
+      });
+      it('Can revert if price is not supported', async () => {
+        await truffleAssert.reverts(
+          diaInstance.methods['getMaxSpread(string)']('EURGBP'),
+          'Price identifier not supported',
+        );
+      });
+      it('Can revert if trying to get dynamic spread', async () => {
+        await diaInstance.setPair(
+          priceIdentifier,
+          1,
+          serverAddress,
+          0,
+          '0x',
+          maxSpread,
+          {
+            from: maintainer,
+          },
+        );
+        const slot = web3Utils
+          .toBN(
+            web3Utils.hexToNumberString(
+              web3Utils.soliditySha3(
+                web3Utils.hexToNumberString(priceIdentifierHex),
+                2,
+              ),
+            ),
+          )
+          .add(web3Utils.toBN('0'))
+          .toString();
+        const actualValue = await network.provider.send('eth_getStorageAt', [
+          diaInstance.address,
+          web3.utils.numberToHex(slot).replace('0x0', '0x'),
+        ]);
+        await network.provider.send('hardhat_setStorageAt', [
+          diaInstance.address,
+          web3.utils.numberToHex(slot).replace('0x0', '0x'),
+          '0x0000000000000000000000' + actualValue.substring(24, 66),
+        ]);
+        await truffleAssert.reverts(
+          diaInstance.methods['getMaxSpread(string)'](priceIdentifier),
+          'Dynamic max spread not supported',
         );
       });
     });

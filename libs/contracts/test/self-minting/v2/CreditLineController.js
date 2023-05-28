@@ -69,6 +69,7 @@ contract('Self-minting controller', function (accounts) {
   let synthereumFinderInstance;
   let minterRole;
   let burnerRole;
+  let maxSpread;
 
   before(async () => {
     // set roles
@@ -117,12 +118,14 @@ contract('Self-minting controller', function (accounts) {
       synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    maxSpread = web3.utils.toWei('0.001');
     await synthereumChainlinkPriceFeed.setPair(
       priceFeedIdentifier,
       1,
       mockAggregator.address,
       0,
       '0x',
+      maxSpread,
       { from: maintainer },
     );
     await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {

@@ -64,6 +64,7 @@ contract('LiquidityPoolCreator', function (accounts) {
     let synthereumFactoryVersioning;
     let mockAggregator;
     let synthereumChainlinkPriceFeed;
+    let maxSpread;
     before(async () => {
       collateralInstance = await TestnetERC20.new('Test Token', 'USDC', 6);
       collateralToken = collateralInstance.address;
@@ -97,12 +98,14 @@ contract('LiquidityPoolCreator', function (accounts) {
         synthereumChainlinkPriceFeed.address,
         { from: maintainer },
       );
+      maxSpread = web3.utils.toWei('0.001');
       await synthereumChainlinkPriceFeed.setPair(
         identifier,
         1,
         mockAggregator.address,
         0,
         '0x',
+        maxSpread,
         { from: maintainer },
       );
       await priceFeed.setPair(identifier, 1, 'chainlink', [], {

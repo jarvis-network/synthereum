@@ -26,6 +26,7 @@ contract('Synthereum price feed', accounts => {
   let oracleIdentifierHex;
   let secondOracleIndentifier;
   let secondOracleIndentifierHex;
+  let secondMaxSpread;
   let chainlinkServer;
   let secondPriceIdentifier;
   let secondPriceIdentifierHex;
@@ -35,6 +36,7 @@ contract('Synthereum price feed', accounts => {
   let diaServer;
   let diaOracle;
   let networkId;
+  let maxSpread;
 
   before(async () => {
     networkId = await web3.eth.net.getId();
@@ -44,9 +46,18 @@ contract('Synthereum price feed', accounts => {
     priceIdentifier = 'MATICUSD';
     priceIdentifierHex = web3Utils.padRight(web3Utils.toHex('MATICUSD'), 64);
     chainlinkServer = oracle[networkId].chainlinkServer;
-    await chainlinkImpl.setPair(priceIdentifier, 1, chainlinkServer, 0, '0x', {
-      from: maintainer,
-    });
+    maxSpread = web3.utils.toWei('0.002');
+    await chainlinkImpl.setPair(
+      priceIdentifier,
+      1,
+      chainlinkServer,
+      0,
+      '0x',
+      maxSpread,
+      {
+        from: maintainer,
+      },
+    );
     oracleIdentifier = 'chainlink';
     oracleIdentifierHex = web3Utils.padRight(
       web3Utils.toHex(oracleIdentifier),
@@ -62,6 +73,7 @@ contract('Synthereum price feed', accounts => {
       web3Utils.toHex(secondPriceIdentifier),
       64,
     );
+    secondMaxSpread = web3.utils.toWei('0.0015');
     computedPriceIdentifier = 'MATICEUR';
     computedPriceIdentifierHex = web3Utils.padRight(
       web3Utils.toHex(computedPriceIdentifier),
@@ -81,6 +93,7 @@ contract('Synthereum price feed', accounts => {
       diaServer.address,
       0,
       '0x',
+      secondMaxSpread,
       { from: maintainer },
     );
   });
@@ -430,6 +443,7 @@ contract('Synthereum price feed', accounts => {
         chainlinkServer,
         0,
         '0x',
+        maxSpread,
         {
           from: maintainer,
         },
@@ -450,6 +464,7 @@ contract('Synthereum price feed', accounts => {
         chainlinkServer,
         0,
         '0x',
+        maxSpread,
         {
           from: maintainer,
         },
@@ -549,6 +564,7 @@ contract('Synthereum price feed', accounts => {
         diaServer.address,
         0,
         '0x',
+        secondMaxSpread,
         { from: maintainer },
       );
       await priceFeed.removeOracle(secondOracleIndentifier, {
@@ -816,6 +832,7 @@ contract('Synthereum price feed', accounts => {
         chainlinkServer,
         0,
         '0x',
+        maxSpread,
         {
           from: maintainer,
         },
@@ -856,6 +873,7 @@ contract('Synthereum price feed', accounts => {
         chainlinkServer,
         0,
         '0x',
+        maxSpread,
         {
           from: maintainer,
         },
@@ -924,6 +942,110 @@ contract('Synthereum price feed', accounts => {
           web3Utils.toBN(pricesFromHex[0]).toString(),
           web3Utils.toBN(pricesFromHex[1]).toString(),
         ],
+      );
+      await priceFeed.removeOracle(secondOracleIndentifier, {
+        from: maintainer,
+      });
+    });
+  });
+
+  describe('Should get max spread', async () => {
+    let mainPrice;
+    let secondPrice;
+    let poolMock;
+    let testRegistry;
+    before(async () => {
+      await priceFeed.addOracle(oracleIdentifier, chainlinkImpl.address, {
+        from: maintainer,
+      });
+      await priceFeed.setPair(priceIdentifier, 1, oracleIdentifier, [], {
+        from: maintainer,
+      });
+    });
+    after(async () => {
+      await priceFeed.removeOracle(oracleIdentifier, {
+        from: maintainer,
+      });
+      await priceFeed.removePair(priceIdentifier, {
+        from: maintainer,
+      });
+    });
+    it('Can get standard max spread', async () => {
+      const maxSpreadFromString = await priceFeed.methods[
+        'getMaxSpread(string)'
+      ](priceIdentifier);
+      const maxSpreadFromHex = await priceFeed.methods['getMaxSpread(bytes32)'](
+        priceIdentifierHex,
+      );
+      assert.equal(
+        maxSpreadFromString.toString(),
+        maxSpreadFromHex.toString(),
+        'Max spreads do not match',
+      );
+      assert.equal(
+        maxSpreadFromHex.toString(),
+        web3Utils.toBN(maxSpread).toString(),
+        'Max spread wrong',
+      );
+    });
+    it('Can get computed max spread', async () => {
+      await priceFeed.addOracle(secondOracleIndentifier, diaOracle.address, {
+        from: maintainer,
+      });
+      await priceFeed.setPair(
+        secondPriceIdentifier,
+        1,
+        secondOracleIndentifier,
+        [],
+        {
+          from: maintainer,
+        },
+      );
+      await priceFeed.setPair(
+        computedPriceIdentifier,
+        2,
+        '',
+        [priceIdentifier, secondPriceIdentifier],
+        {
+          from: maintainer,
+        },
+      );
+      const maxSpreadFromString = await priceFeed.methods[
+        'getMaxSpread(string)'
+      ](computedPriceIdentifier);
+      const maxSpreadFromHex = await priceFeed.methods['getMaxSpread(bytes32)'](
+        computedPriceIdentifierHex,
+      );
+      assert.equal(
+        maxSpreadFromString.toString(),
+        maxSpreadFromHex.toString(),
+        'Max spreads do not match',
+      );
+      const computedSpread = web3Utils.toBN(web3Utils.toWei('1')).sub(
+        web3Utils
+          .toBN(web3Utils.toWei('0.998'))
+          .mul(web3Utils.toBN(web3Utils.toWei('0.9985')))
+          .div(web3Utils.toBN(web3Utils.toWei('1'))),
+      );
+      assert.equal(
+        computedSpread.toString(),
+        maxSpreadFromHex.toString(),
+        'Max spread wrong',
+      );
+      await priceFeed.removePair(secondPriceIdentifier, {
+        from: maintainer,
+      });
+      await priceFeed.removePair(computedPriceIdentifier, {
+        from: maintainer,
+      });
+      await priceFeed.removeOracle(secondOracleIndentifier, {
+        from: maintainer,
+      });
+    });
+    it('Can revert if price is not supported', async () => {
+      await truffleAssert.reverts(
+        priceFeed.methods['getMaxSpread(string)']('JRTUSD'),
+        'Pair not supported',
       );
     });
   });

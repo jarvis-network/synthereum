@@ -112,6 +112,7 @@ contract('Deployer', function (accounts) {
   let forwarderInstance;
   let minterRole;
   let burnerRole;
+  let maxSpread;
 
   before(async () => {
     const networkId = await web3.eth.net.getId();
@@ -124,12 +125,14 @@ contract('Deployer', function (accounts) {
       synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    maxSpread = web3.utils.toWei('0.001');
     await synthereumChainlinkPriceFeed.setPair(
       priceIdentifier,
       1,
       mockAggregator.address,
       0,
       '0x',
+      maxSpread,
       { from: maintainer },
     );
     await priceFeed.setPair(priceIdentifier, 1, 'chainlink', [], {
@@ -654,6 +657,7 @@ contract('Deployer', function (accounts) {
         mockAggregator.address,
         0,
         '0x',
+        maxSpread,
         { from: maintainer },
       );
       await priceFeed.setPair(
@@ -899,6 +903,7 @@ contract('Deployer', function (accounts) {
         mockAggregator.address,
         0,
         '0x',
+        maxSpread,
         { from: maintainer },
       );
       await priceFeed.setPair(

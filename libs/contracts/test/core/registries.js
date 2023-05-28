@@ -107,6 +107,7 @@ contract('Registries', function (accounts) {
   let poolRegistryInstance;
   let minterRole;
   let burnerRole;
+  let maxSpread;
 
   before(async () => {
     collateralAddress = (await TestnetERC20.new('Testnet token', 'USDC', 6))
@@ -119,12 +120,14 @@ contract('Registries', function (accounts) {
       synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    maxSpread = web3.utils.toWei('0.001');
     await synthereumChainlinkPriceFeed.setPair(
       priceFeedIdentifier,
       1,
       mockAggregator.address,
       0,
       '0x',
+      maxSpread,
       { from: maintainer },
     );
     await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {

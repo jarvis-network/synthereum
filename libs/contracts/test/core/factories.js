@@ -102,6 +102,7 @@ contract('Factories', function (accounts) {
   let tokenFactory;
   let poolFactoryInstance;
   let selfMintingFactoryInstance;
+  let maxSpread;
 
   before(async () => {
     networkId = await web3.eth.net.getId();
@@ -114,12 +115,14 @@ contract('Factories', function (accounts) {
       synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    maxSpread = web3.utils.toWei('0.001');
     await synthereumChainlinkPriceFeed.setPair(
       priceFeedIdentifier,
       1,
       mockAggregator.address,
       0,
       '0x',
+      maxSpread,
       { from: maintainer },
     );
     await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {

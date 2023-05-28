@@ -58,6 +58,7 @@ contract('LiquidityPool', function (accounts) {
   let priceFeedInstance;
   let managerInstance;
   let params;
+  let maxSpread;
   const version = 5;
   const admin = accounts[0];
   const maintainer = accounts[1];
@@ -188,6 +189,7 @@ contract('LiquidityPool', function (accounts) {
       synthereumChainlinkPriceFeed.address,
       { from: maintainer },
     );
+    maxSpread = web3.utils.toWei('0.001');
   });
 
   beforeEach(async () => {
@@ -211,6 +213,7 @@ contract('LiquidityPool', function (accounts) {
       aggregatorInstanceAddress,
       0,
       '0x',
+      maxSpread,
       { from: maintainer },
     );
     await priceFeedInstance.setPair('EUR/USD', 1, 'chainlink', [], {
@@ -919,6 +922,7 @@ contract('LiquidityPool', function (accounts) {
         destAggregatorAddress,
         0,
         '0x',
+        maxSpread,
         { from: maintainer },
       );
       await priceFeedInstance.setPair('GBP/USD', 1, 'chainlink', [], {
@@ -3821,6 +3825,7 @@ contract('LiquidityPool', function (accounts) {
         destAggregatorAddress,
         0,
         '0x',
+        maxSpread,
         { from: maintainer },
       );
       await priceFeedInstance.setPair('GBP/USD', 1, 'chainlink', [], {
@@ -4216,6 +4221,7 @@ contract('LiquidityPool', function (accounts) {
         destAggregatorAddress,
         0,
         '0x',
+        maxSpread,
         { from: maintainer },
       );
       await priceFeedInstance.setPair('GBP/USD', 1, 'chainlink', [], {

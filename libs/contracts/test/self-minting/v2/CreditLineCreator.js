@@ -57,6 +57,7 @@ contract('Self-minting creator', function (accounts) {
 
   let synthereumFinderAddress;
   let manager;
+  let maxSpread;
 
   //Other params
   let deployer;
@@ -103,12 +104,14 @@ contract('Self-minting creator', function (accounts) {
       synthereumChainlinkPriceFeed.address,
       { from: roles.maintainer },
     );
+    maxSpread = web3.utils.toWei('0.001');
     await synthereumChainlinkPriceFeed.setPair(
       'EURUSD',
       1,
       mockAggregator.address,
       0,
       '0x',
+      maxSpread,
       { from: roles.maintainer },
     );
     await priceFeed.setPair('EURUSD', 1, 'chainlink', [], {
