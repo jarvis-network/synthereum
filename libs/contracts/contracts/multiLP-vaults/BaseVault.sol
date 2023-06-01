@@ -32,6 +32,7 @@ abstract contract BaseVaultStorage is
   bool internal isLpActive; // dictates if first deposit on pool or not
   uint8 internal version; // version of the vault
   uint128 internal overCollateralization; // overcollateralization of the vault position
+  bytes32 internal priceFeedIdentifier; // price feed id of the pool
 
   function isTrustedForwarder(address forwarder)
     public

@@ -22,7 +22,8 @@ const Manager = artifacts.require('SynthereumManager');
 const Proxy = artifacts.require('TransparentUpgradeableProxy');
 const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
 const VaultRegistry = artifacts.require('SynthereumPublicVaultRegistry');
-
+const PriceFeed = artifacts.require('SynthereumPriceFeed');
+const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
 const data = require('../../data/test/lendingTestnet.json');
 
 const { toBN, toWei, toHex } = web3Utils;
@@ -34,6 +35,7 @@ contract('Lending Vault', accounts => {
     pool,
     USDC,
     jSynth,
+    priceFeed,
     lpToken,
     manager,
     registry,
@@ -51,6 +53,7 @@ contract('Lending Vault', accounts => {
   let mockInterest = accounts[7];
   let collateralAllocation = toWei('50', 'gwei');
   let priceIdentifier = toHex('jEUR/USDC');
+  let spread = toWei('0.01');
   const maintainer = accounts[1];
   const poolRegistryInterface = web3Utils.stringToHex('PoolRegistry');
   const collateralDecimals = 6;
@@ -83,6 +86,12 @@ contract('Lending Vault', accounts => {
     );
   };
 
+  const applySpread = collAmount => {
+    collAmount = toBN(collAmount);
+    let spreadAmount = collAmount.mul(toBN(spread)).div(toBN(Math.pow(10, 18)));
+    return collAmount.sub(spreadAmount).toString();
+  };
+
   before(async () => {
     networkId = await web3.eth.net.getId();
     USDC = await TestnetSelfMintingERC20.at(data[networkId].USDC);
@@ -92,6 +101,27 @@ contract('Lending Vault', accounts => {
     manager = await Manager.deployed();
 
     finder = await SynthereumFinder.deployed();
+    let priceFeedAddr = await finder.getImplementationAddress(
+      web3Utils.utf8ToHex('PriceFeed'),
+    );
+    priceFeed = await PriceFeed.at(priceFeedAddr);
+    let chainlinkFeed = await ChainlinkPriceFeed.deployed();
+    await chainlinkFeed.setPair(
+      'jEUR/USDC',
+      1,
+      chainlinkFeed.address,
+      0,
+      ZERO_ADDRESS,
+      spread,
+      { from: maintainer },
+    );
+
+    await priceFeed.addOracle('chainlink', chainlinkFeed.address, {
+      from: maintainer,
+    });
+    await priceFeed.setPair('jEUR/USDC', 1, 'chainlink', [], {
+      from: maintainer,
+    });
 
     jSynth = await SyntheticToken.new('jarvis euro', 'jEUR', 18, {
       from: accounts[0],
@@ -292,12 +322,26 @@ contract('Lending Vault', accounts => {
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         // deposit
+        let LPTotalSupply = await vault.totalSupply.call();
+
         let collateralDeposit = toWei('10', 'gwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user2 });
         let tx = await vault.deposit(collateralDeposit, user2, { from: user2 });
-        let expectedUserLP = toBN(collateralDeposit).mul(
-          toBN(Math.pow(10, toBN(18).sub(toBN(collateralDecimals)).toString())),
-        );
+
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
+        let expectedRate = toBN(actualCollateralAmount)
+          .sub(toBN(collateralDeposit))
+          .mul(toBN(Math.pow(10, 18)))
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupply));
+
+        let expectedUserLP = toBN(applySpread(collateralDeposit))
+          .mul(toBN(Math.pow(10, 18)))
+          .mul(toBN(Math.pow(10, 12)))
+          .div(expectedRate)
+          .toString();
 
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
@@ -305,7 +349,7 @@ contract('Lending Vault', accounts => {
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
             ev.lpTokensOut.toString() == expectedUserLP.toString() &&
-            ev.rate.toString() == toBN(Math.pow(10, 18)) &&
+            ev.rate.toString() == expectedRate.toString() &&
             ev.discountedRate.toString() == '0'
           );
         });
@@ -332,13 +376,22 @@ contract('Lending Vault', accounts => {
 
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
-        // rate should not have changed
-        assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
+        // rate should have changed now
+        LPTotalSupply = await vault.totalSupply.call();
+        actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
+
+        expectedRate = toBN(actualCollateralAmount)
+          .mul(toBN(Math.pow(10, 18)))
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupply));
+        assert.equal(
+          (await vault.getRate.call()).toString(),
+          expectedRate.toString(),
+        );
       });
 
-      it('Changed rate, new deposit', async () => {
-        assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
-
+      it('Add interest, Changed rate, new deposit', async () => {
         let LPTotalSupply = await vault.totalSupply.call();
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
@@ -368,6 +421,7 @@ contract('Lending Vault', accounts => {
         );
 
         // deposit
+        LPTotalSupply = await vault.totalSupply.call();
         let userBalanceBefore = await USDC.balanceOf.call(user3);
         let userLPBalanceBefore = await vault.balanceOf.call(user3);
         assert.equal(userLPBalanceBefore.toString(), '0');
@@ -378,7 +432,16 @@ contract('Lending Vault', accounts => {
         await USDC.approve(vault.address, collateralDeposit, { from: user3 });
         let tx = await vault.deposit(collateralDeposit, user3, { from: user3 });
 
-        let expectedLPOut = toBN(collateralDeposit)
+        actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
+
+        expectedRate = toBN(actualCollateralAmount)
+          .sub(toBN(collateralDeposit))
+          .mul(toBN(Math.pow(10, 18)))
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupply));
+
+        let expectedLPOut = toBN(applySpread(collateralDeposit))
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(expectedRate);
@@ -422,7 +485,17 @@ contract('Lending Vault', accounts => {
         let expectedUserLP = expectedLPOut;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
-        // rate should not have changed
+        // rate changed
+        LPTotalSupply = await vault.totalSupply.call();
+
+        actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
+
+        expectedRate = toBN(actualCollateralAmount)
+          .mul(toBN(Math.pow(10, 18)))
+          .mul(toBN(Math.pow(10, 12)))
+          .div(toBN(LPTotalSupply));
+
         assert.equal(
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
@@ -498,13 +571,16 @@ contract('Lending Vault', accounts => {
         let userBalanceBefore = await USDC.balanceOf.call(user4);
         let userLPBalanceBefore = await vault.balanceOf.call(user4);
         assert.equal(userLPBalanceBefore.toString(), '0');
+        let expectedUserBalance = toBN(userBalanceBefore).sub(
+          toBN(purchaseAmount),
+        );
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         await USDC.approve(vault.address, purchaseAmount, { from: user4 });
         let tx = await vault.deposit(purchaseAmount, user4, { from: user4 });
 
-        let expectedLPOut = toBN(purchaseAmount)
+        let expectedLPOut = toBN(applySpread(purchaseAmount))
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(discountedRate);
@@ -535,9 +611,6 @@ contract('Lending Vault', accounts => {
         assert.equal(
           vaultBalanceAfter.toString(),
           vaultBalanceBefore.toString(),
-        );
-        let expectedUserBalance = toBN(userBalanceBefore).sub(
-          toBN(purchaseAmount),
         );
         assert.equal(
           expectedUserBalance.toString(),
@@ -612,9 +685,12 @@ contract('Lending Vault', accounts => {
 
         await USDC.approve(vault.address, purchaseAmount, { from: user5 });
         let tx = await vault.deposit(purchaseAmount, user5, { from: user5 });
+        let expectedUserBalance = toBN(userBalanceBefore).sub(
+          toBN(purchaseAmount),
+        );
 
         // the output is maxCollateral discounted + the remaining on regular rate
-        let remainingCollateral = toBN(purchaseAmount).sub(
+        let remainingCollateral = toBN(applySpread(purchaseAmount)).sub(
           toBN(maxCollateralAtDiscount),
         );
         let expectedLPOut = toBN(maxCollateralAtDiscount)
@@ -654,9 +730,6 @@ contract('Lending Vault', accounts => {
         assert.equal(
           vaultBalanceAfter.toString(),
           vaultBalanceBefore.toString(),
-        );
-        let expectedUserBalance = toBN(userBalanceBefore).sub(
-          toBN(purchaseAmount),
         );
         assert.equal(
           expectedUserBalance.toString(),

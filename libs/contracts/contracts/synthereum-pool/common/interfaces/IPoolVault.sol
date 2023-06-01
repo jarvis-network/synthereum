@@ -83,4 +83,10 @@ interface IPoolVault is ISynthereumDeployment {
       uint256 collateralReceived,
       uint256 newLpCollateralAmount
     );
+
+  /**
+   * @notice Returns price identifier of the pool
+   * @return Price identifier
+   */
+  function priceFeedIdentifier() external view returns (bytes32);
 }

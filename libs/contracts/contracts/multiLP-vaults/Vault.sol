@@ -8,6 +8,7 @@ import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
+import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -41,6 +42,7 @@ contract Vault is IVault, BaseVaultStorage {
   ) external override initializer nonReentrant {
     // vault initialisation
     pool = IPoolVault(_pool);
+    priceFeedIdentifier = pool.priceFeedIdentifier();
     collateralAsset = pool.collateralToken();
     overCollateralization = _overCollateralization;
     synthereumFinder = _finder;
@@ -73,6 +75,7 @@ contract Vault is IVault, BaseVaultStorage {
     // deposit collateral (activate if first deposit) into pool and trigger positions update
     uint256 netCollateralDeposited;
     uint256 actualCollateralAmount;
+    uint256 spreadAdjustedCollateral;
     uint256 totalSupply = totalSupply();
     uint128 overCollateralFactor = overCollateralization;
 
@@ -84,12 +87,14 @@ contract Vault is IVault, BaseVaultStorage {
       if (totalSupply == 0) {
         vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       }
+      spreadAdjustedCollateral = applySpread(netCollateralDeposited);
     } else {
       netCollateralDeposited = pool.activateLP(
         collateralAmount,
         overCollateralFactor
       );
       actualCollateralAmount = netCollateralDeposited;
+      spreadAdjustedCollateral = netCollateralDeposited;
       isLpActive = true;
       vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       emit LPActivated(collateralAmount, overCollateralFactor);
@@ -107,8 +112,7 @@ contract Vault is IVault, BaseVaultStorage {
           scalingValue
         );
 
-      // mint LP tokens to user
-      lpTokensOut = (netCollateralDeposited * scalingValue).div(rate);
+      lpTokensOut = (spreadAdjustedCollateral * scalingValue).div(rate);
       _mint(recipient, lpTokensOut);
 
       // log event
@@ -125,11 +129,11 @@ contract Vault is IVault, BaseVaultStorage {
         );
 
       // mint LP tokens to user
-      lpTokensOut = netCollateralDeposited > maxCollateralAtDiscount
+      lpTokensOut = spreadAdjustedCollateral > maxCollateralAtDiscount
         ? (maxCollateralAtDiscount * scalingValue).div(discountedRate) +
-          ((netCollateralDeposited - maxCollateralAtDiscount) * scalingValue)
+          ((spreadAdjustedCollateral - maxCollateralAtDiscount) * scalingValue)
             .div(rate)
-        : (netCollateralDeposited * scalingValue).div(discountedRate);
+        : (spreadAdjustedCollateral * scalingValue).div(discountedRate);
 
       _mint(recipient, lpTokensOut);
 
@@ -287,5 +291,22 @@ contract Vault is IVault, BaseVaultStorage {
     // discount = collateralDeficit / collateralExpected
     // discounted rate = rate - (rate * discount)
     discountedRate = rate - rate.mul(collateralDeficit.div(collateralExpected));
+  }
+
+  // apply spread % based on price feed spread
+  function applySpread(uint256 collateralAmount)
+    internal
+    view
+    returns (uint256 adjustedAmount)
+  {
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.PriceFeed
+        )
+      );
+
+    uint256 maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
+    adjustedAmount = collateralAmount - collateralAmount.mul(maxSpread);
   }
 }
