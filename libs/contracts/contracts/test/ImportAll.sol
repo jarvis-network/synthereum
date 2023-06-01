@@ -139,6 +139,8 @@ import '../jarvis-token/DebtToken.sol';
 import '../jarvis-token/Migration.sol';
 import '../jarvis-token/interfaces/IDebtToken.sol';
 import '../jarvis-token/factories/DebtTokenFactory.sol';
+import '../jarvis-token/jarvis/JarvisToken.sol';
+import '../jarvis-token/jarvis/JarvisTokenImplementation.sol';
 import '../multiLP-vaults/Vault.sol';
 import '../multiLP-vaults/BaseVaultStorage.sol';
 import '../multiLP-vaults/interfaces/IVault.sol';
