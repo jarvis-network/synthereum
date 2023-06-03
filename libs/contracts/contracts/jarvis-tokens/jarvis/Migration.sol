@@ -7,11 +7,11 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
   StandardAccessControlEnumerable
-} from '../common/roles/StandardAccessControlEnumerable.sol';
+} from '../../common/roles/StandardAccessControlEnumerable.sol';
 import {
   IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
-import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 
 contract JrtToJarvisMigrator is StandardAccessControlEnumerable {
   using PreciseUnitMath for uint256;

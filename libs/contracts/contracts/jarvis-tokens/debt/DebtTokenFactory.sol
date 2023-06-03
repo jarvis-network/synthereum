@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
-import {DebtToken} from '../DebtToken.sol';
+import {DebtToken} from './DebtToken.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {StandardAccessControlEnumerable} from '../../common/roles/StandardAccessControlEnumerable.sol';
 
