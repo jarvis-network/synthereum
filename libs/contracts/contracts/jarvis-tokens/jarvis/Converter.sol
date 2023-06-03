@@ -13,7 +13,7 @@ import {
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 
-contract JrtToJarvisMigrator is StandardAccessControlEnumerable {
+contract JrtToJarvisConverter is StandardAccessControlEnumerable {
   using PreciseUnitMath for uint256;
 
   IERC20 public immutable JRT;

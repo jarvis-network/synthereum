@@ -1,5 +1,5 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
-  'JrtToJarvisMigrator',
+  'JrtToJarvisConverter',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -7,7 +7,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { JrtToJarvisMigrator } = migrate.getContracts(artifacts);
+  const { JrtToJarvisConverter } = migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
     deploy,
@@ -35,7 +35,7 @@ async function migrate(deployer, network, accounts) {
     web3,
     deployer,
     network,
-    JrtToJarvisMigrator,
+    JrtToJarvisConverter,
     data.jrtAddress,
     data.jarvisAddress,
     data.ratio,
@@ -46,7 +46,7 @@ async function migrate(deployer, network, accounts) {
   // set activation block
   const migratorInstance = await getExistingInstance(
     web3,
-    JrtToJarvisMigrator,
+    JrtToJarvisConverter,
     '@jarvis-network/synthereum-contracts',
   );
 

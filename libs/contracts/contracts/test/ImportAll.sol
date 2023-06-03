@@ -138,7 +138,7 @@ import '../lending-module/interfaces/IRewardsController.sol';
 import '../jarvis-tokens/debt/DebtToken.sol';
 import '../jarvis-tokens/debt/DebtTokenFactory.sol';
 import '../jarvis-tokens/debt/interfaces/IDebtToken.sol';
-import '../jarvis-tokens/jarvis/Migration.sol';
+import '../jarvis-tokens/jarvis/Converter.sol';
 import '../jarvis-tokens/jarvis/JarvisToken.sol';
 import '../jarvis-tokens/jarvis/JarvisTokenImplementation.sol';
 import '../multiLP-vaults/Vault.sol';

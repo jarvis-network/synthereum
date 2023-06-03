@@ -7,7 +7,7 @@ const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
 const truffleAssert = require('truffle-assertions');
 
 const TestnetSelfMintingERC20 = artifacts.require('MintableBurnableERC20');
-const Migration = artifacts.require('JrtToJarvisMigrator');
+const Migration = artifacts.require('JrtToJarvisConverter');
 
 contract('JRT to JARVIS migration', accounts => {
   let jrtToken,
