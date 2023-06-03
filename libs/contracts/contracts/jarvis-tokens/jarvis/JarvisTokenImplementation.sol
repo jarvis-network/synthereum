@@ -27,6 +27,8 @@ contract JarvisTokenImplementation is ERC2771Context, ERC20PermitUpgradeable {
   {
     __ERC20_init('JARVIS', 'JARVIS');
     __ERC20Permit_init('JARVIS');
+    require(_totSupply > 0, 'No initial supply');
+    require(_recipient != address(0), 'Null initial recipient');
     _mint(_recipient, _totSupply);
   }
 
