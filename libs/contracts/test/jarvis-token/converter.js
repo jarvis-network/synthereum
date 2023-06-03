@@ -36,13 +36,6 @@ contract('JRT to JARVIS migration', accounts => {
       18,
       { from: accounts[0] },
     );
-    migrationContract = await Migration.new(
-      jrtToken.address,
-      jarvisToken.address,
-      ratio,
-      roles,
-      { from: accounts[0] },
-    );
 
     // allocaate jrt
     await jrtToken.addMinter(accounts[0], { from: accounts[0] });
@@ -53,6 +46,16 @@ contract('JRT to JARVIS migration', accounts => {
     await jarvisToken.addMinter(accounts[0], {
       from: accounts[0],
     });
+  });
+
+  beforeEach(async () => {
+    migrationContract = await Migration.new(
+      jrtToken.address,
+      jarvisToken.address,
+      ratio,
+      roles,
+      { from: accounts[0] },
+    );
     await jarvisToken.mint(migrationContract.address, preMintJarvisAmount, {
       from: accounts[0],
     });
@@ -77,6 +80,14 @@ contract('JRT to JARVIS migration', accounts => {
       let activationBlock = toBN(await web3.eth.getBlockNumber())
         .add(toBN(10))
         .toString();
+
+      await truffleAssert.reverts(
+        migrationContract.setActivationBlock(0, {
+          from: roles.maintainer,
+        }),
+        'Wrong block',
+      );
+
       let tx = await migrationContract.setActivationBlock(activationBlock, {
         from: roles.maintainer,
       });
@@ -95,10 +106,10 @@ contract('JRT to JARVIS migration', accounts => {
         'Sender must be the maintainer',
       );
       await truffleAssert.reverts(
-        migrationContract.setActivationBlock(0, {
+        migrationContract.setActivationBlock('10000000000000000', {
           from: roles.maintainer,
         }),
-        'Err',
+        'Already active',
       );
     });
 
