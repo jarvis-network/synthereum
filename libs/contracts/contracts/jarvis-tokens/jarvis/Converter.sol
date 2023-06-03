@@ -8,26 +8,24 @@ import {
 import {
   StandardAccessControlEnumerable
 } from '../../common/roles/StandardAccessControlEnumerable.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 
 contract JrtToJarvisConverter is StandardAccessControlEnumerable {
   using PreciseUnitMath for uint256;
 
   IERC20 public immutable JRT;
-  IMintableBurnableERC20 public immutable JARVIS;
+  IERC20 public immutable JARVIS;
   uint256 public immutable JRT_JARVIS_RATIO;
 
   uint256 public totalJRTMigrated;
+  uint256 public totalJarvisDistributed;
   uint256 public activationBlock;
 
   event MigrationStartBlock(uint256 indexed blockNumber);
   event JrtMigrated(
     address indexed sender,
-    uint256 indexed jrtAmount,
-    uint256 indexed jarvisAmount
+    uint256 jrtAmount,
+    uint256 jarvisAmount
   );
   event Withdrawn(uint256 indexed amount, address indexed recipient);
 
@@ -38,13 +36,14 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
    */
   constructor(
     IERC20 jrt,
-    IMintableBurnableERC20 jarvis,
+    IERC20 jarvis,
     uint256 ratio,
     Roles memory _roles
   ) {
     // we can add checks on the addresses passed
     JRT = jrt;
     JARVIS = jarvis;
+    require(ratio != 0, 'Null ratio');
     JRT_JARVIS_RATIO = ratio;
 
     _setAdmin(_roles.admin);
@@ -57,7 +56,8 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
    * @param blockNumber starting block number
    */
   function setActivationBlock(uint256 blockNumber) external onlyMaintainer {
-    require(blockNumber >= block.number, 'Err');
+    require(activationBlock == 0, 'Already active');
+    require(blockNumber >= block.number, 'Wrong block number');
     activationBlock = blockNumber;
     emit MigrationStartBlock(blockNumber);
   }
@@ -88,6 +88,7 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
     JRT.transferFrom(msg.sender, address(this), amount);
 
     uint256 jarvisAmount = amount.div(JRT_JARVIS_RATIO);
+    totalJarvisDistributed += jarvisAmount;
     JARVIS.transfer(msg.sender, jarvisAmount);
 
     emit JrtMigrated(msg.sender, amount, jarvisAmount);
@@ -99,6 +100,6 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
     returns (uint256 jrtMigrated, uint256 jarvisDistributed)
   {
     jrtMigrated = totalJRTMigrated;
-    jarvisDistributed = jrtMigrated.div(JRT_JARVIS_RATIO);
+    jarvisDistributed = totalJarvisDistributed;
   }
 }
