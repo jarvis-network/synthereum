@@ -77,16 +77,12 @@ contract SynthereumDiaPriceFeed is SynthereumPriceFeedImplementation {
   }
 
   /**
-   * @notice Get the max update spread for a given price identifier from DIA
-   * @param _priceId HexName of price identifier
-   * @param _source Source contract from which get the price
-   * @param _extraData Extra data of the pair for getting info
-   * @return Max spread
+   * @notice No dynamic spread supported
    */
   function _getDynamicMaxSpread(
-    bytes32 _priceId,
-    address _source,
-    bytes memory _extraData
+    bytes32,
+    address,
+    bytes memory
   ) internal view virtual override returns (uint64) {
     revert('Dynamic max spread not supported');
   }
