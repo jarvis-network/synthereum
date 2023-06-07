@@ -5,17 +5,11 @@ import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  BaseControlledMintableBurnableERC20
-} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {CreditLine} from './CreditLine.sol';
 import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
 
@@ -84,8 +78,9 @@ contract CreditLineCreator {
       'Synthetic token address cannot be 0x00'
     );
 
-    BaseControlledMintableBurnableERC20 tokenCurrency =
-      BaseControlledMintableBurnableERC20(params.syntheticToken);
+
+      BaseControlledMintableBurnableERC20 tokenCurrency
+     = BaseControlledMintableBurnableERC20(params.syntheticToken);
     require(
       keccak256(abi.encodePacked(tokenCurrency.name())) ==
         keccak256(abi.encodePacked(params.syntheticName)),
@@ -149,12 +144,11 @@ contract CreditLineCreator {
     uint256 capMintAmount,
     uint256 collateralRequirement
   ) internal {
-    ICreditLineController creditLineController =
-      ICreditLineController(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.CreditLineController
-        )
-      );
+    ICreditLineController creditLineController = ICreditLineController(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.CreditLineController
+      )
+    );
 
     // prepare function calls args
     address[] memory derivatives = new address[](1);

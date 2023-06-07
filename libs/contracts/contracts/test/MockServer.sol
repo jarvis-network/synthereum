@@ -85,8 +85,9 @@ contract MockDapiServer {
   {
     bytes32 dapiNameHash = keccak256(abi.encodePacked(dapiName));
     require(allowedToRead, 'Sender cannot read');
-    DataFeed storage dataFeed =
-      dataFeeds[dapiNameHashToDataFeedId[dapiNameHash]];
+    DataFeed storage dataFeed = dataFeeds[
+      dapiNameHashToDataFeedId[dapiNameHash]
+    ];
     require(dataFeed.timestamp != 0, 'Data feed does not exist');
     return dataFeed.value;
   }

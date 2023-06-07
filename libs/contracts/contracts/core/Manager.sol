@@ -3,20 +3,12 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
-import {
-  IAccessControlEnumerable
-} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
+import {IAccessControlEnumerable} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {IEmergencyShutdown} from '../common/interfaces/IEmergencyShutdown.sol';
-import {
-  ISynthereumLendingSwitch
-} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
+import {ISynthereumLendingSwitch} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 import {SynthereumInterfaces} from './Constants.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 contract SynthereumManager is
   ISynthereumManager,

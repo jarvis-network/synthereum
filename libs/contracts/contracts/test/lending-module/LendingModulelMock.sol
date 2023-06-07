@@ -2,19 +2,11 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  ILendingModule
-} from '../../lending-module/interfaces/ILendingModule.sol';
-import {
-  ILendingStorageManager
-} from '../../lending-module/interfaces/ILendingStorageManager.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {ILendingModule} from '../../lending-module/interfaces/ILendingModule.sol';
+import {ILendingStorageManager} from '../../lending-module/interfaces/ILendingStorageManager.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {SynthereumPoolMigrationFrom} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 import {LendingTestnetERC20} from './LendingTestnetERC20.sol';
 
 contract LendingModulelMock is ILendingModule {
@@ -37,13 +29,14 @@ contract LendingModulelMock is ILendingModule {
     IERC20 collateral = IERC20(poolData.collateral);
     require(collateral.balanceOf(address(this)) >= amount, 'Wrong balance');
 
-    (uint256 exceedPrgDep, , bool isBonus) =
-      abi.decode(lendingArgs, (uint256, uint256, bool));
+    (uint256 exceedPrgDep, , bool isBonus) = abi.decode(
+      lendingArgs,
+      (uint256, uint256, bool)
+    );
 
-    uint256 netDeposit =
-      isBonus
-        ? amount + amount.mul(exceedPrgDep)
-        : amount - amount.mul(exceedPrgDep);
+    uint256 netDeposit = isBonus
+      ? amount + amount.mul(exceedPrgDep)
+      : amount - amount.mul(exceedPrgDep);
 
     address interestToken = poolData.interestBearingToken;
     collateral.safeIncreaseAllowance(interestToken, amount);
@@ -68,13 +61,14 @@ contract LendingModulelMock is ILendingModule {
       uint256 tokensTransferred
     )
   {
-    (, uint256 exceedPrgWith, bool isBonus) =
-      abi.decode(lendingArgs, (uint256, uint256, bool));
+    (, uint256 exceedPrgWith, bool isBonus) = abi.decode(
+      lendingArgs,
+      (uint256, uint256, bool)
+    );
 
-    uint256 netWithdrawal =
-      isBonus
-        ? bearingTokensAmount - bearingTokensAmount.mul(exceedPrgWith)
-        : bearingTokensAmount + bearingTokensAmount.mul(exceedPrgWith);
+    uint256 netWithdrawal = isBonus
+      ? bearingTokensAmount - bearingTokensAmount.mul(exceedPrgWith)
+      : bearingTokensAmount + bearingTokensAmount.mul(exceedPrgWith);
 
     LendingTestnetERC20(poolData.interestBearingToken).withdraw(
       recipient,

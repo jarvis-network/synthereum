@@ -3,31 +3,17 @@ pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPriceFeed} from '../../oracle/interfaces/IPriceFeed.sol';
-import {
-  ILendingManager
-} from '../../lending-module/interfaces/ILendingManager.sol';
-import {
-  ILendingStorageManager
-} from '../../lending-module/interfaces/ILendingStorageManager.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from './interfaces/IMultiLpLiquidityPool.sol';
-import {
-  ISynthereumMultiLpLiquidityPoolEvents
-} from './interfaces/IMultiLpLiquidityPoolEvents.sol';
+import {ILendingManager} from '../../lending-module/interfaces/ILendingManager.sol';
+import {ILendingStorageManager} from '../../lending-module/interfaces/ILendingStorageManager.sol';
+import {ISynthereumMultiLpLiquidityPool} from './interfaces/IMultiLpLiquidityPool.sol';
+import {ISynthereumMultiLpLiquidityPoolEvents} from './interfaces/IMultiLpLiquidityPoolEvents.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {ExplicitERC20} from '../../base/utils/ExplicitERC20.sol';
 
 /**
@@ -165,10 +151,12 @@ library SynthereumMultiLpLiquidityPoolLib {
       actualCollateralAmount = lpCache.lpPosition.actualCollateralAmount;
       if (lp == _depositingLp) {
         newLpCollateralAmount = actualCollateralAmount + _increaseCollateral;
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .actualCollateralAmount = newLpCollateralAmount;
       } else {
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .actualCollateralAmount = actualCollateralAmount;
       }
     }
@@ -215,10 +203,12 @@ library SynthereumMultiLpLiquidityPoolLib {
           isOvercollateralized,
           'LP below its overcollateralization level'
         );
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .actualCollateralAmount = newLpCollateralAmount;
       } else {
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .actualCollateralAmount = actualCollateralAmount;
       }
     }
@@ -263,12 +253,15 @@ library SynthereumMultiLpLiquidityPoolLib {
           isOvercollateralized,
           'LP below its overcollateralization level'
         );
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .actualCollateralAmount = actualCollateralAmount;
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .overCollateralization = _newOverCollateralization;
       } else {
-        _storageParams.lpPositions[lp]
+        _storageParams
+          .lpPositions[lp]
           .actualCollateralAmount = actualCollateralAmount;
       }
     }
@@ -371,12 +364,11 @@ library SynthereumMultiLpLiquidityPoolLib {
         (
           ILendingManager.ReturnValues memory lendingValues,
           WithdrawDust memory withdrawDust
-        ) =
-          _lendingWithdraw(
-            _liquidationUpdateArgs.lendingManager,
-            _liquidationUpdateArgs.liquidator,
-            collateralAmount + liquidationBonusAmount
-          );
+        ) = _lendingWithdraw(
+          _liquidationUpdateArgs.lendingManager,
+          _liquidationUpdateArgs.liquidator,
+          collateralAmount + liquidationBonusAmount
+        );
 
         liquidationBonusAmount = withdrawDust.isPositive
           ? liquidationBonusAmount - withdrawDust.amount
@@ -391,7 +383,8 @@ library SynthereumMultiLpLiquidityPoolLib {
           _liquidationUpdateArgs.actualSynthTokens -
           tokensToLiquidate;
       } else {
-        _storageParams.lpPositions[_liquidationUpdateArgs.lp]
+        _storageParams
+          .lpPositions[_liquidationUpdateArgs.lp]
           .actualCollateralAmount = _liquidationUpdateArgs
           .actualCollateralAmount;
       }
@@ -485,20 +478,18 @@ library SynthereumMultiLpLiquidityPoolLib {
     internal
     returns (ILendingManager.ReturnValues memory, WithdrawDust memory)
   {
-    (uint256 bearingAmount, address bearingToken) =
-      _lendingManager.collateralToInterestToken(
-        address(this),
-        _collateralAmount
-      );
+    (uint256 bearingAmount, address bearingToken) = _lendingManager
+      .collateralToInterestToken(address(this), _collateralAmount);
 
-    (uint256 amountTransferred, ) =
-      IERC20(bearingToken).explicitSafeTransfer(
-        address(_lendingManager),
-        bearingAmount
-      );
+    (uint256 amountTransferred, ) = IERC20(bearingToken).explicitSafeTransfer(
+      address(_lendingManager),
+      bearingAmount
+    );
 
-    ILendingManager.ReturnValues memory returnValues =
-      _lendingManager.withdraw(amountTransferred, _recipient);
+    ILendingManager.ReturnValues memory returnValues = _lendingManager.withdraw(
+      amountTransferred,
+      _recipient
+    );
 
     bool isPositiveDust = _collateralAmount >= returnValues.tokensOut;
 
@@ -527,14 +518,14 @@ library SynthereumMultiLpLiquidityPoolLib {
     string calldata _lendingId,
     address _bearingToken
   ) internal returns (ILendingManager.MigrateReturnValues memory) {
-    IERC20 actualBearingToken =
-      IERC20(_lendingStorageManager.getInterestBearingToken(address(this)));
+    IERC20 actualBearingToken = IERC20(
+      _lendingStorageManager.getInterestBearingToken(address(this))
+    );
     uint256 actualBearingAmount = actualBearingToken.balanceOf(address(this));
-    (uint256 amountTransferred, ) =
-      actualBearingToken.explicitSafeTransfer(
-        address(_lendingManager),
-        actualBearingAmount
-      );
+    (uint256 amountTransferred, ) = actualBearingToken.explicitSafeTransfer(
+      address(_lendingManager),
+      actualBearingAmount
+    );
     return
       _lendingManager.migrateLendingModule(
         _lendingId,
@@ -580,8 +571,10 @@ library SynthereumMultiLpLiquidityPoolLib {
     uint256 maxTokensHeld;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       lp = _storageParams.activeLPs.at(j);
-      ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition =
-        _storageParams.lpPositions[lp];
+
+
+        ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition
+       = _storageParams.lpPositions[lp];
       _positionsCache[j] = PositionCache(lp, lpPosition);
       totalLPsCollateral += lpPosition.actualCollateralAmount;
       bool isLessFunded = lpPosition.tokensCollateralized <= maxTokensHeld;
@@ -777,8 +770,10 @@ library SynthereumMultiLpLiquidityPoolLib {
     TempInterstSharesArgs memory tempInterstSharesArgs;
     for (uint256 j = 0; j < _positionsCache.length; j++) {
       tempInterstSharesArgs.lp = _storageParams.activeLPs.at(j);
-      ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition =
-        _storageParams.lpPositions[tempInterstSharesArgs.lp];
+
+
+        ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition
+       = _storageParams.lpPositions[tempInterstSharesArgs.lp];
       tempInterstSharesArgs.capacityShare = _calculateCapacity(
         lpPosition,
         _price,
@@ -888,10 +883,9 @@ library SynthereumMultiLpLiquidityPoolLib {
     ISynthereumFinder _finder,
     bytes32 _priceIdentifier
   ) internal view returns (uint256) {
-    ISynthereumPriceFeed priceFeed =
-      ISynthereumPriceFeed(
-        _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
-      );
+    ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
+      _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+    );
 
     return priceFeed.getLatestPrice(_priceIdentifier);
   }
@@ -918,12 +912,11 @@ library SynthereumMultiLpLiquidityPoolLib {
 
     uint256 netCollateralAmount = _totCollateralAmount - feeAmount;
 
-    uint256 numTokens =
-      _calculateNumberOfTokens(
-        netCollateralAmount,
-        _price,
-        _collateralDecimals
-      );
+    uint256 numTokens = _calculateNumberOfTokens(
+      netCollateralAmount,
+      _price,
+      _collateralDecimals
+    );
 
     return
       ISynthereumMultiLpLiquidityPoolEvents.MintValues(
@@ -952,8 +945,11 @@ library SynthereumMultiLpLiquidityPoolLib {
     view
     returns (ISynthereumMultiLpLiquidityPoolEvents.RedeemValues memory)
   {
-    uint256 totCollateralAmount =
-      _calculateCollateralAmount(_numTokens, _price, _collateralDecimals);
+    uint256 totCollateralAmount = _calculateCollateralAmount(
+      _numTokens,
+      _price,
+      _collateralDecimals
+    );
 
     uint256 feeAmount = totCollateralAmount.mul(_storageParams.fee);
 
@@ -982,24 +978,25 @@ library SynthereumMultiLpLiquidityPoolLib {
     uint8 _collateralDecimals,
     ISynthereumFinder _finder
   ) internal view returns (uint256 maxCapacity) {
-    (uint256 poolInterest, uint256 collateralDeposited) =
-      SynthereumMultiLpLiquidityPoolLib._getLendingInterest(
-        SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder)
-      );
+    (
+      uint256 poolInterest,
+      uint256 collateralDeposited
+    ) = SynthereumMultiLpLiquidityPoolLib._getLendingInterest(
+      SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder)
+    );
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
       ,
 
-    ) =
-      SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
-        _storageParams,
-        poolInterest,
-        _price,
-        _storageParams.totalSyntheticAsset,
-        collateralDeposited,
-        _collateralDecimals
-      );
+    ) = SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
+      _storageParams,
+      poolInterest,
+      _price,
+      _storageParams.totalSyntheticAsset,
+      collateralDeposited,
+      _collateralDecimals
+    );
 
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
     uint256 lpCapacity;
@@ -1037,19 +1034,17 @@ library SynthereumMultiLpLiquidityPoolLib {
 
     uint256 lpNumbers = _positionsCache.length;
 
-    uint256 totalAssetValue =
-      _calculateCollateralAmount(
-        _totalSynthTokens,
-        _price,
-        _collateralDecimals
-      );
+    uint256 totalAssetValue = _calculateCollateralAmount(
+      _totalSynthTokens,
+      _price,
+      _collateralDecimals
+    );
 
     bool isLpGain = totalAssetValue < _totalUserAmount;
 
-    uint256 totalProfitOrLoss =
-      isLpGain
-        ? _totalUserAmount - totalAssetValue
-        : totalAssetValue - _totalUserAmount;
+    uint256 totalProfitOrLoss = isLpGain
+      ? _totalUserAmount - totalAssetValue
+      : totalAssetValue - _totalUserAmount;
 
     uint256 remainingProfitOrLoss = totalProfitOrLoss;
     ISynthereumMultiLpLiquidityPool.LPPosition memory lpPosition;
@@ -1087,13 +1082,12 @@ library SynthereumMultiLpLiquidityPoolLib {
     uint256 lpNumbers = _positionsCache.length;
 
     uint256[] memory capacityShares = new uint256[](lpNumbers);
-    uint256 totalCapacity =
-      _calculateMintShares(
-        _price,
-        _collateralDecimals,
-        _positionsCache,
-        capacityShares
-      );
+    uint256 totalCapacity = _calculateMintShares(
+      _price,
+      _collateralDecimals,
+      _positionsCache,
+      capacityShares
+    );
 
     require(
       totalCapacity >= _mintValues.numTokens,
@@ -1125,14 +1119,13 @@ library SynthereumMultiLpLiquidityPoolLib {
       .lpPosition;
     mintSplit.lpPosition.tokensCollateralized += mintSplit.remainingTokens;
     mintSplit.lpPosition.actualCollateralAmount += mintSplit.remainingFees;
-    (bool isOvercollateralized, ) =
-      _isOvercollateralizedLP(
-        mintSplit.lpPosition.actualCollateralAmount,
-        mintSplit.lpPosition.overCollateralization,
-        mintSplit.lpPosition.tokensCollateralized,
-        _price,
-        _collateralDecimals
-      );
+    (bool isOvercollateralized, ) = _isOvercollateralizedLP(
+      mintSplit.lpPosition.actualCollateralAmount,
+      mintSplit.lpPosition.overCollateralization,
+      mintSplit.lpPosition.tokensCollateralized,
+      _price,
+      _collateralDecimals
+    );
     require(
       isOvercollateralized,
       'No enough liquidity for covering split in mint operation'
@@ -1286,14 +1279,11 @@ library SynthereumMultiLpLiquidityPoolLib {
     uint256 _price,
     uint8 _collateralDecimals
   ) internal pure returns (uint256) {
-    uint256 maxCapacity =
-      _calculateNumberOfTokens(
-        _lpPosition.actualCollateralAmount.div(
-          _lpPosition.overCollateralization
-        ),
-        _price,
-        _collateralDecimals
-      );
+    uint256 maxCapacity = _calculateNumberOfTokens(
+      _lpPosition.actualCollateralAmount.div(_lpPosition.overCollateralization),
+      _price,
+      _collateralDecimals
+    );
     return
       maxCapacity > _lpPosition.tokensCollateralized
         ? maxCapacity - _lpPosition.tokensCollateralized
@@ -1318,13 +1308,12 @@ library SynthereumMultiLpLiquidityPoolLib {
       _lpPosition.actualCollateralAmount != 0
         ? PreciseUnitMath.min(
           _calculateCollateralAmount(
-            _lpPosition
-              .tokensCollateralized,
+            _lpPosition.tokensCollateralized,
             _price,
             _collateralDecimals
-          )
-            .mul(_lpPosition.overCollateralization)
-            .div(_lpPosition.actualCollateralAmount),
+          ).mul(_lpPosition.overCollateralization).div(
+            _lpPosition.actualCollateralAmount
+          ),
           PreciseUnitMath.PRECISE_UNIT
         )
         : _lpPosition.tokensCollateralized > 0

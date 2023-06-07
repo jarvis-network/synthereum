@@ -2,17 +2,10 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumFactoryVersioning
-} from '../../core/interfaces/IFactoryVersioning.sol';
-import {
-  SynthereumInterfaces,
-  FactoryInterfaces
-} from '../../core/Constants.sol';
+import {ISynthereumFactoryVersioning} from '../../core/interfaces/IFactoryVersioning.sol';
+import {SynthereumInterfaces, FactoryInterfaces} from '../../core/Constants.sol';
 import {SynthereumFactoryAccess} from '../../common/libs/FactoryAccess.sol';
-import {
-  BaseControlledMintableBurnableERC20
-} from '../BaseControlledMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from '../BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Factory for creating new mintable and burnable tokens.

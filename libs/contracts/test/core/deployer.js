@@ -119,7 +119,8 @@ contract('Deployer', function (accounts) {
     collateralAddress = PoolV6Data[networkId].collateral;
     mockAggregator = await MockAggregator.new(8, 120000000);
     priceFeed = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeed.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,
@@ -138,11 +139,13 @@ contract('Deployer', function (accounts) {
     await priceFeed.setPair(priceIdentifier, 1, 'chainlink', [], {
       from: maintainer,
     });
-    collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    collateralWhitelistInstance =
+      await SynthereumCollateralWhitelist.deployed();
     await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
       from: maintainer,
     });
-    identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
+    identifierWhitelistInstance =
+      await SynthereumIdentifierWhitelist.deployed();
     await identifierWhitelistInstance.addToWhitelist(
       web3.utils.utf8ToHex(priceIdentifier),
       {
@@ -720,11 +723,12 @@ contract('Deployer', function (accounts) {
       );
     });
     it('Can deploy', async () => {
-      const selfMintingDerivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingDerivativeVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const selfMintingDerivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingDerivativeVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       const deploymentTx = await deployerInstance.deploySelfMintingDerivative(
         selfMintingDerivativeVersion,
         selfMintingPayload,
@@ -818,7 +822,9 @@ contract('Deployer', function (accounts) {
       );
       const wrongFactory = await CreditLineFactory.new(
         newFinder.address,
-        (await CreditLine.deployed()).address,
+        (
+          await CreditLine.deployed()
+        ).address,
       );
       await factoryVersioningInstance.setFactory(
         web3.utils.stringToHex('SelfMintingFactory'),
@@ -837,7 +843,9 @@ contract('Deployer', function (accounts) {
       await factoryVersioningInstance.setFactory(
         web3.utils.stringToHex('SelfMintingFactory'),
         2,
-        (await CreditLineFactory.deployed()).address,
+        (
+          await CreditLineFactory.deployed()
+        ).address,
         { from: maintainer },
       );
     });
@@ -879,7 +887,9 @@ contract('Deployer', function (accounts) {
       );
       await finderInstance.changeImplementationAddress(
         web3.utils.stringToHex('CreditLineController'),
-        (await CreditLineController.deployed()).address,
+        (
+          await CreditLineController.deployed()
+        ).address,
         { from: maintainer },
       );
     });
@@ -960,11 +970,12 @@ contract('Deployer', function (accounts) {
       );
     });
     it('Can remove self-minting derivative', async () => {
-      const selfMintingDerivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingDerivativeVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const selfMintingDerivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingDerivativeVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       await deployerInstance.deploySelfMintingDerivative(
         selfMintingDerivativeVersion,
         selfMintingPayload,
@@ -976,12 +987,13 @@ contract('Deployer', function (accounts) {
         [selfMintingDerivative, selfMintingDerivative],
         { from: maintainer },
       );
-      const derivativeRemovedTx = await deployerInstance.removeSelfMintingDerivative(
-        selfMintingDerivative,
-        {
-          from: maintainer,
-        },
-      );
+      const derivativeRemovedTx =
+        await deployerInstance.removeSelfMintingDerivative(
+          selfMintingDerivative,
+          {
+            from: maintainer,
+          },
+        );
       truffleAssert.eventEmitted(
         derivativeRemovedTx,
         'SelfMintingDerivativeRemoved',
@@ -991,11 +1003,12 @@ contract('Deployer', function (accounts) {
       );
     });
     it('Can revert if the self-minting derivative has minter role of the synth token', async () => {
-      const selfMintingDerivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingDerivativeVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const selfMintingDerivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingDerivativeVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       await deployerInstance.deploySelfMintingDerivative(
         selfMintingDerivativeVersion,
         selfMintingPayload,
@@ -1015,11 +1028,12 @@ contract('Deployer', function (accounts) {
       );
     });
     it('Can revert if the self-minting derivative has burner role of the synth token', async () => {
-      const selfMintingDerivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingDerivativeVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const selfMintingDerivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingDerivativeVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       await deployerInstance.deploySelfMintingDerivative(
         selfMintingDerivativeVersion,
         selfMintingPayload,
@@ -1266,7 +1280,9 @@ contract('Deployer', function (accounts) {
       await factoryVersioningInstance.setFactory(
         web3.utils.stringToHex('FixedRateFactory'),
         1,
-        (await SynthereumFixedRateFactory.deployed()).address,
+        (
+          await SynthereumFixedRateFactory.deployed()
+        ).address,
         { from: maintainer },
       );
     });
@@ -1336,7 +1352,8 @@ contract('Deployer', function (accounts) {
       const fiexdRateWrapperContract = await SynthereumFixedRateWrapper.at(
         fixedRateWrapper,
       );
-      const synthTokenAddress = await fiexdRateWrapperContract.syntheticToken.call();
+      const synthTokenAddress =
+        await fiexdRateWrapperContract.syntheticToken.call();
       await managerContract.revokeSynthereumRole(
         [synthTokenAddress, synthTokenAddress],
         [minterRole, burnerRole],
@@ -1367,7 +1384,8 @@ contract('Deployer', function (accounts) {
       const fiexdRateWrapperContract = await SynthereumFixedRateWrapper.at(
         fixedRateWrapper,
       );
-      const synthTokenAddress = await fiexdRateWrapperContract.syntheticToken.call();
+      const synthTokenAddress =
+        await fiexdRateWrapperContract.syntheticToken.call();
       await managerContract.revokeSynthereumRole(
         [synthTokenAddress],
         [burnerRole],
@@ -1395,7 +1413,8 @@ contract('Deployer', function (accounts) {
       const fiexdRateWrapperContract = await SynthereumFixedRateWrapper.at(
         fixedRateWrapper,
       );
-      const synthTokenAddress = await fiexdRateWrapperContract.syntheticToken.call();
+      const synthTokenAddress =
+        await fiexdRateWrapperContract.syntheticToken.call();
       await managerContract.revokeSynthereumRole(
         [synthTokenAddress],
         [minterRole],

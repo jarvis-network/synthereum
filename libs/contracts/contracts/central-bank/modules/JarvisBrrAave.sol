@@ -4,12 +4,8 @@ pragma solidity 0.8.9;
 
 import {IJarvisBrrMoneyMarket} from '../interfaces/IJarvisBrrMoneyMarket.sol';
 import {IPool} from '../../lending-module/interfaces/IAaveV3.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 // storageless contract to be used as delegate call by JarvisBRR to deposit the minted jSynth into a money market
@@ -24,8 +20,10 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     bytes calldata _implementationArgs
   ) external override returns (uint256 tokensOut) {
     require(_jSynthAsset.balanceOf(address(this)) >= _amount, 'Wrong balance');
-    (address moneyMarket, IERC20 interestToken) =
-      interestBearingToken(address(_jSynthAsset), _extraArgs);
+    (address moneyMarket, IERC20 interestToken) = interestBearingToken(
+      address(_jSynthAsset),
+      _extraArgs
+    );
 
     uint256 aTokenBalanceBefore = interestToken.balanceOf(address(this));
 
@@ -48,8 +46,10 @@ contract JarvisBrrAave is IJarvisBrrMoneyMarket {
     bytes calldata _extraArgs,
     bytes calldata _implementationArgs
   ) external override returns (uint256 jSynthOut) {
-    (address moneyMarket, IERC20 interestToken) =
-      interestBearingToken(address(_jSynthAsset), _extraArgs);
+    (address moneyMarket, IERC20 interestToken) = interestBearingToken(
+      address(_jSynthAsset),
+      _extraArgs
+    );
 
     require(
       interestToken.balanceOf(address(this)) >= _aTokensAmount,

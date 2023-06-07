@@ -3,9 +3,7 @@ pragma solidity 0.8.9;
 
 import {ISynthereumTrustedForwarder} from './interfaces/ITrustedForwarder.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  MinimalForwarder
-} from '@openzeppelin/contracts/metatx/MinimalForwarder.sol';
+import {MinimalForwarder} from '@openzeppelin/contracts/metatx/MinimalForwarder.sol';
 
 contract SynthereumTrustedForwarder is
   ISynthereumTrustedForwarder,

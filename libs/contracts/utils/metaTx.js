@@ -232,9 +232,8 @@ function claimFeeV5Encoding() {
 }
 
 function liquidateV5Encoding(numSynthTokens) {
-  const signatureHash = Web3EthAbi.encodeFunctionSignature(
-    'liquidate(uint256)',
-  );
+  const signatureHash =
+    Web3EthAbi.encodeFunctionSignature('liquidate(uint256)');
   const data = Web3EthAbi.encodeParameters(['uint256'], [numSynthTokens]);
   return signatureHash.concat(data.replace('0x', ''));
 }

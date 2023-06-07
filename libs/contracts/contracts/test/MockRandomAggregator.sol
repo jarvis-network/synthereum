@@ -2,9 +2,7 @@
 pragma solidity 0.8.9;
 
 import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import {
-  SignedSafeMath
-} from '@openzeppelin/contracts/utils/math/SignedSafeMath.sol';
+import {SignedSafeMath} from '@openzeppelin/contracts/utils/math/SignedSafeMath.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {MockAggregator} from './MockAggregator.sol';
 
@@ -57,13 +55,12 @@ contract MockRandomAggregator is Ownable, MockAggregator {
     returns (int256 newPrice)
   {
     int256 lastPrice = latestAnswer;
-    int256 difference =
-      lastPrice
-        .mul(int256(block.timestamp.sub(latestTimestamp)))
-        .mul(int256(maxSpreadForSecond))
-        .div(10**18)
-        .mul(int256(randomNumber))
-        .div(10**18);
+    int256 difference = lastPrice
+      .mul(int256(block.timestamp.sub(latestTimestamp)))
+      .mul(int256(maxSpreadForSecond))
+      .div(10**18)
+      .mul(int256(randomNumber))
+      .div(10**18);
     newPrice = (randomNumber.mod(2) == 0)
       ? latestAnswer.sub(difference)
       : latestAnswer.add(difference);

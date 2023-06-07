@@ -1,18 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  ILendingManager
-} from '../lending-module/interfaces/ILendingManager.sol';
-import {
-  ILendingStorageManager
-} from '../lending-module/interfaces/ILendingStorageManager.sol';
+import {ILendingManager} from '../lending-module/interfaces/ILendingManager.sol';
+import {ILendingStorageManager} from '../lending-module/interfaces/ILendingStorageManager.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {ExplicitERC20} from '../base/utils/ExplicitERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 interface ATokenMock is IERC20 {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
@@ -155,10 +149,13 @@ contract PoolLendingMock is ISynthereumDeployment {
     external
     returns (uint256)
   {
-    address interestAddr =
-      storageManager.getInterestBearingToken(address(this));
-    (uint256 amountTransferred, ) =
-      IERC20(interestAddr).explicitSafeTransfer(address(proxy), bearingAmount);
+    address interestAddr = storageManager.getInterestBearingToken(
+      address(this)
+    );
+    (uint256 amountTransferred, ) = IERC20(interestAddr).explicitSafeTransfer(
+      address(proxy),
+      bearingAmount
+    );
     return amountTransferred;
   }
 
@@ -182,8 +179,9 @@ contract PoolLendingMock is ISynthereumDeployment {
     external
     returns (uint256 migrationAmount)
   {
-    IERC20 bearingToken =
-      IERC20(storageManager.getInterestBearingToken(address(this)));
+    IERC20 bearingToken = IERC20(
+      storageManager.getInterestBearingToken(address(this))
+    );
     migrationAmount = bearingToken.balanceOf(address(this));
     bearingToken.safeTransfer(_recipient, migrationAmount);
   }

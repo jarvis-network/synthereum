@@ -98,7 +98,8 @@ contract('Self-minting creator', function (accounts) {
     );
     mockAggregator = await MockAggregator.new(8, 140000000);
     priceFeed = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeed.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,

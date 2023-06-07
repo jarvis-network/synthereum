@@ -99,7 +99,8 @@ contract('Self-minting controller', function (accounts) {
     synthereumFinderAddress = synthereumFinderInstance.address;
     synthereumManagerInstance = await SynthereumManager.deployed();
 
-    synthereumCollateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    synthereumCollateralWhitelistInstance =
+      await SynthereumCollateralWhitelist.deployed();
     await synthereumCollateralWhitelistInstance.addToWhitelist(
       collateral.address,
       { from: maintainer },
@@ -112,7 +113,8 @@ contract('Self-minting controller', function (accounts) {
 
     mockAggregator = await MockAggregator.new(8, 140000000);
     priceFeed = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeed.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,
@@ -241,23 +243,26 @@ contract('Self-minting controller', function (accounts) {
 
     describe('Liquidation Reward', () => {
       it('Set liquidation reward', async () => {
-        let liqRew = await creditLineControllerInstance.getLiquidationRewardPercentage.call(
-          creditLine.address,
-        );
+        let liqRew =
+          await creditLineControllerInstance.getLiquidationRewardPercentage.call(
+            creditLine.address,
+          );
         assert.equal(
           liqRew,
           liquidationRewardPct,
           'Wrong initial collateral req',
         );
         const newLiqRew = toWei('0.3');
-        const updateTx = await creditLineControllerInstance.setLiquidationRewardPercentage(
-          [creditLine.address],
-          [newLiqRew],
-          { from: maintainer },
-        );
-        liqRew = await creditLineControllerInstance.getLiquidationRewardPercentage.call(
-          creditLine.address,
-        );
+        const updateTx =
+          await creditLineControllerInstance.setLiquidationRewardPercentage(
+            [creditLine.address],
+            [newLiqRew],
+            { from: maintainer },
+          );
+        liqRew =
+          await creditLineControllerInstance.getLiquidationRewardPercentage.call(
+            creditLine.address,
+          );
         assert.equal(liqRew, newLiqRew, 'Wrong liq rew after updte');
         truffleAssert.eventEmitted(updateTx, 'SetLiquidationReward', ev => {
           return (
@@ -403,9 +408,10 @@ contract('Self-minting controller', function (accounts) {
           'Wrong initial fee recipients',
         );
 
-        const expectedRec = await creditLineControllerInstance.feeRecipientsInfo(
-          creditLine.address,
-        );
+        const expectedRec =
+          await creditLineControllerInstance.feeRecipientsInfo(
+            creditLine.address,
+          );
         assert.equal(Fee.feeRecipients[0], expectedRec[0][0].toString());
         assert.equal(
           Fee.feeProportions[0].toString(),

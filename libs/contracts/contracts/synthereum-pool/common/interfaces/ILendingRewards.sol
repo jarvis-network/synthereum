@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
-import {
-  ILendingStorageManager
-} from '../../../lending-module/interfaces/ILendingStorageManager.sol';
+import {ILendingStorageManager} from '../../../lending-module/interfaces/ILendingStorageManager.sol';
 
 /**
  * @title Pool interface for claiming lending rewards

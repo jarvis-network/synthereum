@@ -755,12 +755,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       assert.equal(tokenHolderFinalSynthetic, 0);
 
       // If the tokenHolder tries to withdraw again they should get no additional tokens; all have been withdrawn (same as normal expiratory).
-      const tokenHolderInitialCollateral_secondWithdrawal = await collateral.balanceOf(
-        tokenHolder,
-      );
-      const tokenHolderInitialSynthetic_secondWithdrawal = await tokenCurrency.balanceOf(
-        tokenHolder,
-      );
+      const tokenHolderInitialCollateral_secondWithdrawal =
+        await collateral.balanceOf(tokenHolder);
+      const tokenHolderInitialSynthetic_secondWithdrawal =
+        await tokenCurrency.balanceOf(tokenHolder);
       assert.equal(tokenHolderInitialSynthetic, tokenHolderTokens);
       await tokenCurrency.approve(
         creditLine.address,
@@ -768,12 +766,10 @@ contract('Synthereum CreditLine ', function (accounts) {
         { from: tokenHolder },
       );
       await creditLine.settleEmergencyShutdown({ from: tokenHolder });
-      const tokenHolderFinalCollateral_secondWithdrawal = await collateral.balanceOf(
-        tokenHolder,
-      );
-      const tokenHolderFinalSynthetic_secondWithdrawal = await tokenCurrency.balanceOf(
-        tokenHolder,
-      );
+      const tokenHolderFinalCollateral_secondWithdrawal =
+        await collateral.balanceOf(tokenHolder);
+      const tokenHolderFinalSynthetic_secondWithdrawal =
+        await tokenCurrency.balanceOf(tokenHolder);
       assert.equal(
         tokenHolderInitialCollateral_secondWithdrawal.toString(),
         tokenHolderFinalCollateral_secondWithdrawal.toString(),
@@ -976,10 +972,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // check sponsor position
-      let {
-        collateralAmount,
-        tokensAmount,
-      } = await creditLine.getPositionData.call(sponsor);
+      let { collateralAmount, tokensAmount } =
+        await creditLine.getPositionData.call(sponsor);
       assert.equal(
         tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
@@ -1850,12 +1844,10 @@ contract('Synthereum CreditLine ', function (accounts) {
     const emergencyShutdownPrice = await mockOnchainOracle.getLatestPrice(
       priceFeedIdentifier,
     );
-    const emergencyShutdownTx = await synthereumManagerInstance.emergencyShutdown(
-      [creditLine.address],
-      {
+    const emergencyShutdownTx =
+      await synthereumManagerInstance.emergencyShutdown([creditLine.address], {
         from: maintainers,
-      },
-    );
+      });
 
     // // // check event
     // let emergencyShutdownTimestamp;
@@ -1960,12 +1952,10 @@ contract('Synthereum CreditLine ', function (accounts) {
     assert.equal(tokenHolderFinalSynthetic, 0);
 
     // If the tokenHolder tries to withdraw again they should get no additional tokens; all have been withdrawn (same as normal expiratory).
-    const tokenHolderInitialCollateral_secondWithdrawal = await collateral.balanceOf(
-      tokenHolder,
-    );
-    const tokenHolderInitialSynthetic_secondWithdrawal = await tokenCurrency.balanceOf(
-      tokenHolder,
-    );
+    const tokenHolderInitialCollateral_secondWithdrawal =
+      await collateral.balanceOf(tokenHolder);
+    const tokenHolderInitialSynthetic_secondWithdrawal =
+      await tokenCurrency.balanceOf(tokenHolder);
     assert.equal(tokenHolderInitialSynthetic, tokenHolderTokens);
     await tokenCurrency.approve(
       creditLine.address,
@@ -1973,12 +1963,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       { from: tokenHolder },
     );
     await creditLine.settleEmergencyShutdown({ from: tokenHolder });
-    const tokenHolderFinalCollateral_secondWithdrawal = await collateral.balanceOf(
-      tokenHolder,
-    );
-    const tokenHolderFinalSynthetic_secondWithdrawal = await tokenCurrency.balanceOf(
-      tokenHolder,
-    );
+    const tokenHolderFinalCollateral_secondWithdrawal =
+      await collateral.balanceOf(tokenHolder);
+    const tokenHolderFinalSynthetic_secondWithdrawal =
+      await tokenCurrency.balanceOf(tokenHolder);
     assert.equal(
       tokenHolderInitialCollateral_secondWithdrawal.toString(),
       tokenHolderFinalCollateral_secondWithdrawal.toString(),
@@ -2339,10 +2327,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // check sponsor position
-      let {
-        collateralAmount,
-        tokensAmount,
-      } = await creditLine.getPositionData.call(sponsor);
+      let { collateralAmount, tokensAmount } =
+        await creditLine.getPositionData.call(sponsor);
       assert.equal(
         tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
@@ -2459,10 +2445,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // check sponsor position
-      let {
-        collateralAmount,
-        tokensAmount,
-      } = await creditLine.getPositionData.call(sponsor);
+      let { collateralAmount, tokensAmount } =
+        await creditLine.getPositionData.call(sponsor);
       assert.equal(
         tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
@@ -2555,10 +2539,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       // check sponsor position
-      let {
-        collateralAmount,
-        tokensAmount,
-      } = await creditLine.getPositionData.call(sponsor);
+      let { collateralAmount, tokensAmount } =
+        await creditLine.getPositionData.call(sponsor);
       assert.equal(
         tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),

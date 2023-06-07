@@ -1,22 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {
-  IDeploymentSignature
-} from '../../core/interfaces/IDeploymentSignature.sol';
-import {
-  IMigrationSignature
-} from '../../core/interfaces/IMigrationSignature.sol';
-import {
-  SynthereumMultiLpLiquidityPoolCreator
-} from './MultiLpLiquidityPoolCreator.sol';
+import {IDeploymentSignature} from '../../core/interfaces/IDeploymentSignature.sol';
+import {IMigrationSignature} from '../../core/interfaces/IMigrationSignature.sol';
+import {SynthereumMultiLpLiquidityPoolCreator} from './MultiLpLiquidityPoolCreator.sol';
 import {FactoryConditions} from '../../common/FactoryConditions.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../common/migration/PoolMigrationFrom.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {SynthereumPoolMigrationFrom} from '../common/migration/PoolMigrationFrom.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';
 
 contract SynthereumMultiLpLiquidityPoolFactory is

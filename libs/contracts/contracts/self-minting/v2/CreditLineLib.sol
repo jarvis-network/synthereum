@@ -4,19 +4,13 @@ pragma solidity 0.8.9;
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPriceFeed} from '../../oracle/interfaces/IPriceFeed.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLine} from './CreditLine.sol';
 
 library CreditLineLib {
@@ -88,10 +82,9 @@ library CreditLineLib {
     address _excessTokenBeneficiary,
     uint8 _version
   ) external {
-    ISynthereumPriceFeed priceFeed =
-      ISynthereumPriceFeed(
-        _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
-      );
+    ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
+      _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+    );
 
     require(
       priceFeed.isPriceSupported(_priceIdentifier),
@@ -179,16 +172,14 @@ library CreditLineLib {
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     // Update fees status - percentage is retrieved from Credit Line Controller
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
-    uint8 collateralDecimals =
-      getCollateralDecimals(positionManagerData.collateralToken);
+    uint8 collateralDecimals = getCollateralDecimals(
+      positionManagerData.collateralToken
+    );
     feeAmount = calculateCollateralAmount(
       numTokens,
       priceRate,
       collateralDecimals
-    )
-      .mul(
-      FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
-    );
+    ).mul(FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage));
     positionManagerData.updateFees(feeStatus, feeAmount);
 
     if (positionData.tokensOutstanding.isEqual(0)) {
@@ -292,8 +283,9 @@ library CreditLineLib {
       );
 
       // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
-      FixedPoint.Unsigned memory newTokenCount =
-        positionData.tokensOutstanding.sub(numTokens);
+      FixedPoint.Unsigned memory newTokenCount = positionData
+        .tokensOutstanding
+        .sub(numTokens);
       require(
         newTokenCount.isGreaterThanOrEqual(
           positionManagerData.minSponsorTokens
@@ -338,8 +330,9 @@ library CreditLineLib {
     );
 
     // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
-    FixedPoint.Unsigned memory newTokenCount =
-      positionData.tokensOutstanding.sub(numTokens);
+    FixedPoint.Unsigned memory newTokenCount = positionData
+      .tokensOutstanding
+      .sub(numTokens);
     require(
       newTokenCount.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
       'Below minimum sponsor position'
@@ -380,8 +373,9 @@ library CreditLineLib {
   {
     // to avoid stack too deep
     ICreditLineStorage.ExecuteLiquidationData memory executeLiquidationData;
-    uint8 collateralDecimals =
-      getCollateralDecimals(positionManagerData.collateralToken);
+    uint8 collateralDecimals = getCollateralDecimals(
+      positionManagerData.collateralToken
+    );
 
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
 
@@ -428,8 +422,7 @@ library CreditLineLib {
         executeLiquidationData.collateralLiquidated.sub(
           executeLiquidationData.collateralValueLiquidatedTokens
         )
-      )
-        .mul(positionManagerData._getLiquidationReward());
+      ).mul(positionManagerData._getLiquidationReward());
       executeLiquidationData.collateralLiquidated = executeLiquidationData
         .collateralValueLiquidatedTokens
         .add(executeLiquidationData.liquidatorReward);
@@ -493,26 +486,29 @@ library CreditLineLib {
     address msgSender
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     // copy value
-    FixedPoint.Unsigned memory emergencyShutdownPrice =
-      positionManagerData.emergencyShutdownPrice;
+    FixedPoint.Unsigned memory emergencyShutdownPrice = positionManagerData
+      .emergencyShutdownPrice;
     IMintableBurnableERC20 tokenCurrency = positionManagerData.tokenCurrency;
     FixedPoint.Unsigned memory rawCollateral = positionData.rawCollateral;
-    FixedPoint.Unsigned memory totalCollateral =
-      globalPositionData.rawTotalPositionCollateral;
+    FixedPoint.Unsigned memory totalCollateral = globalPositionData
+      .rawTotalPositionCollateral;
 
     // Get caller's tokens balance
-    FixedPoint.Unsigned memory tokensToRedeem =
-      FixedPoint.Unsigned(tokenCurrency.balanceOf(msgSender));
+    FixedPoint.Unsigned memory tokensToRedeem = FixedPoint.Unsigned(
+      tokenCurrency.balanceOf(msgSender)
+    );
 
     // calculate amount of underlying collateral entitled to them, with oracle emergency price
-    FixedPoint.Unsigned memory totalRedeemableCollateral =
-      tokensToRedeem.mul(emergencyShutdownPrice);
+    FixedPoint.Unsigned memory totalRedeemableCollateral = tokensToRedeem.mul(
+      emergencyShutdownPrice
+    );
 
     // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
     if (rawCollateral.rawValue > 0) {
       // Calculate the underlying entitled to a token sponsor. This is collateral - debt
-      FixedPoint.Unsigned memory tokenDebtValueInCollateral =
-        positionData.tokensOutstanding.mul(emergencyShutdownPrice);
+      FixedPoint.Unsigned memory tokenDebtValueInCollateral = positionData
+        .tokensOutstanding
+        .mul(emergencyShutdownPrice);
 
       // accrued to withdrawable collateral eventual excess collateral after debt
       if (tokenDebtValueInCollateral.isLessThan(rawCollateral)) {
@@ -579,8 +575,9 @@ library CreditLineLib {
     // Update fee status
     delete feeStatus.feeGained[msgSender];
 
-    FixedPoint.Unsigned memory _totalRemainingFees =
-      feeStatus.totalFeeAmount.sub(_feeClaimed);
+    FixedPoint.Unsigned memory _totalRemainingFees = feeStatus
+      .totalFeeAmount
+      .sub(_feeClaimed);
 
     feeStatus.totalFeeAmount = _totalRemainingFees;
 
@@ -598,11 +595,12 @@ library CreditLineLib {
     ICreditLineStorage.FeeStatus storage feeStatus,
     IERC20 token
   ) external returns (FixedPoint.Unsigned memory amount) {
-    FixedPoint.Unsigned memory balance =
-      FixedPoint.Unsigned(token.balanceOf(address(this)));
+    FixedPoint.Unsigned memory balance = FixedPoint.Unsigned(
+      token.balanceOf(address(this))
+    );
     if (address(token) == address(positionManagerData.collateralToken)) {
-      FixedPoint.Unsigned memory rawTotalPositionCollateral =
-        globalPositionData.rawTotalPositionCollateral;
+      FixedPoint.Unsigned memory rawTotalPositionCollateral = globalPositionData
+        .rawTotalPositionCollateral;
       FixedPoint.Unsigned memory totalFeeAmount = feeStatus.totalFeeAmount;
       // If it is the collateral currency, send only the amount that the contract is not tracking (ie minus fees and positions)
       balance.isGreaterThan(rawTotalPositionCollateral.add(totalFeeAmount))
@@ -632,33 +630,34 @@ library CreditLineLib {
     uint8 collateralDecimals = getCollateralDecimals(self.collateralToken);
     FixedPoint.Unsigned memory positionCollateral = positionData.rawCollateral;
     FixedPoint.Unsigned memory positionTokens = positionData.tokensOutstanding;
-    bool _isOverCollateralised =
-      _checkCollateralization(
-        self,
-        positionCollateral,
-        positionTokens,
+    bool _isOverCollateralised = _checkCollateralization(
+      self,
+      positionCollateral,
+      positionTokens,
+      priceRate,
+      collateralDecimals
+    );
+
+    FixedPoint.Unsigned memory collateralRequirementPrc = self
+      ._getCollateralRequirement();
+
+
+      FixedPoint.Unsigned memory overCollateralValue
+     = getOverCollateralizationLimit(
+      calculateCollateralAmount(
+        positionData.tokensOutstanding,
         priceRate,
         collateralDecimals
-      );
+      ),
+      collateralRequirementPrc
+    );
 
-    FixedPoint.Unsigned memory collateralRequirementPrc =
-      self._getCollateralRequirement();
+    FixedPoint.Unsigned memory coverageRatio = positionCollateral.div(
+      overCollateralValue
+    );
 
-    FixedPoint.Unsigned memory overCollateralValue =
-      getOverCollateralizationLimit(
-        calculateCollateralAmount(
-          positionData.tokensOutstanding,
-          priceRate,
-          collateralDecimals
-        ),
-        collateralRequirementPrc
-      );
-
-    FixedPoint.Unsigned memory coverageRatio =
-      positionCollateral.div(overCollateralValue);
-
-    FixedPoint.Unsigned memory _collateralCoverage =
-      collateralRequirementPrc.mul(coverageRatio);
+    FixedPoint.Unsigned memory _collateralCoverage = collateralRequirementPrc
+      .mul(coverageRatio);
 
     return (_isOverCollateralised, _collateralCoverage.rawValue);
   }
@@ -723,15 +722,14 @@ library CreditLineLib {
     uint32[] memory feeProportions = feeStruct.feeProportions;
     uint256 totalFeeProportions = feeStruct.totalFeeProportions;
     uint256 numberOfRecipients = feeRecipients.length;
-    mapping(address => FixedPoint.Unsigned) storage feeGained =
-      feeStatus.feeGained;
+    mapping(address => FixedPoint.Unsigned) storage feeGained = feeStatus
+      .feeGained;
 
     for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
       address feeRecipient = feeRecipients[i];
-      FixedPoint.Unsigned memory feeReceived =
-        FixedPoint.Unsigned(
-          (feeAmount.rawValue * feeProportions[i]) / totalFeeProportions
-        );
+      FixedPoint.Unsigned memory feeReceived = FixedPoint.Unsigned(
+        (feeAmount.rawValue * feeProportions[i]) / totalFeeProportions
+      );
       feeGained[feeRecipient] = feeGained[feeRecipient].add(feeReceived);
       feeCharged = feeCharged.add(feeReceived);
     }
@@ -791,8 +789,9 @@ library CreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount
   ) internal {
-    FixedPoint.Unsigned memory newRawCollateral =
-      positionData.rawCollateral.sub(collateralAmount);
+    FixedPoint.Unsigned memory newRawCollateral = positionData
+      .rawCollateral
+      .sub(collateralAmount);
 
     positionData.rawCollateral = newRawCollateral;
 
@@ -866,8 +865,9 @@ library CreditLineLib {
     uint8 collateralDecimals
   ) internal view returns (bool) {
     // calculate the min collateral of numTokens with chainlink
-    FixedPoint.Unsigned memory thresholdValue =
-      numTokens.mul(oraclePrice).div(10**(18 - collateralDecimals));
+    FixedPoint.Unsigned memory thresholdValue = numTokens.mul(oraclePrice).div(
+      10**(18 - collateralDecimals)
+    );
 
     thresholdValue = getOverCollateralizationLimit(
       thresholdValue,
@@ -897,12 +897,11 @@ library CreditLineLib {
   function _getOraclePrice(
     ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (FixedPoint.Unsigned memory priceRate) {
-    ISynthereumPriceFeed priceFeed =
-      ISynthereumPriceFeed(
-        positionManagerData.synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.PriceFeed
-        )
-      );
+    ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
+      positionManagerData.synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.PriceFeed
+      )
+    );
     priceRate = FixedPoint.Unsigned(
       priceFeed.getLatestPrice(positionManagerData.priceIdentifier)
     );

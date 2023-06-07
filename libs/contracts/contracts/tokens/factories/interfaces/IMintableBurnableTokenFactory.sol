@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
-import {
-  BaseControlledMintableBurnableERC20
-} from '../../BaseControlledMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from '../../BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Interface for interacting with the MintableBurnableTokenFactory contract

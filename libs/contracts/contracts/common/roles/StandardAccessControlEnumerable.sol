@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @dev Extension of {AccessControlEnumerable} that offer support for maintainer role.

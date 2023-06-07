@@ -5,13 +5,9 @@ import {ISynthereumRegistry} from './interfaces/IRegistry.sol';
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title Register and track all the pools deployed
@@ -48,8 +44,9 @@ contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
    * @notice Check if the sender is the deployer
    */
   modifier onlyDeployer() {
-    address deployer =
-      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
+    address deployer = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.Deployer
+    );
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
     _;
   }
@@ -83,17 +80,15 @@ contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
       for (uint256 j = 0; j < oldSyntheticTokens.length; j++) {
         for (uint256 i = 0; i < oldCollaterals.length; i++) {
           for (uint256 k = 0; k < oldVersions.length; k++) {
-            address[] memory oldElements =
-              oldRegistry.getElements(
-                oldSyntheticTokens[j],
-                IERC20(oldCollaterals[i]),
-                oldVersions[k]
-              );
+            address[] memory oldElements = oldRegistry.getElements(
+              oldSyntheticTokens[j],
+              IERC20(oldCollaterals[i]),
+              oldVersions[k]
+            );
             for (uint256 w = 0; w < oldElements.length; w++) {
               symbolToElements[oldSyntheticTokens[j]][
                 IERC20(oldCollaterals[i])
-              ][oldVersions[k]]
-                .add(oldElements[w]);
+              ][oldVersions[k]].add(oldElements[w]);
             }
           }
         }
@@ -174,8 +169,7 @@ contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
   ) external view override returns (bool isElementDeployed) {
     isElementDeployed = symbolToElements[syntheticTokenSymbol][collateralToken][
       version
-    ]
-      .contains(element);
+    ].contains(element);
   }
 
   /**
@@ -190,8 +184,9 @@ contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
     IERC20 collateralToken,
     uint8 version
   ) external view override returns (address[] memory) {
-    EnumerableSet.AddressSet storage elementSet =
-      symbolToElements[syntheticTokenSymbol][collateralToken][version];
+    EnumerableSet.AddressSet storage elementSet = symbolToElements[
+      syntheticTokenSymbol
+    ][collateralToken][version];
     uint256 numberOfElements = elementSet.length();
     address[] memory elements = new address[](numberOfElements);
     for (uint256 j = 0; j < numberOfElements; j++) {

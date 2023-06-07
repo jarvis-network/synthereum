@@ -69,8 +69,9 @@ contract SynthereumApi3PriceFeed is SynthereumPriceFeedImplementation {
     bytes memory
   ) internal view override returns (uint256 price, uint8 decimals) {
     IDapiServer priceFeed = IDapiServer(_source);
-    int224 unconvertedPrice =
-      priceFeed.readDataFeedValueWithId(_priceIdentifier);
+    int224 unconvertedPrice = priceFeed.readDataFeedValueWithId(
+      _priceIdentifier
+    );
     require(unconvertedPrice >= 0, 'Negative value');
     price = uint256(uint224(unconvertedPrice));
     decimals = 18;

@@ -2,19 +2,11 @@
 pragma solidity 0.8.9;
 
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableTokenFactory
-} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
+import {IMintableBurnableTokenFactory} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumLiquidityPoolStorage
-} from './interfaces/ILiquidityPoolStorage.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  BaseControlledMintableBurnableERC20
-} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
+import {ISynthereumLiquidityPoolStorage} from './interfaces/ILiquidityPoolStorage.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumLiquidityPool} from './LiquidityPool.sol';
 
@@ -69,18 +61,15 @@ contract SynthereumLiquidityPoolCreator {
     );
 
     if (params.syntheticToken == address(0)) {
-      IMintableBurnableTokenFactory tokenFactory =
-        IMintableBurnableTokenFactory(
-          ISynthereumFinder(synthereumFinder).getImplementationAddress(
-            SynthereumInterfaces.TokenFactory
-          )
-        );
-      BaseControlledMintableBurnableERC20 tokenCurrency =
-        tokenFactory.createToken(
-          params.syntheticName,
-          params.syntheticSymbol,
-          18
-        );
+
+        IMintableBurnableTokenFactory tokenFactory
+       = IMintableBurnableTokenFactory(
+        ISynthereumFinder(synthereumFinder).getImplementationAddress(
+          SynthereumInterfaces.TokenFactory
+        )
+      );
+      BaseControlledMintableBurnableERC20 tokenCurrency = tokenFactory
+        .createToken(params.syntheticName, params.syntheticSymbol, 18);
       pool = new SynthereumLiquidityPool(_convertParams(params, tokenCurrency));
       // Give permissions to new pool contract and then hand over ownership.
       tokenCurrency.addMinter(address(pool));
@@ -90,8 +79,9 @@ contract SynthereumLiquidityPoolCreator {
       );
       tokenCurrency.renounceAdmin();
     } else {
-      BaseControlledMintableBurnableERC20 tokenCurrency =
-        BaseControlledMintableBurnableERC20(params.syntheticToken);
+
+        BaseControlledMintableBurnableERC20 tokenCurrency
+       = BaseControlledMintableBurnableERC20(params.syntheticToken);
       require(
         keccak256(abi.encodePacked(tokenCurrency.name())) ==
           keccak256(abi.encodePacked(params.syntheticName)),

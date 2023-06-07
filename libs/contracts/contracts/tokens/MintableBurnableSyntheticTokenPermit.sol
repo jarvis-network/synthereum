@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
-import {
-  MintableBurnableSyntheticToken
-} from './MintableBurnableSyntheticToken.sol';
-import {
-  ERC20Permit
-} from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
+import {MintableBurnableSyntheticToken} from './MintableBurnableSyntheticToken.sol';
+import {ERC20Permit} from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
 import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {MintableBurnableERC20} from './MintableBurnableERC20.sol';
-import {
-  BaseControlledMintableBurnableERC20
-} from './BaseControlledMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from './BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Synthetic token contract

@@ -3,21 +3,14 @@ pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFixedRateWrapper} from './interfaces/IFixedRateWrapper.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {ERC2771Context} from '../../common/ERC2771Context.sol';
-import {
-  AccessControlEnumerable,
-  Context
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {AccessControlEnumerable, Context} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 contract SynthereumFixedRateWrapper is
   ISynthereumFixedRateWrapper,

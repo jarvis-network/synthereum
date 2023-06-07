@@ -3,27 +3,14 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
-import {
-  ISynthereumRegistry
-} from '../../core/registries/interfaces/IRegistry.sol';
+import {ISynthereumRegistry} from '../../core/registries/interfaces/IRegistry.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
-import {
-  ISynthereumFactoryVersioning
-} from '../../core/interfaces/IFactoryVersioning.sol';
+import {ISynthereumFactoryVersioning} from '../../core/interfaces/IFactoryVersioning.sol';
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
-import {
-  SynthereumInterfaces,
-  FactoryInterfaces
-} from '../../core/Constants.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {SynthereumInterfaces, FactoryInterfaces} from '../../core/Constants.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title SelfMintingController
@@ -422,12 +409,11 @@ contract CreditLineController is
     ICreditLine selfMintingDerivative,
     uint8 version
   ) internal view {
-    ISynthereumRegistry selfMintingRegistry =
-      ISynthereumRegistry(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.SelfMintingRegistry
-        )
-      );
+    ISynthereumRegistry selfMintingRegistry = ISynthereumRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.SelfMintingRegistry
+      )
+    );
     require(
       selfMintingRegistry.isDeployed(
         selfMintingDerivative.syntheticTokenSymbol(),
@@ -440,16 +426,16 @@ contract CreditLineController is
   }
 
   function _isSelfMintingFactory() internal view returns (bool) {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.FactoryVersioning
-        )
-      );
-    uint256 numberOfFactories =
-      factoryVersioning.numberOfFactoryVersions(
-        FactoryInterfaces.SelfMintingFactory
-      );
+
+      ISynthereumFactoryVersioning factoryVersioning
+     = ISynthereumFactoryVersioning(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.FactoryVersioning
+      )
+    );
+    uint256 numberOfFactories = factoryVersioning.numberOfFactoryVersions(
+      FactoryInterfaces.SelfMintingFactory
+    );
     uint256 counter = 0;
     for (uint8 i = 0; counter < numberOfFactories; i++) {
       try

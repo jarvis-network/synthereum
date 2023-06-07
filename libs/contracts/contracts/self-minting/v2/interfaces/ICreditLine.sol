@@ -2,21 +2,12 @@
 pragma solidity >=0.8.0;
 
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {
-  IStandardERC20,
-  IERC20
-} from '../../../base/interfaces/IStandardERC20.sol';
-import {
-  ISynthereumDeployment
-} from '../../../common/interfaces/IDeployment.sol';
-import {
-  IEmergencyShutdown
-} from '../../../common/interfaces/IEmergencyShutdown.sol';
+import {IStandardERC20, IERC20} from '../../../base/interfaces/IStandardERC20.sol';
+import {ISynthereumDeployment} from '../../../common/interfaces/IDeployment.sol';
+import {IEmergencyShutdown} from '../../../common/interfaces/IEmergencyShutdown.sol';
 import {ICreditLineStorage} from './ICreditLineStorage.sol';
 import {ITypology} from '../../../common/interfaces/ITypology.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   /**

@@ -3,23 +3,13 @@ pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ILendingManager
-} from '../../lending-module/interfaces/ILendingManager.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from './interfaces/IMultiLpLiquidityPool.sol';
-import {
-  ISynthereumPoolMigrationStorage
-} from '../common/migration/interfaces/IPoolMigrationStorage.sol';
+import {ILendingManager} from '../../lending-module/interfaces/ILendingManager.sol';
+import {ISynthereumMultiLpLiquidityPool} from './interfaces/IMultiLpLiquidityPool.sol';
+import {ISynthereumPoolMigrationStorage} from '../common/migration/interfaces/IPoolMigrationStorage.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {SynthereumMultiLpLiquidityPoolLib} from './MultiLpLiquidityPoolLib.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * @title Multi LP Synthereum pool lib for migration of the storage
@@ -56,37 +46,38 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
       'Sender must be the Synthereum manager'
     );
 
-    ILendingManager.MigrateReturnValues memory migrationValues =
-      SynthereumMultiLpLiquidityPoolLib._lendingMigration(
-        SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder),
-        SynthereumMultiLpLiquidityPoolLib._getLendingStorageManager(_finder),
-        _lendingId,
-        _bearingToken
-      );
 
-    SynthereumMultiLpLiquidityPoolLib.TempStorageArgs memory tempStorage =
-      SynthereumMultiLpLiquidityPoolLib.TempStorageArgs(
-        SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
-          _finder,
-          _storageParams.priceIdentifier
-        ),
-        _storageParams.totalSyntheticAsset,
-        _storageParams.collateralDecimals
-      );
+      ILendingManager.MigrateReturnValues memory migrationValues
+     = SynthereumMultiLpLiquidityPoolLib._lendingMigration(
+      SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder),
+      SynthereumMultiLpLiquidityPoolLib._getLendingStorageManager(_finder),
+      _lendingId,
+      _bearingToken
+    );
+
+
+      SynthereumMultiLpLiquidityPoolLib.TempStorageArgs memory tempStorage
+     = SynthereumMultiLpLiquidityPoolLib.TempStorageArgs(
+      SynthereumMultiLpLiquidityPoolLib._getPriceFeedRate(
+        _finder,
+        _storageParams.priceIdentifier
+      ),
+      _storageParams.totalSyntheticAsset,
+      _storageParams.collateralDecimals
+    );
 
     (
       SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache,
       uint256 prevTotalLpsCollateral,
       uint256 mostFundedIndex
-    ) =
-      SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
-        _storageParams,
-        migrationValues.poolInterest,
-        tempStorage.price,
-        tempStorage.totalSyntheticAsset,
-        migrationValues.prevTotalCollateral,
-        tempStorage.decimals
-      );
+    ) = SynthereumMultiLpLiquidityPoolLib._calculateNewPositions(
+      _storageParams,
+      migrationValues.poolInterest,
+      tempStorage.price,
+      tempStorage.totalSyntheticAsset,
+      migrationValues.prevTotalCollateral,
+      tempStorage.decimals
+    );
 
     SynthereumMultiLpLiquidityPoolLib._calculateSwitchingOrMigratingCollateral(
       prevTotalLpsCollateral,
@@ -151,8 +142,8 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   ) external returns (address[] memory admins, address[] memory maintainers) {
     _storageParams.poolVersion = _newVersion;
 
-    ISynthereumPoolMigrationStorage.MigrationV6 memory migrationStorage =
-      abi.decode(_storageBytes, (ISynthereumPoolMigrationStorage.MigrationV6));
+    ISynthereumPoolMigrationStorage.MigrationV6 memory migrationStorage = abi
+      .decode(_storageBytes, (ISynthereumPoolMigrationStorage.MigrationV6));
 
     _storageParams.lendingModuleId = migrationStorage.lendingModuleId;
     _storageParams.priceIdentifier = migrationStorage.priceIdentifier;
@@ -195,13 +186,16 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
   ) external {
     uint256 lpNumbers = _storageParams.activeLPs.length();
     if (lpNumbers > 0) {
-      SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache =
-        new SynthereumMultiLpLiquidityPoolLib.PositionCache[](lpNumbers);
-      (uint256 totalLpsCollateral, uint256 mostFundedIndex) =
-        SynthereumMultiLpLiquidityPoolLib._loadPositions(
-          _storageParams,
-          positionsCache
-        );
+
+        SynthereumMultiLpLiquidityPoolLib.PositionCache[] memory positionsCache
+       = new SynthereumMultiLpLiquidityPoolLib.PositionCache[](lpNumbers);
+      (
+        uint256 totalLpsCollateral,
+        uint256 mostFundedIndex
+      ) = SynthereumMultiLpLiquidityPoolLib._loadPositions(
+        _storageParams,
+        positionsCache
+      );
       SynthereumMultiLpLiquidityPoolLib
         ._calculateSwitchingOrMigratingCollateral(
         totalLpsCollateral,
@@ -252,8 +246,10 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
       priceIdentifier
     );
     uint256 numberOfLps = _lists.activeLps.length;
-    ISynthereumMultiLpLiquidityPool.LPPosition[] memory positions =
-      new ISynthereumMultiLpLiquidityPool.LPPosition[](numberOfLps);
+
+
+      ISynthereumMultiLpLiquidityPool.LPPosition[] memory positions
+     = new ISynthereumMultiLpLiquidityPool.LPPosition[](numberOfLps);
     for (uint256 j = 0; j < numberOfLps; j++) {
       positions[j] = _storageParams.lpPositions[_lists.activeLps[j]];
     }
@@ -288,19 +284,18 @@ library SynthereumMultiLpLiquidityPoolMigrationLib {
     external
     returns (uint256 migrationAmount)
   {
-    ILendingManager lendingManager =
-      SynthereumMultiLpLiquidityPoolLib._getLendingManager(_finder);
+    ILendingManager lendingManager = SynthereumMultiLpLiquidityPoolLib
+      ._getLendingManager(_finder);
     require(
       msg.sender == address(lendingManager),
       'Sender must be the lending manager'
     );
 
-    IERC20 bearingToken =
-      IERC20(
-        SynthereumMultiLpLiquidityPoolLib
-          ._getLendingStorageManager(_finder)
-          .getInterestBearingToken(address(this))
-      );
+    IERC20 bearingToken = IERC20(
+      SynthereumMultiLpLiquidityPoolLib
+        ._getLendingStorageManager(_finder)
+        .getInterestBearingToken(address(this))
+    );
     migrationAmount = bearingToken.balanceOf(address(this));
     bearingToken.safeTransfer(_recipient, migrationAmount);
   }

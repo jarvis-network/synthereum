@@ -4,23 +4,13 @@ pragma solidity 0.8.9;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IJarvisBrrrrr} from './interfaces/IJarvisBrrrrr.sol';
-import {
-  IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../tokens/interfaces/IMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {StringUtils} from '../base/utils/StringUtils.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract JarvisBrrrrr is
   IJarvisBrrrrr,

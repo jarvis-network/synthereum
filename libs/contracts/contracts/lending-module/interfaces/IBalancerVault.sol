@@ -2,7 +2,10 @@
 pragma solidity >=0.8.0;
 
 interface IBalancerVault {
-  enum SwapKind {GIVEN_IN, GIVEN_OUT}
+  enum SwapKind {
+    GIVEN_IN,
+    GIVEN_OUT
+  }
 
   struct SingleSwap {
     bytes32 poolId;

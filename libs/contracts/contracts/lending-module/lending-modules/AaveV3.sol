@@ -7,13 +7,9 @@ import {ILendingStorageManager} from '../interfaces/ILendingStorageManager.sol';
 import {IPool} from '../interfaces/IAaveV3.sol';
 import {IRewardsController} from '../interfaces/IRewardsController.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {SynthereumPoolMigrationFrom} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 
 contract AaveV3Module is ILendingModule {
   using SafeERC20 for IERC20;
@@ -32,8 +28,12 @@ contract AaveV3Module is ILendingModule {
     )
   {
     // calculate accrued interest since last operation
-    (uint256 interest, uint256 poolBalance) =
-      calculateGeneratedInterest(msg.sender, _poolData, _amount, true);
+    (uint256 interest, uint256 poolBalance) = calculateGeneratedInterest(
+      msg.sender,
+      _poolData,
+      _amount,
+      true
+    );
 
     // proxy should have received collateral from the pool
     IERC20 collateral = IERC20(_poolData.collateral);
@@ -51,9 +51,9 @@ contract AaveV3Module is ILendingModule {
     );
 
     // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
-    uint256 netDeposit =
-      IERC20(_poolData.interestBearingToken).balanceOf(msg.sender) -
-        poolBalance;
+    uint256 netDeposit = IERC20(_poolData.interestBearingToken).balanceOf(
+      msg.sender
+    ) - poolBalance;
 
     totalInterest = interest;
     tokensOut = netDeposit;
@@ -78,11 +78,10 @@ contract AaveV3Module is ILendingModule {
     // proxy should have received interest tokens from the pool
     IERC20 interestToken = IERC20(_poolData.interestBearingToken);
 
-    uint256 withdrawAmount =
-      PreciseUnitMath.min(
-        interestToken.balanceOf(address(this)),
-        _aTokensAmount + 1
-      );
+    uint256 withdrawAmount = PreciseUnitMath.min(
+      interestToken.balanceOf(address(this)),
+      _aTokensAmount + 1
+    );
 
     // calculate accrued interest since last operation
     (totalInterest, ) = calculateGeneratedInterest(
@@ -105,8 +104,8 @@ contract AaveV3Module is ILendingModule {
     );
 
     // aave tokens are usually 1:1 (but in some case there is dust-wei of rounding)
-    uint256 netWithdrawal =
-      IERC20(_poolData.collateral).balanceOf(_recipient) - initialBalance;
+    uint256 netWithdrawal = IERC20(_poolData.collateral).balanceOf(_recipient) -
+      initialBalance;
 
     tokensOut = _aTokensAmount;
     tokensTransferred = netWithdrawal;
@@ -140,8 +139,10 @@ contract AaveV3Module is ILendingModule {
     address _bearingToken,
     address _recipient
   ) external {
-    (, address rewardsController) =
-      abi.decode(_lendingArgs, (address, address));
+    (, address rewardsController) = abi.decode(
+      _lendingArgs,
+      (address, address)
+    );
     address[] memory assets = new address[](1);
     assets[0] = _bearingToken;
     IRewardsController(rewardsController).claimAllRewards(assets, _recipient);

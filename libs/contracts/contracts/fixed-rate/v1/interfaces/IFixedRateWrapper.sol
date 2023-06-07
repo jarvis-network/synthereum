@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
-import {
-  ISynthereumDeployment
-} from '../../../common/interfaces/IDeployment.sol';
+import {ISynthereumDeployment} from '../../../common/interfaces/IDeployment.sol';
 import {ITypology} from '../../../common/interfaces/ITypology.sol';
 
 interface ISynthereumFixedRateWrapper is ITypology, ISynthereumDeployment {

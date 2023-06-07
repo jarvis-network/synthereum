@@ -2,16 +2,12 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  IDeploymentSignature
-} from '../../core/interfaces/IDeploymentSignature.sol';
+import {IDeploymentSignature} from '../../core/interfaces/IDeploymentSignature.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumFixedRateCreator} from './FixedRateCreator.sol';
 import {FactoryConditions} from '../../common/FactoryConditions.sol';
 import {SynthereumFixedRateWrapper} from './FixedRateWrapper.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract SynthereumFixedRateFactory is
   IDeploymentSignature,

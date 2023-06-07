@@ -3,9 +3,7 @@ pragma solidity >=0.8.0;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ICreditLineStorage} from './ICreditLineStorage.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 /** @title Interface for interacting with the SelfMintingController
  */

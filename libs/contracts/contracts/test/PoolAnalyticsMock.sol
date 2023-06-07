@@ -3,20 +3,12 @@ pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {
-  ILendingManager
-} from '../lending-module/interfaces/ILendingManager.sol';
-import {
-  ILendingStorageManager
-} from '../lending-module/interfaces/ILendingStorageManager.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
+import {ILendingManager} from '../lending-module/interfaces/ILendingManager.sol';
+import {ILendingStorageManager} from '../lending-module/interfaces/ILendingStorageManager.sol';
+import {ISynthereumMultiLpLiquidityPool} from '../synthereum-pool/v6/interfaces/IMultiLpLiquidityPool.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract PoolAnalyticsMock {
   using PreciseUnitMath for uint256;
@@ -71,18 +63,17 @@ contract PoolAnalyticsMock {
       Interest memory interest
     )
   {
-    ISynthereumMultiLpLiquidityPool poolContract =
-      ISynthereumMultiLpLiquidityPool(_pool);
-    ILendingStorageManager storageManager =
-      ILendingStorageManager(
-        finder.getImplementationAddress(
-          SynthereumInterfaces.LendingStorageManager
-        )
-      );
-    ILendingManager lendingManager =
-      ILendingManager(
-        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
-      );
+
+      ISynthereumMultiLpLiquidityPool poolContract
+     = ISynthereumMultiLpLiquidityPool(_pool);
+    ILendingStorageManager storageManager = ILendingStorageManager(
+      finder.getImplementationAddress(
+        SynthereumInterfaces.LendingStorageManager
+      )
+    );
+    ILendingManager lendingManager = ILendingManager(
+      finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
+    );
     poolData = storageManager.getPoolStorage(_pool);
     (
       totColl.usersCollateral,
@@ -127,16 +118,16 @@ contract PoolAnalyticsMock {
     bool _moreCollateral,
     uint256 _exceedingAmount
   ) external {
-    ISynthereumMultiLpLiquidityPool poolContract =
-      ISynthereumMultiLpLiquidityPool(_pool);
+
+      ISynthereumMultiLpLiquidityPool poolContract
+     = ISynthereumMultiLpLiquidityPool(_pool);
     poolContract.updatePositions();
     uint256 maxCapacity = poolContract.maxTokensCapacity();
     IERC20 collateralContract = poolContract.collateralToken();
     uint8 decimals = poolContract.collateralTokenDecimals();
-    uint256 collateralAmount =
-      _moreCollateral
-        ? maxCapacity.mul(_price) / (10**(18 - decimals)) + _exceedingAmount
-        : maxCapacity.mul(_price) / (10**(18 - decimals)) - _exceedingAmount;
+    uint256 collateralAmount = _moreCollateral
+      ? maxCapacity.mul(_price) / (10**(18 - decimals)) + _exceedingAmount
+      : maxCapacity.mul(_price) / (10**(18 - decimals)) - _exceedingAmount;
     preCapacity = maxCapacity;
     collAmount = collateralAmount;
     collateralContract.safeTransferFrom(
@@ -157,12 +148,12 @@ contract PoolAnalyticsMock {
   }
 
   function updatePositions(address _pool) external {
-    ISynthereumMultiLpLiquidityPool poolContract =
-      ISynthereumMultiLpLiquidityPool(_pool);
-    ILendingManager lendingManager =
-      ILendingManager(
-        finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
-      );
+
+      ISynthereumMultiLpLiquidityPool poolContract
+     = ISynthereumMultiLpLiquidityPool(_pool);
+    ILendingManager lendingManager = ILendingManager(
+      finder.getImplementationAddress(SynthereumInterfaces.LendingManager)
+    );
     (poolInterest, , , ) = lendingManager.getAccumulatedInterest(_pool);
     poolContract.updatePositions();
   }

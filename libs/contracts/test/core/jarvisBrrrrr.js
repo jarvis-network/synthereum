@@ -384,9 +384,8 @@ contract('Jarvis Printer', async accounts => {
         );
       });
 
-      const implementationInfo = await moneyMarketManager.getMoneyMarketImplementation.call(
-        id,
-      );
+      const implementationInfo =
+        await moneyMarketManager.getMoneyMarketImplementation.call(id);
 
       assert.equal(implementationInfo.implementationAddr, aaveImpl.address);
       assert.equal(implementationInfo.moneyMarketArgs, args);
@@ -403,10 +402,8 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can mint and deposit into aave', async () => {
       let amount = toWei('1', 'gwei');
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
       let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
       let jEurBalanceBefore = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
@@ -449,10 +446,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply.call(jEURPol);
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       assert.equal(
         depositedSupplyAfter.toString(),
@@ -488,10 +483,8 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can redeem from aave and burn', async () => {
       let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       let jEurBalanceBefore = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
@@ -514,10 +507,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply.call(jEURPol);
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       assert.equal(
         depositedSupplyAfter.toString(),
@@ -562,10 +553,8 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Cant redeem and burn more than what deposited', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       await truffleAssert.reverts(
         moneyMarketManager.withdraw(
@@ -582,10 +571,8 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Only maintainer can withdraw revenues from deposit', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
       let maintainerjEurBalanceBefore = await jEurInst.balanceOf.call(
         roles.maintainer,
       );
@@ -606,10 +593,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
 
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
       let maintainerjEurBalanceAfter = await jEurInst.balanceOf.call(
         roles.maintainer,
       );
@@ -696,9 +681,8 @@ contract('Jarvis Printer', async accounts => {
         );
       });
 
-      const implementationInfo = await moneyMarketManager.getMoneyMarketImplementation.call(
-        id,
-      );
+      const implementationInfo =
+        await moneyMarketManager.getMoneyMarketImplementation.call(id);
       assert.equal(
         implementationInfo.implementationAddr,
         implementation.address,
@@ -717,10 +701,8 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can mint and deposit into market xyz', async () => {
       let amount = toWei('1');
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
       let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
       let jEurBalanceBefore = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
@@ -759,10 +741,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply.call(jEURPol);
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       assert.equal(
         depositedSupplyAfter.toString(),
@@ -800,10 +780,8 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can redeem from market xyz and burn', async () => {
       let circSupplyBefore = await jarvisBrrrrr.supply.call(jEURPol);
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       let jEurBalanceBefore = await jEurInst.balanceOf.call(
         moneyMarketManager.address,
@@ -826,10 +804,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply.call(jEURPol);
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       assert.equal(
         depositedSupplyAfter.toString(),
@@ -874,10 +850,8 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Cant redeem and burn more than what deposited', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
 
       await truffleAssert.reverts(
         moneyMarketManager.withdraw(
@@ -894,10 +868,8 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Only maintainer can withdraw revenues from deposit', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
       let maintainerjEurBalanceBefore = await jEurInst.balanceOf.call(
         roles.maintainer,
       );
@@ -918,10 +890,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
 
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jEURPol,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jEURPol);
       let maintainerjEurBalanceAfter = await jEurInst.balanceOf.call(
         roles.maintainer,
       );
@@ -1004,9 +974,8 @@ contract('Jarvis Printer', async accounts => {
           ev.args == args
         );
       });
-      const implementationInfo = await moneyMarketManager.getMoneyMarketImplementation.call(
-        id,
-      );
+      const implementationInfo =
+        await moneyMarketManager.getMoneyMarketImplementation.call(id);
       assert.equal(
         implementationInfo.implementationAddr,
         implementation.address,
@@ -1025,10 +994,8 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can mint and deposit into midas capital', async () => {
       let amount = toWei('1');
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
       let circSupplyBefore = await jarvisBrrrrr.supply.call(jBRL);
       let jBRLBalanceBefore = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
@@ -1068,10 +1035,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply(jBRL);
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
 
       assert.equal(
         depositedSupplyAfter.toString(),
@@ -1103,10 +1068,8 @@ contract('Jarvis Printer', async accounts => {
 
     it('Only maintainer can redeem from midas capital and burn', async () => {
       let circSupplyBefore = await jarvisBrrrrr.supply(jBRL);
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
 
       let jBRLBalanceBefore = await jBRLInstance.balanceOf.call(
         moneyMarketManager.address,
@@ -1128,10 +1091,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
       let circSupplyAfter = await jarvisBrrrrr.supply(jBRL);
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
 
       assert.equal(
         depositedSupplyAfter.toString(),
@@ -1170,10 +1131,8 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Cant redeem and burn more than what deposited', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
 
       await truffleAssert.reverts(
         moneyMarketManager.withdraw(
@@ -1190,10 +1149,8 @@ contract('Jarvis Printer', async accounts => {
     });
 
     it('Only maintainer can withdraw revenues from deposit', async () => {
-      let depositedSupplyBefore = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyBefore =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
       let maintainerjEurBalanceBefore = await jBRLInstance.balanceOf.call(
         roles.maintainer,
       );
@@ -1214,10 +1171,8 @@ contract('Jarvis Printer', async accounts => {
         moneyMarketManager.address,
       );
 
-      let depositedSupplyAfter = await moneyMarketManager.getMoneyMarketDeposited.call(
-        id,
-        jBRL,
-      );
+      let depositedSupplyAfter =
+        await moneyMarketManager.getMoneyMarketDeposited.call(id, jBRL);
       let maintainerjEurBalanceAfter = await jBRLInstance.balanceOf.call(
         roles.maintainer,
       );

@@ -15,7 +15,8 @@ contract('IdentifierWhitelist', function (accounts) {
   let identifierWhitelistInstance;
 
   before(async () => {
-    identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
+    identifierWhitelistInstance =
+      await SynthereumIdentifierWhitelist.deployed();
   });
 
   it('Can add identifier to the whitelist', async () => {
@@ -64,10 +65,10 @@ contract('IdentifierWhitelist', function (accounts) {
       true,
       'Wrong status before removing',
     );
-    const removeCollateralTx = await identifierWhitelistInstance.removeFromWhitelist(
-      identifierToAdd,
-      { from: maintainer },
-    );
+    const removeCollateralTx =
+      await identifierWhitelistInstance.removeFromWhitelist(identifierToAdd, {
+        from: maintainer,
+      });
     truffleAssert.eventEmitted(
       removeCollateralTx,
       'RemovedFromWhitelist',

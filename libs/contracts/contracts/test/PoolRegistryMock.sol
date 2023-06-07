@@ -2,9 +2,7 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
 /**
  * @title Register and track all the pools deployed
@@ -75,7 +73,6 @@ contract PoolRegistryMock {
   ) external view returns (bool isElementDeployed) {
     isElementDeployed = symbolToElements[syntheticTokenSymbol][collateralToken][
       version
-    ]
-      .contains(element);
+    ].contains(element);
   }
 }

@@ -8,9 +8,8 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { SynthereumFinder, CreditLineController } = migrate.getContracts(
-    artifacts,
-  );
+  const { SynthereumFinder, CreditLineController } =
+    migrate.getContracts(artifacts);
   const selfMintingVersions = require('../data/selfMinting-versions.json');
   const {
     getKeysForNetwork,

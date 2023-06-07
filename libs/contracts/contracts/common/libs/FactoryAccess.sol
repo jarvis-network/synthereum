@@ -2,13 +2,8 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumFactoryVersioning
-} from '../../core/interfaces/IFactoryVersioning.sol';
-import {
-  SynthereumInterfaces,
-  FactoryInterfaces
-} from '../../core/Constants.sol';
+import {ISynthereumFactoryVersioning} from '../../core/interfaces/IFactoryVersioning.sol';
+import {SynthereumInterfaces, FactoryInterfaces} from '../../core/Constants.sol';
 
 /** @title Library to use for controlling the access of a functions from the factories
  */
@@ -18,12 +13,14 @@ library SynthereumFactoryAccess {
    * @param _finder Synthereum finder
    */
   function _onlyPoolFactory(ISynthereumFinder _finder) internal view {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        _finder.getImplementationAddress(SynthereumInterfaces.FactoryVersioning)
-      );
-    uint8 numberOfPoolFactories =
-      factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
+
+      ISynthereumFactoryVersioning factoryVersioning
+     = ISynthereumFactoryVersioning(
+      _finder.getImplementationAddress(SynthereumInterfaces.FactoryVersioning)
+    );
+    uint8 numberOfPoolFactories = factoryVersioning.numberOfFactoryVersions(
+      FactoryInterfaces.PoolFactory
+    );
     require(
       _checkSenderIsFactory(
         factoryVersioning,
@@ -42,31 +39,29 @@ library SynthereumFactoryAccess {
     internal
     view
   {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        _finder.getImplementationAddress(SynthereumInterfaces.FactoryVersioning)
-      );
-    uint8 numberOfPoolFactories =
-      factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
-    uint8 numberOfFixedRateFactories =
-      factoryVersioning.numberOfFactoryVersions(
-        FactoryInterfaces.FixedRateFactory
-      );
-    bool isPoolFactory =
-      _checkSenderIsFactory(
-        factoryVersioning,
-        numberOfPoolFactories,
-        FactoryInterfaces.PoolFactory
-      );
+
+      ISynthereumFactoryVersioning factoryVersioning
+     = ISynthereumFactoryVersioning(
+      _finder.getImplementationAddress(SynthereumInterfaces.FactoryVersioning)
+    );
+    uint8 numberOfPoolFactories = factoryVersioning.numberOfFactoryVersions(
+      FactoryInterfaces.PoolFactory
+    );
+    uint8 numberOfFixedRateFactories = factoryVersioning
+      .numberOfFactoryVersions(FactoryInterfaces.FixedRateFactory);
+    bool isPoolFactory = _checkSenderIsFactory(
+      factoryVersioning,
+      numberOfPoolFactories,
+      FactoryInterfaces.PoolFactory
+    );
     if (isPoolFactory) {
       return;
     }
-    bool isFixedRateFactory =
-      _checkSenderIsFactory(
-        factoryVersioning,
-        numberOfFixedRateFactories,
-        FactoryInterfaces.FixedRateFactory
-      );
+    bool isFixedRateFactory = _checkSenderIsFactory(
+      factoryVersioning,
+      numberOfFixedRateFactories,
+      FactoryInterfaces.FixedRateFactory
+    );
     if (isFixedRateFactory) {
       return;
     }

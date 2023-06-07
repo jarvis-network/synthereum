@@ -242,9 +242,8 @@ contract('Compound Lending module - Venus protocol integration', accounts => {
       daoInterestShare.toString(),
     );
 
-    let expectedBearingToken = await storageManager.getInterestBearingToken.call(
-      poolMock.address,
-    );
+    let expectedBearingToken =
+      await storageManager.getInterestBearingToken.call(poolMock.address);
     let moduleBearingToken = await module.getInterestBearingToken.call(
       USDC,
       poolStorage.lendingInfo.args,

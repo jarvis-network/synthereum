@@ -285,7 +285,9 @@ contract('MultiLPLiquidityPool', function (accounts) {
   const updateLendingRate = async (lendingModule, pool) => {
     if (lendingModule == 'Ovix' || lendingModule == 'Midas') {
       const bearingToken = await ICompoundToken.at(
-        (await pool.lendingProtocolInfo.call())[1],
+        (
+          await pool.lendingProtocolInfo.call()
+        )[1],
       );
       await bearingToken.exchangeRateCurrent();
     }
@@ -445,11 +447,13 @@ contract('MultiLPLiquidityPool', function (accounts) {
     collateralContract = await ERC20.at(PoolV6Data[networkId].collateral);
     collateralAddress = collateralContract.address;
     collateralDecimals = await collateralContract.decimals.call();
-    collateralWhiteListInstance = await SynthereumCollateralWhitelist.deployed();
+    collateralWhiteListInstance =
+      await SynthereumCollateralWhitelist.deployed();
     await collateralWhiteListInstance.addToWhitelist(collateralAddress, {
       from: maintainer,
     });
-    identifierWhiteListInstance = await SynthereumIdentifierWhitelist.deployed();
+    identifierWhiteListInstance =
+      await SynthereumIdentifierWhitelist.deployed();
     await identifierWhiteListInstance.addToWhitelist(
       web3.utils.utf8ToHex(priceIdentifier),
       { from: maintainer },
@@ -531,7 +535,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
       assert.equal(symbol, synthTokenSymbol, 'Wrong synth symbol');
       const lendingProtocolInfo = await poolContract.lendingProtocolInfo.call();
       assert.equal(lendingId, lendingProtocolInfo[0], 'Wrong lending id');
-      const collateralRequirement = await poolContract.collateralRequirement.call();
+      const collateralRequirement =
+        await poolContract.collateralRequirement.call();
       assert.equal(
         collateralRequirement.toString(),
         web3.utils
@@ -3093,10 +3098,11 @@ contract('MultiLPLiquidityPool', function (accounts) {
     it('Can migrate storage', async () => {
       const factoryInterface = await web3.utils.stringToHex('PoolFactory');
       const newVersion = 7;
-      const actualFactory = await factoryVersioningContract.getFactoryVersion.call(
-        factoryInterface,
-        poolVersion,
-      );
+      const actualFactory =
+        await factoryVersioningContract.getFactoryVersion.call(
+          factoryInterface,
+          poolVersion,
+        );
       await factoryVersioningContract.setFactory(
         factoryInterface,
         newVersion,
@@ -3159,9 +3165,11 @@ contract('MultiLPLiquidityPool', function (accounts) {
       assert.equal(tokenName, synthTokenName, 'Wrong synthetic name');
       let symbol = await poolContract.syntheticTokenSymbol.call();
       assert.equal(symbol, synthTokenSymbol, 'Wrong synth symbol');
-      let lendingProtocolInfo = await newPoolContract.lendingProtocolInfo.call();
+      let lendingProtocolInfo =
+        await newPoolContract.lendingProtocolInfo.call();
       assert.equal(lendingId, lendingProtocolInfo[0], 'Wrong lending id');
-      let collateralRequirement = await newPoolContract.collateralRequirement.call();
+      let collateralRequirement =
+        await newPoolContract.collateralRequirement.call();
       assert.equal(
         collateralRequirement.toString(),
         web3.utils
@@ -4621,9 +4629,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
     it('Can revert if wrong colletaral passed', async function () {
       if (hasRewards) {
-        const poolData = await lendingStorageManagerContract.getLendingData.call(
-          poolAddress,
-        );
+        const poolData =
+          await lendingStorageManagerContract.getLendingData.call(poolAddress);
         await synthFinder.changeImplementationAddress(
           web3.utils.stringToHex('LendingManager'),
           genericSender,
@@ -4655,9 +4662,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
     it('Can revert if wrong bearing token passed', async function () {
       if (hasRewards) {
-        const poolData = await lendingStorageManagerContract.getLendingData.call(
-          poolAddress,
-        );
+        const poolData =
+          await lendingStorageManagerContract.getLendingData.call(poolAddress);
         await synthFinder.changeImplementationAddress(
           web3.utils.stringToHex('LendingManager'),
           genericSender,
@@ -4689,9 +4695,8 @@ contract('MultiLPLiquidityPool', function (accounts) {
     });
     it('Can revert if caller is not the lending manager', async function () {
       if (hasRewards) {
-        const poolData = await lendingStorageManagerContract.getLendingData.call(
-          poolAddress,
-        );
+        const poolData =
+          await lendingStorageManagerContract.getLendingData.call(poolAddress);
         const wrongData = {
           collateralToken: admin,
           interestToken: poolData[0][1],

@@ -2,15 +2,9 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumLendingRewards
-} from '../common/interfaces/ILendingRewards.sol';
-import {
-  ILendingManager
-} from '../../lending-module/interfaces/ILendingManager.sol';
-import {
-  ILendingStorageManager
-} from '../../lending-module/interfaces/ILendingStorageManager.sol';
+import {ISynthereumLendingRewards} from '../common/interfaces/ILendingRewards.sol';
+import {ILendingManager} from '../../lending-module/interfaces/ILendingManager.sol';
+import {ILendingStorageManager} from '../../lending-module/interfaces/ILendingStorageManager.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {SynthereumMultiLpLiquidityPoolLib} from './MultiLpLiquidityPoolLib.sol';
 import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';
@@ -40,8 +34,8 @@ contract SynthereumMultiLpLiquidityPoolWithRewards is
     address _recipient
   ) external override {
     ISynthereumFinder finderContract = finder;
-    ILendingManager lendingManager =
-      SynthereumMultiLpLiquidityPoolLib._getLendingManager(finderContract);
+    ILendingManager lendingManager = SynthereumMultiLpLiquidityPoolLib
+      ._getLendingManager(finderContract);
     require(
       msg.sender == address(lendingManager),
       'Sender must be the lending manager'
@@ -52,10 +46,9 @@ contract SynthereumMultiLpLiquidityPoolWithRewards is
         address(storageParams.collateralAsset),
       'Wrong collateral passed'
     );
-    address interestToken =
-      SynthereumMultiLpLiquidityPoolLib
-        ._getLendingStorageManager(finderContract)
-        .getInterestBearingToken(address(this));
+    address interestToken = SynthereumMultiLpLiquidityPoolLib
+      ._getLendingStorageManager(finderContract)
+      .getInterestBearingToken(address(this));
     require(
       _poolLendingStorage.interestToken == interestToken,
       'Wrong bearing token passed'

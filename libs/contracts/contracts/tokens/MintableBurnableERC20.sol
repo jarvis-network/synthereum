@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {
-  BaseControlledMintableBurnableERC20
-} from './BaseControlledMintableBurnableERC20.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {BaseControlledMintableBurnableERC20} from './BaseControlledMintableBurnableERC20.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title ERC20 token contract

@@ -2,20 +2,14 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {
-  ISynthereumFactoryVersioning
-} from '../core/interfaces/IFactoryVersioning.sol';
+import {ISynthereumFactoryVersioning} from '../core/interfaces/IFactoryVersioning.sol';
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract LendingStorageManager is ILendingStorageManager, ReentrancyGuard {
   using EnumerableSet for EnumerableSet.AddressSet;

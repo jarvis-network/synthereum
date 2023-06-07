@@ -3,9 +3,7 @@ pragma solidity >=0.8.0;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {SynthereumPoolMigrationFrom} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 
 /**
  * @title Provides interface with functions of Synthereum deployer

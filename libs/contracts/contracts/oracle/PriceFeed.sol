@@ -8,14 +8,10 @@ import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ITypology} from '../common/interfaces/ITypology.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {StringUtils} from '../base/utils/StringUtils.sol';
-import {
-  StandardAccessControlEnumerable
-} from '../common/roles/StandardAccessControlEnumerable.sol';
+import {StandardAccessControlEnumerable} from '../common/roles/StandardAccessControlEnumerable.sol';
 
 /**
  * @title Synthereum price-feed contract for multi-protocol support
@@ -30,7 +26,11 @@ contract SynthereumPriceFeed is
   using StringUtils for bytes32;
   using PreciseUnitMath for uint256;
 
-  enum Type {UNSUPPORTED, STANDARD, COMPUTED}
+  enum Type {
+    UNSUPPORTED,
+    STANDARD,
+    COMPUTED
+  }
 
   struct Pair {
     Type priceType;
@@ -203,8 +203,9 @@ contract SynthereumPriceFeed is
     require(priceIdentifierHex != 0x0, 'Null identifier');
     bytes32 oracleHex = _oracle.stringToBytes32();
     uint256 intermediatePairsNumber = _intermediatePairs.length;
-    bytes32[] memory intermediatePairsHex =
-      new bytes32[](intermediatePairsNumber);
+    bytes32[] memory intermediatePairsHex = new bytes32[](
+      intermediatePairsNumber
+    );
     for (uint256 j = 0; j < intermediatePairsNumber; j++) {
       intermediatePairsHex[j] = _intermediatePairs[j].stringToBytes32();
     }
@@ -511,7 +512,8 @@ contract SynthereumPriceFeed is
     uint256 intermediatePairsNumber = pairHex.intermediatePairs.length;
     pairData.intermediatePairs = new string[](intermediatePairsNumber);
     for (uint256 j = 0; j < intermediatePairsNumber; j++) {
-      pairData.intermediatePairs[j] = pairHex.intermediatePairs[j]
+      pairData.intermediatePairs[j] = pairHex
+        .intermediatePairs[j]
         .bytes32ToString();
     }
     return pairData;

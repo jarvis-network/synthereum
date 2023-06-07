@@ -3,44 +3,21 @@ pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from './interfaces/IMultiLpLiquidityPool.sol';
-import {
-  ISynthereumLendingSwitch
-} from '../common/interfaces/ILendingSwitch.sol';
-import {
-  ISynthereumLendingTransfer
-} from '../common/interfaces/ILendingTransfer.sol';
-import {
-  ISynthereumMultiLpLiquidityPoolEvents
-} from './interfaces/IMultiLpLiquidityPoolEvents.sol';
+import {ISynthereumMultiLpLiquidityPool} from './interfaces/IMultiLpLiquidityPool.sol';
+import {ISynthereumLendingSwitch} from '../common/interfaces/ILendingSwitch.sol';
+import {ISynthereumLendingTransfer} from '../common/interfaces/ILendingTransfer.sol';
+import {ISynthereumMultiLpLiquidityPoolEvents} from './interfaces/IMultiLpLiquidityPoolEvents.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {
-  SynthereumMultiLpLiquidityPoolMainLib
-} from './MultiLpLiquidityPoolMainLib.sol';
-import {
-  SynthereumMultiLpLiquidityPoolMigrationLib
-} from './MultiLpLiquidityPoolMigrationLib.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../common/migration/PoolMigrationFrom.sol';
-import {
-  SynthereumPoolMigrationTo
-} from '../common/migration/PoolMigrationTo.sol';
+import {SynthereumMultiLpLiquidityPoolMainLib} from './MultiLpLiquidityPoolMainLib.sol';
+import {SynthereumMultiLpLiquidityPoolMigrationLib} from './MultiLpLiquidityPoolMigrationLib.sol';
+import {SynthereumPoolMigrationFrom} from '../common/migration/PoolMigrationFrom.sol';
+import {SynthereumPoolMigrationTo} from '../common/migration/PoolMigrationTo.sol';
 import {ERC2771Context} from '../../common/ERC2771Context.sol';
-import {
-  AccessControlEnumerable,
-  Context
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable, Context} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title Multi LP Synthereum pool
@@ -654,13 +631,8 @@ contract SynthereumMultiLpLiquidityPool is
     uint8 _newVersion,
     bytes calldata _extraInputParams
   ) internal override isNotInitialized {
-    (address[] memory admins, address[] memory maintainers) =
-      storageParams.setStorage(
-        _oldVersion,
-        _storageBytes,
-        _newVersion,
-        _extraInputParams
-      );
+    (address[] memory admins, address[] memory maintainers) = storageParams
+      .setStorage(_oldVersion, _storageBytes, _newVersion, _extraInputParams);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);

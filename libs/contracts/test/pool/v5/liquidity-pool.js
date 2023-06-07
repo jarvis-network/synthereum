@@ -160,7 +160,8 @@ contract('LiquidityPool', function (accounts) {
   };
 
   const checkBalances = async liquidityPool => {
-    const availableLiquidity = await liquidityPool.totalAvailableLiquidity.call();
+    const availableLiquidity =
+      await liquidityPool.totalAvailableLiquidity.call();
     const totCollAmount = await liquidityPool.totalCollateralAmount.call();
     const totalFees = await liquidityPool.totalFeeAmount.call();
     const poolBalance = await collateralInstance.balanceOf(
@@ -183,7 +184,8 @@ contract('LiquidityPool', function (accounts) {
     liquidityPoolLibInstance = await SynthereumLiquidityPoolLib.new();
     await SynthereumLiquidityPool.link(liquidityPoolLibInstance);
     priceFeedInstance = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeedInstance.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,
@@ -382,12 +384,13 @@ contract('LiquidityPool', function (accounts) {
     });
     it('Can revert if synthetic token has more or less than 18 decimals', async () => {
       let wrongParams = params;
-      let wrongSynthTokenInstance = await MintableBurnableSyntheticTokenPermit.new(
-        'Jarvis Synthetic Euro',
-        syntheticSymbol,
-        16,
-        { from: admin },
-      );
+      let wrongSynthTokenInstance =
+        await MintableBurnableSyntheticTokenPermit.new(
+          'Jarvis Synthetic Euro',
+          syntheticSymbol,
+          16,
+          { from: admin },
+        );
       let wrongSynthTokenAddress = wrongSynthTokenInstance.address;
       wrongParams.syntheticToken = wrongSynthTokenAddress;
       await truffleAssert.reverts(
@@ -661,8 +664,10 @@ contract('LiquidityPool', function (accounts) {
       const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
         secondUser,
       );
-      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const redeemRatio =
         Decimal(synthTokens.toString())
           .div(Decimal(totalSynthTokensInPool.toString()))
@@ -672,7 +677,8 @@ contract('LiquidityPool', function (accounts) {
         .mul(web3Utils.toBN(redeemRatio))
         .div(web3Utils.toBN(Math.pow(10, 18)))
         .sub(web3Utils.toBN(totalCollateralAmount));
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
       const totalLpAmount = await liquidityPoolInstance.userFee.call(
         liquidityProvider,
@@ -975,16 +981,19 @@ contract('LiquidityPool', function (accounts) {
       const actualUserCollBalance = await collateralInstance.balanceOf.call(
         firstUser,
       );
-      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
         firstUser,
       );
-      const destTotalCollateralPosition = await destLiquidityPoolInstance.totalCollateralAmount.call();
-      const destTotalSynthTokensInPool = await destLiquidityPoolInstance.totalSyntheticTokens.call();
-      const destActualUserSynthBalance = await destSynthTokenInstance.balanceOf.call(
-        firstUser,
-      );
+      const destTotalCollateralPosition =
+        await destLiquidityPoolInstance.totalCollateralAmount.call();
+      const destTotalSynthTokensInPool =
+        await destLiquidityPoolInstance.totalSyntheticTokens.call();
+      const destActualUserSynthBalance =
+        await destSynthTokenInstance.balanceOf.call(firstUser);
       const redeemRatio =
         Decimal(synthTokens.toString())
           .div(Decimal(totalSynthTokensInPool.toString()))
@@ -994,7 +1003,8 @@ contract('LiquidityPool', function (accounts) {
         .mul(web3Utils.toBN(redeemRatio))
         .div(web3Utils.toBN(Math.pow(10, 18)))
         .sub(web3Utils.toBN(totalCollateralAmount));
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
       const totalLpAmount = await liquidityPoolInstance.userFee.call(
         liquidityProvider,
@@ -1003,8 +1013,10 @@ contract('LiquidityPool', function (accounts) {
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
-      const destAvailableLiquidity = await destLiquidityPoolInstance.totalAvailableLiquidity.call();
-      const destTotalFeeAmount = await destLiquidityPoolInstance.totalFeeAmount.call();
+      const destAvailableLiquidity =
+        await destLiquidityPoolInstance.totalAvailableLiquidity.call();
+      const destTotalFeeAmount =
+        await destLiquidityPoolInstance.totalFeeAmount.call();
       const destTotalLpAmount = await destLiquidityPoolInstance.userFee.call(
         liquidityProvider,
       );
@@ -1139,9 +1151,8 @@ contract('LiquidityPool', function (accounts) {
         .toBN(netSynthTokens)
         .mul(web3Utils.toBN(exchangeRate))
         .div(web3Utils.toBN(Math.pow(10, 18)));
-      const destActualUserSynthBalance = await destSynthTokenInstance.balanceOf.call(
-        secondUser,
-      );
+      const destActualUserSynthBalance =
+        await destSynthTokenInstance.balanceOf.call(secondUser);
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
       const exchangeOperation = {
@@ -1311,9 +1322,8 @@ contract('LiquidityPool', function (accounts) {
       const wrongParams = params;
       const wrongCollateralAddress = wrongCollateralInstance.address;
       wrongParams.collateralToken = wrongCollateralAddress;
-      const wrongCollateraLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        wrongParams,
-      );
+      const wrongCollateraLiquidityPoolInstance =
+        await SynthereumLiquidityPool.new(wrongParams);
       const synthTokens = web3Utils.toWei('50');
       const netSynthTokens = web3Utils.toWei('49.9');
       const exchangeRate =
@@ -1375,9 +1385,8 @@ contract('LiquidityPool', function (accounts) {
         collateralRequirement,
         liquidationReward,
       };
-      const wrongFinderLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        wrongParams,
-      );
+      const wrongFinderLiquidityPoolInstance =
+        await SynthereumLiquidityPool.new(wrongParams);
       const synthTokens = web3Utils.toWei('50');
       const netSynthTokens = web3Utils.toWei('49.9');
       const exchangeRate =
@@ -1598,7 +1607,8 @@ contract('LiquidityPool', function (accounts) {
       });
     });
     it('Can withdraw liquidity from the pool by the LP', async () => {
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const lpBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
@@ -1678,15 +1688,14 @@ contract('LiquidityPool', function (accounts) {
     });
     it('Can increase collateralization without deposit by the LP', async () => {
       const collateralToAdd = web3Utils.toWei('50', 'mwei');
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
-      const increaseCollateralTx = await liquidityPoolInstance.increaseCollateral(
-        0,
-        collateralToAdd,
-        {
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const increaseCollateralTx =
+        await liquidityPoolInstance.increaseCollateral(0, collateralToAdd, {
           from: liquidityProvider,
-        },
-      );
+        });
       const newTotalCollateral = web3Utils
         .toBN(actualPositionCollateral)
         .add(web3Utils.toBN(collateralToAdd))
@@ -1723,8 +1732,10 @@ contract('LiquidityPool', function (accounts) {
     it('Can increase collateralization with deposit by the LP', async () => {
       const collateralToTransfer = web3Utils.toWei('30', 'mwei');
       const collateralToAdd = initialPoolAllocation;
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const actualUserBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
@@ -1736,11 +1747,12 @@ contract('LiquidityPool', function (accounts) {
         collateralToTransfer,
         { from: liquidityProvider },
       );
-      const increaseCollateralTx = await liquidityPoolInstance.increaseCollateral(
-        collateralToTransfer,
-        collateralToAdd,
-        { from: liquidityProvider },
-      );
+      const increaseCollateralTx =
+        await liquidityPoolInstance.increaseCollateral(
+          collateralToTransfer,
+          collateralToAdd,
+          { from: liquidityProvider },
+        );
       const newTotalCollateral = web3Utils
         .toBN(actualPositionCollateral)
         .add(web3Utils.toBN(collateralToAdd))
@@ -1853,15 +1865,14 @@ contract('LiquidityPool', function (accounts) {
     });
     it('Can decrease collateralization without withdraw by the LP', async () => {
       const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
-      const decreaseCollateralTx = await liquidityPoolInstance.decreaseCollateral(
-        collateralToRemove,
-        0,
-        {
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const decreaseCollateralTx =
+        await liquidityPoolInstance.decreaseCollateral(collateralToRemove, 0, {
           from: liquidityProvider,
-        },
-      );
+        });
       const newTotalCollateral = web3Utils
         .toBN(actualPositionCollateral)
         .sub(web3Utils.toBN(collateralToRemove))
@@ -1900,19 +1911,22 @@ contract('LiquidityPool', function (accounts) {
       const collateralToWithdraw = web3Utils
         .toBN(collateralToRemove)
         .add(web3Utils.toBN(web3Utils.toWei('900', 'mwei')));
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const actualUserBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
       const actualPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
-      const decreaseCollateralTx = await liquidityPoolInstance.decreaseCollateral(
-        collateralToRemove,
-        collateralToWithdraw,
-        { from: liquidityProvider },
-      );
+      const decreaseCollateralTx =
+        await liquidityPoolInstance.decreaseCollateral(
+          collateralToRemove,
+          collateralToWithdraw,
+          { from: liquidityProvider },
+        );
       const newTotalCollateral = web3Utils
         .toBN(actualPositionCollateral)
         .sub(web3Utils.toBN(collateralToRemove))
@@ -2140,7 +2154,8 @@ contract('LiquidityPool', function (accounts) {
       const emergencyPrice = web3Utils.toWei('148', 'mwei');
       const resultingPrice = web3Utils.toWei('1.48');
       await aggregatorInstance.updateAnswer(emergencyPrice);
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const firstUserSynthTokens = web3Utils.toWei('79.8');
       const secondUserSynthTokens = web3Utils.toWei('20');
       await synthTokenInstance.transfer(secondUser, secondUserSynthTokens, {
@@ -2148,32 +2163,31 @@ contract('LiquidityPool', function (accounts) {
       });
       const firstUserCollateralAmount = web3Utils.toWei('118.104', 'mwei');
       const secondUserCollateralAmount = web3Utils.toWei('29.6', 'mwei');
-      let totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      let totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      let totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      let totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       let collateralPortion = web3Utils
         .toBN(firstUserSynthTokens)
         .mul(web3Utils.toBN(Math.pow(10, 18)))
         .div(web3Utils.toBN(totalSynthTokensInPool))
         .mul(web3Utils.toBN(totalCollateralPosition))
         .div(web3Utils.toBN(Math.pow(10, 18)));
-      const liquidationReward = await liquidityPoolInstance.liquidationReward.call();
+      const liquidationReward =
+        await liquidityPoolInstance.liquidationReward.call();
       const firstUserReward = collateralPortion
         .sub(web3Utils.toBN(firstUserCollateralAmount))
         .mul(web3Utils.toBN(liquidationReward))
         .div(web3Utils.toBN(Math.pow(10, 18)));
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
-      const actualFirstUserCollBalance = await collateralInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualFirstUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualSecondUserCollBalance = await collateralInstance.balanceOf.call(
-        secondUser,
-      );
-      const actualSecondUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        secondUser,
-      );
+      const actualFirstUserCollBalance =
+        await collateralInstance.balanceOf.call(firstUser);
+      const actualFirstUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(firstUser);
+      const actualSecondUserCollBalance =
+        await collateralInstance.balanceOf.call(secondUser);
+      const actualSecondUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(secondUser);
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -2226,8 +2240,10 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
       );
       await checkBalances(liquidityPoolInstance);
-      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       collateralPortion = web3Utils
         .toBN(secondUserSynthTokens)
         .mul(web3Utils.toBN(Math.pow(10, 18)))
@@ -2286,7 +2302,8 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
       );
       await checkBalances(liquidityPoolInstance);
-      const remainingCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const remainingCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       await liquidityPoolInstance.decreaseCollateral(
         remainingCollateral,
         remainingCollateral,
@@ -2309,7 +2326,8 @@ contract('LiquidityPool', function (accounts) {
       );
     });
     it('Can liquidate in case the position is under-capitalized', async () => {
-      let availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      let availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       await liquidityPoolInstance.withdrawLiquidity(availableLiquidity, {
         from: liquidityProvider,
       });
@@ -2335,8 +2353,10 @@ contract('LiquidityPool', function (accounts) {
       const firstUserCollateralAmount = web3Utils.toWei('127.68', 'mwei');
       const secondUserCollateralAmount = web3Utils.toWei('24', 'mwei');
       const thirdUserCollateralAmount = web3Utils.toWei('8', 'mwei');
-      let totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      let totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      let totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      let totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       let collateralPortion = web3Utils
         .toBN(firstUserSynthTokens)
         .mul(web3Utils.toBN(Math.pow(10, 18)))
@@ -2359,18 +2379,14 @@ contract('LiquidityPool', function (accounts) {
         .sub(collateralPortion);
       let rebalancingAmount = targetCollateral.sub(remainingCollateralPortion);
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
-      const actualFirstUserCollBalance = await collateralInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualFirstUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualSecondUserCollBalance = await collateralInstance.balanceOf.call(
-        secondUser,
-      );
-      const actualSecondUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        secondUser,
-      );
+      const actualFirstUserCollBalance =
+        await collateralInstance.balanceOf.call(firstUser);
+      const actualFirstUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(firstUser);
+      const actualSecondUserCollBalance =
+        await collateralInstance.balanceOf.call(secondUser);
+      const actualSecondUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(secondUser);
       let totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -2421,7 +2437,8 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
       );
       await checkBalances(liquidityPoolInstance);
-      let overCollateralizationData = await liquidityPoolInstance.collateralCoverage.call();
+      let overCollateralizationData =
+        await liquidityPoolInstance.collateralCoverage.call();
       assert.equal(
         overCollateralizationData[0],
         true,
@@ -2443,11 +2460,13 @@ contract('LiquidityPool', function (accounts) {
         .mul(web3Utils.toBN(collateralRequirement))
         .div(web3Utils.toBN(Math.pow(10, 18)))
         .div(web3Utils.toBN(Math.pow(10, 12)));
-      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       let collateralToDecrease = web3Utils
         .toBN(totalCollateralPosition)
         .sub(targetCollateral);
-      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       await liquidityPoolInstance.decreaseCollateral(
         collateralToDecrease,
         web3Utils.toBN(availableLiquidity).add(collateralToDecrease),
@@ -2461,11 +2480,13 @@ contract('LiquidityPool', function (accounts) {
         web3Utils.toBN(web3Utils.toWei('2', 'mwei')),
         { from: liquidityProvider },
       );
-      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
-      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       await synthTokenInstance.approve(
         liquidityPoolAddress,
         secondUserSynthTokens,
@@ -2510,7 +2531,8 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
       );
       await checkBalances(liquidityPoolInstance);
-      overCollateralizationData = await liquidityPoolInstance.collateralCoverage.call();
+      overCollateralizationData =
+        await liquidityPoolInstance.collateralCoverage.call();
       assert.equal(
         overCollateralizationData[0],
         false,
@@ -2526,11 +2548,13 @@ contract('LiquidityPool', function (accounts) {
         .mul(web3Utils.toBN(collateralRequirement))
         .div(web3Utils.toBN(Math.pow(10, 18)))
         .div(web3Utils.toBN(Math.pow(10, 12)));
-      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       collateralToDecrease = web3Utils
         .toBN(totalCollateralPosition)
         .sub(targetCollateral);
-      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       await liquidityPoolInstance.decreaseCollateral(
         collateralToDecrease,
         collateralToDecrease,
@@ -2543,14 +2567,15 @@ contract('LiquidityPool', function (accounts) {
       await collateralInstance.transfer(liquidityPoolAddress, addedLiquidity, {
         from: liquidityProvider,
       });
-      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
-      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      const actualThirdUserCollBalance = await collateralInstance.balanceOf.call(
-        thirdUser,
-      );
+      totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const actualThirdUserCollBalance =
+        await collateralInstance.balanceOf.call(thirdUser);
       const receivedAmount = web3Utils
         .toBN(totalCollateralPosition)
         .add(web3Utils.toBN(availableLiquidity));
@@ -2639,8 +2664,10 @@ contract('LiquidityPool', function (accounts) {
       const emergencyPrice = web3Utils.toWei('115', 'mwei');
       const emergencyPriceResult = web3Utils.toWei('1.15');
       await aggregatorInstance.updateAnswer(emergencyPrice);
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const totalCollateralAmount = await liquidityPoolInstance.totalCollateralAmount.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const totalCollateralAmount =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const finalCollateral = web3Utils
         .toBN(totalCollateralAmount)
         .add(web3Utils.toBN(availableLiquidity))
@@ -2856,7 +2883,8 @@ contract('LiquidityPool', function (accounts) {
       const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
         liquidityProvider,
       );
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -2949,11 +2977,10 @@ contract('LiquidityPool', function (accounts) {
         'Wrong null total supply',
       );
       await checkBalances(liquidityPoolInstance);
-      const finalLpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown(
-        {
+      const finalLpSettleTx =
+        await liquidityPoolInstance.settleEmergencyShutdown({
           from: liquidityProvider,
-        },
-      );
+        });
       truffleAssert.eventEmitted(finalLpSettleTx, 'Settle', ev => {
         return (
           ev.account == liquidityProvider &&
@@ -3019,7 +3046,8 @@ contract('LiquidityPool', function (accounts) {
       const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
         liquidityProvider,
       );
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -3106,7 +3134,8 @@ contract('LiquidityPool', function (accounts) {
       await checkBalances(liquidityPoolInstance);
     });
     it('Can settle in case the position is under-capitalized and LP is not a token holder', async () => {
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       await liquidityPoolInstance.withdrawLiquidity(availableLiquidity, {
         from: liquidityProvider,
       });
@@ -3118,30 +3147,28 @@ contract('LiquidityPool', function (accounts) {
       });
       const firstUserCollateralAmount = web3Utils.toWei('135.66', 'mwei');
       const secondUserCollateralAmount = web3Utils.toWei('34', 'mwei');
-      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const netSecondUserCollateralAmount = web3Utils
         .toBN(totalCollateralPosition)
         .sub(web3Utils.toBN(firstUserCollateralAmount));
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
-      const actualFirstUserCollBalance = await collateralInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualFirstUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualSecondUserCollBalance = await collateralInstance.balanceOf.call(
-        secondUser,
-      );
-      const actualSecondUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        secondUser,
-      );
+      const actualFirstUserCollBalance =
+        await collateralInstance.balanceOf.call(firstUser);
+      const actualFirstUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(firstUser);
+      const actualSecondUserCollBalance =
+        await collateralInstance.balanceOf.call(secondUser);
+      const actualSecondUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(secondUser);
       const actualLpCollBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
       const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
         liquidityProvider,
       );
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -3235,11 +3262,10 @@ contract('LiquidityPool', function (accounts) {
           from: secondUser,
         },
       );
-      const secondSettleTx = await liquidityPoolInstance.settleEmergencyShutdown(
-        {
+      const secondSettleTx =
+        await liquidityPoolInstance.settleEmergencyShutdown({
           from: secondUser,
-        },
-      );
+        });
       truffleAssert.eventEmitted(secondSettleTx, 'Settle', ev => {
         return (
           ev.account == secondUser &&
@@ -3268,7 +3294,8 @@ contract('LiquidityPool', function (accounts) {
       await checkBalances(liquidityPoolInstance);
     });
     it('Can settle in case the position is under-capitalized and LP is a token holder', async () => {
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       await liquidityPoolInstance.withdrawLiquidity(availableLiquidity, {
         from: liquidityProvider,
       });
@@ -3280,7 +3307,8 @@ contract('LiquidityPool', function (accounts) {
         .toBN(lpSynthTokens)
         .add(web3Utils.toBN(depositedSynthTokens));
       const expectedLpAmount = web3Utils.toWei('67.66', 'mwei');
-      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const collateralAmount = web3Utils
         .toBN(totalCollateralPosition)
         .sub(web3Utils.toBN(expectedLpAmount));
@@ -3308,7 +3336,8 @@ contract('LiquidityPool', function (accounts) {
       const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
         liquidityProvider,
       );
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -3442,7 +3471,8 @@ contract('LiquidityPool', function (accounts) {
           ev.feeProportions[1] == 80
         );
       });
-      const feeDataOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
+      const feeDataOutput =
+        await liquidityPoolInstance.feeRecipientsInfo.call();
       assert.equal(feeDataOutput[0][0], firstUser, 'Wrong first user address');
       assert.equal(
         feeDataOutput[0][1],
@@ -3463,13 +3493,15 @@ contract('LiquidityPool', function (accounts) {
         feeProportions: [30, 70],
       };
       await liquidityPoolInstance.setFee(newFee, { from: maintainer });
-      const feeDataPercentageOutput = await liquidityPoolInstance.feePercentage.call();
+      const feeDataPercentageOutput =
+        await liquidityPoolInstance.feePercentage.call();
       assert.equal(
         web3Utils.toBN(feeDataPercentageOutput).toString(),
         web3Utils.toBN(newFeePerc),
         'Wrong feeData percentage',
       );
-      const feeDataRecipientsOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
+      const feeDataRecipientsOutput =
+        await liquidityPoolInstance.feeRecipientsInfo.call();
       assert.equal(
         feeDataRecipientsOutput[0][0],
         firstUser,
@@ -3542,10 +3574,11 @@ contract('LiquidityPool', function (accounts) {
   describe('Should set overcollateralization', async () => {
     it('Can set overcollateralization parameter', async () => {
       const overCollateralizationParam = web3Utils.toWei('0.4');
-      const overColllatTx = await liquidityPoolInstance.setOverCollateralization(
-        overCollateralizationParam,
-        { from: maintainer },
-      );
+      const overColllatTx =
+        await liquidityPoolInstance.setOverCollateralization(
+          overCollateralizationParam,
+          { from: maintainer },
+        );
       truffleAssert.eventEmitted(
         overColllatTx,
         'SetOverCollateralization',
@@ -3584,10 +3617,11 @@ contract('LiquidityPool', function (accounts) {
   describe('Should set liquidation reward', async () => {
     it('Can set liquidation reward parameter', async () => {
       const liquidationRewardParam = web3Utils.toWei('0.4');
-      const liquidationRewardTx = await liquidityPoolInstance.setLiquidationReward(
-        liquidationRewardParam,
-        { from: maintainer },
-      );
+      const liquidationRewardTx =
+        await liquidityPoolInstance.setLiquidationReward(
+          liquidationRewardParam,
+          { from: maintainer },
+        );
       truffleAssert.eventEmitted(
         liquidationRewardTx,
         'SetLiquidationReward',
@@ -3652,7 +3686,8 @@ contract('LiquidityPool', function (accounts) {
       });
     });
     it('Can return if is overCollateralized', async () => {
-      let liquidationInfo = await liquidityPoolInstance.collateralCoverage.call();
+      let liquidationInfo =
+        await liquidityPoolInstance.collateralCoverage.call();
       assert.equal(
         liquidationInfo[0],
         true,
@@ -3669,7 +3704,8 @@ contract('LiquidityPool', function (accounts) {
         { from: liquidityProvider },
       );
       await aggregatorInstance.updateAnswer(web3Utils.toWei('125', 'mwei'));
-      let liquidationInfo = await liquidityPoolInstance.collateralCoverage.call();
+      let liquidationInfo =
+        await liquidityPoolInstance.collateralCoverage.call();
       let expectedRatio = web3Utils.toWei('1.68');
       assert.equal(
         liquidationInfo[1].toString(),
@@ -3677,7 +3713,8 @@ contract('LiquidityPool', function (accounts) {
         'Wrong collateral ratio in overcollateralization',
       );
       await aggregatorInstance.updateAnswer(web3Utils.toWei('200', 'mwei')),
-        (liquidationInfo = await liquidityPoolInstance.collateralCoverage.call());
+        (liquidationInfo =
+          await liquidityPoolInstance.collateralCoverage.call());
       assert.equal(
         liquidationInfo[1].toString(),
         web3Utils.toBN(collateralRequirement).toString(),
@@ -3867,10 +3904,11 @@ contract('LiquidityPool', function (accounts) {
     });
     it('Can get exchange info', async () => {
       const inputTokens = web3Utils.toWei('100');
-      const exchangeResult = await liquidityPoolInstance.getExchangeTradeInfo.call(
-        inputTokens,
-        destLiquidityPoolAddress,
-      );
+      const exchangeResult =
+        await liquidityPoolInstance.getExchangeTradeInfo.call(
+          inputTokens,
+          destLiquidityPoolAddress,
+        );
       assert.equal(
         web3Utils.toBN(exchangeResult.destSyntheticTokensReceived).toString(),
         web3Utils.toBN(web3Utils.toWei('81.0875')).toString(),
@@ -3934,7 +3972,8 @@ contract('LiquidityPool', function (accounts) {
     });
     it('Can revert if not enough liquidity to cover mint operation in the destination pool', async () => {
       const inputTokens = web3Utils.toWei('100');
-      const destAvailableLiquidity = await destLiquidityPoolInstance.totalAvailableLiquidity.call();
+      const destAvailableLiquidity =
+        await destLiquidityPoolInstance.totalAvailableLiquidity.call();
       const withdrawLiquidity = web3Utils
         .toBN(destAvailableLiquidity)
         .sub(web3Utils.toBN(web3Utils.toWei('19', 'mwei')));
@@ -4086,8 +4125,10 @@ contract('LiquidityPool', function (accounts) {
       const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
         secondUser,
       );
-      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const redeemRatio =
         Decimal(synthTokens.toString())
           .div(Decimal(totalSynthTokensInPool.toString()))
@@ -4097,7 +4138,8 @@ contract('LiquidityPool', function (accounts) {
         .mul(web3Utils.toBN(redeemRatio))
         .div(web3Utils.toBN(Math.pow(10, 18)))
         .sub(web3Utils.toBN(totalCollateralAmount));
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
       const totalLpAmount = await liquidityPoolInstance.userFee.call(
         liquidityProvider,
@@ -4272,16 +4314,19 @@ contract('LiquidityPool', function (accounts) {
       const actualUserCollBalance = await collateralInstance.balanceOf.call(
         firstUser,
       );
-      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
         firstUser,
       );
-      const destTotalCollateralPosition = await destLiquidityPoolInstance.totalCollateralAmount.call();
-      const destTotalSynthTokensInPool = await destLiquidityPoolInstance.totalSyntheticTokens.call();
-      const destActualUserSynthBalance = await destSynthTokenInstance.balanceOf.call(
-        firstUser,
-      );
+      const destTotalCollateralPosition =
+        await destLiquidityPoolInstance.totalCollateralAmount.call();
+      const destTotalSynthTokensInPool =
+        await destLiquidityPoolInstance.totalSyntheticTokens.call();
+      const destActualUserSynthBalance =
+        await destSynthTokenInstance.balanceOf.call(firstUser);
       const redeemRatio =
         Decimal(synthTokens.toString())
           .div(Decimal(totalSynthTokensInPool.toString()))
@@ -4291,7 +4336,8 @@ contract('LiquidityPool', function (accounts) {
         .mul(web3Utils.toBN(redeemRatio))
         .div(web3Utils.toBN(Math.pow(10, 18)))
         .sub(web3Utils.toBN(totalCollateralAmount));
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
       const totalLpAmount = await liquidityPoolInstance.userFee.call(
         liquidityProvider,
@@ -4300,8 +4346,10 @@ contract('LiquidityPool', function (accounts) {
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
-      const destAvailableLiquidity = await destLiquidityPoolInstance.totalAvailableLiquidity.call();
-      const destTotalFeeAmount = await destLiquidityPoolInstance.totalFeeAmount.call();
+      const destAvailableLiquidity =
+        await destLiquidityPoolInstance.totalAvailableLiquidity.call();
+      const destTotalFeeAmount =
+        await destLiquidityPoolInstance.totalFeeAmount.call();
       const destTotalLpAmount = await destLiquidityPoolInstance.userFee.call(
         liquidityProvider,
       );
@@ -4438,7 +4486,8 @@ contract('LiquidityPool', function (accounts) {
       await liquidityPoolInstance.mint(mintOperation, {
         from: firstUser,
       });
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const lpBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
@@ -4514,8 +4563,10 @@ contract('LiquidityPool', function (accounts) {
         from: firstUser,
       });
       const collateralToAdd = web3Utils.toWei('50', 'mwei');
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const increaseCollateralData = increaseCollateralV5Encoding(
         0,
         collateralToAdd,
@@ -4590,8 +4641,10 @@ contract('LiquidityPool', function (accounts) {
         from: firstUser,
       });
       const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
-      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
-      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const unusedCollateral =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral =
+        await liquidityPoolInstance.totalCollateralAmount.call();
       const decreaseCollateralData = decreaseCollateralV5Encoding(
         collateralToRemove,
         0,
@@ -4762,33 +4815,35 @@ contract('LiquidityPool', function (accounts) {
       const emergencyPrice = web3Utils.toWei('148', 'mwei');
       const resultingPrice = web3Utils.toWei('1.48');
       await aggregatorInstance.updateAnswer(emergencyPrice);
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const availableLiquidity =
+        await liquidityPoolInstance.totalAvailableLiquidity.call();
       const firstUserSynthTokens = web3Utils.toWei('79.8');
       const secondUserSynthTokens = web3Utils.toWei('20');
       await synthTokenInstance.transfer(secondUser, secondUserSynthTokens, {
         from: firstUser,
       });
       const firstUserCollateralAmount = web3Utils.toWei('118.104', 'mwei');
-      let totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
-      let totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      let totalCollateralPosition =
+        await liquidityPoolInstance.totalCollateralAmount.call();
+      let totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       let collateralPortion = web3Utils
         .toBN(firstUserSynthTokens)
         .mul(web3Utils.toBN(Math.pow(10, 18)))
         .div(web3Utils.toBN(totalSynthTokensInPool))
         .mul(web3Utils.toBN(totalCollateralPosition))
         .div(web3Utils.toBN(Math.pow(10, 18)));
-      const liquidationReward = await liquidityPoolInstance.liquidationReward.call();
+      const liquidationReward =
+        await liquidityPoolInstance.liquidationReward.call();
       const firstUserReward = collateralPortion
         .sub(web3Utils.toBN(firstUserCollateralAmount))
         .mul(web3Utils.toBN(liquidationReward))
         .div(web3Utils.toBN(Math.pow(10, 18)));
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
-      const actualFirstUserCollBalance = await collateralInstance.balanceOf.call(
-        firstUser,
-      );
-      const actualFirstUserSynthBalance = await synthTokenInstance.balanceOf.call(
-        firstUser,
-      );
+      const actualFirstUserCollBalance =
+        await collateralInstance.balanceOf.call(firstUser);
+      const actualFirstUserSynthBalance =
+        await synthTokenInstance.balanceOf.call(firstUser);
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
@@ -4889,7 +4944,8 @@ contract('LiquidityPool', function (accounts) {
       const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
         liquidityProvider,
       );
-      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalSynthTokensInPool =
+        await liquidityPoolInstance.totalSyntheticTokens.call();
       const totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );

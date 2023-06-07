@@ -114,7 +114,8 @@ contract('Registries', function (accounts) {
       .address;
     mockAggregator = await MockAggregator.new(8, 120000000);
     priceFeed = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeed.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,
@@ -133,11 +134,13 @@ contract('Registries', function (accounts) {
     await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {
       from: maintainer,
     });
-    collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    collateralWhitelistInstance =
+      await SynthereumCollateralWhitelist.deployed();
     await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
       from: maintainer,
     });
-    identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
+    identifierWhitelistInstance =
+      await SynthereumIdentifierWhitelist.deployed();
     await identifierWhitelistInstance.addToWhitelist(
       web3.utils.utf8ToHex(priceFeedIdentifier),
       {
@@ -460,11 +463,12 @@ contract('Registries', function (accounts) {
       selfMintingRegistryInstance = await SelfMintingRegistry.deployed();
     });
     it('Can write in the registry', async () => {
-      selfMintingDerivatives = await selfMintingRegistryInstance.getElements.call(
-        syntheticSymbol,
-        collateralAddress,
-        selfMintingVersion,
-      );
+      selfMintingDerivatives =
+        await selfMintingRegistryInstance.getElements.call(
+          syntheticSymbol,
+          collateralAddress,
+          selfMintingVersion,
+        );
       assert.equal(
         selfMintingDerivatives.length,
         0,
@@ -472,15 +476,17 @@ contract('Registries', function (accounts) {
       );
       let collaterals = await selfMintingRegistryInstance.getCollaterals.call();
       assert.equal(collaterals.length, 0, 'Collaterals not void');
-      let synthTokens = await selfMintingRegistryInstance.getSyntheticTokens.call();
+      let synthTokens =
+        await selfMintingRegistryInstance.getSyntheticTokens.call();
       assert.equal(synthTokens.length, 0, 'Synthetic tokens not void');
       let versions = await selfMintingRegistryInstance.getVersions.call();
       assert.equal(versions.length, 0, 'Versions not void');
-      const selfMintingDerivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const selfMintingDerivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       await deployerInstance.deploySelfMintingDerivative(
         selfMintingVersion,
         selfMintingPayload,
@@ -493,11 +499,12 @@ contract('Registries', function (accounts) {
         selfMintingDerivative,
       );
       assert.equal(isDeployed, true, 'Wrong deployment status');
-      selfMintingDerivatives = await selfMintingRegistryInstance.getElements.call(
-        syntheticSymbol,
-        collateralAddress,
-        selfMintingVersion,
-      );
+      selfMintingDerivatives =
+        await selfMintingRegistryInstance.getElements.call(
+          syntheticSymbol,
+          collateralAddress,
+          selfMintingVersion,
+        );
       assert.equal(
         selfMintingDerivatives.length,
         1,
@@ -539,11 +546,12 @@ contract('Registries', function (accounts) {
       );
     });
     it('Can migrate selfMinting in the new deployed registry', async () => {
-      const actualDerivatives = await selfMintingRegistryInstance.getElements.call(
-        syntheticSymbol,
-        collateralAddress,
-        selfMintingVersion,
-      );
+      const actualDerivatives =
+        await selfMintingRegistryInstance.getElements.call(
+          syntheticSymbol,
+          collateralAddress,
+          selfMintingVersion,
+        );
       const newRegistry = await SelfMintingRegistry.new(
         synthereumFinderAddress,
       );
@@ -577,11 +585,12 @@ contract('Registries', function (accounts) {
       assert.equal(versions[0], selfMintingVersion, 'Wrong version');
     });
     it('Can revert if adding an already registered selfMinting', async () => {
-      const derivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const derivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       await deployerInstance.deploySelfMintingDerivative(
         selfMintingVersion,
         selfMintingPayload,
@@ -702,11 +711,12 @@ contract('Registries', function (accounts) {
       assert.equal(isDeployed, false, 'Wrong deployment status');
     });
     it('Can revert if unregistering by an address different from deployer', async () => {
-      const derivative = await deployerInstance.deploySelfMintingDerivative.call(
-        selfMintingVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+      const derivative =
+        await deployerInstance.deploySelfMintingDerivative.call(
+          selfMintingVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        );
       await deployerInstance.deploySelfMintingDerivative(
         selfMintingVersion,
         selfMintingPayload,
@@ -779,7 +789,8 @@ contract('Registries', function (accounts) {
       assert.equal(wrappers.length, 0, 'Pools not void');
       let collaterals = await fixedRateRegistryInstance.getCollaterals.call();
       assert.equal(collaterals.length, 0, 'Collaterals not void');
-      let synthTokens = await fixedRateRegistryInstance.getSyntheticTokens.call();
+      let synthTokens =
+        await fixedRateRegistryInstance.getSyntheticTokens.call();
       assert.equal(synthTokens.length, 0, 'Synthetic tokens not void');
       let versions = await fixedRateRegistryInstance.getVersions.call();
       assert.equal(versions.length, 0, 'Versions not void');

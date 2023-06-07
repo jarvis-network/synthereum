@@ -2,12 +2,8 @@
 pragma solidity 0.8.9;
 
 import {IStandardERC20} from '../../../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from '../../../v6/interfaces/IMultiLpLiquidityPool.sol';
+import {IMintableBurnableERC20} from '../../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ISynthereumMultiLpLiquidityPool} from '../../../v6/interfaces/IMultiLpLiquidityPool.sol';
 
 /**
  * @title Interface containing the struct for storage encoding/decoding for each pool version

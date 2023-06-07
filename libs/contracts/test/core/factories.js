@@ -109,7 +109,8 @@ contract('Factories', function (accounts) {
     collateralAddress = PoolV6Data[networkId].collateral;
     mockAggregator = await MockAggregator.new(8, 120000000);
     priceFeed = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeed.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,
@@ -128,11 +129,13 @@ contract('Factories', function (accounts) {
     await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {
       from: maintainer,
     });
-    collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    collateralWhitelistInstance =
+      await SynthereumCollateralWhitelist.deployed();
     await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
       from: maintainer,
     });
-    identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
+    identifierWhitelistInstance =
+      await SynthereumIdentifierWhitelist.deployed();
     await identifierWhitelistInstance.addToWhitelist(
       web3.utils.utf8ToHex(priceFeedIdentifier),
       {
@@ -153,7 +156,8 @@ contract('Factories', function (accounts) {
       poolFactoryInstance.address,
       { from: maintainer },
     );
-    multiLpPoolFactoryInstance = await SynthereumMultiLpLiquidityPoolFactory.deployed();
+    multiLpPoolFactoryInstance =
+      await SynthereumMultiLpLiquidityPoolFactory.deployed();
     selfMintingFactoryInstance = await CreditLineFactory.deployed();
   });
   beforeEach(async () => {
@@ -214,7 +218,8 @@ contract('Factories', function (accounts) {
       await deployerInstance.deployPool(poolVersion, poolPayload, {
         from: maintainer,
       });
-      const permitTokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
+      const permitTokenFactory =
+        await SynthereumSyntheticTokenPermitFactory.deployed();
       await finder.changeImplementationAddress(
         tokenFactoryInterface,
         permitTokenFactory.address,
@@ -241,7 +246,8 @@ contract('Factories', function (accounts) {
       await deployerInstance.deployPool(poolVersion, poolPayload, {
         from: maintainer,
       });
-      const permitTokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
+      const permitTokenFactory =
+        await SynthereumSyntheticTokenPermitFactory.deployed();
       await finder.changeImplementationAddress(
         tokenFactoryInterface,
         permitTokenFactory.address,
@@ -316,7 +322,8 @@ contract('Factories', function (accounts) {
 
   describe('Should revert if sender is not the deployer', async () => {
     it('Can revert in synthetic token factory', async () => {
-      const synthereumSyntheticTokenFactoryInstance = await SynthereumSyntheticTokenPermitFactory.deployed();
+      const synthereumSyntheticTokenFactoryInstance =
+        await SynthereumSyntheticTokenPermitFactory.deployed();
       await truffleAssert.reverts(
         synthereumSyntheticTokenFactoryInstance.createToken(
           'jTest',
@@ -343,7 +350,8 @@ contract('Factories', function (accounts) {
       );
     });
     it('Can revert in multi pool factory', async () => {
-      const funcSignature = await multiLpPoolFactoryInstance.deploymentSignature();
+      const funcSignature =
+        await multiLpPoolFactoryInstance.deploymentSignature();
       const dataPayload =
         funcSignature +
         web3Utils.padRight(ZERO_ADDRESS.replace('0x', ''), '64') +
@@ -367,7 +375,8 @@ contract('Factories', function (accounts) {
       const poolInstance = await SynthereumLiquidityPool.at(pool);
       const tokenCurrencyAddress = await poolInstance.syntheticToken.call();
       selfMintingDerivativeVersion = 2;
-      const funcSignature = await selfMintingFactoryInstance.deploymentSignature();
+      const funcSignature =
+        await selfMintingFactoryInstance.deploymentSignature();
       const selfMintingPayload = encodeCreditLineDerivative(
         collateralAddress,
         priceFeedIdentifier,

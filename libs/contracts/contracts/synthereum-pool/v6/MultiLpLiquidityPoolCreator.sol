@@ -2,28 +2,14 @@
 pragma solidity 0.8.9;
 
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableTokenFactory
-} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
+import {IMintableBurnableTokenFactory} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumMultiLpLiquidityPool
-} from './interfaces/IMultiLpLiquidityPool.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  ILendingManager
-} from '../../lending-module/interfaces/ILendingManager.sol';
-import {
-  ILendingStorageManager
-} from '../../lending-module/interfaces/ILendingStorageManager.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../common/migration/PoolMigrationFrom.sol';
-import {
-  BaseControlledMintableBurnableERC20
-} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
+import {ISynthereumMultiLpLiquidityPool} from './interfaces/IMultiLpLiquidityPool.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ILendingManager} from '../../lending-module/interfaces/ILendingManager.sol';
+import {ILendingStorageManager} from '../../lending-module/interfaces/ILendingStorageManager.sol';
+import {SynthereumPoolMigrationFrom} from '../common/migration/PoolMigrationFrom.sol';
+import {BaseControlledMintableBurnableERC20} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
 import {SynthereumMultiLpLiquidityPool} from './MultiLpLiquidityPool.sol';
@@ -93,12 +79,13 @@ contract SynthereumMultiLpLiquidityPoolCreator {
     );
     BaseControlledMintableBurnableERC20 tokenCurrency;
     if (_params.syntheticToken == address(0)) {
-      IMintableBurnableTokenFactory tokenFactory =
-        IMintableBurnableTokenFactory(
-          ISynthereumFinder(synthereumFinder).getImplementationAddress(
-            SynthereumInterfaces.TokenFactory
-          )
-        );
+
+        IMintableBurnableTokenFactory tokenFactory
+       = IMintableBurnableTokenFactory(
+        ISynthereumFinder(synthereumFinder).getImplementationAddress(
+          SynthereumInterfaces.TokenFactory
+        )
+      );
       tokenCurrency = tokenFactory.createToken(
         _params.syntheticName,
         _params.syntheticSymbol,
@@ -157,11 +144,19 @@ contract SynthereumMultiLpLiquidityPoolCreator {
     migrationPoolUsed = _migrationPool;
     pool = SynthereumMultiLpLiquidityPool(poolImplementation.clone());
 
-    (uint8 oldPoolVersion, uint256 price, bytes memory storageBytes) =
-      _migrationPool.migrateStorage();
+    (
+      uint8 oldPoolVersion,
+      uint256 price,
+      bytes memory storageBytes
+    ) = _migrationPool.migrateStorage();
 
-    (uint256 sourceCollateralAmount, uint256 actualCollateralAmount) =
-      _getLendingManager().migratePool(address(_migrationPool), address(pool));
+    (
+      uint256 sourceCollateralAmount,
+      uint256 actualCollateralAmount
+    ) = _getLendingManager().migratePool(
+      address(_migrationPool),
+      address(pool)
+    );
 
     pool.setMigratedStorage(
       synthereumFinder,

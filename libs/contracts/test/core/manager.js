@@ -93,7 +93,8 @@ contract('Manager', function (accounts) {
       .address;
     mockAggregator = await MockAggregator.new(8, 120000000);
     priceFeed = await SynthereumPriceFeed.deployed();
-    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    synthereumChainlinkPriceFeed =
+      await SynthereumChainlinkPriceFeed.deployed();
     await priceFeed.addOracle(
       'chainlink',
       synthereumChainlinkPriceFeed.address,
@@ -112,11 +113,13 @@ contract('Manager', function (accounts) {
     await priceFeed.setPair(priceFeedIdentifier, 1, 'chainlink', [], {
       from: maintainer,
     });
-    collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    collateralWhitelistInstance =
+      await SynthereumCollateralWhitelist.deployed();
     await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
       from: maintainer,
     });
-    identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
+    identifierWhitelistInstance =
+      await SynthereumIdentifierWhitelist.deployed();
     await identifierWhitelistInstance.addToWhitelist(
       web3.utils.utf8ToHex(priceFeedIdentifier),
       {
@@ -129,7 +132,8 @@ contract('Manager', function (accounts) {
     poolFactoryInstance = await SynthereumLiquidityPoolFactory.new(
       finder.address,
     );
-    const factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
+    const factoryVersioningInstance =
+      await SynthereumFactoryVersioning.deployed();
     await factoryVersioningInstance.setFactory(
       web3.utils.stringToHex('PoolFactory'),
       5,

@@ -2,16 +2,10 @@
 pragma solidity 0.8.9;
 
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableTokenFactory
-} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
+import {IMintableBurnableTokenFactory} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  BaseControlledMintableBurnableERC20
-} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from '../../tokens/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumFixedRateWrapper} from './FixedRateWrapper.sol';
 import {ISynthereumFixedRateWrapper} from './interfaces/IFixedRateWrapper.sol';
@@ -63,18 +57,15 @@ contract SynthereumFixedRateCreator {
     );
 
     if (_params.syntheticToken == address(0)) {
-      IMintableBurnableTokenFactory tokenFactory =
-        IMintableBurnableTokenFactory(
-          ISynthereumFinder(synthereumFinder).getImplementationAddress(
-            SynthereumInterfaces.TokenFactory
-          )
-        );
-      BaseControlledMintableBurnableERC20 tokenCurrency =
-        tokenFactory.createToken(
-          _params.syntheticName,
-          _params.syntheticSymbol,
-          18
-        );
+
+        IMintableBurnableTokenFactory tokenFactory
+       = IMintableBurnableTokenFactory(
+        ISynthereumFinder(synthereumFinder).getImplementationAddress(
+          SynthereumInterfaces.TokenFactory
+        )
+      );
+      BaseControlledMintableBurnableERC20 tokenCurrency = tokenFactory
+        .createToken(_params.syntheticName, _params.syntheticSymbol, 18);
       fixedRate = new SynthereumFixedRateWrapper(
         _convertParams(_params, tokenCurrency)
       );
@@ -86,8 +77,9 @@ contract SynthereumFixedRateCreator {
       );
       tokenCurrency.renounceAdmin();
     } else {
-      BaseControlledMintableBurnableERC20 tokenCurrency =
-        BaseControlledMintableBurnableERC20(_params.syntheticToken);
+
+        BaseControlledMintableBurnableERC20 tokenCurrency
+       = BaseControlledMintableBurnableERC20(_params.syntheticToken);
       require(
         keccak256(abi.encodePacked(tokenCurrency.name())) ==
           keccak256(abi.encodePacked(_params.syntheticName)),

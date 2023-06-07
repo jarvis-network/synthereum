@@ -83,7 +83,8 @@ contract('LiquidityPoolCreator', function (accounts) {
         finderAddress,
       );
       const factoryInterface = await web3.utils.stringToHex('PoolFactory');
-      synthereumFactoryVersioning = await SynthereumFactoryVersioning.deployed();
+      synthereumFactoryVersioning =
+        await SynthereumFactoryVersioning.deployed();
       await synthereumFactoryVersioning.setFactory(
         factoryInterface,
         version,
@@ -92,7 +93,8 @@ contract('LiquidityPoolCreator', function (accounts) {
       );
       mockAggregator = await MockAggregator.new(8, 140000000);
       priceFeed = await SynthereumPriceFeed.deployed();
-      synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+      synthereumChainlinkPriceFeed =
+        await SynthereumChainlinkPriceFeed.deployed();
       await priceFeed.addOracle(
         'chainlink',
         synthereumChainlinkPriceFeed.address,

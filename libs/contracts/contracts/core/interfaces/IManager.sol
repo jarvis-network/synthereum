@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
-import {
-  IEmergencyShutdown
-} from '../../common/interfaces/IEmergencyShutdown.sol';
-import {
-  ISynthereumLendingSwitch
-} from '../../synthereum-pool/common/interfaces/ILendingSwitch.sol';
+import {IEmergencyShutdown} from '../../common/interfaces/IEmergencyShutdown.sol';
+import {ISynthereumLendingSwitch} from '../../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 
 interface ISynthereumManager {
   /**

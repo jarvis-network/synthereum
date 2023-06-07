@@ -6,25 +6,15 @@ import {ILendingModule} from './interfaces/ILendingModule.sol';
 import {ILendingStorageManager} from './interfaces/ILendingStorageManager.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {
-  ISynthereumLendingTransfer
-} from '../synthereum-pool/common/interfaces/ILendingTransfer.sol';
-import {
-  ISynthereumLendingRewards
-} from '../synthereum-pool/common/interfaces/ILendingRewards.sol';
+import {ISynthereumLendingTransfer} from '../synthereum-pool/common/interfaces/ILendingTransfer.sol';
+import {ISynthereumLendingRewards} from '../synthereum-pool/common/interfaces/ILendingRewards.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract LendingManager is
   ILendingManager,
@@ -86,26 +76,22 @@ contract LendingManager is
     ) = _getPoolInfo();
 
     // delegate call implementation
-    bytes memory result =
-      address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          DEPOSIT_SIG,
-          poolData,
-          lendingInfo.args,
-          _amount
-        )
-      );
+    bytes memory result = address(lendingInfo.lendingModule)
+      .functionDelegateCall(
+      abi.encodeWithSignature(DEPOSIT_SIG, poolData, lendingInfo.args, _amount)
+    );
 
-    ILendingModule.ReturnValues memory res =
-      abi.decode(result, (ILendingModule.ReturnValues));
+    ILendingModule.ReturnValues memory res = abi.decode(
+      result,
+      (ILendingModule.ReturnValues)
+    );
 
     // split interest
-    InterestSplit memory interestSplit =
-      splitGeneratedInterest(
-        res.totalInterest,
-        poolData.daoInterestShare,
-        poolData.jrtBuybackShare
-      );
+    InterestSplit memory interestSplit = splitGeneratedInterest(
+      res.totalInterest,
+      poolData.daoInterestShare,
+      poolData.jrtBuybackShare
+    );
 
     // update pool storage values
     poolStorageManager.updateValues(
@@ -138,28 +124,29 @@ contract LendingManager is
     ) = _getPoolInfo();
 
     // delegate call implementation
-    bytes memory result =
-      address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          WITHDRAW_SIG,
-          poolData,
-          msg.sender,
-          lendingInfo.args,
-          _interestTokenAmount,
-          _recipient
-        )
-      );
+    bytes memory result = address(lendingInfo.lendingModule)
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        WITHDRAW_SIG,
+        poolData,
+        msg.sender,
+        lendingInfo.args,
+        _interestTokenAmount,
+        _recipient
+      )
+    );
 
-    ILendingModule.ReturnValues memory res =
-      abi.decode(result, (ILendingModule.ReturnValues));
+    ILendingModule.ReturnValues memory res = abi.decode(
+      result,
+      (ILendingModule.ReturnValues)
+    );
 
     // split interest
-    InterestSplit memory interestSplit =
-      splitGeneratedInterest(
-        res.totalInterest,
-        poolData.daoInterestShare,
-        poolData.jrtBuybackShare
-      );
+    InterestSplit memory interestSplit = splitGeneratedInterest(
+      res.totalInterest,
+      poolData.daoInterestShare,
+      poolData.jrtBuybackShare
+    );
 
     // update storage value
     poolStorageManager.updateValues(
@@ -192,20 +179,15 @@ contract LendingManager is
     ) = _getPoolInfo();
 
     // retrieve accumulated interest
-    uint256 totalInterest =
-      ILendingModule(lendingInfo.lendingModule).getUpdatedInterest(
-        msg.sender,
-        poolData,
-        lendingInfo.args
-      );
+    uint256 totalInterest = ILendingModule(lendingInfo.lendingModule)
+      .getUpdatedInterest(msg.sender, poolData, lendingInfo.args);
 
     // split according to shares
-    InterestSplit memory interestSplit =
-      splitGeneratedInterest(
-        totalInterest,
-        poolData.daoInterestShare,
-        poolData.jrtBuybackShare
-      );
+    InterestSplit memory interestSplit = splitGeneratedInterest(
+      totalInterest,
+      poolData.daoInterestShare,
+      poolData.jrtBuybackShare
+    );
 
     //update pool storage
     poolStorageManager.updateValues(
@@ -228,10 +210,9 @@ contract LendingManager is
     uint256[] calldata _amounts
   ) external override onlyMaintainer nonReentrant {
     require(_pools.length == _amounts.length, 'Invalid call');
-    address recipient =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.CommissionReceiver
-      );
+    address recipient = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.CommissionReceiver
+    );
     uint256 totalAmount;
     for (uint8 i = 0; i < _pools.length; i++) {
       if (_amounts[i] > 0) {
@@ -254,10 +235,9 @@ contract LendingManager is
 
     // withdraw collateral and update all pools
     uint256 aggregatedCollateral;
-    address recipient =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.BuybackProgramReceiver
-      );
+    address recipient = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.BuybackProgramReceiver
+    );
     for (uint8 i = 0; i < _pools.length; i++) {
       address pool = _pools[i];
       uint256 _collateralAmount = _amounts[i];
@@ -270,38 +250,41 @@ contract LendingManager is
       // all pools need to have the same collateral
       require(poolData.collateral == _collateralAddress, 'Collateral mismatch');
 
-      (uint256 interestTokenAmount, ) =
-        collateralToInterestToken(pool, _collateralAmount);
+      (uint256 interestTokenAmount, ) = collateralToInterestToken(
+        pool,
+        _collateralAmount
+      );
 
       // trigger transfer of interest token from the pool
       interestTokenAmount = ISynthereumLendingTransfer(pool)
         .transferToLendingManager(interestTokenAmount);
 
-      bytes memory withdrawRes =
-        address(lendingInfo.lendingModule).functionDelegateCall(
-          abi.encodeWithSignature(
-            WITHDRAW_SIG,
-            poolData,
-            pool,
-            lendingInfo.args,
-            interestTokenAmount,
-            address(this)
-          )
-        );
+      bytes memory withdrawRes = address(lendingInfo.lendingModule)
+        .functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          pool,
+          lendingInfo.args,
+          interestTokenAmount,
+          address(this)
+        )
+      );
 
-      ILendingModule.ReturnValues memory res =
-        abi.decode(withdrawRes, (ILendingModule.ReturnValues));
+      ILendingModule.ReturnValues memory res = abi.decode(
+        withdrawRes,
+        (ILendingModule.ReturnValues)
+      );
 
       // update aggregated collateral to use for buyback
       aggregatedCollateral += res.tokensTransferred;
 
       // split interest
-      InterestSplit memory interestSplit =
-        splitGeneratedInterest(
-          res.totalInterest,
-          poolData.daoInterestShare,
-          poolData.jrtBuybackShare
-        );
+      InterestSplit memory interestSplit = splitGeneratedInterest(
+        res.totalInterest,
+        poolData.daoInterestShare,
+        poolData.jrtBuybackShare
+      );
 
       //update pool storage
       poolStorageManager.updateValues(
@@ -313,22 +296,21 @@ contract LendingManager is
     }
 
     // execute the buyback call with all the withdrawn collateral
-    address JARVIS =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.JarvisToken
-      );
-    bytes memory result =
-      address(poolStorageManager.getCollateralSwapModule(_collateralAddress))
-        .functionDelegateCall(
-        abi.encodeWithSignature(
-          JRTSWAP_SIG,
-          recipient,
-          _collateralAddress,
-          JARVIS,
-          aggregatedCollateral,
-          _swapParams
-        )
-      );
+    address JARVIS = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.JarvisToken
+    );
+    bytes memory result = address(
+      poolStorageManager.getCollateralSwapModule(_collateralAddress)
+    ).functionDelegateCall(
+      abi.encodeWithSignature(
+        JRTSWAP_SIG,
+        recipient,
+        _collateralAddress,
+        JARVIS,
+        aggregatedCollateral,
+        _swapParams
+      )
+    );
 
     emit BatchBuyback(
       aggregatedCollateral,
@@ -401,32 +383,31 @@ contract LendingManager is
     // delegate call withdraw collateral from old module
     ILendingModule.ReturnValues memory res;
     {
-      bytes memory withdrawRes =
-        address(lendingInfo.lendingModule).functionDelegateCall(
-          abi.encodeWithSignature(
-            WITHDRAW_SIG,
-            poolData,
-            msg.sender,
-            lendingInfo.args,
-            _interestTokenAmount,
-            address(this)
-          )
-        );
+      bytes memory withdrawRes = address(lendingInfo.lendingModule)
+        .functionDelegateCall(
+        abi.encodeWithSignature(
+          WITHDRAW_SIG,
+          poolData,
+          msg.sender,
+          lendingInfo.args,
+          _interestTokenAmount,
+          address(this)
+        )
+      );
 
       res = abi.decode(withdrawRes, (ILendingModule.ReturnValues));
     }
     // split interest
-    InterestSplit memory interestSplit =
-      splitGeneratedInterest(
-        res.totalInterest,
-        poolData.daoInterestShare,
-        poolData.jrtBuybackShare
-      );
+    InterestSplit memory interestSplit = splitGeneratedInterest(
+      res.totalInterest,
+      poolData.daoInterestShare,
+      poolData.jrtBuybackShare
+    );
 
     // add interest to pool data
     uint256 newDaoJRT = poolData.unclaimedDaoJRT + interestSplit.jrtInterest;
-    uint256 newDaoCommission =
-      poolData.unclaimedDaoCommission + interestSplit.commissionInterest;
+    uint256 newDaoCommission = poolData.unclaimedDaoCommission +
+      interestSplit.commissionInterest;
 
     // temporary set pool data collateral and interest to 0 to freshly deposit
     poolStorageManager.updateValues(msg.sender, 0, 0, 0);
@@ -440,23 +421,26 @@ contract LendingManager is
     );
 
     // delegate call deposit into new module
-    bytes memory result =
-      address(newLendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          DEPOSIT_SIG,
-          poolData,
-          newLendingInfo.args,
-          res.tokensTransferred,
-          msg.sender
-        )
-      );
+    bytes memory result = address(newLendingInfo.lendingModule)
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        DEPOSIT_SIG,
+        poolData,
+        newLendingInfo.args,
+        res.tokensTransferred,
+        msg.sender
+      )
+    );
 
-    ILendingModule.ReturnValues memory depositRes =
-      abi.decode(result, (ILendingModule.ReturnValues));
+    ILendingModule.ReturnValues memory depositRes = abi.decode(
+      result,
+      (ILendingModule.ReturnValues)
+    );
 
     // update storage with accumulated interest
-    uint256 actualCollateralDeposited =
-      depositRes.tokensOut - newDaoJRT - newDaoCommission;
+    uint256 actualCollateralDeposited = depositRes.tokensOut -
+      newDaoJRT -
+      newDaoCommission;
 
     poolStorageManager.updateValues(
       msg.sender,
@@ -488,20 +472,22 @@ contract LendingManager is
     ) = poolStorageManager.getLendingData(_migrationPool);
 
     // delegate call deposit into new module
-    bytes memory result =
-      address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          TOTAL_TRANSFER_SIG,
-          _migrationPool,
-          _newPool,
-          lendingStorage.collateralToken,
-          lendingStorage.interestToken,
-          lendingInfo.args
-        )
-      );
+    bytes memory result = address(lendingInfo.lendingModule)
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        TOTAL_TRANSFER_SIG,
+        _migrationPool,
+        _newPool,
+        lendingStorage.collateralToken,
+        lendingStorage.interestToken,
+        lendingInfo.args
+      )
+    );
 
-    (uint256 prevTotalAmount, uint256 newTotalAmount) =
-      abi.decode(result, (uint256, uint256));
+    (uint256 prevTotalAmount, uint256 newTotalAmount) = abi.decode(
+      result,
+      (uint256, uint256)
+    );
 
     sourceCollateralAmount = poolStorageManager.getCollateralDeposited(
       _migrationPool
@@ -528,10 +514,9 @@ contract LendingManager is
     ILendingStorageManager poolStorageManager = getStorageManager();
     ILendingStorageManager.PoolLendingStorage memory poolLendingStorage;
     ILendingStorageManager.LendingInfo memory lendingInfo;
-    address recipient =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.LendingRewardsReceiver
-      );
+    address recipient = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.LendingRewardsReceiver
+    );
     for (uint8 i = 0; i < _pools.length; i++) {
       (poolLendingStorage, lendingInfo) = poolStorageManager.getLendingData(
         _pools[i]
@@ -586,19 +571,14 @@ contract LendingManager is
       ILendingStorageManager.LendingInfo memory lendingInfo
     ) = poolStorageManager.getPoolData(_pool);
 
-    uint256 totalInterest =
-      ILendingModule(lendingInfo.lendingModule).getAccumulatedInterest(
-        _pool,
-        poolData,
-        lendingInfo.args
-      );
+    uint256 totalInterest = ILendingModule(lendingInfo.lendingModule)
+      .getAccumulatedInterest(_pool, poolData, lendingInfo.args);
 
-    InterestSplit memory interestSplit =
-      splitGeneratedInterest(
-        totalInterest,
-        poolData.daoInterestShare,
-        poolData.jrtBuybackShare
-      );
+    InterestSplit memory interestSplit = splitGeneratedInterest(
+      totalInterest,
+      poolData.daoInterestShare,
+      poolData.jrtBuybackShare
+    );
     poolInterest = interestSplit.poolInterest;
     commissionInterest = interestSplit.commissionInterest;
     buybackInterest = interestSplit.jrtInterest;
@@ -639,33 +619,36 @@ contract LendingManager is
     ) = poolStorageManager.getPoolData(_pool);
 
     // trigger transfer of funds from _pool
-    (uint256 interestTokenAmount, ) =
-      collateralToInterestToken(_pool, _collateralAmount);
+    (uint256 interestTokenAmount, ) = collateralToInterestToken(
+      _pool,
+      _collateralAmount
+    );
     interestTokenAmount = ISynthereumLendingTransfer(_pool)
       .transferToLendingManager(interestTokenAmount);
 
     // delegate call withdraw
-    bytes memory result =
-      address(lendingInfo.lendingModule).functionDelegateCall(
-        abi.encodeWithSignature(
-          WITHDRAW_SIG,
-          poolData,
-          _pool,
-          lendingInfo.args,
-          interestTokenAmount,
-          _recipient
-        )
-      );
-    ILendingModule.ReturnValues memory res =
-      abi.decode(result, (ILendingModule.ReturnValues));
+    bytes memory result = address(lendingInfo.lendingModule)
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        WITHDRAW_SIG,
+        poolData,
+        _pool,
+        lendingInfo.args,
+        interestTokenAmount,
+        _recipient
+      )
+    );
+    ILendingModule.ReturnValues memory res = abi.decode(
+      result,
+      (ILendingModule.ReturnValues)
+    );
 
     // split interest
-    InterestSplit memory interestSplit =
-      splitGeneratedInterest(
-        res.totalInterest,
-        poolData.daoInterestShare,
-        poolData.jrtBuybackShare
-      );
+    InterestSplit memory interestSplit = splitGeneratedInterest(
+      res.totalInterest,
+      poolData.daoInterestShare,
+      poolData.jrtBuybackShare
+    );
 
     //update pool storage
     poolStorageManager.updateValues(

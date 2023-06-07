@@ -3,13 +3,9 @@ pragma solidity 0.8.9;
 
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IJRTSwapModule} from '../interfaces/IJrtSwapModule.sol';
-import {
-  IUniswapV2Router02
-} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
+import {IUniswapV2Router02} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 
 contract UniV2JRTSwapModule is IJRTSwapModule {
   using SafeERC20 for IERC20;

@@ -2,22 +2,14 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  IDeploymentSignature
-} from '../../core/interfaces/IDeploymentSignature.sol';
-import {
-  ISynthereumCollateralWhitelist
-} from '../../core/interfaces/ICollateralWhitelist.sol';
-import {
-  ISynthereumIdentifierWhitelist
-} from '../../core/interfaces/IIdentifierWhitelist.sol';
+import {IDeploymentSignature} from '../../core/interfaces/IDeploymentSignature.sol';
+import {ISynthereumCollateralWhitelist} from '../../core/interfaces/ICollateralWhitelist.sol';
+import {ISynthereumIdentifierWhitelist} from '../../core/interfaces/IIdentifierWhitelist.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {CreditLineCreator} from './CreditLineCreator.sol';
 import {CreditLine} from './CreditLine.sol';
 import {FactoryConditions} from '../../common/FactoryConditions.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /** @title Contract factory of self-minting derivatives
  */

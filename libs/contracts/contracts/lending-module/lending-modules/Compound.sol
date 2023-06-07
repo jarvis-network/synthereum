@@ -5,13 +5,9 @@ import {ICompoundToken, IComptroller} from '../interfaces/ICToken.sol';
 import {ExponentialNoError} from '../libs/ExponentialNoError.sol';
 import {IRewardsController} from '../interfaces/IRewardsController.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {SynthereumPoolMigrationFrom} from '../../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 
 contract CompoundModule is ILendingModule, ExponentialNoError {
   using SafeERC20 for IERC20;
@@ -130,11 +126,12 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     override
     returns (uint256 prevTotalCollateral, uint256 actualTotalCollateral)
   {
-    uint256 prevTotalcTokens =
-      SynthereumPoolMigrationFrom(_oldPool).migrateTotalFunds(_newPool);
+    uint256 prevTotalcTokens = SynthereumPoolMigrationFrom(_oldPool)
+      .migrateTotalFunds(_newPool);
 
-    Exp memory exchangeRate =
-      Exp({mantissa: ICompoundToken(_interestToken).exchangeRateCurrent()});
+    Exp memory exchangeRate = Exp({
+      mantissa: ICompoundToken(_interestToken).exchangeRateCurrent()
+    });
     prevTotalCollateral = mul_ScalarTruncate(exchangeRate, prevTotalcTokens);
 
     actualTotalCollateral = ICompoundToken(_interestToken).balanceOfUnderlying(
@@ -176,8 +173,9 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
   ) external view override returns (uint256 totalInterest) {
     ICompoundToken cToken = ICompoundToken(_poolData.interestBearingToken);
 
-    (, uint256 tokenBalance, , uint256 excMantissa) =
-      cToken.getAccountSnapshot(_poolAddress);
+    (, uint256 tokenBalance, , uint256 excMantissa) = cToken.getAccountSnapshot(
+      _poolAddress
+    );
     Exp memory exchangeRate = Exp({mantissa: excMantissa});
 
     uint256 totCollateral = mul_ScalarTruncate(exchangeRate, tokenBalance);
@@ -245,11 +243,10 @@ contract CompoundModule is ILendingModule, ExponentialNoError {
     uint256 cTokenBalancePool = _cToken.balanceOf(_poolAddress);
 
     // determine amount of collateral the pool had before this operation
-    uint256 poolBalance =
-      mul_ScalarTruncate(
-        exchangeRate,
-        _isDeposit ? cTokenBalancePool : cTokenBalancePool + _cTokenAmount
-      );
+    uint256 poolBalance = mul_ScalarTruncate(
+      exchangeRate,
+      _isDeposit ? cTokenBalancePool : cTokenBalancePool + _cTokenAmount
+    );
 
     totalPrevDeposit =
       _pool.collateralDeposited +

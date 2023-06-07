@@ -49,16 +49,18 @@ contract('Factory versioning', function (accounts) {
 
   describe('Should pool factory works', () => {
     it('Can get correct number of pool versions', async () => {
-      const numberOfVersions = await factoryVersioningInstance.numberOfFactoryVersions.call(
-        poolFactoryInterface,
-      );
+      const numberOfVersions =
+        await factoryVersioningInstance.numberOfFactoryVersions.call(
+          poolFactoryInterface,
+        );
       assert.equal(numberOfVersions, 2, 'wrong number of pool versions');
     });
     it('Can update existing pool factory', async () => {
-      let poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        poolFactoryInterface,
-        5,
-      );
+      let poolFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          poolFactoryInterface,
+          5,
+        );
       assert.equal(
         poolFactoryAddressStored,
         poolFactoryAddress,
@@ -70,10 +72,11 @@ contract('Factory versioning', function (accounts) {
         testPoolFactory,
         { from: maintainer },
       );
-      poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        poolFactoryInterface,
-        5,
-      );
+      poolFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          poolFactoryInterface,
+          5,
+        );
       assert.equal(
         poolFactoryAddressStored,
         testPoolFactory,
@@ -109,10 +112,11 @@ contract('Factory versioning', function (accounts) {
         testPoolFactory,
         { from: maintainer },
       );
-      poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        poolFactoryInterface,
-        7,
-      );
+      poolFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          poolFactoryInterface,
+          7,
+        );
       assert.equal(
         poolFactoryAddressStored,
         testPoolFactory,
@@ -127,10 +131,11 @@ contract('Factory versioning', function (accounts) {
       });
     });
     it('Can remove pool factory', async () => {
-      let poolFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        poolFactoryInterface,
-        7,
-      );
+      let poolFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          poolFactoryInterface,
+          7,
+        );
       assert.equal(
         poolFactoryAddressStored,
         testPoolFactory,
@@ -204,9 +209,10 @@ contract('Factory versioning', function (accounts) {
 
   describe('Should self-minting Factory works', () => {
     it('Can get correct number of self-minting versions', async () => {
-      const numberOfVersions = await factoryVersioningInstance.numberOfFactoryVersions.call(
-        selfMintingFactoryInterface,
-      );
+      const numberOfVersions =
+        await factoryVersioningInstance.numberOfFactoryVersions.call(
+          selfMintingFactoryInterface,
+        );
       assert.equal(
         numberOfVersions,
         1,
@@ -214,10 +220,11 @@ contract('Factory versioning', function (accounts) {
       );
     });
     it('Can update existing self-minting factory', async () => {
-      let selfMintingFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        selfMintingFactoryInterface,
-        2,
-      );
+      let selfMintingFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          selfMintingFactoryInterface,
+          2,
+        );
       assert.equal(
         selfMintingFactoryAddressStored,
         selfMintingFactoryAddress,
@@ -229,10 +236,11 @@ contract('Factory versioning', function (accounts) {
         testSelfMintingFactory,
         { from: maintainer },
       );
-      selfMintingFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        selfMintingFactoryInterface,
-        2,
-      );
+      selfMintingFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          selfMintingFactoryInterface,
+          2,
+        );
       assert.equal(
         selfMintingFactoryAddressStored,
         testSelfMintingFactory,
@@ -266,10 +274,11 @@ contract('Factory versioning', function (accounts) {
         testSelfMintingFactory,
         { from: maintainer },
       );
-      selfMintingFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        selfMintingFactoryInterface,
-        3,
-      );
+      selfMintingFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          selfMintingFactoryInterface,
+          3,
+        );
       assert.equal(
         selfMintingFactoryAddressStored,
         testSelfMintingFactory,
@@ -284,10 +293,11 @@ contract('Factory versioning', function (accounts) {
       });
     });
     it('Can remove derivative factory', async () => {
-      let selfMintingFactoryAddressStored = await factoryVersioningInstance.getFactoryVersion.call(
-        selfMintingFactoryInterface,
-        3,
-      );
+      let selfMintingFactoryAddressStored =
+        await factoryVersioningInstance.getFactoryVersion.call(
+          selfMintingFactoryInterface,
+          3,
+        );
       assert.equal(
         selfMintingFactoryAddressStored,
         testSelfMintingFactory,

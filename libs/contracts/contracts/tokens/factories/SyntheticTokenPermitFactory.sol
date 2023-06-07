@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {
-  BaseControlledMintableBurnableERC20
-} from '../BaseControlledMintableBurnableERC20.sol';
+import {BaseControlledMintableBurnableERC20} from '../BaseControlledMintableBurnableERC20.sol';
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
-import {
-  MintableBurnableSyntheticTokenPermit
-} from '../MintableBurnableSyntheticTokenPermit.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {MintableBurnableSyntheticTokenPermit} from '../MintableBurnableSyntheticTokenPermit.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract SynthereumSyntheticTokenPermitFactory is
   ReentrancyGuard,
@@ -47,12 +41,13 @@ contract SynthereumSyntheticTokenPermitFactory is
     nonReentrant
     returns (BaseControlledMintableBurnableERC20 newToken)
   {
-    MintableBurnableSyntheticTokenPermit mintableToken =
-      new MintableBurnableSyntheticTokenPermit(
-        tokenName,
-        tokenSymbol,
-        tokenDecimals
-      );
+
+      MintableBurnableSyntheticTokenPermit mintableToken
+     = new MintableBurnableSyntheticTokenPermit(
+      tokenName,
+      tokenSymbol,
+      tokenDecimals
+    );
     newToken = BaseControlledMintableBurnableERC20(address(mintableToken));
     _setAdminRole(newToken);
   }

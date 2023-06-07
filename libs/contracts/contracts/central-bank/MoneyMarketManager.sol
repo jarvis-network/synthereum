@@ -6,19 +6,11 @@ import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IJarvisBrrrrr} from './interfaces/IJarvisBrrrrr.sol';
 import {IJarvisBrrMoneyMarket} from './interfaces/IJarvisBrrMoneyMarket.sol';
 import {IMoneyMarketManager} from './interfaces/IMoneyMarketManager.sol';
-import {
-  IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../tokens/interfaces/IMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract MoneyMarketManager is
@@ -108,10 +100,9 @@ contract MoneyMarketManager is
     bytes calldata _implementationCallArgs
   ) external override onlyMaintainer nonReentrant returns (uint256 tokensOut) {
     // trigger minting of synths from the printer contract
-    address jarvisBrr =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.JarvisBrrrrr
-      );
+    address jarvisBrr = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.JarvisBrrrrr
+    );
     IJarvisBrrrrr(jarvisBrr).mint(_token, _amount);
 
     // deposit into money market through delegate-call
@@ -120,16 +111,17 @@ contract MoneyMarketManager is
 
     moneyMarketBalances[hashId][address(_token)] += _amount;
 
-    bytes memory result =
-      implementation.implementationAddr.functionDelegateCall(
-        abi.encodeWithSignature(
-          DEPOSIT_SIG,
-          address(_token),
-          _amount,
-          implementation.moneyMarketArgs,
-          _implementationCallArgs
-        )
-      );
+    bytes memory result = implementation
+      .implementationAddr
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        DEPOSIT_SIG,
+        address(_token),
+        _amount,
+        implementation.moneyMarketArgs,
+        _implementationCallArgs
+      )
+    );
     tokensOut = abi.decode(result, (uint256));
 
     emit MintAndDeposit(address(_token), _moneyMarketId, _amount);
@@ -155,25 +147,25 @@ contract MoneyMarketManager is
       'Max amount limit'
     );
 
-    bytes memory result =
-      implementation.implementationAddr.functionDelegateCall(
-        abi.encodeWithSignature(
-          WITHDRAW_SIG,
-          address(_token),
-          _amount,
-          implementation.moneyMarketArgs,
-          _implementationCallArgs
-        )
-      );
+    bytes memory result = implementation
+      .implementationAddr
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        WITHDRAW_SIG,
+        address(_token),
+        _amount,
+        implementation.moneyMarketArgs,
+        _implementationCallArgs
+      )
+    );
 
     burningAmount = abi.decode(result, (uint256));
     moneyMarketBalances[hashId][address(_token)] -= burningAmount;
 
     // trigger burning of tokens on the printer contract
-    address jarvisBrr =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.JarvisBrrrrr
-      );
+    address jarvisBrr = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.JarvisBrrrrr
+    );
     _token.safeIncreaseAllowance(jarvisBrr, burningAmount);
     IJarvisBrrrrr(jarvisBrr).redeem(_token, burningAmount);
 
@@ -190,38 +182,39 @@ contract MoneyMarketManager is
     Implementation memory implementation = idToImplementation[hashId];
 
     // get total balance from money market implementation (deposit + interest)
-    uint256 totalBalance =
-      IJarvisBrrMoneyMarket(implementation.implementationAddr).getTotalBalance(
-        address(_jSynthAsset),
-        implementation.moneyMarketArgs,
-        _implementationCallArgs
-      );
+    uint256 totalBalance = IJarvisBrrMoneyMarket(
+      implementation.implementationAddr
+    ).getTotalBalance(
+      address(_jSynthAsset),
+      implementation.moneyMarketArgs,
+      _implementationCallArgs
+    );
 
-    uint256 revenues =
-      totalBalance - moneyMarketBalances[hashId][address(_jSynthAsset)];
+    uint256 revenues = totalBalance -
+      moneyMarketBalances[hashId][address(_jSynthAsset)];
     require(revenues > 0, 'No revenues');
 
     // withdraw revenues
-    bytes memory result =
-      implementation.implementationAddr.functionDelegateCall(
-        abi.encodeWithSignature(
-          WITHDRAW_SIG,
-          address(_jSynthAsset),
-          revenues,
-          implementation.moneyMarketArgs,
-          _implementationCallArgs
-        )
-      );
+    bytes memory result = implementation
+      .implementationAddr
+      .functionDelegateCall(
+      abi.encodeWithSignature(
+        WITHDRAW_SIG,
+        address(_jSynthAsset),
+        revenues,
+        implementation.moneyMarketArgs,
+        _implementationCallArgs
+      )
+    );
 
     // send them to dao
     jSynthOut = abi.decode(result, (uint256));
 
     // burn eventual withdrawn excess
     if (jSynthOut > revenues) {
-      address jarvisBrr =
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.JarvisBrrrrr
-        );
+      address jarvisBrr = synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.JarvisBrrrrr
+      );
       uint256 burningAmount = jSynthOut - revenues;
 
       _jSynthAsset.safeIncreaseAllowance(jarvisBrr, burningAmount);

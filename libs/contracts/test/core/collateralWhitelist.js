@@ -13,7 +13,8 @@ contract('CollateralWhitelist', function (accounts) {
   let collateralWhitelistAddress;
 
   before(async () => {
-    collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    collateralWhitelistInstance =
+      await SynthereumCollateralWhitelist.deployed();
   });
 
   it('Can add collateral to the whitelist', async () => {
@@ -62,10 +63,10 @@ contract('CollateralWhitelist', function (accounts) {
       true,
       'Wrong status before removing',
     );
-    const removeCollateralTx = await collateralWhitelistInstance.removeFromWhitelist(
-      collateralToAdd,
-      { from: maintainer },
-    );
+    const removeCollateralTx =
+      await collateralWhitelistInstance.removeFromWhitelist(collateralToAdd, {
+        from: maintainer,
+      });
     truffleAssert.eventEmitted(
       removeCollateralTx,
       'RemovedFromWhitelist',

@@ -4,26 +4,16 @@ pragma solidity 0.8.9;
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
-import {
-  ERC2771Context
-} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
+import {ERC2771Context} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
 import {Initializable} from '../../base/utils/Initializable.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title
@@ -207,11 +197,11 @@ contract CreditLine is
 
     amountWithdrawn = positionData
       .withdraw(
-      globalPositionData,
-      positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      _msgSender()
-    )
+        globalPositionData,
+        positionManagerData,
+        FixedPoint.Unsigned(collateralAmount),
+        _msgSender()
+      )
       .rawValue;
   }
 
@@ -225,13 +215,13 @@ contract CreditLine is
     PositionData storage positionData = positions[_msgSender()];
     feeAmount = positionData
       .create(
-      globalPositionData,
-      positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      FixedPoint.Unsigned(numTokens),
-      feeStatus,
-      _msgSender()
-    )
+        globalPositionData,
+        positionManagerData,
+        FixedPoint.Unsigned(collateralAmount),
+        FixedPoint.Unsigned(numTokens),
+        feeStatus,
+        _msgSender()
+      )
       .rawValue;
   }
 
@@ -246,11 +236,11 @@ contract CreditLine is
 
     amountWithdrawn = positionData
       .redeem(
-      globalPositionData,
-      positionManagerData,
-      FixedPoint.Unsigned(numTokens),
-      _msgSender()
-    )
+        globalPositionData,
+        positionManagerData,
+        FixedPoint.Unsigned(numTokens),
+        _msgSender()
+      )
       .rawValue;
   }
 
@@ -315,10 +305,10 @@ contract CreditLine is
     PositionData storage positionData = positions[_msgSender()];
     amountWithdrawn = positionData
       .settleEmergencyShutdown(
-      globalPositionData,
-      positionManagerData,
-      _msgSender()
-    )
+        globalPositionData,
+        positionManagerData,
+        _msgSender()
+      )
       .rawValue;
   }
 

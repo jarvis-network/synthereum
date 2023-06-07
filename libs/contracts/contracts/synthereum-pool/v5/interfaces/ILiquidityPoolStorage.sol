@@ -2,13 +2,9 @@
 pragma solidity >=0.8.0;
 
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ISynthereumLiquidityPoolStorage {
   // Describe role structure

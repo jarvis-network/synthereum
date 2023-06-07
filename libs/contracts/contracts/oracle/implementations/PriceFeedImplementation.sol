@@ -2,16 +2,12 @@
 pragma solidity >=0.8.0;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumPriceFeedImplementation
-} from './interfaces/IPriceFeedImplementation.sol';
+import {ISynthereumPriceFeedImplementation} from './interfaces/IPriceFeedImplementation.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
-import {
-  StandardAccessControlEnumerable
-} from '../../common/roles/StandardAccessControlEnumerable.sol';
+import {StandardAccessControlEnumerable} from '../../common/roles/StandardAccessControlEnumerable.sol';
 
 /**
  * @title Abstarct contract inherited by the price-feed implementations
@@ -24,7 +20,11 @@ abstract contract SynthereumPriceFeedImplementation is
   using Address for address;
   using StringUtils for string;
 
-  enum Type {UNSUPPORTED, NORMAL, REVERSE}
+  enum Type {
+    UNSUPPORTED,
+    NORMAL,
+    REVERSE
+  }
 
   struct PairData {
     Type priceType;
@@ -59,10 +59,9 @@ abstract contract SynthereumPriceFeedImplementation is
   //----------------------------------------
   modifier onlyPriceFeed() {
     if (msg.sender != tx.origin) {
-      address priceFeed =
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.PriceFeed
-        );
+      address priceFeed = synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.PriceFeed
+      );
       require(msg.sender == priceFeed, 'Only price-feed');
     }
     _;
@@ -337,8 +336,11 @@ abstract contract SynthereumPriceFeedImplementation is
     uint256 _conversionUnit,
     bytes memory _extraData
   ) internal view virtual returns (uint256) {
-    (uint256 unscaledPrice, uint8 decimals) =
-      _getOracleLatestRoundPrice(_priceId, _source, _extraData);
+    (uint256 unscaledPrice, uint8 decimals) = _getOracleLatestRoundPrice(
+      _priceId,
+      _source,
+      _extraData
+    );
     return _getScaledValue(unscaledPrice, decimals, _conversionUnit);
   }
 
@@ -356,8 +358,11 @@ abstract contract SynthereumPriceFeedImplementation is
     uint256 _conversionUnit,
     bytes memory _extraData
   ) internal view virtual returns (uint256) {
-    (uint256 unscaledPrice, uint8 decimals) =
-      _getOracleLatestRoundPrice(_priceId, _source, _extraData);
+    (uint256 unscaledPrice, uint8 decimals) = _getOracleLatestRoundPrice(
+      _priceId,
+      _source,
+      _extraData
+    );
     return
       PreciseUnitMath.DOUBLE_PRECISE_UNIT /
       _getScaledValue(unscaledPrice, decimals, _conversionUnit);

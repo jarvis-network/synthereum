@@ -1,15 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.9;
 
-import {
-  ISynthereumFactoryVersioning
-} from './interfaces/IFactoryVersioning.sol';
-import {
-  EnumerableMap
-} from '@openzeppelin/contracts/utils/structs/EnumerableMap.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ISynthereumFactoryVersioning} from './interfaces/IFactoryVersioning.sol';
+import {EnumerableMap} from '@openzeppelin/contracts/utils/structs/EnumerableMap.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title Provides addresses of different versions of pools factory and derivative factory
@@ -110,8 +104,9 @@ contract SynthereumFactoryVersioning is
     override
     onlyMaintainer
   {
-    EnumerableMap.UintToAddressMap storage selectedFactories =
-      factories[factoryType];
+    EnumerableMap.UintToAddressMap storage selectedFactories = factories[
+      factoryType
+    ];
     address factoryToRemove = selectedFactories.get(version);
     selectedFactories.remove(version);
     emit RemoveFactory(factoryType, version, factoryToRemove);

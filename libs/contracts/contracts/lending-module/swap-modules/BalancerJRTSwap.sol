@@ -3,9 +3,7 @@ pragma solidity 0.8.9;
 
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
 import {IBalancerVault} from '../interfaces/IBalancerVault.sol';
 import {IJRTSwapModule} from '../interfaces/IJrtSwapModule.sol';
@@ -31,23 +29,21 @@ contract BalancerJRTSwapModule is IJRTSwapModule {
     SwapInfo memory swapInfo = abi.decode(_params, (SwapInfo));
 
     // build params
-    IBalancerVault.SingleSwap memory singleSwap =
-      IBalancerVault.SingleSwap(
-        swapInfo.poolId,
-        IBalancerVault.SwapKind.GIVEN_IN,
-        _collateral,
-        _jarvisToken,
-        _amountIn,
-        '0x00'
-      );
+    IBalancerVault.SingleSwap memory singleSwap = IBalancerVault.SingleSwap(
+      swapInfo.poolId,
+      IBalancerVault.SwapKind.GIVEN_IN,
+      _collateral,
+      _jarvisToken,
+      _amountIn,
+      '0x00'
+    );
 
-    IBalancerVault.FundManagement memory funds =
-      IBalancerVault.FundManagement(
-        address(this),
-        false,
-        payable(_recipient),
-        false
-      );
+    IBalancerVault.FundManagement memory funds = IBalancerVault.FundManagement(
+      address(this),
+      false,
+      payable(_recipient),
+      false
+    );
 
     // swap to JRT to final recipient
     IBalancerVault router = IBalancerVault(swapInfo.routerAddress);
