@@ -206,8 +206,11 @@ contract SynthereumPriceFeed is
     bytes32[] memory intermediatePairsHex = new bytes32[](
       intermediatePairsNumber
     );
-    for (uint256 j = 0; j < intermediatePairsNumber; j++) {
+    for (uint256 j = 0; j < intermediatePairsNumber; ) {
       intermediatePairsHex[j] = _intermediatePairs[j].stringToBytes32();
+      unchecked {
+        j++;
+      }
     }
     _checkPair(
       priceIdentifierHex,
@@ -243,8 +246,11 @@ contract SynthereumPriceFeed is
   function getOracles() external view returns (string[] memory) {
     uint256 oracleNumber = oracles.length();
     string[] memory oracleList = new string[](oracleNumber);
-    for (uint256 j = 0; j < oracleNumber; j++) {
+    for (uint256 j = 0; j < oracleNumber; ) {
       oracleList[j] = oracles.at(j).bytes32ToString();
+      unchecked {
+        j++;
+      }
     }
     return oracleList;
   }
@@ -256,8 +262,11 @@ contract SynthereumPriceFeed is
   function getIdentifiers() external view returns (string[] memory) {
     uint256 identifierNumber = identifiers.length();
     string[] memory identifierList = new string[](identifierNumber);
-    for (uint256 j = 0; j < identifierNumber; j++) {
+    for (uint256 j = 0; j < identifierNumber; ) {
       identifierList[j] = identifiers.at(j).bytes32ToString();
+      unchecked {
+        j++;
+      }
     }
     return identifierList;
   }
@@ -376,8 +385,11 @@ contract SynthereumPriceFeed is
   {
     uint256 identifiersNumber = _priceIdentifiers.length;
     uint256[] memory prices = new uint256[](identifiersNumber);
-    for (uint256 i = 0; i < identifiersNumber; i++) {
-      prices[i] = _getLatestPrice(_priceIdentifiers[i]);
+    for (uint256 j = 0; j < identifiersNumber; ) {
+      prices[j] = _getLatestPrice(_priceIdentifiers[j]);
+      unchecked {
+        j++;
+      }
     }
     return prices;
   }
@@ -396,8 +408,11 @@ contract SynthereumPriceFeed is
   {
     uint256 identifiersNumber = _priceIdentifiers.length;
     uint256[] memory prices = new uint256[](identifiersNumber);
-    for (uint256 i = 0; i < identifiersNumber; i++) {
-      prices[i] = _getLatestPrice(_priceIdentifiers[i].stringToBytes32());
+    for (uint256 j = 0; j < identifiersNumber; ) {
+      prices[j] = _getLatestPrice(_priceIdentifiers[j].stringToBytes32());
+      unchecked {
+        j++;
+      }
     }
     return prices;
   }
@@ -465,7 +480,7 @@ contract SynthereumPriceFeed is
       require(_oracleHex == 0x0, 'Oracle must not be set');
       require(_intermediatePairsNumber > 1, 'No intermediate pairs set');
       bytes32 intermediatePairHex;
-      for (uint256 j = 0; j < _intermediatePairsNumber; j++) {
+      for (uint256 j = 0; j < _intermediatePairsNumber; ) {
         intermediatePairHex = _intermediatePairsHex[j];
         _checkPair(
           intermediatePairHex,
@@ -474,6 +489,9 @@ contract SynthereumPriceFeed is
           pairs[intermediatePairHex].intermediatePairs,
           pairs[intermediatePairHex].intermediatePairs.length
         );
+        unchecked {
+          j++;
+        }
       }
     } else {
       revert('No type passed');
@@ -511,10 +529,13 @@ contract SynthereumPriceFeed is
     pairData.oracle = pairHex.oracle.bytes32ToString();
     uint256 intermediatePairsNumber = pairHex.intermediatePairs.length;
     pairData.intermediatePairs = new string[](intermediatePairsNumber);
-    for (uint256 j = 0; j < intermediatePairsNumber; j++) {
+    for (uint256 j = 0; j < intermediatePairsNumber; ) {
       pairData.intermediatePairs[j] = pairHex
         .intermediatePairs[j]
         .bytes32ToString();
+      unchecked {
+        j++;
+      }
     }
     return pairData;
   }
@@ -539,9 +560,12 @@ contract SynthereumPriceFeed is
       }
     } else if (pairs[_priceId].priceType == Type.COMPUTED) {
       uint256 pairsNumber = pairs[_priceId].intermediatePairs.length;
-      for (uint256 j = 0; j < pairsNumber; j++) {
+      for (uint256 j = 0; j < pairsNumber; ) {
         if (!_isPriceSupported(pairs[_priceId].intermediatePairs[j])) {
           return false;
+        }
+        unchecked {
+          j++;
         }
       }
       isSupported = true;
@@ -595,8 +619,11 @@ contract SynthereumPriceFeed is
     returns (uint256 price)
   {
     price = PreciseUnitMath.PRECISE_UNIT;
-    for (uint256 i = 0; i < _intermediatePairs.length; i++) {
-      price = price.mul(_getLatestPrice(_intermediatePairs[i]));
+    for (uint256 j = 0; j < _intermediatePairs.length; ) {
+      price = price.mul(_getLatestPrice(_intermediatePairs[j]));
+      unchecked {
+        j++;
+      }
     }
   }
 
@@ -644,11 +671,14 @@ contract SynthereumPriceFeed is
     returns (uint256)
   {
     uint256 reducedValue = PreciseUnitMath.PRECISE_UNIT;
-    for (uint256 i = 0; i < _intermediatePairs.length; i++) {
+    for (uint256 j = 0; j < _intermediatePairs.length; ) {
       reducedValue = reducedValue.mul(
         PreciseUnitMath.PRECISE_UNIT -
-          uint256(_getMaxSpread(_intermediatePairs[i]))
+          uint256(_getMaxSpread(_intermediatePairs[j]))
       );
+      unchecked {
+        j++;
+      }
     }
     return PreciseUnitMath.PRECISE_UNIT - reducedValue;
   }
