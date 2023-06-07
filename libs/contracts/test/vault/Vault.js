@@ -212,6 +212,7 @@ contract('Lending Vault', accounts => {
           toBN(Math.pow(10, 18)),
         );
         assert.equal((await vault.getVersion.call()).toString(), '1');
+        assert.equal((await vault.getSpread.call()).toString(), spread);
       });
 
       it('Revert if sender is not synthereum deployer', async () => {

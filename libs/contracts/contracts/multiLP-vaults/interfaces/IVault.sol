@@ -101,4 +101,10 @@ interface IVault is IVaultMigration {
     external
     view
     returns (uint128 overcollateral);
+
+  /**
+   * @notice Return the vault reference pool max spread
+   * @param maxSpread max spread
+   */
+  function getSpread() external view returns (uint256 maxSpread);
 }

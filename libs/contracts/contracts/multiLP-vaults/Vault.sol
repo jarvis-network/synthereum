@@ -86,8 +86,10 @@ contract Vault is IVault, BaseVaultStorage {
       );
       if (totalSupply == 0) {
         vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
+        spreadAdjustedCollateral = netCollateralDeposited;
+      } else {
+        spreadAdjustedCollateral = applySpread(netCollateralDeposited);
       }
-      spreadAdjustedCollateral = applySpread(netCollateralDeposited);
     } else {
       netCollateralDeposited = pool.activateLP(
         collateralAmount,
@@ -243,6 +245,17 @@ contract Vault is IVault, BaseVaultStorage {
     returns (uint128 overcollateral)
   {
     overcollateral = overCollateralization;
+  }
+
+  function getSpread() external view override returns (uint256 maxSpread) {
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.PriceFeed
+        )
+      );
+
+    maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
   }
 
   function scalingFactor() internal view returns (uint256) {
