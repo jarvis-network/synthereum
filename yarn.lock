@@ -3523,8 +3523,8 @@ __metadata:
     jest: ^26.6.3
     netlify-cli: ^3.37.31
     nodemon: 2.0.4
-    prettier: ^2.2.1
-    prettier-plugin-solidity: ^1.0.0-beta.2
+    prettier: 2.3.2
+    prettier-plugin-solidity: 1.0.0-beta.16
     pretty-quick: ^3.1.0
     reflect-metadata: ^0.1.13
     regenerator-runtime: 0.13.7
@@ -12222,13 +12222,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dir-to-object@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "dir-to-object@npm:2.0.0"
-  checksum: 91ca44080810e807c1470cfabb5019dd005526d381d170f54a360e566d45a758b4d53421ec13a962df61b71633d5f4023c170a53c6dcc02e877467f063e7fbcf
-  languageName: node
-  linkType: hard
-
 "doctrine@npm:1.5.0":
   version: 1.5.0
   resolution: "doctrine@npm:1.5.0"
@@ -12599,6 +12592,13 @@ __metadata:
   version: 9.2.0
   resolution: "emoji-regex@npm:9.2.0"
   checksum: c139d5d390a346305b3dc46a5f941f7e69a55334a0d78dbfc112eda4041597510e98cc1ab2aa4ff75779cb12ebb61480e64ffe470a9f58f4f039b6f152bc2b7f
+  languageName: node
+  linkType: hard
+
+"emoji-regex@npm:^9.2.2":
+  version: 9.2.2
+  resolution: "emoji-regex@npm:9.2.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Femoji-regex%2F-%2Femoji-regex-9.2.2.tgz"
+  checksum: 8487182da74aabd810ac6d6f1994111dfc0e331b01271ae01ec1eb0ad7b5ecc2bbbbd2f053c05cb55a1ac30449527d819bbfbf0e3de1023db308cbcb47f86601
   languageName: node
   linkType: hard
 
@@ -23131,23 +23131,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-solidity@npm:^1.0.0-beta.2":
-  version: 1.0.0-beta.2
-  resolution: "prettier-plugin-solidity@npm:1.0.0-beta.2"
+"prettier-plugin-solidity@npm:1.0.0-beta.16":
+  version: 1.0.0-beta.16
+  resolution: "prettier-plugin-solidity@npm:1.0.0-beta.16::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fprettier-plugin-solidity%2F-%2Fprettier-plugin-solidity-1.0.0-beta.16.tgz"
   dependencies:
-    "@solidity-parser/parser": ^0.10.1
-    dir-to-object: ^2.0.0
-    emoji-regex: ^9.0.0
+    "@solidity-parser/parser": ^0.13.2
+    emoji-regex: ^9.2.2
     escape-string-regexp: ^4.0.0
-    prettier: ^2.0.5
-    semver: ^7.3.2
-    solidity-comments-extractor: ^0.0.4
-    string-width: ^4.2.0
-  checksum: 0cc73ade46a87ce33039e9b8cffff609e9df6d473364526edd4a78cc6a39636bbd07559e40db916f67cbdf33efb91467bed6a435aad4cec5c87a484b29ac6fc2
+    semver: ^7.3.5
+    solidity-comments-extractor: ^0.0.7
+    string-width: ^4.2.2
+  peerDependencies:
+    prettier: ^2.3.0
+  checksum: 7215ce50468e630b97dbb48fc2ba6f5dae3b6153fd87274553d4b853c8aa406018d72802e76ffbb1b576dfa98850f3c170f9d73eeee76f2bed7c07429176b8b2
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.0.5, prettier@npm:^2.1.2, prettier@npm:^2.2.1":
+"prettier@npm:2.3.2":
+  version: 2.3.2
+  resolution: "prettier@npm:2.3.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fprettier%2F-%2Fprettier-2.3.2.tgz"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 17ce5784ac67621c292df58e2da60b2ee150c2d6aebea22a6ad9e52fcd6a5e66c349d0a8436ea3bd8ff9d778920a5f68000d7625b74f43558718a49755aa5259
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^2.1.2":
   version: 2.2.1
   resolution: "prettier@npm:2.2.1"
   bin:
@@ -25424,10 +25433,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solidity-comments-extractor@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "solidity-comments-extractor@npm:0.0.4"
-  checksum: c46de83e429970174f49f2e3fae5ab2417b4318ec110338ed6906f2c28d535e200e9e074348697c32edecc7da777a967891186539d1d6c9af849ba14f09c4201
+"solidity-comments-extractor@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "solidity-comments-extractor@npm:0.0.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolidity-comments-extractor%2F-%2Fsolidity-comments-extractor-0.0.7.tgz"
+  checksum: a5cedf2310709969bc1783a6c336171478536f2f0ea96ad88437e0ef1e8844c0b37dd75591b0a824ec9c30640ea7e31b5f03128e871e6235bef3426617ce96c4
   languageName: node
   linkType: hard
 
@@ -25914,7 +25923,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-width@npm:^1.0.2 || 2 || 3 || 4, string-width@npm:^4.2.3":
+"string-width@npm:^1.0.2 || 2 || 3 || 4, string-width@npm:^4.2.2, string-width@npm:^4.2.3":
   version: 4.2.3
   resolution: "string-width@npm:4.2.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fstring-width%2F-%2Fstring-width-4.2.3.tgz"
   dependencies:
