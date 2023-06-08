@@ -89,7 +89,10 @@ contract('Lending Vault', accounts => {
   const applySpread = collAmount => {
     collAmount = toBN(collAmount);
     let spreadAmount = collAmount.mul(toBN(spread)).div(toBN(Math.pow(10, 18)));
-    return collAmount.sub(spreadAmount).toString();
+    return {
+      coll: collAmount.sub(spreadAmount).toString(),
+      fee: spreadAmount.toString(),
+    };
   };
 
   before(async () => {
@@ -332,13 +335,15 @@ contract('Lending Vault', accounts => {
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
+        let spread = applySpread(collateralDeposit);
         let expectedRate = toBN(actualCollateralAmount)
+          .add(toBN(spread.fee))
           .sub(toBN(collateralDeposit))
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(toBN(LPTotalSupply));
 
-        let expectedUserLP = toBN(applySpread(collateralDeposit))
+        let expectedUserLP = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(expectedRate)
@@ -377,7 +382,6 @@ contract('Lending Vault', accounts => {
 
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
-        // rate should have changed now
         LPTotalSupply = await vault.totalSupply.call();
         actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
           .actualCollateralAmount;
@@ -390,6 +394,18 @@ contract('Lending Vault', accounts => {
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
         );
+
+        // check withdraw amount is exactly as deposited amount
+        let withdrawRes = await vault.withdraw.call(
+          expectedUserLP.toString(),
+          user2,
+          { from: user2 },
+        );
+        let expected = expectedRate
+          .mul(toBN(expectedUserLP))
+          .div(toBN(Math.pow(10, 18)))
+          .div(toBN(Math.pow(10, 12)));
+        assert.equal(withdrawRes.toString(), expected.toString());
       });
 
       it('Add interest, Changed rate, new deposit', async () => {
@@ -436,13 +452,15 @@ contract('Lending Vault', accounts => {
         actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
           .actualCollateralAmount;
 
+        let spread = applySpread(collateralDeposit);
         expectedRate = toBN(actualCollateralAmount)
+          .add(toBN(spread.fee))
           .sub(toBN(collateralDeposit))
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(toBN(LPTotalSupply));
 
-        let expectedLPOut = toBN(applySpread(collateralDeposit))
+        let expectedLPOut = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(expectedRate);
@@ -501,6 +519,18 @@ contract('Lending Vault', accounts => {
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
         );
+
+        // check withdraw amount is exactly as deposited amount
+        let withdrawRes = await vault.withdraw.call(
+          expectedUserLP.toString(),
+          user3,
+          { from: user3 },
+        );
+        let expected = expectedRate
+          .mul(toBN(expectedUserLP))
+          .div(toBN(Math.pow(10, 18)))
+          .div(toBN(Math.pow(10, 12)));
+        assert.equal(withdrawRes.toString(), expected.toString());
       });
 
       it('Rejects with 0 amount', async () => {
@@ -581,7 +611,8 @@ contract('Lending Vault', accounts => {
         await USDC.approve(vault.address, purchaseAmount, { from: user4 });
         let tx = await vault.deposit(purchaseAmount, user4, { from: user4 });
 
-        let expectedLPOut = toBN(applySpread(purchaseAmount))
+        let spread = applySpread(purchaseAmount);
+        let expectedLPOut = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(discountedRate);
@@ -690,8 +721,10 @@ contract('Lending Vault', accounts => {
           toBN(purchaseAmount),
         );
 
+        let spread = applySpread(purchaseAmount);
+
         // the output is maxCollateral discounted + the remaining on regular rate
-        let remainingCollateral = toBN(applySpread(purchaseAmount)).sub(
+        let remainingCollateral = toBN(spread.coll).sub(
           toBN(maxCollateralAtDiscount),
         );
         let expectedLPOut = toBN(maxCollateralAtDiscount)
@@ -745,7 +778,7 @@ contract('Lending Vault', accounts => {
         ).actualCollateralAmount;
 
         // the discount should have diluted the regular rate
-        expectedNewRegularRate = toBN(actualCollateralAmount)
+        let expectedNewRegularRate = toBN(actualCollateralAmount)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(toBN(LPTotalSupplyAfter));

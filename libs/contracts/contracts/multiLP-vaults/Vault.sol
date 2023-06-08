@@ -125,7 +125,7 @@ contract Vault is IVault, BaseVaultStorage {
       (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
         calculateDiscountedRate(
           vaultPosition,
-          actualCollateralAmount - netCollateralDeposited + fee,
+          actualCollateralAmount - netCollateralDeposited,
           totalSupply,
           scalingValue,
           overCollateralFactor
