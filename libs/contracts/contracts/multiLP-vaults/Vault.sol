@@ -76,6 +76,7 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 netCollateralDeposited;
     uint256 actualCollateralAmount;
     uint256 spreadAdjustedCollateral;
+    uint256 fee;
     uint256 totalSupply = totalSupply();
     uint128 overCollateralFactor = overCollateralization;
 
@@ -88,7 +89,7 @@ contract Vault is IVault, BaseVaultStorage {
         vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
         spreadAdjustedCollateral = netCollateralDeposited;
       } else {
-        spreadAdjustedCollateral = applySpread(netCollateralDeposited);
+        (spreadAdjustedCollateral, fee) = applySpread(netCollateralDeposited);
       }
     } else {
       netCollateralDeposited = pool.activateLP(
@@ -109,7 +110,7 @@ contract Vault is IVault, BaseVaultStorage {
       // calculate rate
       uint256 rate =
         calculateRate(
-          actualCollateralAmount - netCollateralDeposited,
+          actualCollateralAmount - netCollateralDeposited + fee,
           totalSupply,
           scalingValue
         );
@@ -124,7 +125,7 @@ contract Vault is IVault, BaseVaultStorage {
       (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
         calculateDiscountedRate(
           vaultPosition,
-          actualCollateralAmount - netCollateralDeposited,
+          actualCollateralAmount - netCollateralDeposited + fee,
           totalSupply,
           scalingValue,
           overCollateralFactor
@@ -310,7 +311,7 @@ contract Vault is IVault, BaseVaultStorage {
   function applySpread(uint256 collateralAmount)
     internal
     view
-    returns (uint256 adjustedAmount)
+    returns (uint256 adjustedAmount, uint256 fee)
   {
     ISynthereumPriceFeed priceFeed =
       ISynthereumPriceFeed(
@@ -320,6 +321,7 @@ contract Vault is IVault, BaseVaultStorage {
       );
 
     uint256 maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
-    adjustedAmount = collateralAmount - collateralAmount.mul(maxSpread);
+    fee = collateralAmount.mul(maxSpread);
+    adjustedAmount = collateralAmount - fee;
   }
 }
