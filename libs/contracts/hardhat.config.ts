@@ -80,6 +80,7 @@ addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 3, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 4, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);
+addPublicNetwork(config, 5, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 56);
 addPublicNetwork(config, 77);
 addPublicNetwork(config, 97);

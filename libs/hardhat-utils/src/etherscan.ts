@@ -9,6 +9,7 @@ export function addEtherscanApiKeys(config: HardhatUserConfig) {
       mainnet: process.env.ETHERSCAN_ETH_API_KEY!,
       kovan: process.env.ETHERSCAN_ETH_API_KEY!,
       ropsten: process.env.ETHERSCAN_ETH_API_KEY!,
+      goerli: process.env.ETHERSCAN_ETH_API_KEY!,
       polygon: process.env.ETHERSCAN_POLYGON_API_KEY!,
       polygonMumbai: process.env.ETHERSCAN_POLYGON_API_KEY!,
       bsc: process.env.ETHERSCAN_BSC_API_KEY!,
