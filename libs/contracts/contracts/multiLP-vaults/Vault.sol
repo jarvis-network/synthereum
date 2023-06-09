@@ -9,9 +9,7 @@ import {IVault} from './interfaces/IVault.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
 import {BaseVaultStorage} from './BaseVault.sol';
 
@@ -20,10 +18,9 @@ contract Vault is IVault, BaseVaultStorage {
   using PreciseUnitMath for uint256;
 
   modifier onlyVaultRegistry() {
-    address vaultRegistry =
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.VaultRegistry
-      );
+    address vaultRegistry = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.VaultRegistry
+    );
     require(msg.sender == vaultRegistry, 'Sender must be vault registry');
     _;
   }
@@ -137,8 +134,8 @@ contract Vault is IVault, BaseVaultStorage {
           discountedRate
         );
       } else {
-        uint256 remainingCollateral =
-          netCollateralDeposited - maxCollateralAtDiscount;
+        uint256 remainingCollateral = netCollateralDeposited -
+          maxCollateralAtDiscount;
 
         (spreadAdjustedCollateral, fee) = applySpread(remainingCollateral);
 
@@ -176,18 +173,20 @@ contract Vault is IVault, BaseVaultStorage {
     require(lpTokensAmount > 0, 'Zero amount');
 
     // retrieve updated vault position on pool
-    uint256 vaultCollateralAmount =
-      (pool.positionLPInfo(address(this))).actualCollateralAmount;
+    uint256 vaultCollateralAmount = (pool.positionLPInfo(address(this)))
+      .actualCollateralAmount;
 
     // calculate rate and amount of collateral to withdraw
     uint256 totSupply = totalSupply();
     uint256 scalingValue = scalingFactor();
-    uint256 rate =
-      calculateRate(vaultCollateralAmount, totSupply, scalingValue);
-    uint256 collateralEquivalent =
-      lpTokensAmount == totSupply
-        ? vaultCollateralAmount
-        : lpTokensAmount.mul(rate) / scalingValue;
+    uint256 rate = calculateRate(
+      vaultCollateralAmount,
+      totSupply,
+      scalingValue
+    );
+    uint256 collateralEquivalent = lpTokensAmount == totSupply
+      ? vaultCollateralAmount
+      : lpTokensAmount.mul(rate) / scalingValue;
 
     // Burn LP tokens of user
     _burn(_msgSender(), lpTokensAmount);
@@ -221,7 +220,11 @@ contract Vault is IVault, BaseVaultStorage {
     external
     view
     override
-    returns (uint256 discountedRate, uint256 maxCollateralDiscounted)
+    returns (
+      uint256 rate,
+      uint256 discountedRate,
+      uint256 maxCollateralDiscounted
+    )
   {
     IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
 
@@ -231,11 +234,19 @@ contract Vault is IVault, BaseVaultStorage {
       vaultPosition.coverage >=
       PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
     ) {
-      return (0, 0);
+      return (
+        calculateRate(
+          vaultPosition.actualCollateralAmount,
+          totalSupply(),
+          scalingFactor()
+        ),
+        0,
+        0
+      );
     }
 
     // otherwise calculate discount
-    (, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
+    (rate, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
       vaultPosition,
       vaultPosition.actualCollateralAmount,
       totalSupply(),
@@ -271,12 +282,9 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   function getSpread() external view override returns (uint256 maxSpread) {
-    ISynthereumPriceFeed priceFeed =
-      ISynthereumPriceFeed(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.PriceFeed
-        )
-      );
+    ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
+      synthereumFinder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+    );
 
     maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
   }
@@ -316,10 +324,9 @@ contract Vault is IVault, BaseVaultStorage {
 
     // collateralExpected = numTokens * price * overcollateralization
     // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;
-    uint256 collateralExpected =
-      (actualCollateralAmount).mul(overCollateralFactor).div(
-        vaultPosition.coverage - PreciseUnitMath.PRECISE_UNIT
-      );
+    uint256 collateralExpected = (actualCollateralAmount)
+      .mul(overCollateralFactor)
+      .div(vaultPosition.coverage - PreciseUnitMath.PRECISE_UNIT);
 
     // collateral deficit = collateralExpected - actualCollateral
     collateralDeficit = collateralExpected - actualCollateralAmount;
@@ -335,12 +342,9 @@ contract Vault is IVault, BaseVaultStorage {
     view
     returns (uint256 adjustedAmount, uint256 fee)
   {
-    ISynthereumPriceFeed priceFeed =
-      ISynthereumPriceFeed(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.PriceFeed
-        )
-      );
+    ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
+      synthereumFinder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+    );
 
     uint256 maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
     fee = collateralAmount.mul(maxSpread);

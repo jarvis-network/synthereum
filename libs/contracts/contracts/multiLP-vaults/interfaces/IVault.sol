@@ -69,13 +69,18 @@ interface IVault is IVaultMigration {
 
   /**
    * @notice Return current LP vault discounted rate against collateral
+   * @return rate Vault rate
    * @return discountedRate Vault discounted rate
    * @return maxCollateralDiscounted max amount of collateral units at discount
    */
   function getDiscountedRate()
     external
     view
-    returns (uint256 discountedRate, uint256 maxCollateralDiscounted);
+    returns (
+      uint256 rate,
+      uint256 discountedRate,
+      uint256 maxCollateralDiscounted
+    );
 
   /**
    * @notice Return the vault version
