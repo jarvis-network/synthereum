@@ -1,5 +1,6 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'JrtToJarvisConverter',
+  'JarvisToken',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -7,7 +8,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { JrtToJarvisConverter } = migrate.getContracts(artifacts);
+  const { JrtToJarvisConverter, JarvisToken } = migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
     deploy,
@@ -29,6 +30,11 @@ async function migrate(deployer, network, accounts) {
 
   const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
+  const jarvisToken = await getExistingInstance(
+    web3,
+    JarvisToken,
+    '@jarvis-network/synthereum-contracts',
+  );
 
   data = data[networkId];
   await deploy(
@@ -37,7 +43,7 @@ async function migrate(deployer, network, accounts) {
     network,
     JrtToJarvisConverter,
     data.jrtAddress,
-    data.jarvisAddress,
+    jarvisToken.options.address,
     data.ratio,
     roles,
     { from: keys.deployer },
@@ -50,15 +56,8 @@ async function migrate(deployer, network, accounts) {
     '@jarvis-network/synthereum-contracts',
   );
 
-  await migratorInstance.methods
-    .setActivationBlock(data.activationBlock)
-    .send({ from: roles.maintainer });
-
   console.log(
-    'Migrator contract deployed at',
+    'Coverter contract deployed at',
     migratorInstance.options.address,
   );
-  console.log('Migration will be activated at block', data.activationBlock);
 }
-
-module.exports = migrate;
