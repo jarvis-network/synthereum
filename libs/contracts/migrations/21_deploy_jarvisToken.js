@@ -9,11 +9,8 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const {
-    SynthereumFinder,
-    JarvisToken,
-    JarvisTokenImplementation,
-  } = migrate.getContracts(artifacts);
+  const { SynthereumFinder, JarvisToken, JarvisTokenImplementation } =
+    migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
     deploy,

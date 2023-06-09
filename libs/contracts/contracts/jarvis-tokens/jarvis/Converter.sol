@@ -2,12 +2,8 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {
-  StandardAccessControlEnumerable
-} from '../../common/roles/StandardAccessControlEnumerable.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {StandardAccessControlEnumerable} from '../../common/roles/StandardAccessControlEnumerable.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
 
 contract JrtToJarvisConverter is StandardAccessControlEnumerable {

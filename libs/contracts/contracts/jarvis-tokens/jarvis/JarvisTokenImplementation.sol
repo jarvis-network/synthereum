@@ -3,13 +3,9 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  ContextUpgradeable
-} from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
+import {ContextUpgradeable} from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
 import {ERC2771Context} from '../../common/ERC2771Context.sol';
-import {
-  ERC20PermitUpgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
+import {ERC20PermitUpgradeable} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
 
 contract JarvisTokenImplementation is ERC2771Context, ERC20PermitUpgradeable {
   ISynthereumFinder public immutable synthereumFinder;
