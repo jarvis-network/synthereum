@@ -623,16 +623,10 @@ contract('Lending Vault', accounts => {
 
         let currentRegularRate = getRate(
           actualCollateralAmount,
-          spread.fee,
+          0,
           purchaseAmount,
           LPTotalSupply,
         );
-        // toBN(actualCollateralAmount)
-        // .add(toBN(spread.fee))
-        // .sub(toBN(purchaseAmount))
-        // .mul(toBN(Math.pow(10, 18)))
-        // .mul(toBN(Math.pow(10, 12)))
-        // .div(toBN(LPTotalSupply));
 
         let expectedLPOut = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
@@ -743,7 +737,10 @@ contract('Lending Vault', accounts => {
           toBN(purchaseAmount),
         );
 
-        let spread = applySpread(purchaseAmount);
+        let spreadAdjustedCollateral = applySpread(purchaseAmount).coll;
+        let spread = applySpread(
+          toBN(spreadAdjustedCollateral).sub(maxCollateralAtDiscount),
+        );
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
@@ -756,7 +753,7 @@ contract('Lending Vault', accounts => {
         );
 
         // the output is maxCollateral discounted + the remaining on regular rate
-        let remainingCollateral = toBN(spread.coll).sub(
+        let remainingCollateral = toBN(spreadAdjustedCollateral).sub(
           toBN(maxCollateralAtDiscount),
         );
         let expectedLPOut = toBN(maxCollateralAtDiscount)
@@ -764,7 +761,7 @@ contract('Lending Vault', accounts => {
           .mul(toBN(Math.pow(10, 12)))
           .div(discountedRate);
         expectedLPOut = expectedLPOut.add(
-          remainingCollateral
+          toBN(remainingCollateral)
             .mul(toBN(Math.pow(10, 18)))
             .mul(toBN(Math.pow(10, 12)))
             .div(currentRegularRate),
