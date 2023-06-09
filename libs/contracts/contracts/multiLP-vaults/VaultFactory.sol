@@ -3,12 +3,8 @@ pragma solidity 0.8.9;
 
 import {IVault} from './interfaces/IVault.sol';
 import {IVaultFactory} from './interfaces/IVaultFactory.sol';
-import {
-  IDeploymentSignature
-} from '../core/interfaces/IDeploymentSignature.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {IDeploymentSignature} from '../core/interfaces/IDeploymentSignature.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {FactoryConditions} from '../common/FactoryConditions.sol';
 import {SynthereumVaultCreator} from './VaultCreator.sol';
 

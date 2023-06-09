@@ -186,11 +186,13 @@ contract('Lending Vault', accounts => {
   describe('Deployment and initialisation', () => {
     describe('Factory contract', async () => {
       before(async () => {
-        let collateralWhiteListInstance = await SynthereumCollateralWhitelist.deployed();
+        let collateralWhiteListInstance =
+          await SynthereumCollateralWhitelist.deployed();
         await collateralWhiteListInstance.addToWhitelist(USDC.address, {
           from: maintainer,
         });
-        identifierWhiteListInstance = await SynthereumIdentifierWhitelist.deployed();
+        identifierWhiteListInstance =
+          await SynthereumIdentifierWhitelist.deployed();
         await identifierWhiteListInstance.addToWhitelist(priceIdentifier, {
           from: maintainer,
         });

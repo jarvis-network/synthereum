@@ -2,17 +2,11 @@
 pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
-import {
-  IVaultMigration
-} from '../../multiLP-vaults/interfaces/IVaultMigration.sol';
+import {IVaultMigration} from '../../multiLP-vaults/interfaces/IVaultMigration.sol';
 import {IPublicVaultRegistry} from './interfaces/IPublicVaultRegistry.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title Register and track all the vaults deployed and pool links
@@ -32,8 +26,9 @@ contract SynthereumPublicVaultRegistry is
    * @notice Check if the sender is the deployer
    */
   modifier onlyDeployer() {
-    address deployer =
-      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
+    address deployer = synthereumFinder.getImplementationAddress(
+      SynthereumInterfaces.Deployer
+    );
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
     _;
   }

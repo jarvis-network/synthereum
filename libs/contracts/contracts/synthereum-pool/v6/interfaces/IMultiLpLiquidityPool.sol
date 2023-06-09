@@ -3,20 +3,12 @@ pragma solidity >=0.8.0;
 
 import {ITypology} from '../../../common/interfaces/ITypology.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {
-  ISynthereumDeployment
-} from '../../../common/interfaces/IDeployment.sol';
+import {IMintableBurnableERC20} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ISynthereumDeployment} from '../../../common/interfaces/IDeployment.sol';
 import {IPoolVault} from '../../common/interfaces/IPoolVault.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {FixedPoint} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 /**
  * @title Multi LP pool interface

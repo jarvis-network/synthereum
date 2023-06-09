@@ -2,22 +2,14 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+import {IMintableBurnableERC20} from '../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {IPoolVault} from '../synthereum-pool/common/interfaces/IPoolVault.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {
-  ContextUpgradeable
-} from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
+import {ContextUpgradeable} from '@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol';
 import {ERC2771Context} from '../common/ERC2771Context.sol';
-import {
-  ReentrancyGuardUpgradeable
-} from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import {
-  ERC20PermitUpgradeable
-} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
+import {ReentrancyGuardUpgradeable} from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import {ERC20PermitUpgradeable} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
 
 abstract contract BaseVaultStorage is
   ERC2771Context,

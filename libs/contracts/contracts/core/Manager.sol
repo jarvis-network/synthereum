@@ -3,24 +3,14 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
-import {
-  IAccessControlEnumerable
-} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
+import {IAccessControlEnumerable} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {IEmergencyShutdown} from '../common/interfaces/IEmergencyShutdown.sol';
-import {
-  ISynthereumLendingSwitch
-} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
+import {ISynthereumLendingSwitch} from '../synthereum-pool/common/interfaces/ILendingSwitch.sol';
 import {SynthereumInterfaces} from './Constants.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {IVaultFactory} from '../multiLP-vaults/interfaces/IVaultFactory.sol';
-import {
-  TransparentUpgradeableProxy
-} from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
+import {TransparentUpgradeableProxy} from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
 
 contract SynthereumManager is
   ISynthereumManager,
@@ -215,12 +205,11 @@ contract SynthereumManager is
   {
     require(vaults.length == params.length, 'Mismatch');
 
-    IVaultFactory vaultFactory =
-      IVaultFactory(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.VaultFactory
-        )
-      );
+    IVaultFactory vaultFactory = IVaultFactory(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.VaultFactory
+      )
+    );
     address vaultImplementation = vaultFactory.vaultImplementation();
 
     for (uint256 i = 0; i < vaults.length; i++) {

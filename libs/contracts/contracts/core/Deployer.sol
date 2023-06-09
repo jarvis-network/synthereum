@@ -3,34 +3,22 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumDeployer} from './interfaces/IDeployer.sol';
-import {
-  ISynthereumFactoryVersioning
-} from './interfaces/IFactoryVersioning.sol';
+import {ISynthereumFactoryVersioning} from './interfaces/IFactoryVersioning.sol';
 import {ISynthereumRegistry} from './registries/interfaces/IRegistry.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
 import {IMigrationSignature} from './interfaces/IMigrationSignature.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {SynthereumInterfaces} from './Constants.sol';
-import {
-  IAccessControlEnumerable
-} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
+import {IAccessControlEnumerable} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from './Constants.sol';
-import {
-  SynthereumPoolMigrationFrom
-} from '../synthereum-pool/common/migration/PoolMigrationFrom.sol';
+import {SynthereumPoolMigrationFrom} from '../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {IVaultFactory} from '../multiLP-vaults/interfaces/IVaultFactory.sol';
 import {IVault} from '../multiLP-vaults/interfaces/IVault.sol';
-import {
-  IPublicVaultRegistry
-} from './registries/interfaces/IPublicVaultRegistry.sol';
+import {IPublicVaultRegistry} from './registries/interfaces/IPublicVaultRegistry.sol';
 
 contract SynthereumDeployer is
   ISynthereumDeployer,
@@ -351,12 +339,11 @@ contract SynthereumDeployer is
     address _pool,
     uint128 _overCollateralization
   ) external override onlyMaintainer nonReentrant returns (IVault vault) {
-    IVaultFactory vaultFactory =
-      IVaultFactory(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.VaultFactory
-        )
-      );
+    IVaultFactory vaultFactory = IVaultFactory(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.VaultFactory
+      )
+    );
 
     vault = vaultFactory.createVault(
       _lpTokenName,
@@ -366,12 +353,11 @@ contract SynthereumDeployer is
     );
 
     // register vault
-    IPublicVaultRegistry vaultRegistry =
-      IPublicVaultRegistry(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.VaultRegistry
-        )
-      );
+    IPublicVaultRegistry vaultRegistry = IPublicVaultRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.VaultRegistry
+      )
+    );
 
     vaultRegistry.registerVault(_pool, address(vault));
 
@@ -394,16 +380,14 @@ contract SynthereumDeployer is
     uint8 _poolVersion,
     bytes memory _poolParamsData
   ) internal returns (ISynthereumDeployment pool) {
-    address poolFactory =
-      _factoryVersioning.getFactoryVersion(
-        FactoryInterfaces.PoolFactory,
-        _poolVersion
-      );
-    bytes memory poolDeploymentResult =
-      poolFactory.functionCall(
-        abi.encodePacked(getDeploymentSignature(poolFactory), _poolParamsData),
-        'Wrong pool deployment'
-      );
+    address poolFactory = _factoryVersioning.getFactoryVersion(
+      FactoryInterfaces.PoolFactory,
+      _poolVersion
+    );
+    bytes memory poolDeploymentResult = poolFactory.functionCall(
+      abi.encodePacked(getDeploymentSignature(poolFactory), _poolParamsData),
+      'Wrong pool deployment'
+    );
     pool = ISynthereumDeployment(abi.decode(poolDeploymentResult, (address)));
   }
 
@@ -423,19 +407,17 @@ contract SynthereumDeployer is
     internal
     returns (ISynthereumDeployment oldPool, ISynthereumDeployment newPool)
   {
-    address poolFactory =
-      _factoryVersioning.getFactoryVersion(
-        FactoryInterfaces.PoolFactory,
-        _poolVersion
-      );
-    bytes memory poolDeploymentResult =
-      poolFactory.functionCall(
-        abi.encodePacked(
-          getMigrationSignature(poolFactory),
-          _migrationParamsData
-        ),
-        'Wrong pool migration'
-      );
+    address poolFactory = _factoryVersioning.getFactoryVersion(
+      FactoryInterfaces.PoolFactory,
+      _poolVersion
+    );
+    bytes memory poolDeploymentResult = poolFactory.functionCall(
+      abi.encodePacked(
+        getMigrationSignature(poolFactory),
+        _migrationParamsData
+      ),
+      'Wrong pool migration'
+    );
     (oldPool, newPool) = abi.decode(
       poolDeploymentResult,
       (ISynthereumDeployment, ISynthereumDeployment)
@@ -454,19 +436,18 @@ contract SynthereumDeployer is
     uint8 _selfMintingDerVersion,
     bytes calldata _selfMintingDerParamsData
   ) internal returns (ISynthereumDeployment selfMintingDerivative) {
-    address selfMintingDerFactory =
-      _factoryVersioning.getFactoryVersion(
-        FactoryInterfaces.SelfMintingFactory,
-        _selfMintingDerVersion
-      );
-    bytes memory selfMintingDerDeploymentResult =
-      selfMintingDerFactory.functionCall(
-        abi.encodePacked(
-          getDeploymentSignature(selfMintingDerFactory),
-          _selfMintingDerParamsData
-        ),
-        'Wrong self-minting derivative deployment'
-      );
+    address selfMintingDerFactory = _factoryVersioning.getFactoryVersion(
+      FactoryInterfaces.SelfMintingFactory,
+      _selfMintingDerVersion
+    );
+    bytes memory selfMintingDerDeploymentResult = selfMintingDerFactory
+      .functionCall(
+      abi.encodePacked(
+        getDeploymentSignature(selfMintingDerFactory),
+        _selfMintingDerParamsData
+      ),
+      'Wrong self-minting derivative deployment'
+    );
     selfMintingDerivative = ISynthereumDeployment(
       abi.decode(selfMintingDerDeploymentResult, (address))
     );
@@ -485,19 +466,17 @@ contract SynthereumDeployer is
     uint8 _fixedRateVersion,
     bytes memory _fixedRateParamsData
   ) internal returns (ISynthereumDeployment fixedRate) {
-    address fixedRateFactory =
-      _factoryVersioning.getFactoryVersion(
-        FactoryInterfaces.FixedRateFactory,
-        _fixedRateVersion
-      );
-    bytes memory fixedRateDeploymentResult =
-      fixedRateFactory.functionCall(
-        abi.encodePacked(
-          getDeploymentSignature(fixedRateFactory),
-          _fixedRateParamsData
-        ),
-        'Wrong fixed rate deployment'
-      );
+    address fixedRateFactory = _factoryVersioning.getFactoryVersion(
+      FactoryInterfaces.FixedRateFactory,
+      _fixedRateVersion
+    );
+    bytes memory fixedRateDeploymentResult = fixedRateFactory.functionCall(
+      abi.encodePacked(
+        getDeploymentSignature(fixedRateFactory),
+        _fixedRateParamsData
+      ),
+      'Wrong fixed rate deployment'
+    );
     fixedRate = ISynthereumDeployment(
       abi.decode(fixedRateDeploymentResult, (address))
     );
@@ -511,8 +490,9 @@ contract SynthereumDeployer is
     internal
   {
     address financialContract = address(_financialContract);
-    IAccessControlEnumerable tokenCurrency =
-      IAccessControlEnumerable(address(_financialContract.syntheticToken()));
+    IAccessControlEnumerable tokenCurrency = IAccessControlEnumerable(
+      address(_financialContract.syntheticToken())
+    );
     if (
       !tokenCurrency.hasRole(MINTER_ROLE, financialContract) ||
       !tokenCurrency.hasRole(BURNER_ROLE, financialContract)
@@ -532,8 +512,9 @@ contract SynthereumDeployer is
   function removeSyntheticTokenRoles(ISynthereumDeployment _financialContract)
     internal
   {
-    IAccessControlEnumerable tokenCurrency =
-      IAccessControlEnumerable(address(_financialContract.syntheticToken()));
+    IAccessControlEnumerable tokenCurrency = IAccessControlEnumerable(
+      address(_financialContract.syntheticToken())
+    );
     modifySyntheticTokenRoles(
       address(tokenCurrency),
       address(_financialContract),
@@ -715,8 +696,9 @@ contract SynthereumDeployer is
     view
   {
     address financialContract = address(_financialContract);
-    IAccessControlEnumerable tokenCurrency =
-      IAccessControlEnumerable(address(_financialContract.syntheticToken()));
+    IAccessControlEnumerable tokenCurrency = IAccessControlEnumerable(
+      address(_financialContract.syntheticToken())
+    );
     require(
       !tokenCurrency.hasRole(MINTER_ROLE, financialContract),
       'Contract has minter role'

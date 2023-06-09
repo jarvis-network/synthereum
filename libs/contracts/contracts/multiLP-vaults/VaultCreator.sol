@@ -6,9 +6,7 @@ import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {IVault} from './interfaces/IVault.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
-import {
-  TransparentUpgradeableProxy
-} from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
+import {TransparentUpgradeableProxy} from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
 
 contract SynthereumVaultCreator {
   address internal immutable vaultImpl;
@@ -49,23 +47,20 @@ contract SynthereumVaultCreator {
     );
 
     // deploy a transparent upgradable proxy and initialize implementation
-    address vaultProxy =
-      address(
-        new TransparentUpgradeableProxy(
-          vaultImpl,
-          synthereumFinder.getImplementationAddress(
-            SynthereumInterfaces.Manager
-          ),
-          abi.encodeWithSelector(
-            IVault.initialize.selector,
-            _lpTokenName,
-            _lpTokenSymbol,
-            _pool,
-            _overCollateralization,
-            synthereumFinder
-          )
+    address vaultProxy = address(
+      new TransparentUpgradeableProxy(
+        vaultImpl,
+        synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager),
+        abi.encodeWithSelector(
+          IVault.initialize.selector,
+          _lpTokenName,
+          _lpTokenSymbol,
+          _pool,
+          _overCollateralization,
+          synthereumFinder
         )
-      );
+      )
+    );
 
     vault = IVault(vaultProxy);
   }
@@ -89,8 +84,12 @@ contract SynthereumVaultCreator {
     virtual
     returns (bytes memory encodedCall)
   {
-    (string memory name, string memory symbol, address pool, uint128 overColl) =
-      decodeParams(encodedParams);
+    (
+      string memory name,
+      string memory symbol,
+      address pool,
+      uint128 overColl
+    ) = decodeParams(encodedParams);
     encodedCall = abi.encodeWithSelector(
       IVault.initialize.selector,
       name,
@@ -128,12 +127,11 @@ contract SynthereumVaultCreator {
    * @return bool
    */
   function isPool(address _pool) internal view returns (bool) {
-    ISynthereumRegistry registry =
-      ISynthereumRegistry(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.PoolRegistry
-        )
-      );
+    ISynthereumRegistry registry = ISynthereumRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.PoolRegistry
+      )
+    );
     ISynthereumDeployment callingContract = ISynthereumDeployment(_pool);
     return
       registry.isDeployed(
