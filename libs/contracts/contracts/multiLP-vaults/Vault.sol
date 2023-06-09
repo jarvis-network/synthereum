@@ -158,7 +158,13 @@ contract Vault is IVault, BaseVaultStorage {
     _mint(recipient, lpTokensOut);
 
     // log event
-    emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
+    emit Deposit(
+      msg.sender,
+      netCollateralDeposited,
+      lpTokensOut,
+      rate,
+      discountedRate
+    );
   }
 
   function withdraw(uint256 lpTokensAmount, address recipient)
@@ -192,7 +198,7 @@ contract Vault is IVault, BaseVaultStorage {
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
 
-    emit Withdraw(lpTokensAmount, collateralOut, rate);
+    emit Withdraw(msg.sender, lpTokensAmount, collateralOut, rate);
   }
 
   function setReferencePool(address newPool)

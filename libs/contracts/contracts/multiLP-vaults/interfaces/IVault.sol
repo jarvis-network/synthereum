@@ -9,6 +9,7 @@ import {IVaultMigration} from './IVaultMigration.sol';
  */
 interface IVault is IVaultMigration {
   event Deposit(
+    address sender,
     uint256 netCollateralDeposited,
     uint256 lpTokensOut,
     uint256 rate,
@@ -16,6 +17,7 @@ interface IVault is IVaultMigration {
   );
 
   event Withdraw(
+    address sender,
     uint256 lpTokensBurned,
     uint256 netCollateralOut,
     uint256 rate

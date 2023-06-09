@@ -290,6 +290,7 @@ contract('Lending Vault', accounts => {
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
+            ev.sender == user1 &&
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
             ev.lpTokensOut.toString() == expectedUserLP.toString() &&
@@ -363,6 +364,7 @@ contract('Lending Vault', accounts => {
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
+            ev.sender == user2 &&
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
             ev.lpTokensOut.toString() == expectedUserLP.toString() &&
@@ -477,6 +479,7 @@ contract('Lending Vault', accounts => {
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
+            ev.sender == user3 &&
             ev.netCollateralDeposited.toString() ==
               collateralDeposit.toString() &&
             ev.lpTokensOut.toString() == expectedLPOut.toString() &&
@@ -615,20 +618,12 @@ contract('Lending Vault', accounts => {
 
         await USDC.approve(vault.address, purchaseAmount, { from: user4 });
         let tx = await vault.deposit(purchaseAmount, user4, { from: user4 });
-        let spread = applySpread(purchaseAmount);
 
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
 
-        let currentRegularRate = getRate(
-          actualCollateralAmount,
-          0,
-          purchaseAmount,
-          LPTotalSupply,
-        );
-
-        let expectedLPOut = toBN(spread.coll)
+        let expectedLPOut = toBN(purchaseAmount)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(discountedRate);
@@ -636,9 +631,10 @@ contract('Lending Vault', accounts => {
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
+            ev.sender == user4 &&
             ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
             ev.lpTokensOut.toString() == expectedLPOut.toString() &&
-            ev.rate.toString() == currentRegularRate.toString() &&
+            ev.rate.toString() == '0' &&
             ev.discountedRate.toString() == discountedRate.toString()
           );
         });
@@ -737,10 +733,11 @@ contract('Lending Vault', accounts => {
           toBN(purchaseAmount),
         );
 
-        let spreadAdjustedCollateral = applySpread(purchaseAmount).coll;
-        let spread = applySpread(
-          toBN(spreadAdjustedCollateral).sub(maxCollateralAtDiscount),
+        // the output is maxCollateral discounted + the remaining on regular rate
+        let remainingCollateral = toBN(purchaseAmount).sub(
+          toBN(maxCollateralAtDiscount),
         );
+        let spread = applySpread(remainingCollateral);
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
@@ -752,16 +749,12 @@ contract('Lending Vault', accounts => {
           LPTotalSupply,
         );
 
-        // the output is maxCollateral discounted + the remaining on regular rate
-        let remainingCollateral = toBN(spreadAdjustedCollateral).sub(
-          toBN(maxCollateralAtDiscount),
-        );
         let expectedLPOut = toBN(maxCollateralAtDiscount)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
           .div(discountedRate);
         expectedLPOut = expectedLPOut.add(
-          toBN(remainingCollateral)
+          toBN(spread.coll)
             .mul(toBN(Math.pow(10, 18)))
             .mul(toBN(Math.pow(10, 12)))
             .div(currentRegularRate),
@@ -770,6 +763,7 @@ contract('Lending Vault', accounts => {
         // check event
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
           return (
+            ev.sender == user5 &&
             ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
             ev.lpTokensOut.toString() == expectedLPOut.toString() &&
             ev.rate.toString() == currentRegularRate.toString() &&
@@ -851,6 +845,7 @@ contract('Lending Vault', accounts => {
       // check event
       truffleAssert.eventEmitted(tx, 'Withdraw', ev => {
         return (
+          ev.sender == user1 &&
           ev.lpTokensBurned.toString() == LPInput.toString() &&
           ev.netCollateralOut.toString() == expectedCollateralOut.toString() &&
           ev.rate.toString() == expectedRate.toString()
