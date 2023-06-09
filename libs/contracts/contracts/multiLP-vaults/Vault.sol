@@ -79,6 +79,8 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 fee;
     uint256 totalSupply = totalSupply();
     uint128 overCollateralFactor = overCollateralization;
+    uint256 rate;
+    uint256 discountedRate;
 
     if (isLpActive) {
       vaultPosition = pool.positionLPInfo(address(this));
@@ -87,9 +89,6 @@ contract Vault is IVault, BaseVaultStorage {
       );
       if (totalSupply == 0) {
         vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
-        spreadAdjustedCollateral = netCollateralDeposited;
-      } else {
-        (spreadAdjustedCollateral, fee) = applySpread(netCollateralDeposited);
       }
     } else {
       netCollateralDeposited = pool.activateLP(
@@ -97,67 +96,69 @@ contract Vault is IVault, BaseVaultStorage {
         overCollateralFactor
       );
       actualCollateralAmount = netCollateralDeposited;
-      spreadAdjustedCollateral = netCollateralDeposited;
-      isLpActive = true;
       vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
+      isLpActive = true;
       emit LPActivated(collateralAmount, overCollateralFactor);
     }
+
     uint256 scalingValue = scalingFactor();
 
     if (
       vaultPosition.coverage >=
       PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
     ) {
+      if (totalSupply != 0) {
+        (spreadAdjustedCollateral, fee) = applySpread(netCollateralDeposited);
+      } else {
+        spreadAdjustedCollateral = netCollateralDeposited;
+      }
       // calculate rate
-      uint256 rate =
-        calculateRate(
+      rate = calculateRate(
+        actualCollateralAmount - netCollateralDeposited + fee,
+        totalSupply,
+        scalingValue
+      );
+
+      lpTokensOut = (spreadAdjustedCollateral * scalingValue).div(rate);
+    } else {
+      // calculate rate and discounted rate
+      uint256 maxCollateralAtDiscount;
+
+      (, discountedRate, maxCollateralAtDiscount) = calculateDiscountedRate(
+        vaultPosition,
+        actualCollateralAmount - netCollateralDeposited,
+        totalSupply,
+        scalingValue,
+        overCollateralFactor
+      );
+
+      if (netCollateralDeposited <= maxCollateralAtDiscount) {
+        lpTokensOut = (netCollateralDeposited * scalingValue).div(
+          discountedRate
+        );
+      } else {
+        uint256 remainingCollateral =
+          netCollateralDeposited - maxCollateralAtDiscount;
+
+        (spreadAdjustedCollateral, fee) = applySpread(remainingCollateral);
+
+        rate = calculateRate(
           actualCollateralAmount - netCollateralDeposited + fee,
           totalSupply,
           scalingValue
         );
 
-      lpTokensOut = (spreadAdjustedCollateral * scalingValue).div(rate);
-      _mint(recipient, lpTokensOut);
-
-      // log event
-      emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
-    } else {
-      // calculate rate and discounted rate
-      (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
-        calculateDiscountedRate(
-          vaultPosition,
-          actualCollateralAmount - netCollateralDeposited,
-          totalSupply,
-          scalingValue,
-          overCollateralFactor
-        );
-
-      if (spreadAdjustedCollateral > maxCollateralAtDiscount) {
-        // apply spread to rate of collateral bought not in discount
-        uint256 remainingCollateral =
-          spreadAdjustedCollateral - maxCollateralAtDiscount;
-        (, uint256 regularFee) = applySpread(remainingCollateral);
-
-        rate = calculateRate(
-          actualCollateralAmount - netCollateralDeposited + regularFee,
-          totalSupply,
-          scalingValue
-        );
         lpTokensOut =
           (maxCollateralAtDiscount * scalingValue).div(discountedRate) +
-          (remainingCollateral * scalingValue).div(rate);
-      } else {
-        lpTokensOut = (spreadAdjustedCollateral * scalingValue).div(
-          discountedRate
-        );
+          (spreadAdjustedCollateral * scalingValue).div(rate);
       }
-
-      // mint LP tokens to user
-      _mint(recipient, lpTokensOut);
-
-      // log event
-      emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
     }
+
+    // mint LP tokens to user
+    _mint(recipient, lpTokensOut);
+
+    // log event
+    emit Deposit(netCollateralDeposited, lpTokensOut, rate, discountedRate);
   }
 
   function withdraw(uint256 lpTokensAmount, address recipient)
