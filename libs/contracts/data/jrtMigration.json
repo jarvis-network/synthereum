@@ -4,5 +4,9 @@
     "jarvisAddress": "0x596ebe76e2db4470966ea395b0d063ac6197a8c5",
     "activationBlock": "9999999999",
     "ratio": "1"
+  },
+  "5": {
+    "jrtAddress": "0xe9705DdDe242CB969f637082a06861751f940478",
+    "ratio": "13452380952400000000"
   }
 }

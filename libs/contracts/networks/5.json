@@ -1,0 +1,27 @@
+[
+  {
+    "contractName": "SynthereumFinder",
+    "address": "0x1D04C7dBA163ef9F83390Fd06D8D355b79F02b8e",
+    "transactionHash": "0xd807db33c1f689b05562d38de6182519fce4e26e55df4f1e18c865913f5d3759"
+  },
+  {
+    "contractName": "JarvisTokenImplementation",
+    "address": "0xf00A1D42B2c5a1aa27ACA3c4C9F6eC16A13e53C9",
+    "transactionHash": "0xacb5cef2292fb08acc3232614074052b22c8cb17c4d4bbe5783591fde6d7e289"
+  },
+  {
+    "contractName": "JarvisToken",
+    "address": "0xa75Cfa17bd40682d4F5638564c55C051756AaBa3",
+    "transactionHash": "0x3dcc3b51fd8a444178bd1fa95590ca8c7117d7706349ed2fe5a3cc6d20510206"
+  },
+  {
+    "contractName": "JrtToJarvisConverter",
+    "address": "0x6570CAB872bbE439e1c6aE1bD29F95780B6c0F68",
+    "transactionHash": "0x91b907ad7f04e14e72189ef617ff05126f42fdc369fe923a2edbe53b4cb4c11c"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0xbe3F359341d31e29939095d736E04CF1b358984f",
+    "transactionHash": "0x9fe0eb35a14906666a846d8d6e465f8474d05ca3d32134c8e998e293c860d58d"
+  }
+]
