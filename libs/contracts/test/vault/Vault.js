@@ -95,6 +95,17 @@ contract('Lending Vault', accounts => {
     };
   };
 
+  const getRate = (collAmount, spreadFee, userDeposit, lpSupply) => {
+    let expectedRate = toBN(collAmount)
+      .add(toBN(spreadFee))
+      .sub(toBN(userDeposit))
+      .mul(toBN(Math.pow(10, 18)))
+      .mul(toBN(Math.pow(10, 12)))
+      .div(lpSupply);
+
+    return expectedRate;
+  };
+
   before(async () => {
     networkId = await web3.eth.net.getId();
     USDC = await TestnetSelfMintingERC20.at(data[networkId].USDC);
@@ -336,12 +347,12 @@ contract('Lending Vault', accounts => {
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
         let spread = applySpread(collateralDeposit);
-        let expectedRate = toBN(actualCollateralAmount)
-          .add(toBN(spread.fee))
-          .sub(toBN(collateralDeposit))
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(toBN(LPTotalSupply));
+        let expectedRate = getRate(
+          actualCollateralAmount,
+          spread.fee,
+          collateralDeposit,
+          LPTotalSupply,
+        );
 
         let expectedUserLP = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
@@ -386,10 +397,7 @@ contract('Lending Vault', accounts => {
         actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
           .actualCollateralAmount;
 
-        expectedRate = toBN(actualCollateralAmount)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(toBN(LPTotalSupply));
+        expectedRate = getRate(actualCollateralAmount, 0, 0, LPTotalSupply);
         assert.equal(
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
@@ -424,13 +432,12 @@ contract('Lending Vault', accounts => {
         });
 
         // rate should have changed now
-        let expectedRate = toBN(actualCollateralAmount).add(
-          toBN(generatedInterest),
+        let expectedRate = getRate(
+          toBN(actualCollateralAmount).add(toBN(generatedInterest)),
+          0,
+          0,
+          LPTotalSupply,
         );
-        expectedRate = toBN(expectedRate)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(toBN(LPTotalSupply));
 
         assert.equal(
           (await vault.getRate.call()).toString(),
@@ -453,12 +460,14 @@ contract('Lending Vault', accounts => {
           .actualCollateralAmount;
 
         let spread = applySpread(collateralDeposit);
-        expectedRate = toBN(actualCollateralAmount)
-          .add(toBN(spread.fee))
-          .sub(toBN(collateralDeposit))
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(toBN(LPTotalSupply));
+        expectedRate = getRate(
+          toBN(actualCollateralAmount).add(
+            toBN(generatedInterest).sub(toBN(collateralDeposit)),
+          ),
+          spread.fee,
+          collateralDeposit,
+          LPTotalSupply,
+        );
 
         let expectedLPOut = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
@@ -510,10 +519,7 @@ contract('Lending Vault', accounts => {
         actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
           .actualCollateralAmount;
 
-        expectedRate = toBN(actualCollateralAmount)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(toBN(LPTotalSupply));
+        expectedRate = getRate(actualCollateralAmount, 0, 0, LPTotalSupply);
 
         assert.equal(
           (await vault.getRate.call()).toString(),
@@ -589,7 +595,6 @@ contract('Lending Vault', accounts => {
       });
 
       it('Allows user to buy a portion of max collateral at discount', async () => {
-        let currentRegularRate = await vault.getRate.call();
         let actual = await vault.getDiscountedRate.call();
         let discountedRate = actual.discountedRate;
         let maxCollateralAtDiscount = actual.maxCollateralDiscounted;
@@ -610,8 +615,25 @@ contract('Lending Vault', accounts => {
 
         await USDC.approve(vault.address, purchaseAmount, { from: user4 });
         let tx = await vault.deposit(purchaseAmount, user4, { from: user4 });
-
         let spread = applySpread(purchaseAmount);
+
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
+
+        let currentRegularRate = getRate(
+          actualCollateralAmount,
+          spread.fee,
+          purchaseAmount,
+          LPTotalSupply,
+        );
+        // toBN(actualCollateralAmount)
+        // .add(toBN(spread.fee))
+        // .sub(toBN(purchaseAmount))
+        // .mul(toBN(Math.pow(10, 18)))
+        // .mul(toBN(Math.pow(10, 12)))
+        // .div(toBN(LPTotalSupply));
+
         let expectedLPOut = toBN(spread.coll)
           .mul(toBN(Math.pow(10, 18)))
           .mul(toBN(Math.pow(10, 12)))
@@ -652,15 +674,16 @@ contract('Lending Vault', accounts => {
         let expectedUserLP = expectedLPOut;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
-        let actualCollateralAmount = (
-          await pool.positionLPInfo.call(vault.address)
-        ).actualCollateralAmount;
+        actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
 
         // the discount should have diluted the regular rate
-        let expectedNewRegularRate = toBN(actualCollateralAmount)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(toBN(LPTotalSupplyAfter));
+        let expectedNewRegularRate = getRate(
+          actualCollateralAmount,
+          0,
+          0,
+          LPTotalSupplyAfter,
+        );
 
         let newRegularRate = await vault.getRate.call();
         assert.equal(
@@ -699,7 +722,6 @@ contract('Lending Vault', accounts => {
       });
 
       it('Allows user to buy more collateral than in discount, with rate split', async () => {
-        let currentRegularRate = await vault.getRate.call();
         let actual = await vault.getDiscountedRate.call();
         let discountedRate = actual.discountedRate;
         let maxCollateralAtDiscount = actual.maxCollateralDiscounted;
@@ -722,6 +744,16 @@ contract('Lending Vault', accounts => {
         );
 
         let spread = applySpread(purchaseAmount);
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
+
+        let currentRegularRate = getRate(
+          actualCollateralAmount,
+          spread.fee,
+          purchaseAmount,
+          LPTotalSupply,
+        );
 
         // the output is maxCollateral discounted + the remaining on regular rate
         let remainingCollateral = toBN(spread.coll).sub(
@@ -773,9 +805,8 @@ contract('Lending Vault', accounts => {
         let expectedUserLP = expectedLPOut;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
-        let actualCollateralAmount = (
-          await pool.positionLPInfo.call(vault.address)
-        ).actualCollateralAmount;
+        actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
 
         // the discount should have diluted the regular rate
         let expectedNewRegularRate = toBN(actualCollateralAmount)
@@ -802,10 +833,12 @@ contract('Lending Vault', accounts => {
         await pool.positionLPInfo.call(vault.address)
       ).actualCollateralAmount;
 
-      let expectedRate = toBN(actualCollateralAmount)
-        .mul(toBN(Math.pow(10, 18)))
-        .mul(toBN(Math.pow(10, 12)))
-        .div(totalSupplyLPBefore);
+      let expectedRate = getRate(
+        actualCollateralAmount,
+        0,
+        0,
+        totalSupplyLPBefore,
+      );
 
       let currentRate = await vault.getRate.call();
       assert.equal(expectedRate.toString(), currentRate.toString());

@@ -103,18 +103,17 @@ contract Vault is IVault, BaseVaultStorage {
       emit LPActivated(collateralAmount, overCollateralFactor);
     }
     uint256 scalingValue = scalingFactor();
+    // calculate rate
+    uint256 rate =
+      calculateRate(
+        actualCollateralAmount - netCollateralDeposited + fee,
+        totalSupply,
+        scalingValue
+      );
     if (
       vaultPosition.coverage >=
       PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
     ) {
-      // calculate rate
-      uint256 rate =
-        calculateRate(
-          actualCollateralAmount - netCollateralDeposited + fee,
-          totalSupply,
-          scalingValue
-        );
-
       lpTokensOut = (spreadAdjustedCollateral * scalingValue).div(rate);
       _mint(recipient, lpTokensOut);
 
@@ -122,7 +121,7 @@ contract Vault is IVault, BaseVaultStorage {
       emit Deposit(netCollateralDeposited, lpTokensOut, rate, 0);
     } else {
       // calculate rate and discounted rate
-      (uint256 rate, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
+      (, uint256 discountedRate, uint256 maxCollateralAtDiscount) =
         calculateDiscountedRate(
           vaultPosition,
           actualCollateralAmount - netCollateralDeposited,
