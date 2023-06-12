@@ -372,5 +372,12 @@
       "oracle": "",
       "intermediatePairs": ["MXNUSD", "USDETH", "ETHWSTETH"]
     }
+  },
+  "43113": {
+    "EURUSD": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    }
   }
 }

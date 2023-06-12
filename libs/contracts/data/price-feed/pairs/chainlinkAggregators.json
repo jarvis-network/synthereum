@@ -588,5 +588,13 @@
       "intermediatePairs": [],
       "convertionMetricUnit": 0
     }
+  },
+  "43113": {
+    "EURUSD": {
+      "type": 1,
+      "aggregator": "0xf4E03DBc0D0Bfc7C2D50c965107a74139Ab48ABD",
+      "convertionMetricUnit": 0,
+      "maxSpread": "10000000000000000"
+    }
   }
 }

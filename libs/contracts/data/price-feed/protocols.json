@@ -8,5 +8,10 @@
     "chainlink": true,
     "api3": false,
     "dia": false
+  },
+  "43113": {
+    "chainlink": true,
+    "api3": false,
+    "dia": false
   }
 }
