@@ -278,30 +278,37 @@ async function migrate(deployer, network, accounts) {
         aggregator: chainlinkPriceFeeds[networkId][asset].aggregator,
         convertionMetricUnit:
           chainlinkPriceFeeds[networkId][asset].convertionMetricUnit,
+        maxSpread: chainlinkPriceFeeds[networkId][asset].maxSpread,
       });
     });
     const api3Assets = Object.keys(api3PriceFeeds[networkId]);
-    api3Assets.map(async asset => {
-      api3AggregatorData.push({
-        kind: api3PriceFeeds[networkId][asset].type,
-        asset: asset,
-        pair: asset,
-        aggregator: api3PriceFeeds[networkId][asset].aggregator,
-        convertionMetricUnit:
-          api3PriceFeeds[networkId][asset].convertionMetricUnit,
+    if (api3Assets.length > 0) {
+      api3Assets.map(async asset => {
+        api3AggregatorData.push({
+          kind: api3PriceFeeds[networkId][asset].type,
+          asset: asset,
+          pair: asset,
+          aggregator: api3PriceFeeds[networkId][asset].aggregator,
+          convertionMetricUnit:
+            api3PriceFeeds[networkId][asset].convertionMetricUnit,
+          maxSpread: api3PriceFeeds[networkId][asset].maxSpread,
+        });
       });
-    });
+    }
     const diaAssets = Object.keys(diaPriceFeeds[networkId]);
-    diaAssets.map(async asset => {
-      diaAggregatorData.push({
-        kind: diaPriceFeeds[networkId][asset].type,
-        asset: asset,
-        pair: asset,
-        aggregator: diaPriceFeeds[networkId][asset].aggregator,
-        convertionMetricUnit:
-          diaPriceFeeds[networkId][asset].convertionMetricUnit,
+    if (diaAssets.length > 0) {
+      diaAssets.map(async asset => {
+        diaAggregatorData.push({
+          kind: diaPriceFeeds[networkId][asset].type,
+          asset: asset,
+          pair: asset,
+          aggregator: diaPriceFeeds[networkId][asset].aggregator,
+          convertionMetricUnit:
+            diaPriceFeeds[networkId][asset].convertionMetricUnit,
+          maxSpread: diaPriceFeeds[networkId][asset].maxSpread,
+        });
       });
-    });
+    }
   }
   for (let j = 0; j < chainlinkAggregatorsData.length; j++) {
     await synthereumChainlinkPriceFeed.methods
@@ -311,6 +318,7 @@ async function migrate(deployer, network, accounts) {
         chainlinkAggregatorsData[j].aggregator,
         chainlinkAggregatorsData[j].convertionMetricUnit,
         '0x',
+        chainlinkAggregatorsData[j].maxSpread,
       )
       .send({ from: maintainer });
     console.log(`   Add '${chainlinkAggregatorsData[j].asset}' aggregator`);
@@ -323,6 +331,7 @@ async function migrate(deployer, network, accounts) {
         api3AggregatorData[j].aggregator,
         api3AggregatorData[j].convertionMetricUnit,
         '0x',
+        api3AggregatorData[j].maxSpread,
       )
       .send({ from: maintainer });
     console.log(`   Add '${api3AggregatorData[j].pair}' aggregator`);
@@ -335,6 +344,7 @@ async function migrate(deployer, network, accounts) {
         diaAggregatorData[j].aggregator,
         diaAggregatorData[j].convertionMetricUnit,
         '0x',
+        diaAggregatorData[j].maxSpread,
       )
       .send({ from: maintainer });
     console.log(`   Add '${diaAggregatorData[j].pair}' aggregator`);
