@@ -98,5 +98,20 @@
     "contractName": "SelfMintingController",
     "address": "0x697240b2124bEd2B19FB003Ec4e4cFb5b125B0D1",
     "transactionHash": "0x5beb1f39d394691e53703609b9504c2fcfd4058f69178507c819334675a4a955"
+  },
+  {
+    "contractName": "JarvisTokenImplementation",
+    "address": "0x3b05B902Fe763AD87Aa755Fab70F86c76Bf331F4",
+    "transactionHash": "0x58217de48d06157e6ce5f00a937e19e71911b9340bba7593db6b82a92a0f911a"
+  },
+  {
+    "contractName": "JarvisToken",
+    "address": "0xBD8FdDa057de7e0162b7A386BeC253844B5E07A5",
+    "transactionHash": "0x2026d28003890af05e8ecb2451f0e6a1d9f2f3dc6b8d3f0336eee5e5abf88673"
+  },
+  {
+    "contractName": "JrtToJarvisConverter",
+    "address": "0xf844826e986a2ad77Bf24a491Fe1D8b9ef2d3B03",
+    "transactionHash": "0x1010d6078a3a985e57d5c5da4e4865f4d7bdf35be75dc3fe1aa5dff0f371c847"
   }
 ]
