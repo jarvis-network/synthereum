@@ -113,5 +113,10 @@
     "contractName": "JrtToJarvisConverter",
     "address": "0xf844826e986a2ad77Bf24a491Fe1D8b9ef2d3B03",
     "transactionHash": "0x1010d6078a3a985e57d5c5da4e4865f4d7bdf35be75dc3fe1aa5dff0f371c847"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0xE1f0e22DE16842498634B08C68f8a7a4716fBf87",
+    "transactionHash": "0x3b99f836677f58e72e96a22036f8f877b99ca8a41b05d76bd661f57fd9b9d344"
   }
 ]
