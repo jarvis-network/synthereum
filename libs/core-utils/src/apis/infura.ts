@@ -45,7 +45,7 @@ export function getXDAIEndpoint<Net extends Network>(
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
   const endpoint =
-    networkName === 'xDAI' ? 'rpc.xdaichain.com/' : 'sokol.poa.network';
+    networkName === 'xDAI' ? 'rpc.gnosis.gateway.fm' : 'sokol.poa.network';
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 
