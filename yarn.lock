@@ -3405,7 +3405,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jarvis-network/hardhat-utils@workspace:libs/hardhat-utils"
   dependencies:
-    "@nomiclabs/hardhat-etherscan": ^3.0.0
+    "@nomiclabs/hardhat-etherscan": ^3.1.7
     truffle-deploy-registry: ^0.5.1
   languageName: unknown
   linkType: soft
@@ -4300,20 +4300,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomiclabs/hardhat-etherscan@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@nomiclabs/hardhat-etherscan@npm:3.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40nomiclabs%2Fhardhat-etherscan%2F-%2Fhardhat-etherscan-3.0.0.tgz"
+"@nomiclabs/hardhat-etherscan@npm:^3.1.7":
+  version: 3.1.7
+  resolution: "@nomiclabs/hardhat-etherscan@npm:3.1.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40nomiclabs%2Fhardhat-etherscan%2F-%2Fhardhat-etherscan-3.1.7.tgz"
   dependencies:
     "@ethersproject/abi": ^5.1.2
     "@ethersproject/address": ^5.0.2
-    cbor: ^5.0.2
+    cbor: ^8.1.0
+    chalk: ^2.4.2
     debug: ^4.1.1
     fs-extra: ^7.0.1
-    node-fetch: ^2.6.0
+    lodash: ^4.17.11
     semver: ^6.3.0
+    table: ^6.8.0
+    undici: ^5.14.0
   peerDependencies:
     hardhat: ^2.0.4
-  checksum: 79c6f9a399f9bd09b2335e89846cf1dc245bfab53358963edcf53ca0886ac120e578cd2a176396ab42d0998c25f8d41124be55877e65eb2763669d2b74a21ef6
+  checksum: 32d74e567e78a940a79cbe49c5dee0eb5cda0a4c0c34a9badfaf13d45e6054d9e717c28b8d2b0b20f29721a484af15a52d391fb60768222c4b13de92ef0f72b3
   languageName: node
   linkType: hard
 
@@ -7254,6 +7257,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ajv@npm:^8.0.1":
+  version: 8.12.0
+  resolution: "ajv@npm:8.12.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fajv%2F-%2Fajv-8.12.0.tgz"
+  dependencies:
+    fast-deep-equal: ^3.1.1
+    json-schema-traverse: ^1.0.0
+    require-from-string: ^2.0.2
+    uri-js: ^4.2.2
+  checksum: 4dc13714e316e67537c8b31bc063f99a1d9d9a497eb4bbd55191ac0dcd5e4985bbb71570352ad6f1e76684fb6d790928f96ba3b2d4fd6e10024be9612fe3f001
+  languageName: node
+  linkType: hard
+
 "align-text@npm:^0.1.1, align-text@npm:^0.1.3":
   version: 0.1.4
   resolution: "align-text@npm:0.1.4"
@@ -9462,6 +9477,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"busboy@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "busboy@npm:1.6.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbusboy%2F-%2Fbusboy-1.6.0.tgz"
+  dependencies:
+    streamsearch: ^1.1.0
+  checksum: 32801e2c0164e12106bf236291a00795c3c4e4b709ae02132883fe8478ba2ae23743b11c5735a0aae8afe65ac4b6ca4568b91f0d9fed1fdbc32ede824a73746e
+  languageName: node
+  linkType: hard
+
 "byline@npm:^5.0.0":
   version: 5.0.0
   resolution: "byline@npm:5.0.0"
@@ -9803,6 +9827,15 @@ __metadata:
     bignumber.js: ^9.0.1
     nofilter: ^1.0.4
   checksum: b3c39dae64370f361526dbec88f51d0f1b47027224cdd21dbd64c228f0fe7eaa945932d349ec5324068a6c6dcdbb1e3b46242852524fd53c526d14cb60514bdc
+  languageName: node
+  linkType: hard
+
+"cbor@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "cbor@npm:8.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcbor%2F-%2Fcbor-8.1.0.tgz"
+  dependencies:
+    nofilter: ^3.1.0
+  checksum: a90338435dc7b45cc01461af979e3bb6ddd4f2a08584c437586039cd5f2235014c06e49d664295debbfb3514d87b2f06728092ab6aa6175e2e85e9cd7dc0c1fd
   languageName: node
   linkType: hard
 
@@ -19858,6 +19891,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.truncate@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "lodash.truncate@npm:4.4.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Flodash.truncate%2F-%2Flodash.truncate-4.4.2.tgz"
+  checksum: b463d8a382cfb5f0e71c504dcb6f807a7bd379ff1ea216669aa42c52fc28c54e404bfbd96791aa09e6df0de2c1d7b8f1b7f4b1a61f324d38fe98bc535aeee4f5
+  languageName: node
+  linkType: hard
+
 "lodash.union@npm:^4.6.0":
   version: 4.6.0
   resolution: "lodash.union@npm:4.6.0"
@@ -21612,6 +21652,13 @@ __metadata:
   version: 1.0.4
   resolution: "nofilter@npm:1.0.4"
   checksum: 54d864f745de5c3312994e880cf2d4f55e34830d6adc8275dce3731507ca380d21040336e4a277a4901551c07f04c452fbeffd57fad1dc8f68a2943eaf894a04
+  languageName: node
+  linkType: hard
+
+"nofilter@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "nofilter@npm:3.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fnofilter%2F-%2Fnofilter-3.1.0.tgz"
+  checksum: 58aa85a5b4b35cbb6e42de8a8591c5e338061edc9f3e7286f2c335e9e9b9b8fa7c335ae45daa8a1f3433164dc0b9a3d187fa96f9516e04a17a1f9ce722becc4f
   languageName: node
   linkType: hard
 
@@ -25825,6 +25872,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"streamsearch@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "streamsearch@npm:1.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fstreamsearch%2F-%2Fstreamsearch-1.1.0.tgz"
+  checksum: 1cce16cea8405d7a233d32ca5e00a00169cc0e19fbc02aa839959985f267335d435c07f96e5e0edd0eadc6d39c98d5435fb5bbbdefc62c41834eadc5622ad942
+  languageName: node
+  linkType: hard
+
 "strict-uri-encode@npm:^1.0.0":
   version: 1.1.0
   resolution: "strict-uri-encode@npm:1.1.0"
@@ -26353,6 +26407,19 @@ __metadata:
     slice-ansi: ^4.0.0
     string-width: ^4.2.0
   checksum: 5cbc42454d9d2b8051aac77cdfa38b78e0ea00eeb1ef2bc50463f02ede9e9210bbb418a1f38c51f10dd34c5a01df50b05a32cb9222fb28b095d51fb557c5c21e
+  languageName: node
+  linkType: hard
+
+"table@npm:^6.8.0":
+  version: 6.8.1
+  resolution: "table@npm:6.8.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftable%2F-%2Ftable-6.8.1.tgz"
+  dependencies:
+    ajv: ^8.0.1
+    lodash.truncate: ^4.4.2
+    slice-ansi: ^4.0.0
+    string-width: ^4.2.3
+    strip-ansi: ^6.0.1
+  checksum: 08249c7046125d9d0a944a6e96cfe9ec66908d6b8a9db125531be6eb05fa0de047fd5542e9d43b4f987057f00a093b276b8d3e19af162a9c40db2681058fd306
   languageName: node
   linkType: hard
 
@@ -27464,6 +27531,15 @@ __metadata:
   version: 1.10.2
   resolution: "underscore@npm:1.10.2"
   checksum: 199ee8d97258458273ee8b9f5ce5368c3669646ef4c50766fe5a2d12b9b22ce58a78e278d8fb79ceb9618041ee14dc6780ba9a563bd700f1b10c080668ded6ea
+  languageName: node
+  linkType: hard
+
+"undici@npm:^5.14.0":
+  version: 5.22.1
+  resolution: "undici@npm:5.22.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fundici%2F-%2Fundici-5.22.1.tgz"
+  dependencies:
+    busboy: ^1.6.0
+  checksum: 048a3365f622be44fb319316cedfaa241c59cf7f3368ae7667a12323447e1822e8cc3d00f6956c852d1478a6fde1cbbe753f49e05f2fdaed229693e716ebaf35
   languageName: node
   linkType: hard
 
