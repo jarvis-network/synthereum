@@ -24,7 +24,7 @@ elif [ "$network" == "bscTestnet" ]; then
 elif [ "$network" == "sokol" ]; then
     networkId=77
     endpoint='https://sokol.poa.network'
-elif [ "$network" == "xDAI" ]; then
+elif [ "$network" == "gnosis" ]; then
     networkId=100
     endpoint='https://rpc.xdaichain.com/'
 elif [ "$network" == "fantomTestnet" ]; then
