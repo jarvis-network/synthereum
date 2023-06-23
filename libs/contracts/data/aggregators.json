@@ -105,6 +105,11 @@
     }
   },
   "137": {
+    "EURUSD": {
+      "type": 0,
+      "aggregator": "0x73366Fe0AA0Ded304479862808e02506FE556a98",
+      "intermediatePairs": []
+    },
     "ETHWSTETH": {
       "type": 1,
       "aggregator": "0x10f964234cae09cB6a9854B56FF7D4F38Cda5E6a",
@@ -293,6 +298,11 @@
     }
   },
   "10": {
+    "EURUSD": {
+      "type": 0,
+      "aggregator": "0x3626369857A10CcC6cc3A6e4f5C2f5984a519F20",
+      "intermediatePairs": []
+    },
     "WSTETHUSD": {
       "type": 0,
       "aggregator": "0x698B585CbC4407e2D54aa898B2600B53C68958f7",
