@@ -638,7 +638,7 @@ contract('Synthereum price feed', accounts => {
         priceFeed.setPair(priceIdentifier, 0, oracleIdentifier, [], {
           from: maintainer,
         }),
-        'No type passed',
+        'Pair not supported',
       );
     });
     it('Can revert if sender is not the maintainer', async () => {

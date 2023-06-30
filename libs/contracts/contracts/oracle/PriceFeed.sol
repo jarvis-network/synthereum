@@ -494,7 +494,7 @@ contract SynthereumPriceFeed is
         }
       }
     } else {
-      revert('No type passed');
+      revert('Pair not supported');
     }
   }
 
