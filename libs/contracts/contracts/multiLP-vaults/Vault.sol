@@ -105,7 +105,13 @@ contract Vault is IVault, BaseVaultStorage {
       PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
     ) {
       if (totalSupply != 0) {
-        (spreadAdjustedCollateral, fee) = applySpread(netCollateralDeposited);
+        (spreadAdjustedCollateral, fee) = applySpread(
+          vaultPosition.actualCollateralAmount,
+          netCollateralDeposited,
+          netCollateralDeposited.div(actualCollateralAmount),
+          vaultPosition.coverage,
+          true
+        );
       } else {
         spreadAdjustedCollateral = netCollateralDeposited;
       }
@@ -137,7 +143,13 @@ contract Vault is IVault, BaseVaultStorage {
         uint256 remainingCollateral = netCollateralDeposited -
           maxCollateralAtDiscount;
 
-        (spreadAdjustedCollateral, fee) = applySpread(remainingCollateral);
+        (spreadAdjustedCollateral, fee) = applySpread(
+          vaultPosition.actualCollateralAmount,
+          remainingCollateral,
+          remainingCollateral.div(actualCollateralAmount),
+          vaultPosition.coverage,
+          true
+        );
 
         rate = calculateRate(
           actualCollateralAmount - netCollateralDeposited + fee,
@@ -173,8 +185,8 @@ contract Vault is IVault, BaseVaultStorage {
     require(lpTokensAmount > 0, 'Zero amount');
 
     // retrieve updated vault position on pool
-    uint256 vaultCollateralAmount = (pool.positionLPInfo(address(this)))
-      .actualCollateralAmount;
+    IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
+    uint256 vaultCollateralAmount = vaultPosition.actualCollateralAmount;
 
     // calculate rate and amount of collateral to withdraw
     uint256 totSupply = totalSupply();
@@ -192,7 +204,14 @@ contract Vault is IVault, BaseVaultStorage {
     _burn(_msgSender(), lpTokensAmount);
 
     // withdraw collateral from pool
-    (, collateralOut, ) = pool.removeLiquidity(collateralEquivalent);
+    (uint256 spreadAdjustedCollateral, ) = applySpread(
+      vaultCollateralAmount,
+      collateralEquivalent,
+      lpTokensAmount.div(totSupply),
+      vaultPosition.coverage,
+      false
+    );
+    (, collateralOut, ) = pool.removeLiquidity(spreadAdjustedCollateral);
 
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
@@ -281,12 +300,18 @@ contract Vault is IVault, BaseVaultStorage {
     overcollateral = overCollateralization;
   }
 
-  function getSpread() external view override returns (uint256 maxSpread) {
+  function getSpread()
+    external
+    view
+    override
+    returns (uint256 maxSpreadLong, uint256 maxSpreadShort)
+  {
     ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
       synthereumFinder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
     );
 
-    maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
+    maxSpreadLong = priceFeed.longMaxSpread(priceFeedIdentifier);
+    maxSpreadShort = priceFeed.shortMaxSpread(priceFeedIdentifier);
   }
 
   function scalingFactor() internal view returns (uint256) {
@@ -337,17 +362,25 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   // apply spread % based on price feed spread
-  function applySpread(uint256 collateralAmount)
-    internal
-    view
-    returns (uint256 adjustedAmount, uint256 fee)
-  {
+  function applySpread(
+    uint256 positionCollateralBefore,
+    uint256 amount,
+    uint256 lpWeight,
+    uint256 coverage,
+    bool isDeposit
+  ) internal view returns (uint256 adjustedAmount, uint256 fee) {
     ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
       synthereumFinder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
     );
 
-    uint256 maxSpread = priceFeed.getMaxSpread(priceFeedIdentifier);
-    fee = collateralAmount.mul(maxSpread);
-    adjustedAmount = collateralAmount - fee;
+    uint256 maxSpread = isDeposit
+      ? priceFeed.shortMaxSpread(priceFeedIdentifier)
+      : priceFeed.longMaxSpread(priceFeedIdentifier);
+
+    fee = positionCollateralBefore.div(coverage - 1).mul(lpWeight).mul(
+      maxSpread
+    );
+
+    adjustedAmount = amount - fee;
   }
 }

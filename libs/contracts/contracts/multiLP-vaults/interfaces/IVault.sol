@@ -111,7 +111,11 @@ interface IVault is IVaultMigration {
 
   /**
    * @notice Return the vault reference pool max spread
-   * @param maxSpread max spread
+   * @param maxSpreadLong max spread for buying
+   * @param maxSpreadShort max spread for selling
    */
-  function getSpread() external view returns (uint256 maxSpread);
+  function getSpread()
+    external
+    view
+    returns (uint256 maxSpreadLong, uint256 maxSpreadShort);
 }
