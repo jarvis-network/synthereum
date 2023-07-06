@@ -133,7 +133,7 @@ contract Vault is IVault, BaseVaultStorage {
       if (cache.totalSupply != 0) {
         (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
           FeeCache(
-            vaultPosition.actualCollateralAmount,
+            cache.actualCollateralAmount - cache.netCollateralDeposited,
             cache.netCollateralDeposited,
             cache.netCollateralDeposited,
             cache.actualCollateralAmount,
