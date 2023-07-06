@@ -90,7 +90,7 @@ async function migrate(deployer, network, accounts) {
   let synthereumApi3PriceFeed;
   let synthereumDiaPriceFeed;
 
-  if (protocols[networkId]?.chainlink ?? true) {
+  if (!isPublicNetwork(network) || (protocols[networkId]?.chainlink ?? true)) {
     // deploy chainlink module
     await deploy(
       web3,
@@ -118,7 +118,7 @@ async function migrate(deployer, network, accounts) {
     }
   }
 
-  if (protocols[networkId]?.api3 ?? true) {
+  if (!isPublicNetwork(network) || (protocols[networkId]?.api3 ?? true)) {
     // deploy chainlink module
     await deploy(
       web3,
@@ -146,7 +146,7 @@ async function migrate(deployer, network, accounts) {
     }
   }
 
-  if (protocols[networkId]?.dia ?? true) {
+  if (!isPublicNetwork(network) || (protocols[networkId]?.dia ?? true)) {
     // deploy chainlink module
     await deploy(
       web3,
@@ -203,11 +203,12 @@ async function migrate(deployer, network, accounts) {
           '@jarvis-network/synthereum-contracts',
         );
         chainlinkAggregatorsData.push({
-          kind: 0,
+          kind: 1,
           asset: assets[j],
-          pair: web3.utils.utf8ToHex(assets[j]),
+          pair: assets[j],
           aggregator: mockRandomAggregator.options.address,
-          intermediateIds: [],
+          convertionMetricUnit: 0,
+          maxSpread: '10000000000000000',
         });
       } else if (randomOracleConfig[networkId][assets[j]].oracle == 'api3') {
         await deploy(web3, deployer, network, MockDapiServer, {
@@ -231,9 +232,12 @@ async function migrate(deployer, network, accounts) {
         );
 
         api3AggregatorData.push({
+          kind: 1,
+          asset: assets[j],
           pair: assets[j],
-          priceIdentifier: web3.utils.utf8ToHex(assets[j]),
-          server: mockApi3Server.address,
+          aggregator: mockApi3Server.options.address,
+          convertionMetricUnit: 0,
+          maxSpread: '10000000000000000',
         });
       } else if (randomOracleConfig[networkId][assets[j]].oracle == 'dia') {
         await deploy(
@@ -262,9 +266,12 @@ async function migrate(deployer, network, accounts) {
         );
 
         diaAggregatorData.push({
+          kind: 1,
+          asset: assets[j],
           pair: assets[j],
-          priceIdentifier: web3.utils.utf8ToHex(assets[j]),
-          aggregator: mockDiaOracle.address,
+          aggregator: mockDiaOracle.options.address,
+          convertionMetricUnit: 0,
+          maxSpread: '10000000000000000',
         });
       }
     }
