@@ -424,7 +424,7 @@ contract Vault is IVault, BaseVaultStorage {
       .positionCollateral
       .mul(_feeCache.lpShare)
       .mul(maxSpread)
-      .div(_feeCache.coverage - 1)
+      .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
       .div(_feeCache.totalShares);
 
     adjustedAmount = _feeCache.amount - fee;
