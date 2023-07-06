@@ -17,6 +17,26 @@ contract Vault is IVault, BaseVaultStorage {
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
+  struct DepositCache {
+    uint256 netCollateralDeposited;
+    uint256 actualCollateralAmount;
+    uint256 spreadAdjustedCollateral;
+    uint256 fee;
+    uint256 rate;
+    uint256 discountedRate;
+    uint256 totalSupply;
+    uint256 vaultCoverage;
+    uint128 overCollateralFactor;
+  }
+
+  struct WithdrawCache {
+    uint256 vaultCollateralAmount;
+    uint256 totSupply;
+    uint256 scalingValue;
+    uint256 rate;
+    uint256 collateralEquivalent;
+  }
+
   modifier onlyVaultRegistry() {
     address vaultRegistry = synthereumFinder.getImplementationAddress(
       SynthereumInterfaces.VaultRegistry
@@ -69,97 +89,103 @@ contract Vault is IVault, BaseVaultStorage {
     // retrieve updated vault position on pool
     IPoolVault.LPInfo memory vaultPosition;
 
+    // struct to cache intermediate values
+    DepositCache memory cache;
+
     // deposit collateral (activate if first deposit) into pool and trigger positions update
-    uint256 netCollateralDeposited;
-    uint256 actualCollateralAmount;
-    uint256 spreadAdjustedCollateral;
-    uint256 fee;
-    uint256 totalSupply = totalSupply();
-    uint128 overCollateralFactor = overCollateralization;
-    uint256 rate;
-    uint256 discountedRate;
+    cache.totalSupply = totalSupply();
+    cache.overCollateralFactor = overCollateralization;
 
     if (isLpActive) {
       vaultPosition = pool.positionLPInfo(address(this));
-      (netCollateralDeposited, actualCollateralAmount) = pool.addLiquidity(
-        collateralAmount
-      );
-      if (totalSupply == 0) {
+      (cache.netCollateralDeposited, cache.actualCollateralAmount) = pool
+        .addLiquidity(collateralAmount);
+      if (cache.totalSupply == 0) {
         vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       }
     } else {
-      netCollateralDeposited = pool.activateLP(
+      cache.netCollateralDeposited = pool.activateLP(
         collateralAmount,
-        overCollateralFactor
+        cache.overCollateralFactor
       );
-      actualCollateralAmount = netCollateralDeposited;
+      cache.actualCollateralAmount = cache.netCollateralDeposited;
       vaultPosition.coverage = PreciseUnitMath.MAX_UINT_256;
       isLpActive = true;
-      emit LPActivated(collateralAmount, overCollateralFactor);
+      emit LPActivated(collateralAmount, cache.overCollateralFactor);
     }
 
     uint256 scalingValue = scalingFactor();
+    cache.vaultCoverage = vaultPosition.coverage;
 
     if (
-      vaultPosition.coverage >=
-      PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
+      cache.vaultCoverage >=
+      PreciseUnitMath.PRECISE_UNIT + cache.overCollateralFactor
     ) {
-      if (totalSupply != 0) {
-        (spreadAdjustedCollateral, fee) = applySpread(
+      if (cache.totalSupply != 0) {
+        (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
           vaultPosition.actualCollateralAmount,
-          netCollateralDeposited,
-          netCollateralDeposited.div(actualCollateralAmount),
-          vaultPosition.coverage,
+          cache.netCollateralDeposited,
+          cache.netCollateralDeposited,
+          cache.actualCollateralAmount,
+          cache.vaultCoverage,
           true
         );
       } else {
-        spreadAdjustedCollateral = netCollateralDeposited;
+        cache.spreadAdjustedCollateral = cache.netCollateralDeposited;
       }
       // calculate rate
-      rate = calculateRate(
-        actualCollateralAmount - netCollateralDeposited + fee,
-        totalSupply,
+      cache.rate = calculateRate(
+        cache.actualCollateralAmount - cache.netCollateralDeposited + cache.fee,
+        cache.totalSupply,
         scalingValue
       );
 
-      lpTokensOut = (spreadAdjustedCollateral * scalingValue).div(rate);
+      lpTokensOut = (cache.spreadAdjustedCollateral * scalingValue).div(
+        cache.rate
+      );
     } else {
       // calculate rate and discounted rate
       uint256 maxCollateralAtDiscount;
 
-      (, discountedRate, maxCollateralAtDiscount) = calculateDiscountedRate(
+      (
+        ,
+        cache.discountedRate,
+        maxCollateralAtDiscount
+      ) = calculateDiscountedRate(
         vaultPosition,
-        actualCollateralAmount - netCollateralDeposited,
-        totalSupply,
+        cache.actualCollateralAmount - cache.netCollateralDeposited,
+        cache.totalSupply,
         scalingValue,
-        overCollateralFactor
+        cache.overCollateralFactor
       );
 
-      if (netCollateralDeposited <= maxCollateralAtDiscount) {
-        lpTokensOut = (netCollateralDeposited * scalingValue).div(
-          discountedRate
+      if (cache.netCollateralDeposited <= maxCollateralAtDiscount) {
+        lpTokensOut = (cache.netCollateralDeposited * scalingValue).div(
+          cache.discountedRate
         );
       } else {
-        uint256 remainingCollateral = netCollateralDeposited -
+        uint256 remainingCollateral = cache.netCollateralDeposited -
           maxCollateralAtDiscount;
-
-        (spreadAdjustedCollateral, fee) = applySpread(
+        (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
           vaultPosition.actualCollateralAmount,
           remainingCollateral,
-          remainingCollateral.div(actualCollateralAmount),
-          vaultPosition.coverage,
+          remainingCollateral,
+          cache.actualCollateralAmount,
+          cache.vaultCoverage,
           true
         );
 
-        rate = calculateRate(
-          actualCollateralAmount - netCollateralDeposited + fee,
-          totalSupply,
+        cache.rate = calculateRate(
+          cache.actualCollateralAmount -
+            cache.netCollateralDeposited +
+            cache.fee,
+          cache.totalSupply,
           scalingValue
         );
 
         lpTokensOut =
-          (maxCollateralAtDiscount * scalingValue).div(discountedRate) +
-          (spreadAdjustedCollateral * scalingValue).div(rate);
+          (maxCollateralAtDiscount * scalingValue).div(cache.discountedRate) +
+          (cache.spreadAdjustedCollateral * scalingValue).div(cache.rate);
       }
     }
 
@@ -169,10 +195,10 @@ contract Vault is IVault, BaseVaultStorage {
     // log event
     emit Deposit(
       msg.sender,
-      netCollateralDeposited,
+      cache.netCollateralDeposited,
       lpTokensOut,
-      rate,
-      discountedRate
+      cache.rate,
+      cache.discountedRate
     );
   }
 
@@ -186,28 +212,32 @@ contract Vault is IVault, BaseVaultStorage {
 
     // retrieve updated vault position on pool
     IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
-    uint256 vaultCollateralAmount = vaultPosition.actualCollateralAmount;
+
+    WithdrawCache memory cache;
+
+    cache.vaultCollateralAmount = vaultPosition.actualCollateralAmount;
 
     // calculate rate and amount of collateral to withdraw
-    uint256 totSupply = totalSupply();
-    uint256 scalingValue = scalingFactor();
-    uint256 rate = calculateRate(
-      vaultCollateralAmount,
-      totSupply,
-      scalingValue
+    cache.totSupply = totalSupply();
+    cache.scalingValue = scalingFactor();
+    cache.rate = calculateRate(
+      cache.vaultCollateralAmount,
+      cache.totSupply,
+      cache.scalingValue
     );
-    uint256 collateralEquivalent = lpTokensAmount == totSupply
-      ? vaultCollateralAmount
-      : lpTokensAmount.mul(rate) / scalingValue;
+    cache.collateralEquivalent = lpTokensAmount == cache.totSupply
+      ? cache.vaultCollateralAmount
+      : lpTokensAmount.mul(cache.rate) / cache.scalingValue;
 
     // Burn LP tokens of user
     _burn(_msgSender(), lpTokensAmount);
 
     // withdraw collateral from pool
     (uint256 spreadAdjustedCollateral, ) = applySpread(
-      vaultCollateralAmount,
-      collateralEquivalent,
-      lpTokensAmount.div(totSupply),
+      cache.vaultCollateralAmount,
+      cache.collateralEquivalent,
+      lpTokensAmount,
+      cache.totSupply,
       vaultPosition.coverage,
       false
     );
@@ -216,7 +246,7 @@ contract Vault is IVault, BaseVaultStorage {
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
 
-    emit Withdraw(msg.sender, lpTokensAmount, collateralOut, rate);
+    emit Withdraw(msg.sender, lpTokensAmount, collateralOut, cache.rate);
   }
 
   function setReferencePool(address newPool)
@@ -363,9 +393,10 @@ contract Vault is IVault, BaseVaultStorage {
 
   // apply spread % based on price feed spread
   function applySpread(
-    uint256 positionCollateralBefore,
+    uint256 positionCollateral,
     uint256 amount,
-    uint256 lpWeight,
+    uint256 lpShare,
+    uint256 totalShares,
     uint256 coverage,
     bool isDeposit
   ) internal view returns (uint256 adjustedAmount, uint256 fee) {
@@ -377,8 +408,8 @@ contract Vault is IVault, BaseVaultStorage {
       ? priceFeed.shortMaxSpread(priceFeedIdentifier)
       : priceFeed.longMaxSpread(priceFeedIdentifier);
 
-    fee = positionCollateralBefore.div(coverage - 1).mul(lpWeight).mul(
-      maxSpread
+    fee = positionCollateral.mul(lpShare).mul(maxSpread).div(coverage - 1).div(
+      totalShares
     );
 
     adjustedAmount = amount - fee;
