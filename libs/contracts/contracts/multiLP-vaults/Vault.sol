@@ -37,6 +37,15 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 collateralEquivalent;
   }
 
+  struct FeeCache {
+    uint256 positionCollateral;
+    uint256 amount;
+    uint256 lpShare;
+    uint256 totalShares;
+    uint256 coverage;
+    bool isDeposit;
+  }
+
   modifier onlyVaultRegistry() {
     address vaultRegistry = synthereumFinder.getImplementationAddress(
       SynthereumInterfaces.VaultRegistry
@@ -123,12 +132,14 @@ contract Vault is IVault, BaseVaultStorage {
     ) {
       if (cache.totalSupply != 0) {
         (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
-          vaultPosition.actualCollateralAmount,
-          cache.netCollateralDeposited,
-          cache.netCollateralDeposited,
-          cache.actualCollateralAmount,
-          cache.vaultCoverage,
-          true
+          FeeCache(
+            vaultPosition.actualCollateralAmount,
+            cache.netCollateralDeposited,
+            cache.netCollateralDeposited,
+            cache.actualCollateralAmount,
+            cache.vaultCoverage,
+            true
+          )
         );
       } else {
         cache.spreadAdjustedCollateral = cache.netCollateralDeposited;
@@ -167,12 +178,14 @@ contract Vault is IVault, BaseVaultStorage {
         uint256 remainingCollateral = cache.netCollateralDeposited -
           maxCollateralAtDiscount;
         (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
-          vaultPosition.actualCollateralAmount,
-          remainingCollateral,
-          remainingCollateral,
-          cache.actualCollateralAmount,
-          cache.vaultCoverage,
-          true
+          FeeCache(
+            vaultPosition.actualCollateralAmount,
+            remainingCollateral,
+            remainingCollateral,
+            cache.actualCollateralAmount,
+            cache.vaultCoverage,
+            true
+          )
         );
 
         cache.rate = calculateRate(
@@ -234,12 +247,14 @@ contract Vault is IVault, BaseVaultStorage {
 
     // withdraw collateral from pool
     (uint256 spreadAdjustedCollateral, ) = applySpread(
-      cache.vaultCollateralAmount,
-      cache.collateralEquivalent,
-      lpTokensAmount,
-      cache.totSupply,
-      vaultPosition.coverage,
-      false
+      FeeCache(
+        cache.vaultCollateralAmount,
+        cache.collateralEquivalent,
+        lpTokensAmount,
+        cache.totSupply,
+        vaultPosition.coverage,
+        false
+      )
     );
     (, collateralOut, ) = pool.removeLiquidity(spreadAdjustedCollateral);
 
@@ -392,26 +407,26 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   // apply spread % based on price feed spread
-  function applySpread(
-    uint256 positionCollateral,
-    uint256 amount,
-    uint256 lpShare,
-    uint256 totalShares,
-    uint256 coverage,
-    bool isDeposit
-  ) internal view returns (uint256 adjustedAmount, uint256 fee) {
+  function applySpread(FeeCache memory _feeCache)
+    internal
+    view
+    returns (uint256 adjustedAmount, uint256 fee)
+  {
     ISynthereumPriceFeed priceFeed = ISynthereumPriceFeed(
       synthereumFinder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
     );
 
-    uint256 maxSpread = isDeposit
+    uint256 maxSpread = _feeCache.isDeposit
       ? priceFeed.shortMaxSpread(priceFeedIdentifier)
       : priceFeed.longMaxSpread(priceFeedIdentifier);
 
-    fee = positionCollateral.mul(lpShare).mul(maxSpread).div(coverage - 1).div(
-      totalShares
-    );
+    fee = _feeCache
+      .positionCollateral
+      .mul(_feeCache.lpShare)
+      .mul(maxSpread)
+      .div(_feeCache.coverage - 1)
+      .div(_feeCache.totalShares);
 
-    adjustedAmount = amount - fee;
+    adjustedAmount = _feeCache.amount - fee;
   }
 }
