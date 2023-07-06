@@ -238,7 +238,9 @@ contract Vault is IVault, BaseVaultStorage {
       cache.totSupply,
       cache.scalingValue
     );
-    cache.collateralEquivalent = lpTokensAmount == cache.totSupply
+
+    bool isFullPosition = lpTokensAmount == cache.totSupply;
+    cache.collateralEquivalent = isFullPosition
       ? cache.vaultCollateralAmount
       : lpTokensAmount.mul(cache.rate) / cache.scalingValue;
 
@@ -246,17 +248,22 @@ contract Vault is IVault, BaseVaultStorage {
     _burn(_msgSender(), lpTokensAmount);
 
     // withdraw collateral from pool
-    (uint256 spreadAdjustedCollateral, ) = applySpread(
-      FeeCache(
-        cache.vaultCollateralAmount,
-        cache.collateralEquivalent,
-        lpTokensAmount,
-        cache.totSupply,
-        vaultPosition.coverage,
-        false
-      )
-    );
-    (, collateralOut, ) = pool.removeLiquidity(spreadAdjustedCollateral);
+    uint256 removeCollateral;
+    if (isFullPosition) {
+      removeCollateral = cache.collateralEquivalent;
+    } else {
+      (removeCollateral, ) = applySpread(
+        FeeCache(
+          cache.vaultCollateralAmount,
+          cache.collateralEquivalent,
+          lpTokensAmount,
+          cache.totSupply,
+          vaultPosition.coverage,
+          false
+        )
+      );
+    }
+    (, collateralOut, ) = pool.removeLiquidity(removeCollateral);
 
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
