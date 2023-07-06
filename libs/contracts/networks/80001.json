@@ -153,5 +153,30 @@
     "contractName": "CreditLineController",
     "address": "0x6763f433B92328685bA8430Ee2428fBEB2FAAaD9",
     "transactionHash": "0x2bc642658f10ba18da26bec0d855234b96d0147ec15eaec66240c96f6107c54f"
+  },
+  {
+    "contractName": "SynthereumPriceFeed",
+    "address": "0x3193aC550880C003a4a31Ac8fE5A581C21c13831",
+    "transactionHash": "0xa05b8eb22c4950ef16861624c985ab4e1d1e53d5fc5e30a5d6a412596f1658ef"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0xcef544B10e734f2635234e9D8219990d7Ecd3D89",
+    "transactionHash": "0x90b8bf4487b63e53c2c94ecd615ad9fe3e97e2e869c60acd6e259f852460e86e"
+  },
+  {
+    "contractName": "MockRandomAggregator",
+    "address": "0x33930138e1281f14FC05F568eaacdCFfd9b23fAE",
+    "transactionHash": "0x73039149e991f94b33043fdf5135e56e9cc3db5bf4c310269f6de50c18407832"
+  },
+  {
+    "contractName": "MockRandomAggregator",
+    "address": "0x8665A70F93BC1cF4A8F4CFeFa2733619366149B7",
+    "transactionHash": "0xdf247cbe462b4d3c851ac6c7695763a1db300f6cb03cc9079ad05b1c82e29cd2"
+  },
+  {
+    "contractName": "MockRandomAggregator",
+    "address": "0x3E24294BEDD9CFE70D8908709efFF134bc2cD3D4",
+    "transactionHash": "0x169e4978bb572627b52cac86a1a56e6dbe8ecc5c1726618533a3705772776c93"
   }
 ]

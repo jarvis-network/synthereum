@@ -1,7 +1,7 @@
 {
   "80001": {
     "chainlink": true,
-    "api3": true,
+    "api3": false,
     "dia": false
   }
 }

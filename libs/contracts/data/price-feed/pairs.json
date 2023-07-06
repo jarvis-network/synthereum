@@ -5,12 +5,12 @@
       "oracle": "chainlink",
       "intermediatePairs": []
     },
-    "CHFUSD": {
+    "GBPUSD": {
       "type": 1,
       "oracle": "chainlink",
       "intermediatePairs": []
     },
-    "USDCHF": {
+    "CHFUSD": {
       "type": 1,
       "oracle": "chainlink",
       "intermediatePairs": []

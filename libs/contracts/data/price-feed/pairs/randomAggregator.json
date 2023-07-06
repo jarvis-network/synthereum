@@ -45,5 +45,22 @@
       "maxSpread": "0.00000000868",
       "oracle": "chainlink"
     }
+  },
+  "80001": {
+    "EURUSD": {
+      "initialPrice": "1.0871",
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
+    },
+    "GBPUSD": {
+      "initialPrice": "1.2720",
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
+    },
+    "CHFUSD": {
+      "initialPrice": "1.1169",
+      "maxSpread": "0.00000000868",
+      "oracle": "chainlink"
+    }
   }
 }
