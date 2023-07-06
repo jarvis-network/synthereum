@@ -3,6 +3,7 @@ pragma solidity 0.8.9;
 
 import {ISynthereumPriceFeed} from './interfaces/IPriceFeed.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
+import {ISynthereumPriceFeedImplementation} from './implementations/interfaces/IPriceFeedImplementation.sol';
 import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
 import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {ITypology} from '../common/interfaces/ITypology.sol';
@@ -30,6 +31,11 @@ contract SynthereumPriceFeed is
     UNSUPPORTED,
     STANDARD,
     COMPUTED
+  }
+
+  enum SpreadType {
+    LONG,
+    SHORT
   }
 
   struct Pair {
@@ -324,7 +330,12 @@ contract SynthereumPriceFeed is
    * @param _priceId HexName of price identifier
    * @return True fi supported, otherwise false
    */
-  function isPriceSupported(bytes32 _priceId) external view returns (bool) {
+  function isPriceSupported(bytes32 _priceId)
+    external
+    view
+    override
+    returns (bool)
+  {
     return _isPriceSupported(_priceId);
   }
 
@@ -350,6 +361,7 @@ contract SynthereumPriceFeed is
   function getLatestPrice(bytes32 _priceId)
     external
     view
+    override
     onlyPoolsOrSelfMinting
     returns (uint256)
   {
@@ -418,30 +430,57 @@ contract SynthereumPriceFeed is
   }
 
   /**
-   * @notice Get the max update spread for a given price identifier
+   * @notice Get the max update spread for a given price identifier when price increases
    * @param _priceId HexName of price identifier
    * @return Max spread
    */
-  function getMaxSpread(bytes32 _priceId)
+  function longMaxSpread(bytes32 _priceId)
     external
     view
     override
     returns (uint256)
   {
-    return _getMaxSpread(_priceId);
+    return _getMaxSpread(_priceId, SpreadType.LONG);
   }
 
   /**
-   * @notice Get the max update spread for a given price identifier
+   * @notice Get the max update spread for a given price identifier when price increases
    * @param _priceId Name of price identifier
    * @return Max spread
    */
-  function getMaxSpread(string calldata _priceId)
+  function longMaxSpread(string calldata _priceId)
     external
     view
     returns (uint256)
   {
-    return _getMaxSpread(_priceId.stringToBytes32());
+    return _getMaxSpread(_priceId.stringToBytes32(), SpreadType.LONG);
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier when price decreases
+   * @param _priceId HexName of price identifier
+   * @return Max spread
+   */
+  function shortMaxSpread(bytes32 _priceId)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return _getMaxSpread(_priceId, SpreadType.SHORT);
+  }
+
+  /**
+   * @notice Get the max update spread for a given price identifier when price decreases
+   * @param _priceId Name of price identifier
+   * @return Max spread
+   */
+  function shortMaxSpread(string calldata _priceId)
+    external
+    view
+    returns (uint256)
+  {
+    return _getMaxSpread(_priceId.stringToBytes32(), SpreadType.SHORT);
   }
 
   //----------------------------------------
@@ -472,7 +511,7 @@ contract SynthereumPriceFeed is
         'Oracle not supported'
       );
       require(
-        ISynthereumPriceFeed(oracleToImplementation[_oracleHex])
+        ISynthereumPriceFeedImplementation(oracleToImplementation[_oracleHex])
           .isPriceSupported(_priceIdHex),
         'Price not supported by implementation'
       );
@@ -554,7 +593,9 @@ contract SynthereumPriceFeed is
       address implementation = oracleToImplementation[pairs[_priceId].oracle];
       if (
         implementation != address(0) &&
-        ISynthereumPriceFeed(implementation).isPriceSupported(_priceId)
+        ISynthereumPriceFeedImplementation(implementation).isPriceSupported(
+          _priceId
+        )
       ) {
         isSupported = true;
       }
@@ -605,7 +646,8 @@ contract SynthereumPriceFeed is
     view
     returns (uint256)
   {
-    return ISynthereumPriceFeed(_oracleImpl).getLatestPrice(_priceId);
+    return
+      ISynthereumPriceFeedImplementation(_oracleImpl).getLatestPrice(_priceId);
   }
 
   /**
@@ -629,10 +671,15 @@ contract SynthereumPriceFeed is
 
   /**
    * @notice Get the max update spread for a given price identifier
+   * @param _spreadType Long or short
    * @param _priceId HexName of price identifier
    * @return Max spread
    */
-  function _getMaxSpread(bytes32 _priceId) internal view returns (uint256) {
+  function _getMaxSpread(bytes32 _priceId, SpreadType _spreadType)
+    internal
+    view
+    returns (uint256)
+  {
     Type priceType = pairs[_priceId].priceType;
     if (priceType == Type.STANDARD) {
       return
@@ -641,7 +688,10 @@ contract SynthereumPriceFeed is
           oracleToImplementation[pairs[_priceId].oracle]
         );
     } else if (priceType == Type.COMPUTED) {
-      return _getComputedMaxSpread(pairs[_priceId].intermediatePairs);
+      return
+        _spreadType == SpreadType.SHORT
+          ? _getComputedShortMaxSpread(pairs[_priceId].intermediatePairs)
+          : _getComputedLongMaxSpread(pairs[_priceId].intermediatePairs);
     } else {
       revert('Pair not supported');
     }
@@ -657,15 +707,18 @@ contract SynthereumPriceFeed is
     view
     returns (uint256)
   {
-    return uint256(ISynthereumPriceFeed(_oracleImpl).getMaxSpread(_priceId));
+    return
+      uint256(
+        ISynthereumPriceFeedImplementation(_oracleImpl).getMaxSpread(_priceId)
+      );
   }
 
   /**
-   * @notice Get the max update spread for a given computed price identifier
+   * @notice Get the max update spread for a given computed price identifier when price decreases
    * @param _intermediatePairs Path with pair HexNames
    * @return price 18 decimals scaled price of the pair
    */
-  function _getComputedMaxSpread(bytes32[] memory _intermediatePairs)
+  function _getComputedShortMaxSpread(bytes32[] memory _intermediatePairs)
     internal
     view
     returns (uint256)
@@ -674,12 +727,35 @@ contract SynthereumPriceFeed is
     for (uint256 j = 0; j < _intermediatePairs.length; ) {
       reducedValue = reducedValue.mul(
         PreciseUnitMath.PRECISE_UNIT -
-          uint256(_getMaxSpread(_intermediatePairs[j]))
+          uint256(_getMaxSpread(_intermediatePairs[j], SpreadType.SHORT))
       );
       unchecked {
         j++;
       }
     }
     return PreciseUnitMath.PRECISE_UNIT - reducedValue;
+  }
+
+  /**
+   * @notice Get the max update spread for a given computed price identifier when price increases
+   * @param _intermediatePairs Path with pair HexNames
+   * @return price 18 decimals scaled price of the pair
+   */
+  function _getComputedLongMaxSpread(bytes32[] memory _intermediatePairs)
+    internal
+    view
+    returns (uint256)
+  {
+    uint256 reducedValue = PreciseUnitMath.PRECISE_UNIT;
+    for (uint256 j = 0; j < _intermediatePairs.length; ) {
+      reducedValue = reducedValue.mul(
+        PreciseUnitMath.PRECISE_UNIT +
+          uint256(_getMaxSpread(_intermediatePairs[j], SpreadType.LONG))
+      );
+      unchecked {
+        j++;
+      }
+    }
+    return reducedValue - PreciseUnitMath.PRECISE_UNIT;
   }
 }

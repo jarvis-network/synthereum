@@ -972,11 +972,17 @@ contract('Synthereum price feed', accounts => {
     });
     it('Can get standard max spread', async () => {
       const maxSpreadFromString = await priceFeed.methods[
-        'getMaxSpread(string)'
+        'shortMaxSpread(string)'
       ](priceIdentifier);
-      const maxSpreadFromHex = await priceFeed.methods['getMaxSpread(bytes32)'](
-        priceIdentifierHex,
-      );
+      const maxSpreadFromHex = await priceFeed.methods[
+        'shortMaxSpread(bytes32)'
+      ](priceIdentifierHex);
+      const maxSpreadLongFromString = await priceFeed.methods[
+        'longMaxSpread(string)'
+      ](priceIdentifier);
+      const maxSpreadLongFromHex = await priceFeed.methods[
+        'longMaxSpread(bytes32)'
+      ](priceIdentifierHex);
       assert.equal(
         maxSpreadFromString.toString(),
         maxSpreadFromHex.toString(),
@@ -984,6 +990,16 @@ contract('Synthereum price feed', accounts => {
       );
       assert.equal(
         maxSpreadFromHex.toString(),
+        web3Utils.toBN(maxSpread).toString(),
+        'Max spread wrong',
+      );
+      assert.equal(
+        maxSpreadLongFromString.toString(),
+        maxSpreadLongFromHex.toString(),
+        'Max spreads do not match',
+      );
+      assert.equal(
+        maxSpreadLongFromHex.toString(),
         web3Utils.toBN(maxSpread).toString(),
         'Max spread wrong',
       );
@@ -1011,14 +1027,25 @@ contract('Synthereum price feed', accounts => {
         },
       );
       const maxSpreadFromString = await priceFeed.methods[
-        'getMaxSpread(string)'
+        'shortMaxSpread(string)'
       ](computedPriceIdentifier);
-      const maxSpreadFromHex = await priceFeed.methods['getMaxSpread(bytes32)'](
-        computedPriceIdentifierHex,
-      );
+      const maxSpreadFromHex = await priceFeed.methods[
+        'shortMaxSpread(bytes32)'
+      ](computedPriceIdentifierHex);
+      const maxSpreadLongFromString = await priceFeed.methods[
+        'longMaxSpread(string)'
+      ](computedPriceIdentifier);
+      const maxSpreadLongFromHex = await priceFeed.methods[
+        'longMaxSpread(bytes32)'
+      ](computedPriceIdentifierHex);
       assert.equal(
         maxSpreadFromString.toString(),
         maxSpreadFromHex.toString(),
+        'Max spreads do not match',
+      );
+      assert.equal(
+        maxSpreadLongFromString.toString(),
+        maxSpreadLongFromHex.toString(),
         'Max spreads do not match',
       );
       const computedSpread = web3Utils.toBN(web3Utils.toWei('1')).sub(
@@ -1027,9 +1054,19 @@ contract('Synthereum price feed', accounts => {
           .mul(web3Utils.toBN(web3Utils.toWei('0.9985')))
           .div(web3Utils.toBN(web3Utils.toWei('1'))),
       );
+      const computedLongSpread = web3Utils
+        .toBN(web3Utils.toWei('1.002'))
+        .mul(web3Utils.toBN(web3Utils.toWei('1.0015')))
+        .div(web3Utils.toBN(web3Utils.toWei('1')))
+        .sub(web3Utils.toBN(web3Utils.toWei('1')));
       assert.equal(
         computedSpread.toString(),
         maxSpreadFromHex.toString(),
+        'Max spread wrong',
+      );
+      assert.equal(
+        computedLongSpread.toString(),
+        maxSpreadLongFromHex.toString(),
         'Max spread wrong',
       );
       await priceFeed.removePair(secondPriceIdentifier, {
@@ -1044,7 +1081,11 @@ contract('Synthereum price feed', accounts => {
     });
     it('Can revert if price is not supported', async () => {
       await truffleAssert.reverts(
-        priceFeed.methods['getMaxSpread(string)']('JRTUSD'),
+        priceFeed.methods['shortMaxSpread(string)']('JRTUSD'),
+        'Pair not supported',
+      );
+      await truffleAssert.reverts(
+        priceFeed.methods['longMaxSpread(string)']('JRTUSD'),
         'Pair not supported',
       );
     });

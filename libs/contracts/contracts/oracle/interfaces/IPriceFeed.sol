@@ -18,9 +18,16 @@ interface ISynthereumPriceFeed {
   function getLatestPrice(bytes32 _priceId) external view returns (uint256);
 
   /**
-   * @notice Get the max update spread for a given price identifier
+   * @notice Get the max update spread for a given price identifier when price increases
    * @param _priceId HexName of price identifier
    * @return Max spread
    */
-  function getMaxSpread(bytes32 _priceId) external view returns (uint256);
+  function longMaxSpread(bytes32 _priceId) external view returns (uint256);
+
+  /**
+   * @notice Get the max update spread for a given price identifier when price decreases
+   * @param _priceId HexName of price identifier
+   * @return Max spread
+   */
+  function shortMaxSpread(bytes32 _priceId) external view returns (uint256);
 }
