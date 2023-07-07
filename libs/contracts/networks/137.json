@@ -95,11 +95,6 @@
     "transactionHash": "0xdf661d749efa62f1c01edddfbd4b3306f9262e40344e69c4475aa9f6c1d3f15e"
   },
   {
-    "contractName": "SynthereumChainlinkPriceFeed",
-    "address": "0x12F513D977B47D1d155bC5ED4d295c1B10D6D027",
-    "transactionHash": "0xae7cca8d99fdc846ba18c40e593ddb73ab6c9a88bf41bc472899ed55c560680e"
-  },
-  {
     "contractName": "LendingStorageManager",
     "address": "0x04d6206CCd424f2E82901EE1CD3982b0b9C409e9",
     "transactionHash": "0x4f27e931ca0e94123920fa3e9dae425d4ad2df53ed396932d8a34325a8b54aa3"
@@ -183,5 +178,15 @@
     "contractName": "CreditLineController",
     "address": "0xa0534D5119A10507e28577a555310104c77449F4",
     "transactionHash": "0x47b74b715cd8dff16890f99f186ed7bbef1e6b7bcc57457b1a7924c4d0902b8e"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0x91a57a3aE0649B6c88C775B92E4F957836bb4F37",
+    "transactionHash": "0x582aed43a36924462a0078de2863b50d781bc6ae1091f436d558d43987a757cf"
+  },
+  {
+    "contractName": "SynthereumPriceFeed",
+    "address": "0x9ecFcc1Cb2A8afceB463d2D395261e07eAdEbf17",
+    "transactionHash": "0x0f012adc8dcb96b973658b5d503ec6f6feb0b93c11f74c4dd4e097b0852f53ec"
   }
 ]

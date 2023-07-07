@@ -3,5 +3,10 @@
     "chainlink": true,
     "api3": false,
     "dia": false
+  },
+  "137": {
+    "chainlink": true,
+    "api3": false,
+    "dia": false
   }
 }
