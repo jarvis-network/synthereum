@@ -671,8 +671,8 @@ contract SynthereumPriceFeed is
 
   /**
    * @notice Get the max update spread for a given price identifier
-   * @param _spreadType Long or short
    * @param _priceId HexName of price identifier
+   * @param _spreadType Long or short
    * @return Max spread
    */
   function _getMaxSpread(bytes32 _priceId, SpreadType _spreadType)
@@ -699,6 +699,7 @@ contract SynthereumPriceFeed is
 
   /**
    * @notice Get the max update spread for a given standard price identifier
+   * @param _priceId HexName of price identifier
    * @param _oracleImpl Synthereum implementation of the oracle
    * @return Max spread
    */
