@@ -26,6 +26,7 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 discountedRate;
     uint256 totalSupply;
     uint256 vaultCoverage;
+    uint256 scalingValue;
     uint128 overCollateralFactor;
   }
 
@@ -35,6 +36,8 @@ contract Vault is IVault, BaseVaultStorage {
     uint256 scalingValue;
     uint256 rate;
     uint256 collateralEquivalent;
+    uint256 removeCollateral;
+    bool isFullPosition;
   }
 
   struct FeeCache {
@@ -123,8 +126,11 @@ contract Vault is IVault, BaseVaultStorage {
       emit LPActivated(collateralAmount, cache.overCollateralFactor);
     }
 
-    uint256 scalingValue = scalingFactor();
+    cache.scalingValue = scalingFactor();
     cache.vaultCoverage = vaultPosition.coverage;
+
+    uint256 positionCollBefore = cache.actualCollateralAmount -
+      cache.netCollateralDeposited;
 
     if (
       cache.vaultCoverage >=
@@ -133,7 +139,7 @@ contract Vault is IVault, BaseVaultStorage {
       if (cache.totalSupply != 0) {
         (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
           FeeCache(
-            cache.actualCollateralAmount - cache.netCollateralDeposited,
+            positionCollBefore,
             cache.netCollateralDeposited,
             cache.netCollateralDeposited,
             cache.actualCollateralAmount,
@@ -146,12 +152,12 @@ contract Vault is IVault, BaseVaultStorage {
       }
       // calculate rate
       cache.rate = calculateRate(
-        cache.actualCollateralAmount - cache.netCollateralDeposited + cache.fee,
+        positionCollBefore,
         cache.totalSupply,
-        scalingValue
+        cache.scalingValue
       );
 
-      lpTokensOut = (cache.spreadAdjustedCollateral * scalingValue).div(
+      lpTokensOut = (cache.spreadAdjustedCollateral * cache.scalingValue).div(
         cache.rate
       );
     } else {
@@ -163,15 +169,15 @@ contract Vault is IVault, BaseVaultStorage {
         cache.discountedRate,
         maxCollateralAtDiscount
       ) = calculateDiscountedRate(
-        vaultPosition,
-        cache.actualCollateralAmount - cache.netCollateralDeposited,
+        cache.vaultCoverage,
+        positionCollBefore,
         cache.totalSupply,
-        scalingValue,
+        cache.scalingValue,
         cache.overCollateralFactor
       );
 
       if (cache.netCollateralDeposited <= maxCollateralAtDiscount) {
-        lpTokensOut = (cache.netCollateralDeposited * scalingValue).div(
+        lpTokensOut = (cache.netCollateralDeposited * cache.scalingValue).div(
           cache.discountedRate
         );
       } else {
@@ -179,26 +185,26 @@ contract Vault is IVault, BaseVaultStorage {
           maxCollateralAtDiscount;
         (cache.spreadAdjustedCollateral, cache.fee) = applySpread(
           FeeCache(
-            vaultPosition.actualCollateralAmount,
+            cache.actualCollateralAmount - remainingCollateral,
             remainingCollateral,
             remainingCollateral,
             cache.actualCollateralAmount,
-            cache.vaultCoverage,
+            PreciseUnitMath.PRECISE_UNIT + cache.overCollateralFactor,
             true
           )
         );
 
         cache.rate = calculateRate(
-          cache.actualCollateralAmount -
-            cache.netCollateralDeposited +
-            cache.fee,
+          cache.actualCollateralAmount - cache.netCollateralDeposited,
           cache.totalSupply,
-          scalingValue
+          cache.scalingValue
         );
 
         lpTokensOut =
-          (maxCollateralAtDiscount * scalingValue).div(cache.discountedRate) +
-          (cache.spreadAdjustedCollateral * scalingValue).div(cache.rate);
+          (maxCollateralAtDiscount * cache.scalingValue).div(
+            cache.discountedRate
+          ) +
+          (cache.spreadAdjustedCollateral * cache.scalingValue).div(cache.rate);
       }
     }
 
@@ -239,8 +245,8 @@ contract Vault is IVault, BaseVaultStorage {
       cache.scalingValue
     );
 
-    bool isFullPosition = lpTokensAmount == cache.totSupply;
-    cache.collateralEquivalent = isFullPosition
+    cache.isFullPosition = lpTokensAmount == cache.totSupply;
+    cache.collateralEquivalent = cache.isFullPosition
       ? cache.vaultCollateralAmount
       : lpTokensAmount.mul(cache.rate) / cache.scalingValue;
 
@@ -248,11 +254,10 @@ contract Vault is IVault, BaseVaultStorage {
     _burn(_msgSender(), lpTokensAmount);
 
     // withdraw collateral from pool
-    uint256 removeCollateral;
-    if (isFullPosition) {
-      removeCollateral = cache.collateralEquivalent;
+    if (cache.isFullPosition) {
+      cache.removeCollateral = cache.collateralEquivalent;
     } else {
-      (removeCollateral, ) = applySpread(
+      (cache.removeCollateral, ) = applySpread(
         FeeCache(
           cache.vaultCollateralAmount,
           cache.collateralEquivalent,
@@ -263,7 +268,7 @@ contract Vault is IVault, BaseVaultStorage {
         )
       );
     }
-    (, collateralOut, ) = pool.removeLiquidity(removeCollateral);
+    (, collateralOut, ) = pool.removeLiquidity(cache.removeCollateral);
 
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
@@ -298,19 +303,14 @@ contract Vault is IVault, BaseVaultStorage {
     )
   {
     IPoolVault.LPInfo memory vaultPosition = pool.positionLPInfo(address(this));
+    uint256 coverage = vaultPosition.coverage;
+    uint256 collateralAmount = vaultPosition.actualCollateralAmount;
 
     // return zeros if not in discount state
     uint128 overCollateralFactor = overCollateralization;
-    if (
-      vaultPosition.coverage >=
-      PreciseUnitMath.PRECISE_UNIT + overCollateralFactor
-    ) {
+    if (coverage >= PreciseUnitMath.PRECISE_UNIT + overCollateralFactor) {
       return (
-        calculateRate(
-          vaultPosition.actualCollateralAmount,
-          totalSupply(),
-          scalingFactor()
-        ),
+        calculateRate(collateralAmount, totalSupply(), scalingFactor()),
         0,
         0
       );
@@ -318,8 +318,8 @@ contract Vault is IVault, BaseVaultStorage {
 
     // otherwise calculate discount
     (rate, discountedRate, maxCollateralDiscounted) = calculateDiscountedRate(
-      vaultPosition,
-      vaultPosition.actualCollateralAmount,
+      coverage,
+      collateralAmount,
       totalSupply(),
       scalingFactor(),
       overCollateralFactor
@@ -382,7 +382,7 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   function calculateDiscountedRate(
-    IPoolVault.LPInfo memory vaultPosition,
+    uint256 coverage,
     uint256 actualCollateralAmount,
     uint256 totalSupply,
     uint256 scalingValue,
@@ -403,7 +403,7 @@ contract Vault is IVault, BaseVaultStorage {
     // numTokens * price * overCollateralization = actualCollateral * overColl / coverage - 1;
     uint256 collateralExpected = (actualCollateralAmount)
       .mul(overCollateralFactor)
-      .div(vaultPosition.coverage - PreciseUnitMath.PRECISE_UNIT);
+      .div(coverage - PreciseUnitMath.PRECISE_UNIT);
 
     // collateral deficit = collateralExpected - actualCollateral
     collateralDeficit = collateralExpected - actualCollateralAmount;
