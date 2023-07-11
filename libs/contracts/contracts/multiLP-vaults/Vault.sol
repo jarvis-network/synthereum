@@ -131,7 +131,6 @@ contract Vault is IVault, BaseVaultStorage {
 
     uint256 positionCollBefore = cache.actualCollateralAmount -
       cache.netCollateralDeposited;
-
     if (
       cache.vaultCoverage >=
       PreciseUnitMath.PRECISE_UNIT + cache.overCollateralFactor
@@ -156,7 +155,6 @@ contract Vault is IVault, BaseVaultStorage {
         cache.totalSupply,
         cache.scalingValue
       );
-
       lpTokensOut = (cache.spreadAdjustedCollateral * cache.scalingValue).div(
         cache.rate
       );
@@ -429,8 +427,8 @@ contract Vault is IVault, BaseVaultStorage {
       .positionCollateral
       .mul(_feeCache.lpShare)
       .mul(maxSpread)
-      .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
-      .div(_feeCache.totalShares);
+      .div(_feeCache.totalShares)
+      .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT);
 
     adjustedAmount = _feeCache.amount - fee;
   }
