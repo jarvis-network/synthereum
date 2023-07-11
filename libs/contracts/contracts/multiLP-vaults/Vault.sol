@@ -165,7 +165,7 @@ contract Vault is IVault, BaseVaultStorage {
       uint256 maxCollateralAtDiscount;
 
       (
-        ,
+        cache.rate,
         cache.discountedRate,
         maxCollateralAtDiscount
       ) = calculateDiscountedRate(
@@ -192,12 +192,6 @@ contract Vault is IVault, BaseVaultStorage {
             PreciseUnitMath.PRECISE_UNIT + cache.overCollateralFactor,
             true
           )
-        );
-
-        cache.rate = calculateRate(
-          cache.actualCollateralAmount - cache.netCollateralDeposited,
-          cache.totalSupply,
-          cache.scalingValue
         );
 
         lpTokensOut =
@@ -414,6 +408,10 @@ contract Vault is IVault, BaseVaultStorage {
   }
 
   // apply spread % based on price feed spread
+  // the spread is applied when the vault is overcollateralized
+  // and is equal to the maximum gain one can have by
+  // front-running the price change from the oracle
+  // spread fee = amountIn * leverage * utilization * maxSpread
   function applySpread(FeeCache memory _feeCache)
     internal
     view
