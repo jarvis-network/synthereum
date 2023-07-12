@@ -151,7 +151,7 @@ contract Vault is IVault, BaseVaultStorage {
       }
       // calculate rate
       cache.rate = calculateRate(
-        positionCollBefore,
+        positionCollBefore + cache.fee,
         cache.totalSupply,
         cache.scalingValue
       );
@@ -163,7 +163,7 @@ contract Vault is IVault, BaseVaultStorage {
       uint256 maxCollateralAtDiscount;
 
       (
-        cache.rate,
+        ,
         cache.discountedRate,
         maxCollateralAtDiscount
       ) = calculateDiscountedRate(
@@ -190,6 +190,12 @@ contract Vault is IVault, BaseVaultStorage {
             PreciseUnitMath.PRECISE_UNIT + cache.overCollateralFactor,
             true
           )
+        );
+
+        cache.rate = calculateRate(
+          positionCollBefore + cache.fee,
+          cache.totalSupply,
+          cache.scalingValue
         );
 
         lpTokensOut =
@@ -424,11 +430,15 @@ contract Vault is IVault, BaseVaultStorage {
       : priceFeed.longMaxSpread(priceFeedIdentifier);
 
     if (_feeCache.isDeposit) {
-      fee = maxSpread
-        .div(_feeCache.totalShares)
-        .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
-        .mul(_feeCache.positionCollateral)
-        .mul(_feeCache.lpShare);
+      uint256 scaleFactor = scalingFactor();
+      uint256 maxFrontRunScaled = (_feeCache.positionCollateral * scaleFactor)
+        .mul(maxSpread)
+        .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT);
+      fee =
+        maxFrontRunScaled.mul(_feeCache.lpShare * scaleFactor).div(
+          _feeCache.totalShares * scaleFactor + maxFrontRunScaled
+        ) /
+        scaleFactor;
     } else {
       fee = _feeCache
         .lpShare
