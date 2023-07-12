@@ -423,12 +423,11 @@ contract Vault is IVault, BaseVaultStorage {
       ? priceFeed.shortMaxSpread(priceFeedIdentifier)
       : priceFeed.longMaxSpread(priceFeedIdentifier);
 
-    fee = _feeCache
-      .positionCollateral
-      .mul(_feeCache.lpShare)
-      .mul(maxSpread)
+    fee = maxSpread
       .div(_feeCache.totalShares)
-      .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT);
+      .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
+      .mul(_feeCache.positionCollateral)
+      .mul(_feeCache.lpShare);
 
     adjustedAmount = _feeCache.amount - fee;
   }
