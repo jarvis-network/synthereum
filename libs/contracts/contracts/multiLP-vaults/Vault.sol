@@ -423,11 +423,20 @@ contract Vault is IVault, BaseVaultStorage {
       ? priceFeed.shortMaxSpread(priceFeedIdentifier)
       : priceFeed.longMaxSpread(priceFeedIdentifier);
 
-    fee = maxSpread
-      .div(_feeCache.totalShares)
-      .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
-      .mul(_feeCache.positionCollateral)
-      .mul(_feeCache.lpShare);
+    if (_feeCache.isDeposit) {
+      fee = maxSpread
+        .div(_feeCache.totalShares)
+        .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
+        .mul(_feeCache.positionCollateral)
+        .mul(_feeCache.lpShare);
+    } else {
+      fee = _feeCache
+        .lpShare
+        .div(_feeCache.coverage - PreciseUnitMath.PRECISE_UNIT)
+        .mul(maxSpread)
+        .div(_feeCache.totalShares)
+        .mul(_feeCache.positionCollateral);
+    }
 
     adjustedAmount = _feeCache.amount - fee;
   }
