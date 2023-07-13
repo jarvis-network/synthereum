@@ -213,6 +213,7 @@ contract Vault is IVault, BaseVaultStorage {
     // log event
     emit Deposit(
       sender,
+      recipient,
       cache.netCollateralDeposited,
       lpTokensOut,
       cache.rate,
@@ -273,7 +274,7 @@ contract Vault is IVault, BaseVaultStorage {
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
 
-    emit Withdraw(sender, lpTokensAmount, collateralOut, cache.rate);
+    emit Withdraw(sender, recipient, lpTokensAmount, collateralOut, cache.rate);
   }
 
   function donate(uint256 collateralAmount) external {
