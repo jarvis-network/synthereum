@@ -9,7 +9,7 @@ import {IVaultMigration} from './IVaultMigration.sol';
  */
 interface IVault is IVaultMigration {
   event Deposit(
-    address sender,
+    address indexed sender,
     uint256 netCollateralDeposited,
     uint256 lpTokensOut,
     uint256 rate,
@@ -17,7 +17,7 @@ interface IVault is IVaultMigration {
   );
 
   event Withdraw(
-    address sender,
+    address indexed sender,
     uint256 lpTokensBurned,
     uint256 netCollateralOut,
     uint256 rate
@@ -25,7 +25,7 @@ interface IVault is IVaultMigration {
 
   event LPActivated(uint256 collateralAmount, uint128 overCollateralization);
 
-  event Donation(uint256 collateralAmount, address sender);
+  event Donation(address indexed sender, uint256 collateralAmount);
 
   /**
    * @notice Initialize vault as per OZ Clones pattern

@@ -94,7 +94,7 @@ contract Vault is IVault, BaseVaultStorage {
 
     // transfer collateral - checks balance
     address sender = _msgSender();
-    collateralAsset.transferFrom(sender, address(this), collateralAmount);
+    collateralAsset.safeTransferFrom(sender, address(this), collateralAmount);
 
     // approve pool to pull collateral
     collateralAsset.safeApprove(address(pool), collateralAmount);
@@ -220,22 +220,6 @@ contract Vault is IVault, BaseVaultStorage {
     );
   }
 
-  function donate(uint256 collateralAmount) external {
-    require(collateralAmount > 0, 'Zero amount');
-
-    // transfer collateral - checks balance
-    address sender = _msgSender();
-    collateralAsset.transferFrom(sender, address(this), collateralAmount);
-
-    // approve pool to pull collateral
-    collateralAsset.safeApprove(address(pool), collateralAmount);
-
-    // add liquidity to vault position in pool
-    pool.addLiquidity(collateralAmount);
-
-    emit Donation(collateralAmount, sender);
-  }
-
   function withdraw(uint256 lpTokensAmount, address recipient)
     external
     override
@@ -290,6 +274,22 @@ contract Vault is IVault, BaseVaultStorage {
     collateralAsset.safeTransfer(recipient, collateralOut);
 
     emit Withdraw(sender, lpTokensAmount, collateralOut, cache.rate);
+  }
+
+  function donate(uint256 collateralAmount) external {
+    require(collateralAmount > 0, 'Zero amount');
+
+    // transfer collateral - checks balance
+    address sender = _msgSender();
+    collateralAsset.safeTransferFrom(sender, address(this), collateralAmount);
+
+    // approve pool to pull collateral
+    collateralAsset.safeApprove(address(pool), collateralAmount);
+
+    // add liquidity to vault position in pool
+    pool.addLiquidity(collateralAmount);
+
+    emit Donation(sender, collateralAmount);
   }
 
   function setReferencePool(address newPool)
