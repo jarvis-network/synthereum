@@ -14,14 +14,14 @@ interface IPublicVaultRegistry {
   function registerVault(address pool, address vault) external;
 
   /**
-   * @notice Allow the deployer to unregister a vault
-   * @notice Only a registered pool can call this one to remove his own registered vaults
+   * @notice To unregister a vault
+   * @notice Only a registered pool can call this one to remove its own registered vaults
    * @param vault Address of the vault to unregister
    */
   function removeVault(address vault) external;
 
   /**
-   * @notice Allow to move vaults from an old pool to a new pol migrated
+   * @notice Allow to move vaults from an old pool to a new pool
    * @notice Only deployer can call this function
    * @param oldPool Address of the old pool
    * @param newPool Address of the new pool

@@ -99,16 +99,16 @@ contract Vault is IVault, BaseVaultStorage {
     // approve pool to pull collateral
     collateralAsset.safeApprove(address(pool), collateralAmount);
 
-    // retrieve updated vault position on pool
+    // to retrieve updated vault position on pool
     IPoolVault.LPInfo memory vaultPosition;
 
-    // struct to cache intermediate values
+    // to cache intermediate values
     DepositCache memory cache;
 
-    // deposit collateral (activate if first deposit) into pool and trigger positions update
     cache.totalSupply = totalSupply();
     cache.overCollateralFactor = overCollateralization;
 
+    // deposit collateral (activate if first deposit) into pool and trigger positions update
     if (isLpActive) {
       vaultPosition = pool.positionLPInfo(address(this));
       (cache.netCollateralDeposited, cache.actualCollateralAmount) = pool
