@@ -98,5 +98,10 @@
     "contractName": "SynthereumVaultFactory",
     "address": "0xc45C0c65916a6b4D798caE5adffB90DD15E60225",
     "transactionHash": "0x6573bf2abfe62cdfc9adcc1bf5ad12ebdaf705d4f34df75dcb498372b8ed3289"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0x486ca3E675cE75501A658B00B9c944cb4C9b0642",
+    "transactionHash": "0x95b0747906de6b94db88d2cc453cc9d46aa6adb7c71ecf56ef3774cd9f74ab71"
   }
 ]
