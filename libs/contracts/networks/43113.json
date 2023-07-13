@@ -80,28 +80,23 @@
     "transactionHash": "0xe73661e3d4828a6416d6f1ea655f13340a421467176f63c34069635b4559ac7c"
   },
   {
-    "contractName": "SynthereumChainlinkPriceFeed",
-    "address": "0x9725B7840Ca2b68872cc1eDeDEFF65Ef85759E5d",
-    "transactionHash": "0xc5978c80d61dd5c9c1817d81d37036eb84e8e5e9cbc59eca99928792bee703ff"
-  },
-  {
     "contractName": "SynthereumPriceFeed",
-    "address": "0xc65C33495E30882c620dc699DD045c4A07366305",
-    "transactionHash": "0xd82f5c3b907f27b1b53f5d05ea43fd7c557a86a8210d959a161f4e2743bfd3c9"
+    "address": "0xdBE23bb074DAcAFF6F19808dDb016780f19a0d99",
+    "transactionHash": "0x808b05992896f1f190daa4bccee4f42f0abf48595e7c9dc8377125b3bb06a6dd"
   },
   {
     "contractName": "SynthereumChainlinkPriceFeed",
-    "address": "0x68b5D1f84A333Dc36910387ee7eEFB0BeF64cF22",
-    "transactionHash": "0x3d4b1904e51b4c67886230e66a8f3ff27c2bbd7aa7d9834bbccc7857171c0bd7"
+    "address": "0x58D5cE09152e8f30d41ec5Ee4dAF6f6D08997511",
+    "transactionHash": "0xac5bb92a79ae6d588c93188386ad325bb1dac403823c1067360b6d1bebaa3c50"
   },
   {
     "contractName": "Vault",
-    "address": "0xEF95A4c368964E2119c6Cac44DE8Ff4C8A906EE9",
-    "transactionHash": "0xd207376af04f98fc704255dbd13da05a5894e4fced50328f7633813b1325cc7d"
+    "address": "0x1f29D9D48f1FeDFC680E34795c1969503e90e4e6",
+    "transactionHash": "0x2aec37d5055e7d16aff7f4a4534eed04266267d7619fe484897840dbf56a6fec"
   },
   {
     "contractName": "SynthereumVaultFactory",
-    "address": "0x981d4bc7418Fd82429d4c3214F40d092D16180a0",
-    "transactionHash": "0xbb4277ba42a02ad305b0eecbb9f67db2eb68b8cc5eba7269f70e98a07875e9f0"
+    "address": "0xc45C0c65916a6b4D798caE5adffB90DD15E60225",
+    "transactionHash": "0x6573bf2abfe62cdfc9adcc1bf5ad12ebdaf705d4f34df75dcb498372b8ed3289"
   }
 ]
