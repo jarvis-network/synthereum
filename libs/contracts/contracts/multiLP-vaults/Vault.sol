@@ -93,7 +93,8 @@ contract Vault is IVault, BaseVaultStorage {
     require(collateralAmount > 0, 'Zero amount');
 
     // transfer collateral - checks balance
-    collateralAsset.transferFrom(_msgSender(), address(this), collateralAmount);
+    address sender = _msgSender();
+    collateralAsset.transferFrom(sender, address(this), collateralAmount);
 
     // approve pool to pull collateral
     collateralAsset.safeApprove(address(pool), collateralAmount);
@@ -211,12 +212,28 @@ contract Vault is IVault, BaseVaultStorage {
 
     // log event
     emit Deposit(
-      msg.sender,
+      sender,
       cache.netCollateralDeposited,
       lpTokensOut,
       cache.rate,
       cache.discountedRate
     );
+  }
+
+  function donate(uint256 collateralAmount) external {
+    require(collateralAmount > 0, 'Zero amount');
+
+    // transfer collateral - checks balance
+    address sender = _msgSender();
+    collateralAsset.transferFrom(sender, address(this), collateralAmount);
+
+    // approve pool to pull collateral
+    collateralAsset.safeApprove(address(pool), collateralAmount);
+
+    // add liquidity to vault position in pool
+    pool.addLiquidity(collateralAmount);
+
+    emit Donation(collateralAmount, sender);
   }
 
   function withdraw(uint256 lpTokensAmount, address recipient)
@@ -249,7 +266,8 @@ contract Vault is IVault, BaseVaultStorage {
       : lpTokensAmount.mul(cache.rate) / cache.scalingValue;
 
     // Burn LP tokens of user
-    _burn(_msgSender(), lpTokensAmount);
+    address sender = _msgSender();
+    _burn(sender, lpTokensAmount);
 
     // withdraw collateral from pool
     if (cache.isFullPosition) {
@@ -271,7 +289,7 @@ contract Vault is IVault, BaseVaultStorage {
     // transfer to user the net collateral out
     collateralAsset.safeTransfer(recipient, collateralOut);
 
-    emit Withdraw(msg.sender, lpTokensAmount, collateralOut, cache.rate);
+    emit Withdraw(sender, lpTokensAmount, collateralOut, cache.rate);
   }
 
   function setReferencePool(address newPool)

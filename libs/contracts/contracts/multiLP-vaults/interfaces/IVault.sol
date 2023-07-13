@@ -25,6 +25,8 @@ interface IVault is IVaultMigration {
 
   event LPActivated(uint256 collateralAmount, uint128 overCollateralization);
 
+  event Donation(uint256 collateralAmount, address sender);
+
   /**
    * @notice Initialize vault as per OZ Clones pattern
    * @param _lpTokenName name of the LP token representing a share in the vault
@@ -60,6 +62,12 @@ interface IVault is IVaultMigration {
   function withdraw(uint256 lpTokensAmount, address recipient)
     external
     returns (uint256 collateralOut);
+
+  /**
+   * @notice Deposits collateral into the vault as a form of donation (no LP token minted)
+   * @notice that will be split among existing LPs
+   */
+  function donate(uint256 collateralAmount) external;
 
   /**
    * @notice Return current LP vault rate against collateral
