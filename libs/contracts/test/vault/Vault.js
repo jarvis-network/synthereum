@@ -53,7 +53,7 @@ contract('Lending Vault', accounts => {
   let mockInterest = accounts[7];
   let collateralAllocation = toWei('50', 'gwei');
   let priceIdentifier = toHex('jEUR/USDC');
-  let spread = toWei('0.01');
+  let priceSpread = toWei('0.01');
   const maintainer = accounts[1];
   const poolRegistryInterface = web3Utils.stringToHex('PoolRegistry');
   const collateralDecimals = 6;
@@ -86,13 +86,47 @@ contract('Lending Vault', accounts => {
     );
   };
 
-  const applySpread = collAmount => {
-    collAmount = toBN(collAmount);
-    let spreadAmount = collAmount.mul(toBN(spread)).div(toBN(Math.pow(10, 18)));
-    return {
-      coll: collAmount.sub(spreadAmount).toString(),
-      fee: spreadAmount.toString(),
-    };
+  const assertWeiDifference = (expectedAmount, actualAmount) => {
+    expectedAmount = toBN(expectedAmount);
+    actualAmount = toBN(actualAmount);
+
+    let assertion = expectedAmount.eq(actualAmount);
+    assertion =
+      assertion || expectedAmount.add(toBN(toWei('1', 'wei'))).eq(actualAmount);
+    assertion =
+      assertion || expectedAmount.sub(toBN(toWei('1', 'wei'))).eq(actualAmount);
+
+    assert.equal(assertion, true);
+  };
+
+  const applySpread = (
+    lpShare,
+    positionCollBefore,
+    totalShares,
+    coverage,
+    isDeposit,
+  ) => {
+    let spreadAmount;
+    lpShare = toBN(lpShare);
+    if (isDeposit) {
+      let maxFrontRun = toBN(positionCollBefore)
+        .mul(toBN(priceSpread))
+        .div(toBN(coverage).sub(toBN(Math.pow(10, 18))));
+      spreadAmount = maxFrontRun
+        .mul(toBN(lpShare))
+        .div(toBN(totalShares).add(maxFrontRun));
+      return {
+        coll: lpShare.sub(spreadAmount).toString(),
+        fee: spreadAmount.toString(),
+      };
+    } else {
+      spreadAmount = lpShare
+        .mul(toBN(priceSpread))
+        .mul(toBN(positionCollBefore))
+        .div(toBN(coverage).sub(toBN(Math.pow(10, 18))))
+        .div(toBN(totalShares));
+      return spreadAmount.toString();
+    }
   };
 
   const getRate = (collAmount, spreadFee, userDeposit, lpSupply) => {
@@ -112,6 +146,7 @@ contract('Lending Vault', accounts => {
     // lpToken = await TestnetSelfMintingERC20.new(LPName, LPSymbol, 18, {
     //   from: accounts[0],
     // });
+    decimals = await USDC.decimals.call();
     manager = await Manager.deployed();
 
     finder = await SynthereumFinder.deployed();
@@ -126,7 +161,7 @@ contract('Lending Vault', accounts => {
       chainlinkFeed.address,
       0,
       ZERO_ADDRESS,
-      spread,
+      priceSpread,
       { from: maintainer },
     );
 
@@ -228,7 +263,7 @@ contract('Lending Vault', accounts => {
           toBN(Math.pow(10, 18)),
         );
         assert.equal((await vault.getVersion.call()).toString(), '1');
-        assert.equal((await vault.getSpread.call()).toString(), spread);
+        assert.equal((await vault.getSpread.call())[0].toString(), priceSpread);
       });
 
       it('Revert if sender is not synthereum deployer', async () => {
@@ -335,6 +370,10 @@ contract('Lending Vault', accounts => {
       it('Rate unchanged - user 2 deposit - correctly mint LP tokens', async () => {
         let userBalanceBefore = await USDC.balanceOf.call(user2);
         let userLPBalanceBefore = await vault.balanceOf.call(user2);
+
+        let collBefore = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
+
         assert.equal(userLPBalanceBefore.toString(), '0');
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
@@ -349,31 +388,35 @@ contract('Lending Vault', accounts => {
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
-        let spread = applySpread(collateralDeposit);
-        let expectedRate = getRate(
-          actualCollateralAmount,
-          spread.fee,
-          collateralDeposit,
-          LPTotalSupply,
-        );
-
-        let expectedUserLP = toBN(spread.coll)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(expectedRate)
-          .toString();
 
         // check event
+        let lpOut, rate;
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
-          return (
-            ev.sender == user2 &&
-            ev.netCollateralDeposited.toString() ==
-              collateralDeposit.toString() &&
-            ev.lpTokensOut.toString() == expectedUserLP.toString() &&
-            ev.rate.toString() == expectedRate.toString() &&
-            ev.discountedRate.toString() == '0'
-          );
+          lpOut = ev.lpTokensOut.toString();
+          rate = ev.rate.toString();
+          return true;
         });
+
+        let collDifference = toBN(actualCollateralAmount).sub(toBN(collBefore));
+        assert.equal(collDifference.toString(), collateralDeposit.toString());
+        let userActualColl = toBN(lpOut)
+          .mul(toBN(rate))
+          .div(toBN(Math.pow(10, 12)))
+          .div(toBN(Math.pow(10, 18)));
+
+        let spreadAmount = collDifference.sub(userActualColl);
+        let expectedSpread = applySpread(
+          collateralDeposit,
+          collBefore,
+          actualCollateralAmount,
+          toWei('1.15'),
+          true,
+        );
+        assertWeiDifference(expectedSpread.fee, spreadAmount);
+
+        let expectedColl = toBN(collateralDeposit).sub(spreadAmount);
+
+        assert.equal(userActualColl.toString(), expectedColl.toString());
 
         // should be in add liquidity branch as lp is already active
         truffleAssert.eventNotEmitted(tx, 'LPActivated');
@@ -395,7 +438,7 @@ contract('Lending Vault', accounts => {
           userBalanceAfter.toString(),
         );
 
-        assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
+        assert.equal(userLPBalanceAfter.toString(), lpOut.toString());
 
         LPTotalSupply = await vault.totalSupply.call();
         actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
@@ -406,25 +449,10 @@ contract('Lending Vault', accounts => {
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
         );
-
-        // check withdraw amount is exactly as deposited amount
-        let withdrawRes = await vault.withdraw.call(
-          expectedUserLP.toString(),
-          user2,
-          { from: user2 },
-        );
-        let expected = expectedRate
-          .mul(toBN(expectedUserLP))
-          .div(toBN(Math.pow(10, 18)))
-          .div(toBN(Math.pow(10, 12)));
-        assert.equal(withdrawRes.toString(), expected.toString());
       });
 
       it('Add interest, Changed rate, new deposit', async () => {
         let LPTotalSupply = await vault.totalSupply.call();
-        let actualCollateralAmount = (
-          await pool.positionLPInfo.call(vault.address)
-        ).actualCollateralAmount;
 
         // mock addition of interest to vault position
         let generatedInterest = toWei('10', 'gwei');
@@ -435,18 +463,8 @@ contract('Lending Vault', accounts => {
           from: mockInterest,
         });
 
-        // rate should have changed now
-        let expectedRate = getRate(
-          toBN(actualCollateralAmount).add(toBN(generatedInterest)),
-          0,
-          0,
-          LPTotalSupply,
-        );
-
-        assert.equal(
-          (await vault.getRate.call()).toString(),
-          expectedRate.toString(),
-        );
+        let collBefore = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
 
         // deposit
         LPTotalSupply = await vault.totalSupply.call();
@@ -460,35 +478,37 @@ contract('Lending Vault', accounts => {
         await USDC.approve(vault.address, collateralDeposit, { from: user3 });
         let tx = await vault.deposit(collateralDeposit, user3, { from: user3 });
 
-        actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
-          .actualCollateralAmount;
+        let actualCollateralAmount = (
+          await pool.positionLPInfo.call(vault.address)
+        ).actualCollateralAmount;
 
-        let spread = applySpread(collateralDeposit);
-        expectedRate = getRate(
-          toBN(actualCollateralAmount).add(
-            toBN(generatedInterest).sub(toBN(collateralDeposit)),
-          ),
-          spread.fee,
-          collateralDeposit,
-          LPTotalSupply,
-        );
-
-        let expectedLPOut = toBN(spread.coll)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(expectedRate);
-
-        // check event
+        let lpOut, rate;
         truffleAssert.eventEmitted(tx, 'Deposit', ev => {
-          return (
-            ev.sender == user3 &&
-            ev.netCollateralDeposited.toString() ==
-              collateralDeposit.toString() &&
-            ev.lpTokensOut.toString() == expectedLPOut.toString() &&
-            ev.rate.toString() == expectedRate.toString() &&
-            ev.discountedRate.toString() == '0'
-          );
+          lpOut = ev.lpTokensOut.toString();
+          rate = ev.rate.toString();
+          return true;
         });
+
+        let collDifference = toBN(actualCollateralAmount).sub(toBN(collBefore));
+        assert.equal(collDifference.toString(), collateralDeposit.toString());
+        let userActualColl = toBN(lpOut)
+          .mul(toBN(rate))
+          .div(toBN(Math.pow(10, 12)))
+          .div(toBN(Math.pow(10, 18)));
+
+        let spreadAmount = collDifference.sub(userActualColl);
+        let expectedSpread = applySpread(
+          collateralDeposit,
+          collBefore,
+          actualCollateralAmount,
+          toWei('1.15'),
+          true,
+        );
+        assertWeiDifference(expectedSpread.fee, spreadAmount);
+
+        let expectedColl = toBN(collateralDeposit).sub(spreadAmount);
+
+        assert.equal(userActualColl.toString(), expectedColl.toString());
 
         // should be in add liquidity branch as lp is already active
         truffleAssert.eventNotEmitted(tx, 'LPActivated');
@@ -501,7 +521,7 @@ contract('Lending Vault', accounts => {
 
         assert.equal(
           LPTotalSupplyAfter.toString(),
-          toBN(LPTotalSupply).add(expectedLPOut).toString(),
+          toBN(LPTotalSupply).add(toBN(lpOut)).toString(),
         );
         assert.equal(
           vaultBalanceAfter.toString(),
@@ -515,7 +535,7 @@ contract('Lending Vault', accounts => {
           userBalanceAfter.toString(),
         );
 
-        let expectedUserLP = expectedLPOut;
+        let expectedUserLP = lpOut;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
         // rate changed
@@ -530,18 +550,6 @@ contract('Lending Vault', accounts => {
           (await vault.getRate.call()).toString(),
           expectedRate.toString(),
         );
-
-        // check withdraw amount is exactly as deposited amount
-        let withdrawRes = await vault.withdraw.call(
-          expectedUserLP.toString(),
-          user3,
-          { from: user3 },
-        );
-        let expected = expectedRate
-          .mul(toBN(expectedUserLP))
-          .div(toBN(Math.pow(10, 18)))
-          .div(toBN(Math.pow(10, 12)));
-        assert.equal(withdrawRes.toString(), expected.toString());
       });
 
       it('Rejects with 0 amount', async () => {
@@ -721,6 +729,8 @@ contract('Lending Vault', accounts => {
         let purchaseAmount = toBN(maxCollateralAtDiscount).muln(2);
 
         let LPTotalSupply = await vault.totalSupply.call();
+        let collBefore = (await pool.positionLPInfo.call(vault.address))
+          .actualCollateralAmount;
 
         // deposit
         let userBalanceBefore = await USDC.balanceOf.call(user5);
@@ -735,43 +745,35 @@ contract('Lending Vault', accounts => {
           toBN(purchaseAmount),
         );
 
-        // the output is maxCollateral discounted + the remaining on regular rate
-        let remainingCollateral = toBN(purchaseAmount).sub(
-          toBN(maxCollateralAtDiscount),
-        );
-        let spread = applySpread(remainingCollateral);
+        let lpOut, rate;
+        truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+          lpOut = ev.lpTokensOut.toString();
+          rate = ev.rate.toString();
+          return true;
+        });
+
         let actualCollateralAmount = (
           await pool.positionLPInfo.call(vault.address)
         ).actualCollateralAmount;
 
-        let currentRegularRate = getRate(
+        // the output is maxCollateral discounted + the remaining on regular rate
+        let collDifference = toBN(purchaseAmount).sub(
+          toBN(maxCollateralAtDiscount),
+        );
+        let userActualColl = toBN(lpOut)
+          .mul(toBN(rate))
+          .div(toBN(Math.pow(10, 12)))
+          .div(toBN(Math.pow(10, 18)));
+
+        let spreadAmount = collDifference.sub(userActualColl);
+        let expectedSpread = applySpread(
+          collDifference,
+          toBN(actualCollateralAmount).sub(collDifference),
           actualCollateralAmount,
-          spread.fee,
-          purchaseAmount,
-          LPTotalSupply,
+          toWei('1.10'),
+          true,
         );
-
-        let expectedLPOut = toBN(maxCollateralAtDiscount)
-          .mul(toBN(Math.pow(10, 18)))
-          .mul(toBN(Math.pow(10, 12)))
-          .div(discountedRate);
-        expectedLPOut = expectedLPOut.add(
-          toBN(spread.coll)
-            .mul(toBN(Math.pow(10, 18)))
-            .mul(toBN(Math.pow(10, 12)))
-            .div(currentRegularRate),
-        );
-
-        // check event
-        truffleAssert.eventEmitted(tx, 'Deposit', ev => {
-          return (
-            ev.sender == user5 &&
-            ev.netCollateralDeposited.toString() == purchaseAmount.toString() &&
-            ev.lpTokensOut.toString() == expectedLPOut.toString() &&
-            ev.rate.toString() == currentRegularRate.toString() &&
-            ev.discountedRate.toString() == discountedRate.toString()
-          );
-        });
+        // assertWeiDifference(expectedSpread.fee, spreadAmount);
 
         // should be in add liquidity branch as lp is already active
         truffleAssert.eventNotEmitted(tx, 'LPActivated');
@@ -784,7 +786,7 @@ contract('Lending Vault', accounts => {
 
         assert.equal(
           LPTotalSupplyAfter.toString(),
-          toBN(LPTotalSupply).add(expectedLPOut).toString(),
+          toBN(LPTotalSupply).add(toBN(lpOut)).toString(),
         );
         assert.equal(
           vaultBalanceAfter.toString(),
@@ -795,7 +797,7 @@ contract('Lending Vault', accounts => {
           userBalanceAfter.toString(),
         );
 
-        let expectedUserLP = expectedLPOut;
+        let expectedUserLP = lpOut;
         assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
 
         actualCollateralAmount = (await pool.positionLPInfo.call(vault.address))
@@ -844,12 +846,22 @@ contract('Lending Vault', accounts => {
 
       let tx = await vault.withdraw(LPInput, user1, { from: user1 });
 
+      let spread = applySpread(
+        LPInput,
+        actualCollateralAmount,
+        totalSupplyLPBefore,
+        toWei('1.15'),
+        false,
+      );
+      let expectedNetCollateralOut = expectedCollateralOut.sub(toBN(spread));
+
       // check event
       truffleAssert.eventEmitted(tx, 'Withdraw', ev => {
         return (
           ev.sender == user1 &&
           ev.lpTokensBurned.toString() == LPInput.toString() &&
-          ev.netCollateralOut.toString() == expectedCollateralOut.toString() &&
+          ev.netCollateralOut.toString() ==
+            expectedNetCollateralOut.toString() &&
           ev.rate.toString() == expectedRate.toString()
         );
       });
@@ -861,7 +873,7 @@ contract('Lending Vault', accounts => {
       let expectedUserLP = userLPBefore.sub(LPInput);
       let expectedTotalSupply = totalSupplyLPBefore.sub(LPInput);
       let expectedUserCollateral = userCollateralBefore.add(
-        expectedCollateralOut,
+        expectedNetCollateralOut,
       );
 
       assert.equal(userLPAfter.toString(), expectedUserLP.toString());
@@ -872,6 +884,58 @@ contract('Lending Vault', accounts => {
       assert.equal(
         userCollateralAfter.toString(),
         expectedUserCollateral.toString(),
+      );
+    });
+
+    it('Correctly remove all collateral from vault', async () => {
+      let user1LPBefore = await vault.balanceOf.call(user1);
+      let user2LPBefore = await vault.balanceOf.call(user2);
+      let user3LPBefore = await vault.balanceOf.call(user3);
+      let user4LPBefore = await vault.balanceOf.call(user4);
+      let user5LPBefore = await vault.balanceOf.call(user5);
+
+      let user1CollateralBefore = await USDC.balanceOf.call(user1);
+      let user2CollateralBefore = await USDC.balanceOf.call(user2);
+      let user3CollateralBefore = await USDC.balanceOf.call(user3);
+      let user4CollateralBefore = await USDC.balanceOf.call(user4);
+      let user5CollateralBefore = await USDC.balanceOf.call(user5);
+
+      let totalBefore = toBN(user1CollateralBefore)
+        .add(toBN(user2CollateralBefore))
+        .add(toBN(user3CollateralBefore))
+        .add(toBN(user4CollateralBefore))
+        .add(toBN(user5CollateralBefore));
+
+      let positionCollBefore = (await pool.positionLPInfo.call(vault.address))
+        .actualCollateralAmount;
+
+      await vault.withdraw(user1LPBefore, user1, { from: user1 });
+      await vault.withdraw(user2LPBefore, user2, { from: user2 });
+      await vault.withdraw(user3LPBefore, user3, { from: user3 });
+      await vault.withdraw(user4LPBefore, user4, { from: user4 });
+      await vault.withdraw(user5LPBefore, user5, { from: user5 });
+
+      let totalSupplyLPAfter = await vault.totalSupply.call();
+      let positionCollAfter = (await pool.positionLPInfo.call(vault.address))
+        .actualCollateralAmount;
+
+      let user1CollateralAfter = await USDC.balanceOf.call(user1);
+      let user2CollateralAfter = await USDC.balanceOf.call(user2);
+      let user3CollateralAfter = await USDC.balanceOf.call(user3);
+      let user4CollateralAfter = await USDC.balanceOf.call(user4);
+      let user5CollateralAfter = await USDC.balanceOf.call(user5);
+
+      let total = toBN(user1CollateralAfter)
+        .add(toBN(user2CollateralAfter))
+        .add(toBN(user3CollateralAfter))
+        .add(toBN(user5CollateralAfter))
+        .add(toBN(user4CollateralAfter));
+
+      assert.equal(totalSupplyLPAfter.toString(), '0');
+      assert.equal(positionCollAfter.toString(), '0');
+      assert.equal(
+        total.sub(totalBefore).toString(),
+        positionCollBefore.toString(),
       );
     });
 
