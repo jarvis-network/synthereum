@@ -263,7 +263,9 @@ contract('Lending Vault', accounts => {
           toBN(Math.pow(10, 18)),
         );
         assert.equal((await vault.getVersion.call()).toString(), '1');
-        assert.equal((await vault.getSpread.call())[0].toString(), priceSpread);
+        let spreadRes = await vault.getSpread.call();
+        assert.equal(spreadRes.maxSpreadLong.toString(), priceSpread);
+        assert.equal(spreadRes.maxSpreadShort.toString(), priceSpread);
       });
 
       it('Revert if sender is not synthereum deployer', async () => {
@@ -365,6 +367,11 @@ contract('Lending Vault', accounts => {
 
         // rate should not have changed
         assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
+
+        let discountRes = await vault.getDiscountedRate.call();
+        assert.equal(discountRes.rate.toString(), toBN(Math.pow(10, 18)));
+        assert.equal(discountRes.discountedRate.toString(), '0');
+        assert.equal(discountRes.maxCollateralDiscounted.toString(), '0');
       });
 
       it('Rate unchanged - user 2 deposit - correctly mint LP tokens', async () => {
@@ -939,9 +946,95 @@ contract('Lending Vault', accounts => {
       );
     });
 
+    it('Correctly allow new deposits after vault is emptied', async () => {
+      let userBalanceBefore = await USDC.balanceOf.call(user1);
+      let userLPBalanceBefore = await vault.balanceOf.call(user1);
+      assert.equal(userLPBalanceBefore.toString(), '0');
+
+      let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
+
+      // deposit
+      let collateralDeposit = toWei('5', 'gwei');
+      await USDC.approve(vault.address, collateralDeposit, { from: user1 });
+      let tx = await vault.deposit(collateralDeposit, user1, { from: user1 });
+      let expectedUserLP = toBN(collateralDeposit).mul(
+        toBN(Math.pow(10, toBN(18).sub(toBN(collateralDecimals)).toString())),
+      );
+
+      // check event
+      truffleAssert.eventEmitted(tx, 'Deposit', ev => {
+        return (
+          ev.sender == user1 &&
+          ev.netCollateralDeposited.toString() ==
+            collateralDeposit.toString() &&
+          ev.lpTokensOut.toString() == expectedUserLP.toString() &&
+          ev.rate.toString() == toBN(Math.pow(10, 18)) &&
+          ev.discountedRate.toString() == '0'
+        );
+      });
+
+      // check
+      let userBalanceAfter = await USDC.balanceOf.call(user1);
+      let userLPBalanceAfter = await vault.balanceOf.call(user1);
+      let vaultBalanceAfter = await USDC.balanceOf.call(vault.address);
+
+      assert.equal(vaultBalanceAfter.toString(), vaultBalanceBefore.toString());
+      let expectedUserBalance = toBN(userBalanceBefore).sub(
+        toBN(collateralDeposit),
+      );
+      assert.equal(expectedUserBalance.toString(), userBalanceAfter.toString());
+
+      assert.equal(userLPBalanceAfter.toString(), expectedUserLP.toString());
+
+      // rate should not have changed
+      assert.equal((await vault.getRate.call()).toString(), Math.pow(10, 18));
+    });
+
     it('Rejects with zero amount', async () => {
       await truffleAssert.reverts(
         vault.withdraw(0, user1, { from: user1 }),
+        'Zero amount',
+      );
+    });
+  });
+
+  describe('Donation', () => {
+    it('Allows anyone to post collateral in the vault as a form of donation', async () => {
+      let LPTotalSupply = await vault.totalSupply.call();
+      let collBefore = (await pool.positionLPInfo.call(vault.address))
+        .actualCollateralAmount;
+      let userBalanceBefore = await USDC.balanceOf.call(user1);
+      let amount = toWei('10', 'gwei');
+
+      await USDC.approve(vault.address, amount, { from: user1 });
+      let tx = await vault.donate(amount, { from: user1 });
+
+      truffleAssert.eventEmitted(tx, 'Donation', ev => {
+        return (
+          ev.sender == user1 &&
+          ev.collateralAmount.toString() == amount.toString()
+        );
+      });
+
+      let LPTotalSupplyAft = await vault.totalSupply.call();
+      let collAft = (await pool.positionLPInfo.call(vault.address))
+        .actualCollateralAmount;
+      let userBalanceAft = await USDC.balanceOf.call(user1);
+
+      assert.equal(LPTotalSupply.toString(), LPTotalSupplyAft);
+      assert.equal(
+        collAft.toString(),
+        toBN(collBefore).add(toBN(amount)).toString(),
+      );
+      assert.equal(
+        userBalanceAft.toString(),
+        toBN(userBalanceBefore).sub(toBN(amount)).toString(),
+      );
+    });
+
+    it('Rejects with zero amount', async () => {
+      await truffleAssert.reverts(
+        vault.donate(0, { from: user1 }),
         'Zero amount',
       );
     });
