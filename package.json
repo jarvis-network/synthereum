@@ -134,6 +134,7 @@
     }
   },
   "dependencies": {
+    "@chainlink/contracts-ccip": "^0.7.6",
     "core-js": "^3.6.5",
     "document-register-element": "1.13.1",
     "dotenv": "^8.2.0",
