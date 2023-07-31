@@ -12,7 +12,7 @@ export type AbiFor<Contract extends BaseContract> = Tagged<AbiItem[], Contract>;
 
 export function getContract<
   Contract extends BaseContract,
-  Net extends NetworkName
+  Net extends NetworkName,
 >(
   web3: Web3On<Net>,
   abi: AbiFor<Contract>,
@@ -23,10 +23,10 @@ export function getContract<
   },
 ): ContractInstance<Net, Contract> {
   const connect = (web3_: Web3On<Net>) =>
-    (new web3_.eth.Contract(abi, address, {
+    new web3_.eth.Contract(abi, address, {
       gas: gas?.gasLimit,
       gasPrice: gas?.gasPrice,
-    }) as unknown) as Contract;
+    }) as unknown as Contract;
   return {
     connect,
     instance: connect(web3),

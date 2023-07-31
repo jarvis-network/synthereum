@@ -32,7 +32,7 @@ function encodeLiquidityPool(
   liquidationReward: string,
   version: number,
 ) {
-  const poolPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+  const poolPayload = (Web3EthAbi as unknown as AbiCoder).encodeParameters(
     [
       {
         params: {
@@ -108,7 +108,7 @@ function encodeMultiLpLiquidityPool(
   daoInterestShare: string,
   jrtBuybackShare: string,
 ) {
-  const poolPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+  const poolPayload = (Web3EthAbi as unknown as AbiCoder).encodeParameters(
     [
       {
         params: {
@@ -178,7 +178,9 @@ function encodeCreditLineDerivative(
   liquidationPercentage: string,
   capMintAmount: string,
 ) {
-  const CreditLineDerivativePayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+  const CreditLineDerivativePayload = (
+    Web3EthAbi as unknown as AbiCoder
+  ).encodeParameters(
     [
       {
         params: {
@@ -241,7 +243,7 @@ function encodeFixedRate(
   version: number,
   rate: number,
 ) {
-  const fixedRatePayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+  const fixedRatePayload = (Web3EthAbi as unknown as AbiCoder).encodeParameters(
     [
       {
         params: {
@@ -281,7 +283,7 @@ function encodeMultiLpLiquidityPoolMigration(
   version: number,
   extraInputParams: string,
 ) {
-  const migrationPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+  const migrationPayload = (Web3EthAbi as unknown as AbiCoder).encodeParameters(
     ['address', 'uint8', 'bytes'],
     [migrationPool, version, extraInputParams],
   );

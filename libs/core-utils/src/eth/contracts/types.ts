@@ -6,7 +6,7 @@ import { BaseContract } from './typechain/types';
 
 export interface TokenInstance<
   Net extends NetworkName,
-  TokenSymbol extends string = string
+  TokenSymbol extends string = string,
 > extends ContractInstance<Net, ERC20> {
   symbol: TokenSymbol;
   decimals: number;
@@ -14,7 +14,7 @@ export interface TokenInstance<
 
 export interface TokenInfo<
   Net extends NetworkName,
-  TokenSymbol extends string = string
+  TokenSymbol extends string = string,
 > extends ContractInfo<Net, ERC20> {
   symbol: TokenSymbol;
   decimals: number;
@@ -22,14 +22,14 @@ export interface TokenInfo<
 
 export interface ContractInstance<
   Net extends NetworkName,
-  Contract extends BaseContract
+  Contract extends BaseContract,
 > extends ContractInfo<Net, Contract> {
   instance: Contract;
 }
 
 export interface ContractInfo<
   Net extends NetworkName,
-  Contract extends BaseContract
+  Contract extends BaseContract,
 > {
   address: AddressOn<Net>;
   connect: (web3: Web3On<Net>) => Contract;

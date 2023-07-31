@@ -13,7 +13,7 @@ type MapToPromiseFunctions<T> = { [P in keyof T]: () => Promise<T[P]> };
 export async function executeInSequence<Args extends unknown[]>(
   ...promises: MapToPromiseFunctions<Args>
 ): Promise<Args> {
-  const result: Args = ([] as unknown) as Args;
+  const result: Args = [] as unknown as Args;
   for (const p of promises) {
     // eslint-disable-next-line no-await-in-loop
     result.push(await p());

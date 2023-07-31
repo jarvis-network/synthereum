@@ -1,8 +1,8 @@
 {
-    "56": {
-        "deployRouter": false
+  "56": {
+    "deployRouter": false
   },
-    "3": {
-        "deployRouter": true
-    }
+  "3": {
+    "deployRouter": true
+  }
 }

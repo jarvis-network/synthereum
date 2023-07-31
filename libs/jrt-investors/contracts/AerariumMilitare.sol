@@ -87,10 +87,9 @@ contract AerariumMilitare is Ownable {
    */
   function claimableJRT(address investor) external view returns (uint256) {
     uint256 totalAmount = userTotalAmount[investor];
-    uint256 timePassed =
-      block.timestamp <= endTime
-        ? block.timestamp.sub(startTime)
-        : endTime.sub(startTime);
+    uint256 timePassed = block.timestamp <= endTime
+      ? block.timestamp.sub(startTime)
+      : endTime.sub(startTime);
     return
       timePassed.mul(totalAmount).div(lockTime).sub(claimedAmount[investor]);
   }
@@ -101,8 +100,9 @@ contract AerariumMilitare is Ownable {
     require(block.timestamp < endTime, 'The end time has passed');
     uint256 totalAmount = userTotalAmount[msg.sender];
     uint256 timePassed = block.timestamp.sub(startTime);
-    uint256 amount =
-      timePassed.mul(totalAmount).div(lockTime).sub(claimedAmount[msg.sender]);
+    uint256 amount = timePassed.mul(totalAmount).div(lockTime).sub(
+      claimedAmount[msg.sender]
+    );
     claimedAmount[msg.sender] = claimedAmount[msg.sender].add(amount);
     token.safeTransfer(msg.sender, amount);
   }

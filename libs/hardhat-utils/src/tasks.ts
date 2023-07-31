@@ -60,12 +60,12 @@ export function modifiyVerifyMinimumBuild(): void {
 export function modifyCompile(contractsPath: string, deployPath: string): void {
   createOrModifyHardhatTask(TASK_COMPILE).setAction(
     async (args, hre, runSuper) => {
-      if (((hre as unknown) as { skipCompile?: boolean }).skipCompile) return;
+      if ((hre as unknown as { skipCompile?: boolean }).skipCompile) return;
 
       const prepare =
-        ((hre as unknown) as { fromDeployScript?: boolean })
-          .fromDeployScript !== true &&
-        ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript !==
+        (hre as unknown as { fromDeployScript?: boolean }).fromDeployScript !==
+          true &&
+        (hre as unknown as { fromTestScript?: boolean }).fromTestScript !==
           true;
 
       if (prepare) {
@@ -83,8 +83,8 @@ export function modifyTest(contractsPath: string, deployPath: string): void {
     .setAction(async (taskArgs, hre, runSuper) => {
       const { debug } = taskArgs;
       const prepare =
-        ((hre as unknown) as { fromDeployScript?: boolean })
-          .fromDeployScript !== true;
+        (hre as unknown as { fromDeployScript?: boolean }).fromDeployScript !==
+        true;
 
       if (prepare) {
         console.log(0, {
@@ -110,14 +110,16 @@ export function modifyTest(contractsPath: string, deployPath: string): void {
         'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
       });
       console.log('hello', { taskArgs });
-      ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript = true;
+      (hre as unknown as { fromTestScript?: boolean }).fromTestScript = true;
       await runSuper(taskArgs);
-      delete ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript;
+      delete (hre as unknown as { fromTestScript?: boolean }).fromTestScript;
 
       if (prepare) {
-        delete (hre as {
-          migrationScript?: string;
-        }).migrationScript;
+        delete (
+          hre as {
+            migrationScript?: string;
+          }
+        ).migrationScript;
       }
       console.log('goodbye');
     });
@@ -200,7 +202,9 @@ export function modifyDeploy(module: string): void {
 
         // Search for calls to artifacts.require and get value of first argument
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const contractNames = require(migrationScriptPath).getContracts() as string[];
+        const contractNames =
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          require(migrationScriptPath).getContracts() as string[];
         delete require.cache[require.resolve(migrationScriptPath)];
 
         /* eslint-disable no-await-in-loop */
@@ -255,9 +259,11 @@ export function modifyDeploy(module: string): void {
         }
         /* eslint-enable no-await-in-loop */
 
-        (hre as {
-          migrationScript?: string;
-        }).migrationScript = migrationScript; // Used in test/truffle-fixture.js
+        (
+          hre as {
+            migrationScript?: string;
+          }
+        ).migrationScript = migrationScript; // Used in test/truffle-fixture.js
         const testPath = `./cache/test-${migrationScript}.js`;
         await fs.writeFile(
           testPath,
@@ -271,19 +277,25 @@ export function modifyDeploy(module: string): void {
           'utf-8',
         );
 
-        (hre as {
-          fromDeployScript?: boolean;
-        }).fromDeployScript = true;
+        (
+          hre as {
+            fromDeployScript?: boolean;
+          }
+        ).fromDeployScript = true;
 
         if (!skipTest) {
           await hre.run(TASK_TEST, { testFiles: [testPath] });
         }
-        delete (hre as {
-          migrationScript?: string;
-        }).migrationScript;
-        delete (hre as {
-          fromDeployScript?: boolean;
-        }).fromDeployScript;
+        delete (
+          hre as {
+            migrationScript?: string;
+          }
+        ).migrationScript;
+        delete (
+          hre as {
+            fromDeployScript?: boolean;
+          }
+        ).fromDeployScript;
 
         const findContractPathInProject = (contractName: string) =>
           `${relative(
@@ -311,9 +323,11 @@ export function modifyDeploy(module: string): void {
 
             for (;;) {
               try {
-                ((hre as unknown) as {
-                  skipCompile?: boolean;
-                }).skipCompile = true;
+                (
+                  hre as unknown as {
+                    skipCompile?: boolean;
+                  }
+                ).skipCompile = true;
                 await hre.run(TASK_VERIFY_VERIFY, {
                   address,
                   constructorArguments: (
@@ -323,7 +337,7 @@ export function modifyDeploy(module: string): void {
                   )[address],
                   contract,
                 });
-                delete ((hre as unknown) as { skipCompile?: boolean })
+                delete (hre as unknown as { skipCompile?: boolean })
                   .skipCompile;
                 break;
               } catch (error: any) {
@@ -353,10 +367,7 @@ export function modifyDeploy(module: string): void {
                   address,
                   constructorArgs,
                 );
-                const {
-                  stdout,
-                  stderr,
-                } = await exec(
+                const { stdout, stderr } = await exec(
                   `hardhat verify ${address} --constructor-args ${constructorArgs} --contract '${contract}' --network ${network}`,
                   { capture: ['stderr', 'stdout'] },
                 );
@@ -376,9 +387,11 @@ export function compile(): void {
   task(TASK_COMPILE, async (args, hre, runSuper) => {
     await runSuper();
     if (
-      (hre as {
-        migrationScript?: string;
-      }).migrationScript !== 'uma'
+      (
+        hre as {
+          migrationScript?: string;
+        }
+      ).migrationScript !== 'uma'
     ) {
       const distBaseDir = './dist/contracts';
 
@@ -437,9 +450,9 @@ async function exists(path: string) {
 async function findContract({ dir, name }: { dir: string; name: string }) {
   /* eslint-disable no-await-in-loop */
   for (const solidityFile of await globby(`${dir}/**/*.sol`)) {
-    const { children } = ((await parse(
+    const { children } = (await parse(
       await fs.readFile(solidityFile, 'utf-8'),
-    )) as unknown) as {
+    )) as unknown as {
       children: Token[];
     };
 
@@ -448,10 +461,12 @@ async function findContract({ dir, name }: { dir: string; name: string }) {
         child =>
           child.type === 'ContractDefinition' &&
           name ===
-            ((child as unknown) as {
-              type: 'ContractDefinition';
-              name: string;
-            }).name,
+            (
+              child as unknown as {
+                type: 'ContractDefinition';
+                name: string;
+              }
+            ).name,
       )
     ) {
       return solidityFile;
@@ -506,13 +521,13 @@ async function gatherFiles(
 
   const externalImports: Record<string, string> = {};
 
-  const { children } = ((await parse(mainContractContent)) as unknown) as {
+  const { children } = (await parse(mainContractContent)) as unknown as {
     children: Token[];
   };
 
   for (const child of children) {
     if (child.type === 'ImportDirective') {
-      const { path: importedContractPath } = (child as unknown) as {
+      const { path: importedContractPath } = child as unknown as {
         type: 'ImportDirective';
         path: string;
       };

@@ -2,17 +2,11 @@
 
 pragma solidity 0.8.9;
 
-import {
-  IUniswapV2Router02
-} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
-import {
-  IOnChainLiquidityRouter
-} from '../interfaces/IOnChainLiquidityRouter.sol';
+import {IUniswapV2Router02} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
+import {IOnChainLiquidityRouter} from '../interfaces/IOnChainLiquidityRouter.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
 import {AtomicSwapConstants} from '../lib/AtomicSwapConstants.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract OCLRV2UniswapV2 is OCLRBase {
   using SafeERC20 for IERC20;
@@ -35,12 +29,14 @@ contract OCLRV2UniswapV2 is OCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
-    ImplementationInfo memory implementationInfo =
-      decodeImplementationInfo(info);
+    ImplementationInfo memory implementationInfo = decodeImplementationInfo(
+      info
+    );
 
     // instantiate router
-    IUniswapV2Router02 router =
-      IUniswapV2Router02(implementationInfo.routerAddress);
+    IUniswapV2Router02 router = IUniswapV2Router02(
+      implementationInfo.routerAddress
+    );
 
     // unpack tokenSwapPath from extraParams
     address[] memory tokenSwapPath = decodeExtraParams(inputParams.extraParams);
@@ -115,10 +111,9 @@ contract OCLRV2UniswapV2 is OCLRBase {
 
         // refund eventual eth leftover
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
-          (bool success, ) =
-            inputParams.msgSender.call{
-              value: inputParams.minOutOrMaxIn - amountsOut[0]
-            }('');
+          (bool success, ) = inputParams.msgSender.call{
+            value: inputParams.minOutOrMaxIn - amountsOut[0]
+          }('');
           require(success, 'Failed eth refund');
         }
       } else {
@@ -182,12 +177,14 @@ contract OCLRV2UniswapV2 is OCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
-    ImplementationInfo memory implementationInfo =
-      decodeImplementationInfo(info);
+    ImplementationInfo memory implementationInfo = decodeImplementationInfo(
+      info
+    );
 
     // instantiate router
-    IUniswapV2Router02 router =
-      IUniswapV2Router02(implementationInfo.routerAddress);
+    IUniswapV2Router02 router = IUniswapV2Router02(
+      implementationInfo.routerAddress
+    );
 
     // unpack tokenSwapPath from extraParams
     address[] memory tokenSwapPath = decodeExtraParams(inputParams.extraParams);
@@ -204,8 +201,9 @@ contract OCLRV2UniswapV2 is OCLRBase {
     );
     address outputTokenAddress = tokenSwapPath[tokenSwapPath.length - 1];
 
-    IERC20 synthTokenInstance =
-      synthereumParams.synthereumPool.syntheticToken();
+    IERC20 synthTokenInstance = synthereumParams
+      .synthereumPool
+      .syntheticToken();
 
     // redeem USDC with jSynth into this contract
     synthTokenInstance.safeTransferFrom(
@@ -227,8 +225,9 @@ contract OCLRV2UniswapV2 is OCLRBase {
 
     // redeem to collateral and approve swap
     synthereumParams.redeemParams.recipient = address(this);
-    (uint256 collateralOut, ) =
-      synthereumParams.synthereumPool.redeem(synthereumParams.redeemParams);
+    (uint256 collateralOut, ) = synthereumParams.synthereumPool.redeem(
+      synthereumParams.redeemParams
+    );
 
     // allow router to swap tokens
     IERC20(tokenSwapPath[0]).safeIncreaseAllowance(

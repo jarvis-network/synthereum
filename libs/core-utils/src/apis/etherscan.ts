@@ -91,7 +91,7 @@ interface EtherscanPriceResult {
 }
 
 export function getEthUsdBtcPrice<
-  Net extends NetworkName
+  Net extends NetworkName,
 >(): Promise<EtherscanPriceResult> {
   return makeEtherscanApiCall<EtherscanPriceResult, Net>({
     module: 'stats',

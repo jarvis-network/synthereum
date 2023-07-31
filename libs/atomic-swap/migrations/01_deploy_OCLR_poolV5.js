@@ -37,17 +37,19 @@ module.exports = async function (deployer, network, accounts) {
 
   // deploy proxy
 
-  routerData[networkId].deployRouter ? await deploy(
-    web3,
-    deployer,
-    network,
-    OnChainLiquidityRouter,
-    FixedRateRoles,
-    synthereumFinderAddress,
-    {
-      from: admin,
-    },
-  ) : null;
+  routerData[networkId].deployRouter
+    ? await deploy(
+        web3,
+        deployer,
+        network,
+        OnChainLiquidityRouter,
+        FixedRateRoles,
+        synthereumFinderAddress,
+        {
+          from: admin,
+        },
+      )
+    : null;
 
   // get proxy instance
   const proxyInstance = await getExistingInstance(web3, OnChainLiquidityRouter);

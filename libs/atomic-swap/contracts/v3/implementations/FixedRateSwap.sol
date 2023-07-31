@@ -2,30 +2,16 @@
 
 pragma solidity 0.8.9;
 
-import {
-  ISynthereumFixedRateWrapper
-} from '@jarvis-network/synthereum-contracts/contracts/fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
-import {
-  ISynthereumLiquidityPool
-} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
-import {
-  ISynthereumRegistry
-} from '@jarvis-network/synthereum-contracts/contracts/core/registries/interfaces/IRegistry.sol';
-import {
-  SynthereumInterfaces
-} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
-import {
-  ISynthereumFinder
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {ISynthereumFixedRateWrapper} from '@jarvis-network/synthereum-contracts/contracts/fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
+import {ISynthereumLiquidityPool} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
+import {ISynthereumRegistry} from '@jarvis-network/synthereum-contracts/contracts/core/registries/interfaces/IRegistry.sol';
+import {SynthereumInterfaces} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
+import {ISynthereumFinder} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IOCLRBase} from '../interfaces/IOCLRBase.sol';
-import {
-  IOnChainLiquidityRouter
-} from '../interfaces/IOnChainLiquidityRouter.sol';
+import {IOnChainLiquidityRouter} from '../interfaces/IOnChainLiquidityRouter.sol';
 
 contract FixedRateSwap {
   using Address for address;
@@ -42,16 +28,19 @@ contract FixedRateSwap {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     //reverts if the interface is not implemented
-    ISynthereumFixedRateWrapper fixedRateWrapper =
-      ISynthereumFixedRateWrapper(fixedRateSwapParams.outputAsset);
+    ISynthereumFixedRateWrapper fixedRateWrapper = ISynthereumFixedRateWrapper(
+      fixedRateSwapParams.outputAsset
+    );
     IERC20 pegToken = fixedRateWrapper.collateralToken();
     IERC20 syntheticToken = fixedRateWrapper.syntheticToken();
 
     if (!fromERC20) {
       // jSynth -> pegSynth -> fixedRate
       // decode into exchange params struct
-      IOnChainLiquidityRouter.SynthereumExchangeParams memory params =
-        decodeToExchangeParams(fixedRateSwapParams.operationArgs);
+
+
+        IOnChainLiquidityRouter.SynthereumExchangeParams memory params
+       = decodeToExchangeParams(fixedRateSwapParams.operationArgs);
 
       // set finder passed from proxy
       params.synthereumFinder = ISynthereumFinder(
@@ -89,8 +78,9 @@ contract FixedRateSwap {
 
       // perform a pool exchange to with recipient being this contract
       params.exchangeParams.recipient = address(this);
-      (uint256 pegSynthAmount, ) =
-        params.inputSynthereumPool.exchange(params.exchangeParams);
+      (uint256 pegSynthAmount, ) = params.inputSynthereumPool.exchange(
+        params.exchangeParams
+      );
 
       // wrap jSynth into fixedRate and send them to final recipient
       pegToken.safeIncreaseAllowance(address(fixedRateWrapper), pegSynthAmount);
@@ -107,8 +97,10 @@ contract FixedRateSwap {
     } else {
       // erc20 -> pegSynth-> fixedRate
       // decode into SwapMintPeg params
-      IOnChainLiquidityRouter.SwapMintPegParams memory params =
-        decodeToSwapMintParams(fixedRateSwapParams.operationArgs);
+
+
+        IOnChainLiquidityRouter.SwapMintPegParams memory params
+       = decodeToSwapMintParams(fixedRateSwapParams.operationArgs);
 
       // set finder passed from proxy
       params.mintParams.synthereumFinder = ISynthereumFinder(
@@ -190,8 +182,9 @@ contract FixedRateSwap {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     //reverts if the interface is not implemented
-    ISynthereumFixedRateWrapper fixedRateWrapper =
-      ISynthereumFixedRateWrapper(fixedRateSwapParams.inputAsset);
+    ISynthereumFixedRateWrapper fixedRateWrapper = ISynthereumFixedRateWrapper(
+      fixedRateSwapParams.inputAsset
+    );
 
     IERC20 pegToken = fixedRateWrapper.collateralToken();
     IERC20 fixedRateToken = fixedRateWrapper.syntheticToken();
@@ -206,17 +199,18 @@ contract FixedRateSwap {
       address(fixedRateWrapper),
       inputAmount
     );
-    uint256 pegSynthAmountOut =
-      fixedRateWrapper.unwrap(inputAmount, address(this));
+    uint256 pegSynthAmountOut = fixedRateWrapper.unwrap(
+      inputAmount,
+      address(this)
+    );
 
     if (toERC20) {
       // fixedRate -> pegSynth -> erc20
       // decode params
-      IOnChainLiquidityRouter.RedeemPegSwapParams memory params =
-        abi.decode(
-          fixedRateSwapParams.operationArgs,
-          (IOnChainLiquidityRouter.RedeemPegSwapParams)
-        );
+      IOnChainLiquidityRouter.RedeemPegSwapParams memory params = abi.decode(
+        fixedRateSwapParams.operationArgs,
+        (IOnChainLiquidityRouter.RedeemPegSwapParams)
+      );
       ISynthereumLiquidityPool redeemPool = params.redeemParams.synthereumPool;
 
       // set finder passed from proxy
@@ -266,8 +260,10 @@ contract FixedRateSwap {
     } else {
       // fixedRate -> pegSynth -> jSynth via exchange
       // decode params
-      IOnChainLiquidityRouter.SynthereumExchangeParams memory params =
-        decodeToExchangeParams(fixedRateSwapParams.operationArgs);
+
+
+        IOnChainLiquidityRouter.SynthereumExchangeParams memory params
+       = decodeToExchangeParams(fixedRateSwapParams.operationArgs);
       ISynthereumLiquidityPool inputPool = params.inputSynthereumPool;
 
       // set finder passed from proxy
@@ -336,10 +332,9 @@ contract FixedRateSwap {
     ISynthereumLiquidityPool pool,
     ISynthereumFinder finder
   ) internal view {
-    ISynthereumRegistry poolRegistry =
-      ISynthereumRegistry(
-        finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
-      );
+    ISynthereumRegistry poolRegistry = ISynthereumRegistry(
+      finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
+    );
     require(
       poolRegistry.isDeployed(
         pool.syntheticTokenSymbol(),
@@ -355,10 +350,9 @@ contract FixedRateSwap {
     ISynthereumFixedRateWrapper fixedRateToken,
     ISynthereumFinder finder
   ) internal view {
-    ISynthereumRegistry fixedRateRegitry =
-      ISynthereumRegistry(
-        finder.getImplementationAddress(SynthereumInterfaces.FixedRateRegistry)
-      );
+    ISynthereumRegistry fixedRateRegitry = ISynthereumRegistry(
+      finder.getImplementationAddress(SynthereumInterfaces.FixedRateRegistry)
+    );
     require(
       fixedRateRegitry.isDeployed(
         fixedRateToken.syntheticTokenSymbol(),
@@ -378,18 +372,18 @@ contract FixedRateSwap {
     internal
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
-    string memory functionSig =
-      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)))';
 
-    bytes memory result =
-      implementation.functionDelegateCall(
-        abi.encodeWithSignature(
-          functionSig,
-          implementationInfo,
-          params.swapMintParams,
-          params.mintParams
-        )
-      );
+      string memory functionSig
+     = 'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)))';
+
+    bytes memory result = implementation.functionDelegateCall(
+      abi.encodeWithSignature(
+        functionSig,
+        implementationInfo,
+        params.swapMintParams,
+        params.mintParams
+      )
+    );
 
     returnValues = abi.decode(result, (IOnChainLiquidityRouter.ReturnValues));
   }
@@ -402,19 +396,19 @@ contract FixedRateSwap {
     internal
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
-    string memory functionSig =
-      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)),address)';
 
-    bytes memory result =
-      implementation.functionDelegateCall(
-        abi.encodeWithSignature(
-          functionSig,
-          implementationInfo,
-          params.redeemSwapParams,
-          params.redeemParams,
-          params.recipient
-        )
-      );
+      string memory functionSig
+     = 'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)),address)';
+
+    bytes memory result = implementation.functionDelegateCall(
+      abi.encodeWithSignature(
+        functionSig,
+        implementationInfo,
+        params.redeemSwapParams,
+        params.redeemParams,
+        params.recipient
+      )
+    );
 
     returnValues = abi.decode(result, (IOnChainLiquidityRouter.ReturnValues));
   }

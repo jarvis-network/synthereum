@@ -31,12 +31,8 @@ export async function logTransactionOutput({
   if (!log || !web3) return;
 
   const { gasPrice, gas, value } = await web3.eth.getTransaction(txhash);
-  const {
-    blockNumber,
-    from,
-    to,
-    gasUsed,
-  } = await web3.eth.getTransactionReceipt(txhash);
+  const { blockNumber, from, to, gasUsed } =
+    await web3.eth.getTransactionReceipt(txhash);
 
   contractName ??=
     getContractNameFromEtherscan === true && contractAddress

@@ -3,9 +3,7 @@
 pragma solidity >=0.8.0;
 pragma experimental ABIEncoderV2;
 
-import {
-  ISynthereumLiquidityPool
-} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
+import {ISynthereumLiquidityPool} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
 import {IOnChainLiquidityRouter} from './IOnChainLiquidityRouter.sol';
 
 /// @notice general interface that OCLR implementations must adhere to

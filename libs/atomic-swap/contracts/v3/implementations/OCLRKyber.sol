@@ -3,14 +3,10 @@
 pragma solidity 0.8.9;
 
 import {IDMMExchangeRouter} from './interfaces/IKyberRouter.sol';
-import {
-  IOnChainLiquidityRouter
-} from '../interfaces/IOnChainLiquidityRouter.sol';
+import {IOnChainLiquidityRouter} from '../interfaces/IOnChainLiquidityRouter.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
 import {AtomicSwapConstants} from '../lib/AtomicSwapConstants.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract OCLRV2Kyber is OCLRBase {
   using SafeERC20 for IERC20;
@@ -33,16 +29,20 @@ contract OCLRV2Kyber is OCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
-    ImplementationInfo memory implementationInfo =
-      decodeImplementationInfo(info);
+    ImplementationInfo memory implementationInfo = decodeImplementationInfo(
+      info
+    );
 
     // insantiate router
-    IDMMExchangeRouter kyberRouter =
-      IDMMExchangeRouter(implementationInfo.routerAddress);
+    IDMMExchangeRouter kyberRouter = IDMMExchangeRouter(
+      implementationInfo.routerAddress
+    );
 
     // unpack the extraParams
-    (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
-      decodeExtraParams(inputParams.extraParams);
+    (
+      address[] memory poolsPath,
+      IERC20[] memory tokenSwapPath
+    ) = decodeExtraParams(inputParams.extraParams);
 
     // checks
     require(
@@ -126,10 +126,9 @@ contract OCLRV2Kyber is OCLRBase {
         );
 
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
-          (bool success, ) =
-            inputParams.msgSender.call{
-              value: inputParams.minOutOrMaxIn - amountsOut[0]
-            }('');
+          (bool success, ) = inputParams.msgSender.call{
+            value: inputParams.minOutOrMaxIn - amountsOut[0]
+          }('');
           require(success, 'Failed eth refund');
         }
       } else {
@@ -200,16 +199,20 @@ contract OCLRV2Kyber is OCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
-    ImplementationInfo memory implementationInfo =
-      decodeImplementationInfo(info);
+    ImplementationInfo memory implementationInfo = decodeImplementationInfo(
+      info
+    );
 
     // unpack the extraParams
-    (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
-      decodeExtraParams(inputParams.extraParams);
+    (
+      address[] memory poolsPath,
+      IERC20[] memory tokenSwapPath
+    ) = decodeExtraParams(inputParams.extraParams);
 
     // insantiate router
-    IDMMExchangeRouter kyberRouter =
-      IDMMExchangeRouter(implementationInfo.routerAddress);
+    IDMMExchangeRouter kyberRouter = IDMMExchangeRouter(
+      implementationInfo.routerAddress
+    );
 
     // checks
     require(
@@ -225,8 +228,9 @@ contract OCLRV2Kyber is OCLRBase {
     );
 
     {
-      IERC20 synthTokenInstance =
-        synthereumParams.synthereumPool.syntheticToken();
+      IERC20 synthTokenInstance = synthereumParams
+        .synthereumPool
+        .syntheticToken();
 
       // redeem USDC with jSynth into this contract
       synthTokenInstance.safeTransferFrom(
@@ -250,8 +254,9 @@ contract OCLRV2Kyber is OCLRBase {
 
     // redeem to collateral and approve swap
     synthereumParams.redeemParams.recipient = address(this);
-    (uint256 collateralOut, ) =
-      synthereumParams.synthereumPool.redeem(synthereumParams.redeemParams);
+    (uint256 collateralOut, ) = synthereumParams.synthereumPool.redeem(
+      synthereumParams.redeemParams
+    );
 
     // approve kyber router to swap tokens
     tokenSwapPath[0].safeIncreaseAllowance(

@@ -134,9 +134,8 @@ export type ToNetworkName<Net extends Network> = (typeof networkIdToName &
 export type ToNetworkId<Net extends Network> = (typeof networkNameToId &
   typeof networkIdToId)[Net];
 
-export type NetworkNameNoFork<
-  T extends NetworkName | `${NetworkName}_fork`
-> = T extends `${infer Name}_fork` ? Name : T;
+export type NetworkNameNoFork<T extends NetworkName | `${NetworkName}_fork`> =
+  T extends `${infer Name}_fork` ? Name : T;
 
 export function toNetworkId<Id extends NetworkId>(id: Id): Id;
 export function toNetworkId<Name extends NetworkName | `${NetworkName}_fork`>(

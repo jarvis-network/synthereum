@@ -18,11 +18,8 @@ variables:
 🧪:
   parallel:
     matrix:
-      - TARGET:
-          [contracts,  yield-farming, jrt-investors, crypto-utils]
+      - TARGET: [contracts, yield-farming, jrt-investors, crypto-utils]
   script:
     - yarn test $TARGET
   rules:
     - if: $CI_MERGE_REQUEST_ID
-
-

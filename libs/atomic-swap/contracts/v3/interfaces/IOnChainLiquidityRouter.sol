@@ -2,12 +2,8 @@
 
 pragma solidity >=0.8.0;
 
-import {
-  ISynthereumLiquidityPool
-} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
-import {
-  ISynthereumFinder
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {ISynthereumLiquidityPool} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
+import {ISynthereumFinder} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 
 interface IOnChainLiquidityRouter {
   // Role structure

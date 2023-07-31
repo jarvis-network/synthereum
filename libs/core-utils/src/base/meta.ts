@@ -24,7 +24,7 @@ export function valuesOf<T extends Obj>(obj: T): ValuesOf<T>[] {
 export type OneOf<
   T,
   V extends readonly any[],
-  NK extends keyof V = Exclude<keyof V, keyof any[]>
+  NK extends keyof V = Exclude<keyof V, keyof any[]>,
 > = { [K in NK]: T extends V[K] ? V[K] : never }[NK];
 
 /**
@@ -79,7 +79,7 @@ export type PerTupleElement<Tuple extends readonly any[], T> = {
 export function mapTupleToObject<
   Tuple extends readonly any[],
   F extends (elem: Tuple[number], index: number) => T,
-  T
+  T,
 >(tuple: Tuple, mapFun: F): PerTupleElement<Tuple, T> {
   const result: Record<Tuple[number], T> = Object.fromEntries(
     tuple.map((elem, i) => t(elem, mapFun(elem, i))),

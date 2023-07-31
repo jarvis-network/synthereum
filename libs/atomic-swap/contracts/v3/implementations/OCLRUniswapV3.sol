@@ -2,21 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import {
-  ISwapRouter
-} from '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
-import {
-  IPeripheryPayments
-} from '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
-import {
-  IOnChainLiquidityRouter
-} from '../interfaces/IOnChainLiquidityRouter.sol';
+import {ISwapRouter} from '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
+import {IPeripheryPayments} from '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
+import {IOnChainLiquidityRouter} from '../interfaces/IOnChainLiquidityRouter.sol';
 import {IWETH9} from '../interfaces/IWETH9.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
 import {AtomicSwapConstants} from '../lib/AtomicSwapConstants.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 // group the two univ3 interfaces for convenience
 interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {
@@ -44,16 +36,19 @@ contract OCLRV2UniswapV3 is OCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
-    ImplementationInfo memory implementationInfo =
-      decodeImplementationInfo(info);
+    ImplementationInfo memory implementationInfo = decodeImplementationInfo(
+      info
+    );
 
     // instantiate router
-    IUniswapV3Router router =
-      IUniswapV3Router(implementationInfo.routerAddress);
+    IUniswapV3Router router = IUniswapV3Router(
+      implementationInfo.routerAddress
+    );
 
     // unpack the extraParams
-    (uint24[] memory fees, address[] memory tokenSwapPath) =
-      decodeExtraParams(inputParams.extraParams);
+    (uint24[] memory fees, address[] memory tokenSwapPath) = decodeExtraParams(
+      inputParams.extraParams
+    );
 
     IERC20 collateralToken = IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
     {
@@ -97,14 +92,14 @@ contract OCLRV2UniswapV3 is OCLRBase {
       }
 
       // swap to collateral token into this wallet
-      ISwapRouter.ExactInputParams memory params =
-        ISwapRouter.ExactInputParams({
-          path: encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
-          recipient: address(this),
-          deadline: synthereumParams.mintParams.expiration,
-          amountIn: inputParams.exactAmount,
-          amountOutMinimum: inputParams.minOutOrMaxIn
-        });
+      ISwapRouter.ExactInputParams memory params = ISwapRouter
+        .ExactInputParams({
+        path: encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+        recipient: address(this),
+        deadline: synthereumParams.mintParams.expiration,
+        amountIn: inputParams.exactAmount,
+        amountOutMinimum: inputParams.minOutOrMaxIn
+      });
 
       synthereumParams.mintParams.collateralAmount = router.exactInput{
         value: msg.value
@@ -143,14 +138,14 @@ contract OCLRV2UniswapV3 is OCLRBase {
       }
 
       // swap to collateral token into this wallet
-      ISwapRouter.ExactOutputParams memory params =
-        ISwapRouter.ExactOutputParams({
-          path: encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
-          recipient: address(this),
-          deadline: synthereumParams.mintParams.expiration,
-          amountOut: inputParams.exactAmount,
-          amountInMaximum: inputParams.minOutOrMaxIn
-        });
+      ISwapRouter.ExactOutputParams memory params = ISwapRouter
+        .ExactOutputParams({
+        path: encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+        recipient: address(this),
+        deadline: synthereumParams.mintParams.expiration,
+        amountOut: inputParams.exactAmount,
+        amountInMaximum: inputParams.minOutOrMaxIn
+      });
 
       returnValues.inputAmount = router.exactOutput{value: msg.value}(params);
 
@@ -158,16 +153,17 @@ contract OCLRV2UniswapV3 is OCLRBase {
       if (inputParams.minOutOrMaxIn > returnValues.inputAmount) {
         if (isEthInput) {
           // refund extra eth to user - the univ3 router refunds all his eth balance
-          uint256 routerETHBalance =
-            address(implementationInfo.routerAddress).balance;
+          uint256 routerETHBalance = address(implementationInfo.routerAddress)
+            .balance;
           returnValues.inputAmount = inputParams.minOutOrMaxIn >
             routerETHBalance
             ? inputParams.minOutOrMaxIn - routerETHBalance
             : 0;
           router.refundETH();
 
-          (bool success, ) =
-            inputParams.msgSender.call{value: routerETHBalance}('');
+          (bool success, ) = inputParams.msgSender.call{
+            value: routerETHBalance
+          }('');
           require(success, 'Failed eth refund');
         } else {
           // refund erc20
@@ -211,15 +207,18 @@ contract OCLRV2UniswapV3 is OCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
-    ImplementationInfo memory implementationInfo =
-      decodeImplementationInfo(info);
+    ImplementationInfo memory implementationInfo = decodeImplementationInfo(
+      info
+    );
 
     // unpack the extraParams
-    (uint24[] memory fees, address[] memory tokenSwapPath) =
-      decodeExtraParams(inputParams.extraParams);
+    (uint24[] memory fees, address[] memory tokenSwapPath) = decodeExtraParams(
+      inputParams.extraParams
+    );
 
-    IERC20 synthTokenInstance =
-      synthereumParams.synthereumPool.syntheticToken();
+    IERC20 synthTokenInstance = synthereumParams
+      .synthereumPool
+      .syntheticToken();
     IERC20 collateralInstance = IERC20(tokenSwapPath[0]);
     {
       require(
@@ -265,32 +264,29 @@ contract OCLRV2UniswapV3 is OCLRBase {
       );
     }
 
-    address swapRecipient =
-      inputParams.unwrapToETH ? implementationInfo.routerAddress : recipient;
+    address swapRecipient = inputParams.unwrapToETH
+      ? implementationInfo.routerAddress
+      : recipient;
     if (inputParams.isExactInput) {
       // collateral as exact input
       // swap to erc20 token (into recipient or swap router wallet)
-      ISwapRouter.ExactInputParams memory params =
-        ISwapRouter.ExactInputParams(
-          encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
-          swapRecipient,
-          synthereumParams.redeemParams.expiration,
-          inputParams.exactAmount,
-          inputParams.minOutOrMaxIn
-        );
+      ISwapRouter.ExactInputParams memory params = ISwapRouter.ExactInputParams(
+        encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+        swapRecipient,
+        synthereumParams.redeemParams.expiration,
+        inputParams.exactAmount,
+        inputParams.minOutOrMaxIn
+      );
 
       returnValues.outputAmount = IUniswapV3Router(
-        implementationInfo
-          .routerAddress
-      )
-        .exactInput(params);
+        implementationInfo.routerAddress
+      ).exactInput(params);
 
       if (inputParams.unwrapToETH) {
         // the univ3 router unwraps all the WETH balance it has, which can be higher that outputAmount
         returnValues.outputAmount = IWETH9(
           IUniswapV3Router(implementationInfo.routerAddress).WETH9()
-        )
-          .balanceOf(implementationInfo.routerAddress);
+        ).balanceOf(implementationInfo.routerAddress);
 
         // unwrap to ETH
         IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
@@ -299,24 +295,23 @@ contract OCLRV2UniswapV3 is OCLRBase {
         );
       }
     } else {
-      ISwapRouter.ExactOutputParams memory params =
-        ISwapRouter.ExactOutputParams(
-          encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
-          swapRecipient,
-          synthereumParams.redeemParams.expiration,
-          inputParams.exactAmount,
-          inputParams.minOutOrMaxIn
-        );
+      ISwapRouter.ExactOutputParams memory params = ISwapRouter
+        .ExactOutputParams(
+        encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+        swapRecipient,
+        synthereumParams.redeemParams.expiration,
+        inputParams.exactAmount,
+        inputParams.minOutOrMaxIn
+      );
       {
-        uint256 inputTokensUsed =
-          IUniswapV3Router(implementationInfo.routerAddress).exactOutput(
-            params
-          );
+        uint256 inputTokensUsed = IUniswapV3Router(
+          implementationInfo.routerAddress
+        ).exactOutput(params);
 
         // refund leftover input (collateral) tokens
         if (inputParams.minOutOrMaxIn > inputTokensUsed) {
-          uint256 collateralRefund =
-            inputParams.minOutOrMaxIn - inputTokensUsed;
+          uint256 collateralRefund = inputParams.minOutOrMaxIn -
+            inputTokensUsed;
 
           IERC20(tokenSwapPath[0]).safeTransfer(
             inputParams.msgSender,
@@ -334,8 +329,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
           // the univ3 router unwraps all the WETH balance it has, which can be higher than exact output
           returnValues.outputAmount = IWETH9(
             IUniswapV3Router(implementationInfo.routerAddress).WETH9()
-          )
-            .balanceOf(implementationInfo.routerAddress);
+          ).balanceOf(implementationInfo.routerAddress);
           //unwrap to eth
           IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
             returnValues.outputAmount,

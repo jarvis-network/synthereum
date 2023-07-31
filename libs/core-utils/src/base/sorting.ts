@@ -170,7 +170,7 @@ export class SortedArray<T, K extends number | string> {
 export function assertSorted<
   T,
   K extends number | string,
-  CMP extends CompareFunction<T>
+  CMP extends CompareFunction<T>,
 >(
   array: MaybeSortedArray<T, K>,
   cmp: CMP,
@@ -185,7 +185,7 @@ export function assertSorted<
 export function isSorted<
   T,
   K extends number | string,
-  CMP extends CompareFunction<T>
+  CMP extends CompareFunction<T>,
 >(array: MaybeSortedArray<T, K>, cmp: CMP): boolean {
   if (!Array.isArray(array)) {
     return array.cmp === cmp;

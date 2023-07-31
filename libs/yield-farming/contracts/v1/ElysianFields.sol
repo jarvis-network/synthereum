@@ -109,8 +109,9 @@ contract ElysianFields is Ownable {
       'Arrays length doesnt match'
     );
     massUpdatePools();
-    uint256 lastRewardBlock =
-      block.number > startBlock ? block.number : startBlock;
+    uint256 lastRewardBlock = block.number > startBlock
+      ? block.number
+      : startBlock;
     uint256 tempTotalAllocPoints = totalAllocPoints;
     for (uint256 j = 0; j < _lpTokens.length; j++) {
       tempTotalAllocPoints = tempTotalAllocPoints.add(_allocPoints[j]);
@@ -210,8 +211,9 @@ contract ElysianFields is Ownable {
     require(startBlock != 0, 'Program parameters not set');
     updatePool(_pid);
     if (user.amount > 0) {
-      uint256 pending =
-        user.amount.mul(pool.accRwdPerShare).div(1e18).sub(user.rewardDebt);
+      uint256 pending = user.amount.mul(pool.accRwdPerShare).div(1e18).sub(
+        user.rewardDebt
+      );
       safeRewardTransfer(msg.sender, pending);
     }
     pool.lpToken.safeTransferFrom(msg.sender, address(this), _amount);
@@ -230,8 +232,9 @@ contract ElysianFields is Ownable {
     UserInfo storage user = userInfo[_pid][msg.sender];
     require(user.amount >= _amount, 'withdraw: not good');
     updatePool(_pid);
-    uint256 pending =
-      user.amount.mul(pool.accRwdPerShare).div(1e18).sub(user.rewardDebt);
+    uint256 pending = user.amount.mul(pool.accRwdPerShare).div(1e18).sub(
+      user.rewardDebt
+    );
     safeRewardTransfer(msg.sender, pending);
     user.amount = user.amount.sub(_amount);
     user.rewardDebt = user.amount.mul(pool.accRwdPerShare).div(1e18);
@@ -270,8 +273,9 @@ contract ElysianFields is Ownable {
     uint256 lpSupply = pool.lpToken.balanceOf(address(this));
     if (block.number > pool.lastRewardBlock && lpSupply != 0) {
       uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-      uint256 rwdReward =
-        multiplier.mul(rwdPerBlock).mul(pool.allocPoint).div(totalAllocPoints);
+      uint256 rwdReward = multiplier.mul(rwdPerBlock).mul(pool.allocPoint).div(
+        totalAllocPoints
+      );
       accRwdPerShare = accRwdPerShare.add(rwdReward.mul(1e18).div(lpSupply));
     }
     return user.amount.mul(accRwdPerShare).div(1e18).sub(user.rewardDebt);
@@ -311,8 +315,9 @@ contract ElysianFields is Ownable {
       return;
     }
     uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-    uint256 rwdReward =
-      multiplier.mul(rwdPerBlock).mul(pool.allocPoint).div(totalAllocPoints);
+    uint256 rwdReward = multiplier.mul(rwdPerBlock).mul(pool.allocPoint).div(
+      totalAllocPoints
+    );
     pool.accRwdPerShare = pool.accRwdPerShare.add(
       rwdReward.mul(1e18).div(lpSupply)
     );

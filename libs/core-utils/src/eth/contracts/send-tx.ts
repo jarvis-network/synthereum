@@ -144,7 +144,7 @@ export function once<T>(
           blockHash?: string,
         ) {
           if (confirmations === maxConfirmations) {
-            ((promiEvent as unknown) as EventEmitter).off(
+            (promiEvent as unknown as EventEmitter).off(
               'confirmation',
               onConfirm,
             );

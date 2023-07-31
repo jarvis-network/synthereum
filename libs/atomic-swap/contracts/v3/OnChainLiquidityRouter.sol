@@ -2,28 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import {
-  IOnChainLiquidityRouter
-} from './interfaces/IOnChainLiquidityRouter.sol';
-import {
-  ISynthereumLiquidityPool
-} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
-import {
-  SynthereumInterfaces
-} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
-import {
-  ISynthereumFinder
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
-import {
-  ERC2771Context
-} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
-import {
-  AccessControlEnumerable,
-  Context
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {IOnChainLiquidityRouter} from './interfaces/IOnChainLiquidityRouter.sol';
+import {ISynthereumLiquidityPool} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
+import {SynthereumInterfaces} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
+import {ISynthereumFinder} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {ERC2771Context} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
+import {AccessControlEnumerable, Context} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract OnChainLiquidityRouterV2 is
@@ -109,7 +94,7 @@ contract OnChainLiquidityRouterV2 is
     string calldata identifier,
     address implementation,
     bytes calldata info
-  ) external onlyMaintainer() {
+  ) external onlyMaintainer {
     address previous = idToAddress[keccak256(abi.encode(identifier))];
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
     dexImplementationInfo[implementation] = info;
@@ -121,7 +106,7 @@ contract OnChainLiquidityRouterV2 is
   /// @param identifier: string identifier of the OCLR implementation.
   function removeImplementation(string calldata identifier)
     external
-    onlyMaintainer()
+    onlyMaintainer
   {
     bytes32 bytesId = keccak256(abi.encode(identifier));
     require(
@@ -145,30 +130,34 @@ contract OnChainLiquidityRouterV2 is
     external
     payable
     override
-    nonReentrant()
+    nonReentrant
     returns (ReturnValues memory returnValues)
   {
-    address implementation =
-      idToAddress[keccak256(abi.encode(implementationId))];
+    address implementation = idToAddress[
+      keccak256(abi.encode(implementationId))
+    ];
     require(implementation != address(0), 'Implementation id not registered');
 
-    string memory functionSig =
-      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)))';
-    SynthereumMintParams memory synthereumParams =
-      SynthereumMintParams(synthereumFinder, synthereumPool, mintParams);
+
+      string memory functionSig
+     = 'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)))';
+    SynthereumMintParams memory synthereumParams = SynthereumMintParams(
+      synthereumFinder,
+      synthereumPool,
+      mintParams
+    );
 
     // store msg sender using ERC2771Context
     inputParams.msgSender = _msgSender();
 
-    bytes memory result =
-      implementation.functionDelegateCall(
-        abi.encodeWithSignature(
-          functionSig,
-          dexImplementationInfo[implementation],
-          inputParams,
-          synthereumParams
-        )
-      );
+    bytes memory result = implementation.functionDelegateCall(
+      abi.encodeWithSignature(
+        functionSig,
+        dexImplementationInfo[implementation],
+        inputParams,
+        synthereumParams
+      )
+    );
 
     returnValues = abi.decode(result, (ReturnValues));
 
@@ -190,34 +179,33 @@ contract OnChainLiquidityRouterV2 is
     ISynthereumLiquidityPool synthereumPool,
     ISynthereumLiquidityPool.RedeemParams memory redeemParams,
     address recipient
-  )
-    external
-    override
-    nonReentrant()
-    returns (ReturnValues memory returnValues)
-  {
-    address implementation =
-      idToAddress[keccak256(abi.encode(implementationId))];
+  ) external override nonReentrant returns (ReturnValues memory returnValues) {
+    address implementation = idToAddress[
+      keccak256(abi.encode(implementationId))
+    ];
     require(implementation != address(0), 'Implementation id not registered');
 
-    string memory functionSig =
-      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)),address)';
-    SynthereumRedeemParams memory synthereumParams =
-      SynthereumRedeemParams(synthereumFinder, synthereumPool, redeemParams);
+
+      string memory functionSig
+     = 'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)),address)';
+    SynthereumRedeemParams memory synthereumParams = SynthereumRedeemParams(
+      synthereumFinder,
+      synthereumPool,
+      redeemParams
+    );
 
     // store msg sender using ERC2771Context
     inputParams.msgSender = _msgSender();
 
-    bytes memory result =
-      implementation.functionDelegateCall(
-        abi.encodeWithSignature(
-          functionSig,
-          dexImplementationInfo[implementation],
-          inputParams,
-          synthereumParams,
-          recipient
-        )
-      );
+    bytes memory result = implementation.functionDelegateCall(
+      abi.encodeWithSignature(
+        functionSig,
+        dexImplementationInfo[implementation],
+        inputParams,
+        synthereumParams,
+        recipient
+      )
+    );
 
     returnValues = abi.decode(result, (ReturnValues));
 
@@ -241,25 +229,24 @@ contract OnChainLiquidityRouterV2 is
     address recipient
   ) external override returns (ReturnValues memory returnValues) {
     address fixedRateSwap = idToAddress[keccak256(abi.encode('fixedRateSwap'))];
-    address implementation =
-      idToAddress[keccak256(abi.encode(implementationId))];
+    address implementation = idToAddress[
+      keccak256(abi.encode(implementationId))
+    ];
     require(implementation != address(0), 'Implementation id not registered');
 
-    FixedRateSwapParams memory params =
-      FixedRateSwapParams(
-        _msgSender(),
-        implementation,
-        inputAsset,
-        outputAsset,
-        address(synthereumFinder),
-        dexImplementationInfo[implementation],
-        operationArgs
-      );
+    FixedRateSwapParams memory params = FixedRateSwapParams(
+      _msgSender(),
+      implementation,
+      inputAsset,
+      outputAsset,
+      address(synthereumFinder),
+      dexImplementationInfo[implementation],
+      operationArgs
+    );
 
-    bytes memory result =
-      fixedRateSwap.functionDelegateCall(
-        abi.encodeWithSignature(WRAP_FROM_SIG, fromERC20, recipient, params)
-      );
+    bytes memory result = fixedRateSwap.functionDelegateCall(
+      abi.encodeWithSignature(WRAP_FROM_SIG, fromERC20, recipient, params)
+    );
 
     returnValues = abi.decode(result, (ReturnValues));
 
@@ -282,25 +269,24 @@ contract OnChainLiquidityRouterV2 is
     bytes calldata operationArgs
   ) external override returns (ReturnValues memory returnValues) {
     address fixedRateSwap = idToAddress[keccak256(abi.encode('fixedRateSwap'))];
-    address implementation =
-      idToAddress[keccak256(abi.encode(implementationId))];
+    address implementation = idToAddress[
+      keccak256(abi.encode(implementationId))
+    ];
     require(implementation != address(0), 'Implementation id not registered');
 
-    FixedRateSwapParams memory params =
-      FixedRateSwapParams(
-        _msgSender(),
-        implementation,
-        inputAsset,
-        outputAsset,
-        address(synthereumFinder),
-        dexImplementationInfo[implementation],
-        operationArgs
-      );
+    FixedRateSwapParams memory params = FixedRateSwapParams(
+      _msgSender(),
+      implementation,
+      inputAsset,
+      outputAsset,
+      address(synthereumFinder),
+      dexImplementationInfo[implementation],
+      operationArgs
+    );
 
-    bytes memory result =
-      fixedRateSwap.functionDelegateCall(
-        abi.encodeWithSignature(UNWRAP_TO_SIG, toERC20, inputAmount, params)
-      );
+    bytes memory result = fixedRateSwap.functionDelegateCall(
+      abi.encodeWithSignature(UNWRAP_TO_SIG, toERC20, inputAmount, params)
+    );
 
     returnValues = abi.decode(result, (ReturnValues));
 
