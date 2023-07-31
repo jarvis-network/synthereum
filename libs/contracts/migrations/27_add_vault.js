@@ -4,7 +4,7 @@ const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const {
   getExistingInstance,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-const vaults = require('../data/vaults.json');
+const vaults = require('../data/deployment/vaults.json');
 const {
   logTransactionOutput,
 } = require('@jarvis-network/core-utils/dist/eth/contracts/print-tx');
