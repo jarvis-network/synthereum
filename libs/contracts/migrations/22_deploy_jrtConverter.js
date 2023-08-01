@@ -30,20 +30,24 @@ async function migrate(deployer, network, accounts) {
 
   const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
-  const jarvisToken = await getExistingInstance(
-    web3,
-    JarvisToken,
-    '@jarvis-network/synthereum-contracts',
-  );
-
   data = data[networkId];
+  const jarvisToken =
+    data.jarvisAddress ??
+    (
+      await getExistingInstance(
+        web3,
+        JarvisToken,
+        '@jarvis-network/synthereum-contracts',
+      )
+    ).options.address;
+
   await deploy(
     web3,
     deployer,
     network,
     JrtToJarvisConverter,
     data.jrtAddress,
-    jarvisToken.options.address,
+    jarvisToken,
     data.ratio,
     roles,
     { from: keys.deployer },
