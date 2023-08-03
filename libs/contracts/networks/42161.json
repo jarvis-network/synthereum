@@ -118,5 +118,10 @@
     "contractName": "JarvisBrrrrr",
     "address": "0xEaDCC3Db129379ba6071F26Cb94d948147B2CC39",
     "transactionHash": "0xfbc42dd979e2ba02f864a862b01c03d2030bbc13491ee0729b58eacd94a687fc"
+  },
+  {
+    "contractName": "JrtToJarvisConverter",
+    "address": "0xf55739A9F5eE79025D68377c1D5a3E9678a0be38",
+    "transactionHash": "0xee9628f2006838908791e9083a4cd0d58594d63924af8c5eb8c06911e4147aa4"
   }
 ]

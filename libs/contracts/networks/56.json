@@ -143,5 +143,10 @@
     "contractName": "CreditLineController",
     "address": "0xC687c60106200b45c0A09c46FB117820207765f2",
     "transactionHash": "0xcae8674286e93874f2995d9a529c850c36967910193cd25ce8913f5d81a459a9"
+  },
+  {
+    "contractName": "JrtToJarvisConverter",
+    "address": "0x90CCED6c1912eBE199016D3eBca887A8b86dC5E7",
+    "transactionHash": "0x984f57c4faff261308bf70548065f51ff03eaa20ed168910f4a5190af2607d68"
   }
 ]
