@@ -27,6 +27,7 @@ library SynthereumInterfaces {
   bytes32 public constant PriceFeed = 'PriceFeed';
   bytes32 public constant JarvisBrrrrr = 'JarvisBrrrrr';
   bytes32 public constant MoneyMarketManager = 'MoneyMarketManager';
+  bytes32 public constant CrossChainBridge = 'CrossChainBridge';
   bytes32 public constant TrustedForwarder = 'TrustedForwarder';
 }
 
