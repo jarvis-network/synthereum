@@ -1,0 +1,13 @@
+{
+  "80001": {
+    "chainSelector": "16015286601757825753",
+    "linkToken": {
+      "addr": "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
+      "slotBalanceStorage": 1
+    },
+    "unsupportedToken": {
+      "addr": "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F",
+      "slotBalanceStorage": 0
+    }
+  }
+}
