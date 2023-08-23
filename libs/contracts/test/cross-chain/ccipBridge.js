@@ -11,6 +11,7 @@ const SynthereumCCIPBridge = artifacts.require('SynthereumCCIPBridge');
 const MintableBurnableSyntheticTokenPermit = artifacts.require(
   'MintableBurnableSyntheticTokenPermit',
 );
+const MockRouter = artifacts.require('MockCCIPRouter');
 const ERC20 = artifacts.require('ERC20');
 const bridge = require('../../data/test/bridge.json');
 
@@ -1234,24 +1235,25 @@ contract('Synthereum ccip bridge', accounts => {
     let bridgeToken;
     let amount;
     let destToken;
-    let mockBridgeInstance;
+    let mockBridgeInstance, mockRouter;
     before(async () => {
+      mockRouter = await MockRouter.new();
       mockBridgeInstance = await SynthereumCCIPBridge.new(
         finderInstance.address,
-        admin,
+        mockRouter.address,
         { admin: admin, maintainer: maintainer },
       );
       amount = toWei('10000');
-      bridgeToken = await MintableBurnableSyntheticTokenPermit.new(
+      destToken = await MintableBurnableSyntheticTokenPermit.new(
         'Jarvis Synthetic Euro',
         'jEUR',
         18,
         { from: admin },
       );
-      await bridgeToken.addMinter(mockBridgeInstance.address, {
+      await destToken.addMinter(mockBridgeInstance.address, {
         from: admin,
       });
-      destToken = accounts[8];
+      bridgeToken = accounts[8];
       await mockBridgeInstance.setEndpoints(
         destChainSelector,
         srcEndpoint,
@@ -1260,8 +1262,8 @@ contract('Synthereum ccip bridge', accounts => {
       );
       await mockBridgeInstance.setMappedTokens(
         destChainSelector,
-        [destToken],
-        [bridgeToken.address],
+        [destToken.address],
+        [bridgeToken],
         {
           from: maintainer,
         },
@@ -1273,29 +1275,262 @@ contract('Synthereum ccip bridge', accounts => {
       });
       await mockBridgeInstance.removeMappedTokens(
         destChainSelector,
-        [destToken],
+        [destToken.address],
         {
           from: maintainer,
         },
       );
     });
     it('Can mint tokens on the destination chain', async () => {
-      const prevBridgeTokenBalance = await bridgeToken.balanceOf.call(sender);
-      const tx = await mockBridgeInstance.ccipReceive();
+      const data = web3.eth.abi.encodeParameters(
+        ['address', 'address', 'uint256', 'address'],
+        [bridgeToken, destToken.address, amount, recipient],
+      );
+
+      const messageId = web3.eth.abi.encodeParameters(
+        ['bytes32'],
+        [toHex('test')],
+      );
+      const message = {
+        messageId,
+        sourceChainSelector: destChainSelector,
+        sender: web3.eth.abi.encodeParameters(['address'], [srcEndpoint]),
+        data,
+        destTokenAmounts: [],
+      };
+
+      const prevDestTokenBalance = await destToken.balanceOf.call(recipient);
+      const tx = await mockRouter.ccipSend(
+        mockBridgeInstance.address,
+        0,
+        message,
+      );
+
+      // the event is now internal since using a mock contract to call
+      // truffleAssert.eventEmitted(tx, 'TransferCompleted', ev => {
+      //   return (
+      //     ev.messageId.toString() == messageId &&
+      //     ev.sourceChainSelector == destChainSelector &&
+      //     ev.sourceEndpoint == sourceEndpoint &&
+      //     ev.sourceToken == bridgeToken &&
+      //     ev.destinationToken == destToken &&
+      //     ev.amount.toString() == amount &&
+      //     ev.receiver == recipient
+      //     );
+      // });
+      const destTokenBalance = await destToken.balanceOf.call(recipient);
+
+      assert.equal(
+        destTokenBalance.toString(),
+        toBN(prevDestTokenBalance).add(toBN(amount)).toString(),
+      );
     });
-    it('Can revert is source endpoint not supported', async () => {});
-    it('Can revert if source token not supported', async () => {});
-    it('Can revert if sender is not the router', async () => {});
+    it('Can revert is source endpoint not supported', async () => {
+      const data = web3.eth.abi.encodeParameters(
+        ['address', 'address', 'uint256', 'address'],
+        [bridgeToken, destToken.address, amount, recipient],
+      );
+
+      const messageId = web3.eth.abi.encodeParameters(
+        ['bytes32'],
+        [toHex('test')],
+      );
+      const message = {
+        messageId,
+        sourceChainSelector: destChainSelector,
+        sender: web3.eth.abi.encodeParameters(['address'], [accounts[10]]),
+        data,
+        destTokenAmounts: [],
+      };
+
+      await truffleAssert.reverts(
+        mockRouter.ccipSend(mockBridgeInstance.address, 0, message),
+        'Wrong src endpoint',
+      );
+    });
+    it('Can revert if source token not supported', async () => {
+      const data = web3.eth.abi.encodeParameters(
+        ['address', 'address', 'uint256', 'address'],
+        [accounts[4], destToken.address, amount, recipient],
+      );
+
+      const messageId = web3.eth.abi.encodeParameters(
+        ['bytes32'],
+        [toHex('test')],
+      );
+      const message = {
+        messageId,
+        sourceChainSelector: destChainSelector,
+        sender: web3.eth.abi.encodeParameters(['address'], [srcEndpoint]),
+        data,
+        destTokenAmounts: [],
+      };
+
+      await truffleAssert.reverts(
+        mockRouter.ccipSend(mockBridgeInstance.address, 0, message),
+        'Wrong src token',
+      );
+    });
+    it('Can revert if sender is not the router', async () => {
+      const data = web3.eth.abi.encodeParameters(
+        ['address', 'address', 'uint256', 'address'],
+        [accounts[4], destToken.address, amount, recipient],
+      );
+
+      const messageId = web3.eth.abi.encodeParameters(
+        ['bytes32'],
+        [toHex('test')],
+      );
+      const message = {
+        messageId,
+        sourceChainSelector: destChainSelector,
+        sender: web3.eth.abi.encodeParameters(['address'], [accounts[10]]),
+        data,
+        destTokenAmounts: [],
+      };
+
+      await truffleAssert.reverts(
+        mockBridgeInstance.ccipReceive(message),
+        'Invalid router',
+      );
+    });
   });
 
   describe('Should withdraw deposited tokens', async () => {
-    before(async () => {});
-    it('Can withdraw native tokens', async () => {});
-    it('Can revert if no native tokens deposited', async () => {});
-    it('Can revert if withdraw native is not called by maintainer', async () => {});
-    it('Can withdraw ERC20 tokens', async () => {});
-    it('Can revert if no ERC20 tokens deposited', async () => {});
-    it('Can revert if withdraw ERC20 is not called by maintainer', async () => {});
+    let mockBridgeInstance;
+    before(async () => {
+      mockRouter = await MockRouter.new();
+      mockBridgeInstance = await SynthereumCCIPBridge.new(
+        finderInstance.address,
+        mockRouter.address,
+        { admin: admin, maintainer: maintainer },
+      );
+      amount = toWei('10000');
+      destToken = await MintableBurnableSyntheticTokenPermit.new(
+        'Jarvis Synthetic Euro',
+        'jEUR',
+        18,
+        { from: admin },
+      );
+      await destToken.addMinter(mockBridgeInstance.address, {
+        from: admin,
+      });
+      bridgeToken = accounts[8];
+      await mockBridgeInstance.setEndpoints(
+        destChainSelector,
+        srcEndpoint,
+        destEndpoint,
+        { from: maintainer },
+      );
+      await mockBridgeInstance.setMappedTokens(
+        destChainSelector,
+        [destToken.address],
+        [bridgeToken],
+        {
+          from: maintainer,
+        },
+      );
+    });
+    after(async () => {
+      await mockBridgeInstance.removeEndpoints(destChainSelector, {
+        from: maintainer,
+      });
+      await mockBridgeInstance.removeMappedTokens(
+        destChainSelector,
+        [destToken.address],
+        {
+          from: maintainer,
+        },
+      );
+    });
+    it('Can withdraw native tokens', async () => {
+      const value = toWei('1', 'ether');
+      let receiver = accounts[9];
+
+      const balanceBefore = await web3.eth.getBalance(
+        mockBridgeInstance.address,
+      );
+      const balanceReceiverBefore = await web3.eth.getBalance(receiver);
+
+      await web3.eth.sendTransaction({
+        from: accounts[0],
+        to: mockBridgeInstance.address,
+        value,
+      });
+      let balanceAfter = await web3.eth.getBalance(mockBridgeInstance.address);
+      assert.equal(
+        balanceAfter.toString(),
+        toBN(balanceBefore).add(toBN(value)).toString(),
+      );
+
+      await mockBridgeInstance.withdraw(receiver, { from: maintainer });
+
+      const balanceReceiverAfter = await web3.eth.getBalance(receiver);
+      assert.equal(
+        balanceReceiverAfter.toString(),
+        toBN(balanceReceiverBefore).add(toBN(value)).toString(),
+      );
+
+      balanceAfter = await web3.eth.getBalance(mockBridgeInstance.address);
+      assert.equal(balanceAfter.toString(), '0');
+    });
+    it('Can revert if no native tokens deposited', async () => {
+      await truffleAssert.reverts(
+        mockBridgeInstance.withdraw(maintainer, { from: maintainer }),
+        'Nothing to withdraw',
+      );
+    });
+    it('Can revert if withdraw native is not called by maintainer', async () => {
+      await truffleAssert.reverts(
+        mockBridgeInstance.withdraw(maintainer, { from: accounts[0] }),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can withdraw ERC20 tokens', async () => {
+      const value = '100000000';
+      let receiver = accounts[9];
+      const balanceReceiverBefore = await linkToken.balanceOf.call(receiver);
+      await setTokenBalance(
+        linkToken.address,
+        mockBridgeInstance.address,
+        value,
+        linkTokenStorage,
+      );
+
+      await mockBridgeInstance.withdrawToken(linkToken.address, receiver, {
+        from: maintainer,
+      });
+
+      const balanceReceiverAfter = await linkToken.balanceOf.call(receiver);
+      assert.equal(
+        balanceReceiverAfter.toString(),
+        toBN(balanceReceiverBefore)
+          .add(toBN(toWei(value)))
+          .toString(),
+      );
+
+      let balanceAfter = await linkToken.balanceOf.call(
+        mockBridgeInstance.address,
+      );
+      assert.equal(balanceAfter.toString(), '0');
+    });
+    it('Can revert if no ERC20 tokens deposited', async () => {
+      await truffleAssert.reverts(
+        mockBridgeInstance.withdrawToken(linkToken.address, maintainer, {
+          from: maintainer,
+        }),
+        'Nothing to withdraw',
+      );
+    });
+
+    it('Can revert if withdraw ERC20 is not called by maintainer', async () => {
+      await truffleAssert.reverts(
+        mockBridgeInstance.withdrawToken(linkToken.address, maintainer, {
+          from: accounts[0],
+        }),
+        'Sender must be the maintainer',
+      );
+    });
   });
 
   // Test for supports interafces function
