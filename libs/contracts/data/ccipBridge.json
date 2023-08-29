@@ -1,5 +1,11 @@
 {
   "80001": {
     "ccipRouter": "0x70499c328e1E2a3c41108bd3730F6670a44595D1"
+  },
+  "420": {
+    "ccipRouter": "0xEB52E9Ae4A9Fb37172978642d4C141ef53876f26"
+  },
+  "43113": {
+    "ccipRouter": "0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8"
   }
 }
