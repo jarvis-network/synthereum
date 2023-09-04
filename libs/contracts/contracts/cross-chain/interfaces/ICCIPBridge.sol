@@ -44,8 +44,8 @@ interface ISynthereumCCIPBridge {
     view
     returns (Client.EVMExtraArgsV1 memory args);
 
-  function getMappedToken(
-    IMintableBurnableERC20 _srcToken,
-    uint64 _chainSelector
-  ) external view returns (IMintableBurnableERC20 destToken);
+  function getMappedToken(address _srcToken, uint64 _chainSelector)
+    external
+    view
+    returns (address destToken);
 }

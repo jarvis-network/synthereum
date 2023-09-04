@@ -8,6 +8,7 @@ import {ISynthereumCCIPBridge} from './interfaces/ICCIPBridge.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeCast} from '@openzeppelin/contracts/utils/math/SafeCast.sol';
 import {Context} from '@openzeppelin/contracts/utils/Context.sol';
 import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -26,6 +27,7 @@ contract SynthereumCCIPBridge is
   using Address for address payable;
   using SafeERC20 for IERC20;
   using SafeERC20 for IMintableBurnableERC20;
+  using SafeCast for uint256;
 
   struct MessageEndpoints {
     address contractSender;
@@ -40,6 +42,10 @@ contract SynthereumCCIPBridge is
 
   mapping(IMintableBurnableERC20 => mapping(uint64 => IMintableBurnableERC20))
     internal tokensMap;
+
+  mapping(IMintableBurnableERC20 => mapping(uint64 => int256)) chainBridgedAmount;
+
+  mapping(IMintableBurnableERC20 => int256) totalBridgedAmount;
 
   bool freeFee;
 
@@ -209,9 +215,8 @@ contract SynthereumCCIPBridge is
     address _feeToken
   ) external payable nonReentrant returns (bytes32 messageId, uint256 fees) {
     address messageReceiver = getDestEndpoint(_destinationChainSelector);
-    IMintableBurnableERC20 destToken = getMappedToken(
-      IMintableBurnableERC20(_token),
-      _destinationChainSelector
+    IMintableBurnableERC20 destToken = IMintableBurnableERC20(
+      getMappedToken(_token, _destinationChainSelector)
     );
 
     address msgSender = _msgSender();
@@ -226,6 +231,11 @@ contract SynthereumCCIPBridge is
       _feeToken
     );
 
+    chainBridgedAmount[IMintableBurnableERC20(_token)][
+      _destinationChainSelector
+    ] -= _amount.toInt256();
+    totalBridgedAmount[IMintableBurnableERC20(_token)] -= _amount.toInt256();
+
     // Emit an event with message details
     emit TransferInitiated(
       messageId,
@@ -239,6 +249,35 @@ contract SynthereumCCIPBridge is
       _feeToken,
       fees
     );
+  }
+
+  function withdraw(address payable _beneficiary)
+    external
+    onlyMaintainer
+    nonReentrant
+  {
+    // Retrieve the balance of this contract
+    uint256 amount = address(this).balance;
+
+    // Revert if there is nothing to withdraw
+    require(amount > 0, 'Nothing to withdraw');
+
+    // Attempt to send the funds, capturing the success status and discarding any return data
+    _beneficiary.sendValue(amount);
+  }
+
+  function withdrawToken(address _token, address _beneficiary)
+    external
+    onlyMaintainer
+    nonReentrant
+  {
+    // Retrieve the balance of this contract
+    uint256 amount = IERC20(_token).balanceOf(address(this));
+
+    // Revert if there is nothing to withdraw
+    require(amount > 0, 'Nothing to withdraw');
+
+    IERC20(_token).safeTransfer(_beneficiary, amount);
   }
 
   function _ccipReceive(Client.Any2EVMMessage memory message)
@@ -265,12 +304,18 @@ contract SynthereumCCIPBridge is
     );
     require(
       address(srcToken) ==
-        address(getMappedToken(destToken, message.sourceChainSelector)),
+        address(
+          getMappedToken(address(destToken), message.sourceChainSelector)
+        ),
       'Wrong src token'
     );
 
     // mint token to recipient
     IMintableBurnableERC20(destToken).mint(recipient, amount);
+
+    chainBridgedAmount[destToken][message.sourceChainSelector] += amount
+      .toInt256();
+    totalBridgedAmount[destToken] += amount.toInt256();
 
     emit TransferCompleted(
       message.messageId,
@@ -402,28 +447,16 @@ contract SynthereumCCIPBridge is
     return freeFee;
   }
 
-  function withdraw(address payable _beneficiary) public onlyMaintainer {
-    // Retrieve the balance of this contract
-    uint256 amount = address(this).balance;
-
-    // Revert if there is nothing to withdraw
-    require(amount > 0, 'Nothing to withdraw');
-
-    // Attempt to send the funds, capturing the success status and discarding any return data
-    _beneficiary.sendValue(amount);
+  function getTotalBridgedAmount(address token) external view returns (int256) {
+    return totalBridgedAmount[IMintableBurnableERC20(token)];
   }
 
-  function withdrawToken(address _token, address _beneficiary)
-    public
-    onlyMaintainer
+  function getChainBridgedAmount(address token, uint64 destChainSelector)
+    external
+    view
+    returns (int256)
   {
-    // Retrieve the balance of this contract
-    uint256 amount = IERC20(_token).balanceOf(address(this));
-
-    // Revert if there is nothing to withdraw
-    require(amount > 0, 'Nothing to withdraw');
-
-    IERC20(_token).safeTransfer(_beneficiary, amount);
+    return chainBridgedAmount[IMintableBurnableERC20(token)][destChainSelector];
   }
 
   function getSrcEndpoint(uint64 _chainSelector)
@@ -453,11 +486,14 @@ contract SynthereumCCIPBridge is
     require(args.gasLimit != 0, 'Args not supported');
   }
 
-  function getMappedToken(
-    IMintableBurnableERC20 _srcToken,
-    uint64 _chainSelector
-  ) public view returns (IMintableBurnableERC20 destToken) {
-    destToken = tokensMap[_srcToken][_chainSelector];
+  function getMappedToken(address _srcToken, uint64 _chainSelector)
+    public
+    view
+    returns (address destToken)
+  {
+    destToken = address(
+      tokensMap[IMintableBurnableERC20(_srcToken)][_chainSelector]
+    );
     require(address(destToken) != address(0), 'Token not supported');
   }
 

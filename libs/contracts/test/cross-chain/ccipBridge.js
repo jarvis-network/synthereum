@@ -700,7 +700,7 @@ contract('Synthereum ccip bridge', accounts => {
         from: sender,
       });
       const prevNativeBalance = await web3.eth.getBalance(sender);
-      const retValues =
+      let retValues =
         await bridgeInstance.transferTokensToDestinationChain.call(
           destChainSelector,
           bridgeToken.address,
@@ -743,6 +743,148 @@ contract('Synthereum ccip bridge', accounts => {
         toBN(nativeBalance).toString(),
         toBN(prevNativeBalance).sub(toBN(retValues[1])).sub(txCost).toString(),
         'Wrong native balance',
+      );
+      let bridgedChainAmount = await bridgeInstance.getChainBridgedAmount.call(
+        bridgeToken.address,
+        destChainSelector,
+      );
+      let bridgedTotalAmount = await bridgeInstance.getTotalBridgedAmount.call(
+        bridgeToken.address,
+      );
+      assert.equal(
+        bridgedChainAmount.toString(),
+        '-' + toBN(amount).toString(),
+        'Wrong bridge chain amount',
+      );
+      assert.equal(
+        bridgedTotalAmount.toString(),
+        '-' + toBN(amount).toString(),
+        'Wrong bridge total amount',
+      );
+      const secondAmount = toWei('20000');
+      await bridgeToken.approve(bridgeInstance.address, secondAmount, {
+        from: sender,
+      });
+      retValues = await bridgeInstance.transferTokensToDestinationChain.call(
+        destChainSelector,
+        bridgeToken.address,
+        secondAmount,
+        recipient,
+        ZERO_ADDRESS,
+        { from: sender, value: toWei('1000') },
+      );
+      await bridgeInstance.transferTokensToDestinationChain(
+        destChainSelector,
+        bridgeToken.address,
+        secondAmount,
+        recipient,
+        ZERO_ADDRESS,
+        { from: sender, value: retValues[1] },
+      );
+      bridgedChainAmount = await bridgeInstance.getChainBridgedAmount.call(
+        bridgeToken.address,
+        destChainSelector,
+      );
+      bridgedTotalAmount = await bridgeInstance.getTotalBridgedAmount.call(
+        bridgeToken.address,
+      );
+      assert.equal(
+        bridgedChainAmount.toString(),
+        '-' + toBN(amount).add(toBN(secondAmount)).toString(),
+        'Wrong bridge chain amount',
+      );
+      assert.equal(
+        bridgedTotalAmount.toString(),
+        '-' + toBN(amount).add(toBN(secondAmount)).toString(),
+        'Wrong bridge total amount',
+      );
+      const secondDestChainSelector = bridge[networkId].secondChainSelector;
+      await bridgeInstance.setEndpoints(
+        secondDestChainSelector,
+        srcEndpoint,
+        destEndpoint,
+        { from: maintainer },
+      );
+      const secondDestToken = accounts[9];
+      await bridgeInstance.setExtraArgs(
+        secondDestChainSelector,
+        gasLimit,
+        false,
+        {
+          from: maintainer,
+        },
+      );
+      await bridgeInstance.setMappedTokens(
+        secondDestChainSelector,
+        [bridgeToken.address],
+        [secondDestToken],
+        {
+          from: maintainer,
+        },
+      );
+      const thirdAmount = toWei('25000');
+      await bridgeToken.approve(bridgeInstance.address, thirdAmount, {
+        from: sender,
+      });
+      retValues = await bridgeInstance.transferTokensToDestinationChain.call(
+        secondDestChainSelector,
+        bridgeToken.address,
+        thirdAmount,
+        recipient,
+        ZERO_ADDRESS,
+        { from: sender, value: toWei('1000') },
+      );
+      await bridgeInstance.transferTokensToDestinationChain(
+        secondDestChainSelector,
+        bridgeToken.address,
+        thirdAmount,
+        recipient,
+        ZERO_ADDRESS,
+        { from: sender, value: retValues[1] },
+      );
+      bridgedChainAmount = await bridgeInstance.getChainBridgedAmount.call(
+        bridgeToken.address,
+        destChainSelector,
+      );
+      let secondBridgeChainAmount =
+        await bridgeInstance.getChainBridgedAmount.call(
+          bridgeToken.address,
+          secondDestChainSelector,
+        );
+      bridgedTotalAmount = await bridgeInstance.getTotalBridgedAmount.call(
+        bridgeToken.address,
+      );
+      assert.equal(
+        bridgedChainAmount.toString(),
+        '-' + toBN(amount).add(toBN(secondAmount)).toString(),
+        'Wrong bridge chain amount',
+      );
+      assert.equal(
+        secondBridgeChainAmount.toString(),
+        '-' + toBN(thirdAmount).toString(),
+        'Wrong second bridge chain amount',
+      );
+      assert.equal(
+        bridgedTotalAmount.toString(),
+        '-' +
+          toBN(amount)
+            .add(toBN(secondAmount))
+            .add(toBN(thirdAmount))
+            .toString(),
+        'Wrong bridge total amount',
+      );
+      await bridgeInstance.removeEndpoints(secondDestChainSelector, {
+        from: maintainer,
+      });
+      await bridgeInstance.removeExtraArgs(secondDestChainSelector, {
+        from: maintainer,
+      });
+      await bridgeInstance.removeMappedTokens(
+        secondDestChainSelector,
+        [bridgeToken.address],
+        {
+          from: maintainer,
+        },
       );
     });
     it('Can bridge token paying native fees with refuding of exceeding amount', async () => {
@@ -1282,16 +1424,16 @@ contract('Synthereum ccip bridge', accounts => {
       );
     });
     it('Can mint tokens on the destination chain', async () => {
-      const data = web3.eth.abi.encodeParameters(
+      let data = web3.eth.abi.encodeParameters(
         ['address', 'address', 'uint256', 'address'],
         [bridgeToken, destToken.address, amount, recipient],
       );
 
-      const messageId = web3.eth.abi.encodeParameters(
+      let messageId = web3.eth.abi.encodeParameters(
         ['bytes32'],
         [toHex('test')],
       );
-      const message = {
+      let message = {
         messageId,
         sourceChainSelector: destChainSelector,
         sender: web3.eth.abi.encodeParameters(['address'], [srcEndpoint]),
@@ -1323,6 +1465,121 @@ contract('Synthereum ccip bridge', accounts => {
       assert.equal(
         destTokenBalance.toString(),
         toBN(prevDestTokenBalance).add(toBN(amount)).toString(),
+      );
+      let bridgedChainAmount =
+        await mockBridgeInstance.getChainBridgedAmount.call(
+          destToken.address,
+          destChainSelector,
+        );
+      let bridgedTotalAmount =
+        await mockBridgeInstance.getTotalBridgedAmount.call(destToken.address);
+      assert.equal(
+        bridgedChainAmount.toString(),
+        toBN(amount).toString(),
+        'Wrong bridge chain amount',
+      );
+      assert.equal(
+        bridgedTotalAmount.toString(),
+        toBN(amount).toString(),
+        'Wrong bridge total amount',
+      );
+      const secondAmount = toWei('5000');
+      data = web3.eth.abi.encodeParameters(
+        ['address', 'address', 'uint256', 'address'],
+        [bridgeToken, destToken.address, secondAmount, recipient],
+      );
+      messageId = web3.eth.abi.encodeParameters(['bytes32'], [toHex('test2')]);
+      message = {
+        messageId,
+        sourceChainSelector: destChainSelector,
+        sender: web3.eth.abi.encodeParameters(['address'], [srcEndpoint]),
+        data,
+        destTokenAmounts: [],
+      };
+      await mockRouter.ccipSend(mockBridgeInstance.address, 0, message);
+      bridgedChainAmount = await mockBridgeInstance.getChainBridgedAmount.call(
+        destToken.address,
+        destChainSelector,
+      );
+      bridgedTotalAmount = await mockBridgeInstance.getTotalBridgedAmount.call(
+        destToken.address,
+      );
+      assert.equal(
+        bridgedChainAmount.toString(),
+        toBN(amount).add(toBN(secondAmount)).toString(),
+        'Wrong bridge chain amount',
+      );
+      assert.equal(
+        bridgedTotalAmount.toString(),
+        toBN(amount).add(toBN(secondAmount)).toString(),
+        'Wrong bridge total amount',
+      );
+      const secondDestChainSelector = bridge[networkId].secondChainSelector;
+      await mockBridgeInstance.setEndpoints(
+        secondDestChainSelector,
+        srcEndpoint,
+        destEndpoint,
+        { from: maintainer },
+      );
+      const srcToken = accounts[9];
+      await mockBridgeInstance.setMappedTokens(
+        secondDestChainSelector,
+        [destToken.address],
+        [srcToken],
+        {
+          from: maintainer,
+        },
+      );
+      const thirdAmount = toWei('15000');
+      data = web3.eth.abi.encodeParameters(
+        ['address', 'address', 'uint256', 'address'],
+        [srcToken, destToken.address, thirdAmount, recipient],
+      );
+      messageId = web3.eth.abi.encodeParameters(['bytes32'], [toHex('test3')]);
+      message = {
+        messageId,
+        sourceChainSelector: secondDestChainSelector,
+        sender: web3.eth.abi.encodeParameters(['address'], [srcEndpoint]),
+        data,
+        destTokenAmounts: [],
+      };
+      await mockRouter.ccipSend(mockBridgeInstance.address, 0, message);
+      bridgedChainAmount = await mockBridgeInstance.getChainBridgedAmount.call(
+        destToken.address,
+        destChainSelector,
+      );
+      let secondBridgeChainAmount =
+        await mockBridgeInstance.getChainBridgedAmount.call(
+          destToken.address,
+          secondDestChainSelector,
+        );
+      bridgedTotalAmount = await mockBridgeInstance.getTotalBridgedAmount.call(
+        destToken.address,
+      );
+      assert.equal(
+        bridgedChainAmount.toString(),
+        toBN(amount).add(toBN(secondAmount)).toString(),
+        'Wrong bridge chain amount',
+      );
+      assert.equal(
+        secondBridgeChainAmount.toString(),
+        toBN(thirdAmount).toString(),
+        'Wrong second bridge chain amount',
+      );
+      assert.equal(
+        bridgedTotalAmount.toString(),
+        toBN(amount).add(toBN(secondAmount)).add(toBN(thirdAmount)).toString(),
+        'Wrong bridge total amount',
+      );
+      await mockBridgeInstance.removeEndpoints(secondDestChainSelector, {
+        from: maintainer,
+      });
+      await mockBridgeInstance.removeMappedTokens(
+        secondDestChainSelector,
+        [destToken.address],
+        {
+          from: maintainer,
+        },
       );
     });
     it('Can revert is source endpoint not supported', async () => {
@@ -1532,6 +1789,4 @@ contract('Synthereum ccip bridge', accounts => {
       );
     });
   });
-
-  // Test for supports interafces function
 });

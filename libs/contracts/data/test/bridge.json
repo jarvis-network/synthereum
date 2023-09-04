@@ -1,6 +1,7 @@
 {
   "80001": {
     "chainSelector": "16015286601757825753",
+    "secondChainSelector": "14767482510784806043",
     "linkToken": {
       "addr": "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
       "slotBalanceStorage": 1
