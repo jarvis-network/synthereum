@@ -579,33 +579,33 @@ contract('Synthereum ccip bridge', accounts => {
     it('Can set free fee', async () => {
       assert.equal(
         false,
-        await bridgeInstance.isFeeFree.call(),
+        await bridgeInstance.isFeeFree.call(destChainSelector),
         'wrong free fee false',
       );
-      const tx = await bridgeInstance.setFreeFee(true, {
+      const tx = await bridgeInstance.setFreeFee(destChainSelector, true, {
         from: maintainer,
       });
       truffleAssert.eventEmitted(tx, 'FreeFeeSet', ev => {
-        return ev.isFree == true;
+        return ev.chainSelector == destChainSelector && ev.isFree == true;
       });
       assert.equal(
         true,
-        await bridgeInstance.isFeeFree.call(),
+        await bridgeInstance.isFeeFree.call(destChainSelector),
         'wrong free fee true',
       );
     });
     it('Can revert if same fee status passed', async () => {
       await truffleAssert.reverts(
-        bridgeInstance.setFreeFee(true, {
+        bridgeInstance.setFreeFee(destChainSelector, true, {
           from: maintainer,
         }),
         'Free fee already set',
       );
-      await bridgeInstance.setFreeFee(false, {
+      await bridgeInstance.setFreeFee(destChainSelector, false, {
         from: maintainer,
       });
       await truffleAssert.reverts(
-        bridgeInstance.setFreeFee(false, {
+        bridgeInstance.setFreeFee(destChainSelector, false, {
           from: maintainer,
         }),
         'Free fee already set',
@@ -613,7 +613,7 @@ contract('Synthereum ccip bridge', accounts => {
     });
     it('Can revert if sender that sets is not the maintainer', async () => {
       await truffleAssert.reverts(
-        bridgeInstance.setFreeFee(true, {
+        bridgeInstance.setFreeFee(destChainSelector, true, {
           from: accounts[6],
         }),
         'Sender must be the maintainer',
@@ -940,7 +940,9 @@ contract('Synthereum ccip bridge', accounts => {
       );
     });
     it('Can bridge token with free native fees', async () => {
-      await bridgeInstance.setFreeFee(true, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, true, {
+        from: maintainer,
+      });
       const prevBridgeTokenBalance = await bridgeToken.balanceOf.call(sender);
       await bridgeToken.approve(bridgeInstance.address, amount, {
         from: sender,
@@ -1007,7 +1009,9 @@ contract('Synthereum ccip bridge', accounts => {
         'Wrong native balance',
       );
       await bridgeInstance.withdraw(admin, { from: maintainer });
-      await bridgeInstance.setFreeFee(false, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, false, {
+        from: maintainer,
+      });
     });
     it('Can revert if not enough native fees paid', async () => {
       await bridgeToken.approve(bridgeInstance.address, amount, {
@@ -1035,7 +1039,9 @@ contract('Synthereum ccip bridge', accounts => {
       );
     });
     it('Can revert if not enough balance with native free fees', async () => {
-      await bridgeInstance.setFreeFee(true, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, true, {
+        from: maintainer,
+      });
       await bridgeToken.approve(bridgeInstance.address, amount, {
         from: sender,
       });
@@ -1066,7 +1072,9 @@ contract('Synthereum ccip bridge', accounts => {
         ),
         'Not enough balance',
       );
-      await bridgeInstance.setFreeFee(false, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, false, {
+        from: maintainer,
+      });
     });
     it('Can bridge token paying ERC20 fees', async () => {
       const prevBridgeTokenBalance = await bridgeToken.balanceOf.call(sender);
@@ -1125,7 +1133,9 @@ contract('Synthereum ccip bridge', accounts => {
       );
     });
     it('Can bridge token with free ERC20 fees', async () => {
-      await bridgeInstance.setFreeFee(true, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, true, {
+        from: maintainer,
+      });
       const prevBridgeTokenBalance = await bridgeToken.balanceOf.call(sender);
       await bridgeToken.approve(bridgeInstance.address, amount, {
         from: sender,
@@ -1203,7 +1213,9 @@ contract('Synthereum ccip bridge', accounts => {
       await bridgeInstance.withdrawToken(linkToken.address, admin, {
         from: maintainer,
       });
-      await bridgeInstance.setFreeFee(false, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, false, {
+        from: maintainer,
+      });
     });
     it('Can revert if native token sent with ERC20 fees', async () => {
       await bridgeToken.approve(bridgeInstance.address, amount, {
@@ -1237,7 +1249,9 @@ contract('Synthereum ccip bridge', accounts => {
       );
     });
     it('Can revert if not enough balance with native ERC20 free fees', async () => {
-      await bridgeInstance.setFreeFee(true, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, true, {
+        from: maintainer,
+      });
       await bridgeToken.approve(bridgeInstance.address, amount, {
         from: sender,
       });
@@ -1281,7 +1295,9 @@ contract('Synthereum ccip bridge', accounts => {
       await bridgeInstance.withdrawToken(linkToken.address, admin, {
         from: maintainer,
       });
-      await bridgeInstance.setFreeFee(false, { from: maintainer });
+      await bridgeInstance.setFreeFee(destChainSelector, false, {
+        from: maintainer,
+      });
     });
     it('Can revert if paying fees with an unsupported ERC20 token', async () => {
       await bridgeToken.approve(bridgeInstance.address, amount, {

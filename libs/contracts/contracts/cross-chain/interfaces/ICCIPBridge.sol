@@ -57,10 +57,11 @@ interface ISynthereumCCIPBridge {
     returns (bool);
 
   /**
-   * @notice Check if the fees are free
+   * @notice Check if the fee is free on the input destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
    * @return True if fee is flat, otherwise false
    */
-  function isFeeFree() external view returns (bool);
+  function isFeeFree(uint64 _chainSelector) external view returns (bool);
 
   /**
    * @notice Amount of bridged token (negative outbound bridge, positive inbound bridge) for every chain

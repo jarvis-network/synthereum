@@ -49,11 +49,11 @@ contract SynthereumCCIPBridge is
   mapping(IMintableBurnableERC20 => mapping(uint64 => IMintableBurnableERC20))
     internal tokensMap;
 
+  mapping(uint64 => bool) freeFee;
+
   mapping(IMintableBurnableERC20 => mapping(uint64 => int256)) chainBridgedAmount;
 
   mapping(IMintableBurnableERC20 => int256) totalBridgedAmount;
-
-  bool freeFee;
 
   //----------------------------------------
   // Events
@@ -85,7 +85,7 @@ contract SynthereumCCIPBridge is
     uint64 indexed chainSelector
   );
 
-  event FreeFeeSet(bool indexed isFree);
+  event FreeFeeSet(uint64 indexed chainSelector, bool indexed isFree);
 
   // Event emitted when the tokens are burned on the source chain and the message sent to ccipi
   event TransferInitiated(
@@ -261,12 +261,16 @@ contract SynthereumCCIPBridge is
   /**
    * @notice Set fee to free or not
    * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector of the destination chain
    * @param _isFree True if free, otherwise false
    */
-  function setFreeFee(bool _isFree) external onlyMaintainer {
-    require(freeFee != _isFree, 'Free fee already set');
-    freeFee = _isFree;
-    emit FreeFeeSet(_isFree);
+  function setFreeFee(uint64 _chainSelector, bool _isFree)
+    external
+    onlyMaintainer
+  {
+    require(freeFee[_chainSelector] != _isFree, 'Free fee already set');
+    freeFee[_chainSelector] = _isFree;
+    emit FreeFeeSet(_chainSelector, _isFree);
   }
 
   /**
@@ -408,11 +412,12 @@ contract SynthereumCCIPBridge is
   }
 
   /**
-   * @notice Check if the fees are free
+   * @notice Check if the fee is free on the input destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
    * @return True if fee is flat, otherwise false
    */
-  function isFeeFree() external view returns (bool) {
-    return freeFee;
+  function isFeeFree(uint64 _chainSelector) external view returns (bool) {
+    return freeFee[_chainSelector];
   }
 
   /**
@@ -613,7 +618,7 @@ contract SynthereumCCIPBridge is
 
     if (_feeToken != address(0)) {
       require(msg.value == 0, 'Native token sent');
-      if (!freeFee) {
+      if (!freeFee[_destinationChainSelector]) {
         IERC20(_feeToken).safeTransferFrom(_tokenSender, address(this), fees);
       } else {
         require(
@@ -629,7 +634,7 @@ contract SynthereumCCIPBridge is
       messageId = i_router.ccipSend(_destinationChainSelector, evm2AnyMessage);
     } else {
       // NATIVE TOKEN FEE
-      if (!freeFee) {
+      if (!freeFee[_destinationChainSelector]) {
         require(msg.value >= fees, 'Not enough native fees sent');
         uint256 refundAmount = msg.value - fees;
         if (refundAmount > 0) {
