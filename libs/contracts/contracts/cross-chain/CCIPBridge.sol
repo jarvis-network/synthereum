@@ -140,21 +140,24 @@ contract SynthereumCCIPBridge is
    * @notice Set sender and receiver endpoint for a chain
    * @notice Only maintainer can call this function
    * @param _chainSelector CCIP chain selector of the destination chain
-   * @param _msgSender Sender endpoint for the destination chain in input
-   * @param _msgSender Receiver endpoint for the destination chain in input
+   * @param _msgSenderEndpoint Sender endpoint for the destination chain in input
+   * @param _msgReceiverEndpoint Receiver endpoint for the destination chain in input
    */
   function setEndpoints(
     uint64 _chainSelector,
-    address _msgSender,
-    address _msgReceiver
+    address _msgSenderEndpoint,
+    address _msgReceiverEndpoint
   ) external onlyMaintainer {
     require(i_router.isChainSupported(_chainSelector), 'Chain not supported');
     require(
-      _msgSender != address(0) && _msgReceiver != address(0),
+      _msgSenderEndpoint != address(0) && _msgReceiverEndpoint != address(0),
       'Null input endpoint'
     );
-    endpoints[_chainSelector] = MessageEndpoints(_msgSender, _msgReceiver);
-    emit EndpointsSet(_chainSelector, _msgSender, _msgReceiver);
+    endpoints[_chainSelector] = MessageEndpoints(
+      _msgSenderEndpoint,
+      _msgReceiverEndpoint
+    );
+    emit EndpointsSet(_chainSelector, _msgSenderEndpoint, _msgReceiverEndpoint);
   }
 
   /**

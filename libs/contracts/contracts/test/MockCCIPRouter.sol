@@ -7,11 +7,7 @@ import {IAny2EVMMessageReceiver} from '@chainlink/contracts-ccip/src/v0.8/ccip/i
 contract MockCCIPRouter {
   constructor() {}
 
-  function isChainSupported(uint64 chainSelector)
-    external
-    view
-    returns (bool supported)
-  {
+  function isChainSupported(uint64) external pure returns (bool supported) {
     supported = true;
   }
 
@@ -21,18 +17,19 @@ contract MockCCIPRouter {
     returns (address[] memory tokens)
   {}
 
-  function getFee(
-    uint64 destinationChainSelector,
-    Client.EVM2AnyMessage memory message
-  ) external view returns (uint256 fee) {
+  function getFee(uint64, Client.EVM2AnyMessage memory)
+    external
+    pure
+    returns (uint256 fee)
+  {
     fee = 0;
   }
 
   function ccipSend(
     address ccipReceiver,
-    uint64 destinationChainSelector,
+    uint64,
     Client.Any2EVMMessage memory message
-  ) external payable returns (bytes32) {
+  ) external {
     IAny2EVMMessageReceiver(ccipReceiver).ccipReceive(message);
   }
 }
