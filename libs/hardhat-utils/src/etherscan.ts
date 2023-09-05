@@ -21,6 +21,7 @@ export function addEtherscanApiKeys(config: HardhatUserConfig) {
       avalancheFujiTestnet: process.env.ETHERSCAN_AVALANCHE_API_KEY!,
       avalanche: process.env.ETHERSCAN_AVALANCHE_API_KEY!,
       optimisticEthereum: process.env.OPTIMISM_API_KEY!,
+      optimisticGoerli: process.env.OPTIMISM_API_KEY!,
       arbitrumGoerli: process.env.ARBITRUM_API_KEY!,
       arbitrumOne: process.env.ARBITRUM_API_KEY!,
     },
