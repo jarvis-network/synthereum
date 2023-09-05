@@ -17,6 +17,9 @@ import {CCIPReceiver} from './CCIPReceiver.sol';
 import {AccessControlEnumerable} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {StandardAccessControlEnumerable} from '../common/roles/StandardAccessControlEnumerable.sol';
 
+/**
+ * @title Synthereum CCIP bridge for moving synthetic assets cross-chain
+ */
 contract SynthereumCCIPBridge is
   ISynthereumCCIPBridge,
   ERC2771Context,
@@ -34,6 +37,9 @@ contract SynthereumCCIPBridge is
     address contractReceiver;
   }
 
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
   ISynthereumFinder public immutable synthereumFinder;
 
   mapping(uint64 => MessageEndpoints) internal endpoints;
@@ -49,6 +55,9 @@ contract SynthereumCCIPBridge is
 
   bool freeFee;
 
+  //----------------------------------------
+  // Events
+  //----------------------------------------
   event EndpointsSet(
     uint64 indexed chainSelector,
     address messageSender,
@@ -103,18 +112,37 @@ contract SynthereumCCIPBridge is
     address receiver
   );
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+  /**
+   * @notice Constructs the SynthereumCCIPBridge contract
+   * @param _synthereumFinder Synthereum finder contract
+   * @param _router Chainlink CCIP router
+   * @param _roles Admin and Mainteiner roles
+   */
   constructor(
-    ISynthereumFinder _finder,
+    ISynthereumFinder _synthereumFinder,
     address _router,
     Roles memory _roles
   ) CCIPReceiver(_router) {
-    synthereumFinder = _finder;
+    synthereumFinder = _synthereumFinder;
     _setAdmin(_roles.admin);
     _setMaintainer(_roles.maintainer);
   }
 
   receive() external payable {}
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+  /**
+   * @notice Set sender and receiver endpoint for a chain
+   * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @param _msgSender Sender endpoint for the destination chain in input
+   * @param _msgSender Receiver endpoint for the destination chain in input
+   */
   function setEndpoints(
     uint64 _chainSelector,
     address _msgSender,
@@ -129,6 +157,11 @@ contract SynthereumCCIPBridge is
     emit EndpointsSet(_chainSelector, _msgSender, _msgReceiver);
   }
 
+  /**
+   * @notice Remove sender and receiver endpoint for a chain
+   * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector of the destination chain
+   */
   function removeEndpoints(uint64 _chainSelector) external onlyMaintainer {
     require(
       endpoints[_chainSelector].contractSender != address(0) &&
@@ -139,6 +172,13 @@ contract SynthereumCCIPBridge is
     emit EndpointsRemoved(_chainSelector);
   }
 
+  /**
+   * @notice Set extra args for a chain
+   * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector
+   * @param _gasLimit CCIP gas limit for executing transaction by CCIP protocol on on the destination chain in input
+   * @param _strict CCIP flag for stop the execution of the queue on the input chain in case of error
+   */
   function setExtraArgs(
     uint64 _chainSelector,
     uint256 _gasLimit,
@@ -150,12 +190,23 @@ contract SynthereumCCIPBridge is
     emit ExtraArgsSet(_chainSelector, _gasLimit, _strict);
   }
 
+  /**
+   * @notice Remove extra args for a chain
+   * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector of the destination chain
+   */
   function removeExtraArgs(uint64 _chainSelector) external onlyMaintainer {
     require(extraArgs[_chainSelector].gasLimit != 0, 'Args not supported');
     delete extraArgs[_chainSelector];
     emit ExtraArgsRemoved(_chainSelector);
   }
 
+  /**
+   * @notice Map tokens between this chain and a destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @param _srcTokens List of tokens on this chain
+   * @param _destTokens List of tokens on the destination chain in input
+   */
   function setMappedTokens(
     uint64 _chainSelector,
     IMintableBurnableERC20[] calldata _srcTokens,
@@ -182,6 +233,12 @@ contract SynthereumCCIPBridge is
     }
   }
 
+  /**
+   * @notice Reomve mapped tokens between this chain and a destination chain
+   * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @param _srcTokens List of tokens on this chain to be removed
+   */
   function removeMappedTokens(
     uint64 _chainSelector,
     IMintableBurnableERC20[] calldata _srcTokens
@@ -201,12 +258,27 @@ contract SynthereumCCIPBridge is
     }
   }
 
+  /**
+   * @notice Set fee to free or not
+   * @notice Only maintainer can call this function
+   * @param _isFree True if free, otherwise false
+   */
   function setFreeFee(bool _isFree) external onlyMaintainer {
     require(freeFee != _isFree, 'Free fee already set');
     freeFee = _isFree;
     emit FreeFeeSet(_isFree);
   }
 
+  /**
+   * @notice Burn tokens on this chain and trigger CCIP bridge for receiving on the destination chain
+   * @param _destinationChainSelector CCIP chain selector of the destination chain
+   * @param _token Address of the synth token to bridge
+   * @param _amount Amount to bridge
+   * @param _recipient Address to which receive synth tokens on the destination chain
+   * @param _feeToken Address of the token used to pay fees for bridging
+   * @return messageId CCIP output message id
+   * @return fees Amount of fees to be paid
+   */
   function transferTokensToDestinationChain(
     uint64 _destinationChainSelector,
     address _token,
@@ -251,6 +323,11 @@ contract SynthereumCCIPBridge is
     );
   }
 
+  /**
+   * @notice Withdraw deposited native tokens
+   * @notice Only maintainer can call this function
+   * @param _beneficiary Address used for receiving native tokens
+   */
   function withdraw(address payable _beneficiary)
     external
     onlyMaintainer
@@ -266,6 +343,12 @@ contract SynthereumCCIPBridge is
     _beneficiary.sendValue(amount);
   }
 
+  /**
+   * @notice Withdraw deposited ERC20 tokens
+   * @notice Only maintainer can call this function
+   * @param _token Address of the token to withdraw
+   * @param _beneficiary Address used for receiving ERC20 tokens
+   */
   function withdrawToken(address _token, address _beneficiary)
     external
     onlyMaintainer
@@ -280,6 +363,177 @@ contract SynthereumCCIPBridge is
     IERC20(_token).safeTransfer(_beneficiary, amount);
   }
 
+  /**
+   * @notice Check if a token is whitelisted for a destination chain
+   * @param _token Address of the token on this chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @return True if token is whitelisted, otherwise false
+   */
+  function isTokenWhitelisted(address _token, uint64 _chainSelector)
+    external
+    view
+    returns (bool)
+  {
+    return
+      address(tokensMap[IMintableBurnableERC20(_token)][_chainSelector]) !=
+      address(0);
+  }
+
+  /**
+   * @notice Check if endpoints are supported for a destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @return True if endpoints are supported, otherwise false
+   */
+  function isEndpointSupported(uint64 _chainSelector)
+    external
+    view
+    returns (bool)
+  {
+    return
+      endpoints[_chainSelector].contractSender != address(0) &&
+      endpoints[_chainSelector].contractReceiver != address(0);
+  }
+
+  /**
+   * @notice Check if extra args are supported for a destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @return True if extra args are supported, otherwise false
+   */
+  function isExtraArgsSupported(uint64 _chainSelector)
+    external
+    view
+    returns (bool)
+  {
+    return extraArgs[_chainSelector].gasLimit != 0;
+  }
+
+  /**
+   * @notice Check if the fees are free
+   * @return True if fee is flat, otherwise false
+   */
+  function isFeeFree() external view returns (bool) {
+    return freeFee;
+  }
+
+  /**
+   * @notice Amount of bridged token (negative outbound bridge, positive inbound bridge) for every chain
+   * @param _token Address of the token
+   */
+  function getTotalBridgedAmount(address _token)
+    external
+    view
+    returns (int256)
+  {
+    return totalBridgedAmount[IMintableBurnableERC20(_token)];
+  }
+
+  /**
+   * @notice Amount of bridged token (negative outbound bridge, positive inbound bridge) for the input chain
+   * @param _token Address of the token
+   * @param _destChainSelector CCIP chain selector of the destination chain
+   */
+  function getChainBridgedAmount(address _token, uint64 _destChainSelector)
+    external
+    view
+    returns (int256)
+  {
+    return
+      chainBridgedAmount[IMintableBurnableERC20(_token)][_destChainSelector];
+  }
+
+  /**
+   * @notice Get the source endpoint for the input chain
+   * @param _chainSelector CCIP chain selector of the source chain
+   * @return srcEndpoint Source endpoint
+   */
+  function getSrcEndpoint(uint64 _chainSelector)
+    public
+    view
+    returns (address srcEndpoint)
+  {
+    srcEndpoint = endpoints[_chainSelector].contractSender;
+    require(srcEndpoint != address(0), 'Src endpoint not supported');
+  }
+
+  /**
+   * @notice Get the destination endpoint for the input chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @return destEndpoint Destination endpoint
+   */
+  function getDestEndpoint(uint64 _chainSelector)
+    public
+    view
+    returns (address destEndpoint)
+  {
+    destEndpoint = endpoints[_chainSelector].contractReceiver;
+    require(destEndpoint != address(0), 'Dest endpoint not supported');
+  }
+
+  /**
+   * @notice Get the extra-args for the input destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @return args GasLimit and strict
+   */
+  function getExtraArgs(uint64 _chainSelector)
+    public
+    view
+    returns (Client.EVMExtraArgsV1 memory args)
+  {
+    args = extraArgs[_chainSelector];
+    require(args.gasLimit != 0, 'Args not supported');
+  }
+
+  /**
+   * @notice Get the address of the mapped token with the input token on the input destination chain
+   * @param _srcToken Address of the token
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @return destToken Address of mapped token on the destination chain
+   */
+  function getMappedToken(address _srcToken, uint64 _chainSelector)
+    public
+    view
+    returns (address destToken)
+  {
+    destToken = address(
+      tokensMap[IMintableBurnableERC20(_srcToken)][_chainSelector]
+    );
+    require(address(destToken) != address(0), 'Token not supported');
+  }
+
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override
+    returns (bool)
+  {
+    try
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.TrustedForwarder
+      )
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  /// @notice IERC165 supports an interfaceId
+  /// @param interfaceId The interfaceId to check
+  /// @return true if the interfaceId is supported
+  function supportsInterface(bytes4 interfaceId)
+    public
+    pure
+    override(CCIPReceiver, AccessControlEnumerable)
+    returns (bool)
+  {
+    return CCIPReceiver.supportsInterface(interfaceId);
+  }
+
+  // called by the router for mint tokens on the destination chain
   function _ccipReceive(Client.Any2EVMMessage memory message)
     internal
     override
@@ -328,6 +582,7 @@ contract SynthereumCCIPBridge is
     );
   }
 
+  // burn tokens and trigger bridge message on CCIP
   function _burnAndSendCCIPMessage(
     uint64 _destinationChainSelector,
     address _messageReceiver,
@@ -392,6 +647,7 @@ contract SynthereumCCIPBridge is
     }
   }
 
+  // build CCIP message to send to the destination chain
   function _buildCCIPMessage(
     uint64 _destinationChainSelector,
     address _messageReceiver,
@@ -413,121 +669,6 @@ contract SynthereumCCIPBridge is
       feeToken: _feeToken
     });
     return evm2AnyMessage;
-  }
-
-  function isTokenWhitelisted(address token, uint64 _chainSelector)
-    external
-    view
-    returns (bool)
-  {
-    return
-      address(tokensMap[IMintableBurnableERC20(token)][_chainSelector]) !=
-      address(0);
-  }
-
-  function isEndpointSupported(uint64 _chainSelector)
-    external
-    view
-    returns (bool)
-  {
-    return
-      endpoints[_chainSelector].contractSender != address(0) &&
-      endpoints[_chainSelector].contractReceiver != address(0);
-  }
-
-  function isExtraArgsSupported(uint64 _chainSelector)
-    external
-    view
-    returns (bool)
-  {
-    return extraArgs[_chainSelector].gasLimit != 0;
-  }
-
-  function isFeeFree() external view returns (bool) {
-    return freeFee;
-  }
-
-  function getTotalBridgedAmount(address token) external view returns (int256) {
-    return totalBridgedAmount[IMintableBurnableERC20(token)];
-  }
-
-  function getChainBridgedAmount(address token, uint64 destChainSelector)
-    external
-    view
-    returns (int256)
-  {
-    return chainBridgedAmount[IMintableBurnableERC20(token)][destChainSelector];
-  }
-
-  function getSrcEndpoint(uint64 _chainSelector)
-    public
-    view
-    returns (address srcEndpoint)
-  {
-    srcEndpoint = endpoints[_chainSelector].contractSender;
-    require(srcEndpoint != address(0), 'Src endpoint not supported');
-  }
-
-  function getDestEndpoint(uint64 _chainSelector)
-    public
-    view
-    returns (address destEndpoint)
-  {
-    destEndpoint = endpoints[_chainSelector].contractReceiver;
-    require(destEndpoint != address(0), 'Dest endpoint not supported');
-  }
-
-  function getExtraArgs(uint64 _chainSelector)
-    public
-    view
-    returns (Client.EVMExtraArgsV1 memory args)
-  {
-    args = extraArgs[_chainSelector];
-    require(args.gasLimit != 0, 'Args not supported');
-  }
-
-  function getMappedToken(address _srcToken, uint64 _chainSelector)
-    public
-    view
-    returns (address destToken)
-  {
-    destToken = address(
-      tokensMap[IMintableBurnableERC20(_srcToken)][_chainSelector]
-    );
-    require(address(destToken) != address(0), 'Token not supported');
-  }
-
-  function isTrustedForwarder(address forwarder)
-    public
-    view
-    override
-    returns (bool)
-  {
-    try
-      synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.TrustedForwarder
-      )
-    returns (address trustedForwarder) {
-      if (forwarder == trustedForwarder) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-  }
-
-  /// @notice IERC165 supports an interfaceId
-  /// @param interfaceId The interfaceId to check
-  /// @return true if the interfaceId is supported
-  function supportsInterface(bytes4 interfaceId)
-    public
-    pure
-    override(CCIPReceiver, AccessControlEnumerable)
-    returns (bool)
-  {
-    return CCIPReceiver.supportsInterface(interfaceId);
   }
 
   function _msgSender()
