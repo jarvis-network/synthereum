@@ -165,18 +165,8 @@
     "transactionHash": "0x90b8bf4487b63e53c2c94ecd615ad9fe3e97e2e869c60acd6e259f852460e86e"
   },
   {
-    "contractName": "MockRandomAggregator",
-    "address": "0x33930138e1281f14FC05F568eaacdCFfd9b23fAE",
-    "transactionHash": "0x73039149e991f94b33043fdf5135e56e9cc3db5bf4c310269f6de50c18407832"
-  },
-  {
-    "contractName": "MockRandomAggregator",
-    "address": "0x8665A70F93BC1cF4A8F4CFeFa2733619366149B7",
-    "transactionHash": "0xdf247cbe462b4d3c851ac6c7695763a1db300f6cb03cc9079ad05b1c82e29cd2"
-  },
-  {
-    "contractName": "MockRandomAggregator",
-    "address": "0x3E24294BEDD9CFE70D8908709efFF134bc2cD3D4",
-    "transactionHash": "0x169e4978bb572627b52cac86a1a56e6dbe8ecc5c1726618533a3705772776c93"
+    "contractName": "SynthereumCCIPBridge",
+    "address": "0x759B78738328A95cE4136c159CA9e2840bc71266",
+    "transactionHash": "0x2f599ef159b6105a4a92e4982f60ab7b870e529139eedfd292829e303d4e01d1"
   }
 ]
