@@ -16,5 +16,10 @@
     "chainlink": true,
     "api3": false,
     "dia": false
+  },
+  "420": {
+    "chainlink": true,
+    "api3": false,
+    "dia": false
   }
 }

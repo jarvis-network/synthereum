@@ -519,10 +519,10 @@
   },
   "420": {
     "EURUSD": {
-      "type": 0,
-      "aggregator": "",
-      "intermediatePairs": [],
-      "convertionMetricUnit": 0
+      "type": 1,
+      "aggregator": "0x619AeaaF08dF3645e138C611bddCaE465312Ef6B",
+      "convertionMetricUnit": 0,
+      "maxSpread": "1000000000000000"
     }
   },
   "10": {

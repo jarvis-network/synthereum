@@ -1,10 +1,4 @@
 {
-  "420": {
-    "EURUSD": {
-      "initialPrice": "1.0140",
-      "maxSpread": "0.00000003472"
-    }
-  },
   "97": {
     "EURUSD": {
       "initialPrice": "1.1281",

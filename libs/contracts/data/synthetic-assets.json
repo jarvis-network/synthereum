@@ -505,13 +505,10 @@
       "syntheticName": "Jarvis Synthetic Euro",
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
-      "collateralRequirement": "1025000000000000000",
       "overCollateralRequirement": "25000000000000000",
-      "minSponsorTokens": "10000000000000000000",
-      "capMintAmount": "1000000000000000000000000",
-      "liquidationReward": "1000000000000000000",
+      "liquidationReward": "700000000000000000",
       "lendingId": "AaveV3",
-      "interestBearingToken": "0x0000000000000000000000000000000000000000",
+      "interestBearingToken": "0x99A8acb66c7ED63141b868a603C2337B24f85B22",
       "daoInterestShare": "600000000000000000",
       "jrtBuybackShare": "0"
     }

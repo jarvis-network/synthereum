@@ -47,11 +47,18 @@
       "rewardsController": "0x0000000000000000000000000000000000000000",
       "isEnabled": true
     },
+    "Compound": {
+      "modules": [],
+      "isEnabled": false
+    },
     "SwapModules": {
       "uniV2": false,
       "balancer": false,
       "collateral": ""
-    }
+    },
+    "commissionReceiver": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
+    "buybackProgramReceiver": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
+    "lendingRewardsReceiver": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5"
   },
   "10": {
     "AaveV3": {

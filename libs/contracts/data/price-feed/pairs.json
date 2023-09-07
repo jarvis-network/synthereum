@@ -444,5 +444,12 @@
       "oracle": "chainlink",
       "intermediatePairs": []
     }
+  },
+  "420": {
+    "EURUSD": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    }
   }
 }
