@@ -7,5 +7,14 @@
   },
   "43113": {
     "ccipRouter": "0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8"
+  },
+  "137": {
+    "ccipRouter": "0x3C3D92629A02a8D95D5CB9650fe49C3544f69B43"
+  },
+  "10": {
+    "ccipRouter": "0x261c05167db67B2b619f9d312e0753f3721ad6E8"
+  },
+  "42161": {
+    "ccipRouter": "0xE92634289A1841A979C11C2f618B33D376e4Ba85"
   }
 }
