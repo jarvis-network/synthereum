@@ -94,6 +94,46 @@
       "minSponsorTokens": "10000000000000000000",
       "capMintAmount": "100000000000000000000000",
       "liquidationReward": "200000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFUSD",
+      "collateralAddress": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFEUR",
+      "collateralAddress": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "500000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFETH",
+      "collateralAddress": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "100000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFWSTETH",
+      "collateralAddress": "0x03b54A6e9a984069379fae1a4fC4dBAE93B3bCCD",
+      "collateralRequirement": "1250000000000000000",
+      "minSponsorTokens": "10000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "100000000000000000"
     }
   ],
   "97": [
