@@ -36,7 +36,10 @@
     "MXNUSD",
     "BRLWSTETH",
     "MXNWSTETH",
-    "EURWSTETH"
+    "EURWSTETH",
+    "CHFEUR",
+    "CHFETH",
+    "CHFWSTETH"
   ],
   "56": [
     "EURUSD",
