@@ -148,5 +148,10 @@
     "contractName": "JrtToJarvisConverter",
     "address": "0x90CCED6c1912eBE199016D3eBca887A8b86dC5E7",
     "transactionHash": "0x984f57c4faff261308bf70548065f51ff03eaa20ed168910f4a5190af2607d68"
+  },
+  {
+    "contractName": "SynthereumCCIPBridge",
+    "address": "0x483479a3A413488612f84EE7ad67fE00724b730B",
+    "transactionHash": "0x624a0d7f2a1d0fa90fa700793a85498003951650123d7ba8e37de18de8ccd92c"
   }
 ]

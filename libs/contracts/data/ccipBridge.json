@@ -16,5 +16,8 @@
   },
   "42161": {
     "ccipRouter": "0xE92634289A1841A979C11C2f618B33D376e4Ba85"
+  },
+  "56": {
+    "ccipRouter": "0x536d7E53D0aDeB1F20E7c81fea45d02eC9dBD698"
   }
 }
