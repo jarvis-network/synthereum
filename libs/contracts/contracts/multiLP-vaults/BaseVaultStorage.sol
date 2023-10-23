@@ -11,7 +11,7 @@ import {ERC2771Context} from '../common/ERC2771Context.sol';
 import {ReentrancyGuardUpgradeable} from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import {ERC20PermitUpgradeable} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol';
 
-abstract contract BaseVaultStorage is
+abstract contract SynthereumBaseVaultStorage is
   ERC2771Context,
   ReentrancyGuardUpgradeable,
   ERC20PermitUpgradeable

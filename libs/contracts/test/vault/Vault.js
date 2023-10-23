@@ -15,7 +15,7 @@ const TestnetSelfMintingERC20 = artifacts.require('MintableBurnableERC20');
 const IUniswapRouter = artifacts.require('IUniswapV2Router02');
 
 const VaultFactory = artifacts.require('SynthereumVaultFactory');
-const Vault = artifacts.require('Vault');
+const SynthereumVault = artifacts.require('SynthereumVault');
 const PoolMock = artifacts.require('PoolMockForVault');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const Manager = artifacts.require('SynthereumManager');
@@ -28,7 +28,7 @@ const data = require('../../data/test/lendingTestnet.json');
 
 const { toBN, toWei, toHex } = web3Utils;
 
-contract('Lending Vault', accounts => {
+contract('LP Vault', accounts => {
   let vault,
     factoryVault,
     vaultImpl,
@@ -192,7 +192,7 @@ contract('Lending Vault', accounts => {
       { from: maintainer },
     );
 
-    vaultImpl = await Vault.new();
+    vaultImpl = await SynthereumVault.new();
     factoryVault = await VaultFactory.new(finder.address, vaultImpl.address);
     vaultRegistry = await VaultRegistry.deployed();
 
@@ -248,7 +248,7 @@ contract('Lending Vault', accounts => {
           overCollateralization,
           { from: accounts[0] },
         );
-        vault = await Vault.at(vaultAddr);
+        vault = await SynthereumVault.at(vaultAddr);
 
         assert.equal(await vault.getPool.call(), pool.address);
         assert.equal(await vault.getPoolCollateral.call(), USDC.address);
@@ -1043,7 +1043,7 @@ contract('Lending Vault', accounts => {
   describe('Manager - update of logic and admin', () => {
     let newVaultImpl;
     before(async () => {
-      newVaultImpl = await Vault.new();
+      newVaultImpl = await SynthereumVault.new();
       let newVaultFactory = await VaultFactory.new(
         finder.address,
         newVaultImpl.address,

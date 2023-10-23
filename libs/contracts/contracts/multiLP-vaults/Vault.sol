@@ -11,9 +11,9 @@ import {PreciseUnitMath} from '../base/utils/PreciseUnitMath.sol';
 import {ISynthereumPriceFeed} from '../oracle/interfaces/IPriceFeed.sol';
 import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {SynthereumFactoryAccess} from '../common/libs/FactoryAccess.sol';
-import {BaseVaultStorage} from './BaseVault.sol';
+import {SynthereumBaseVaultStorage} from './BaseVaultStorage.sol';
 
-contract Vault is IVault, BaseVaultStorage {
+contract SynthereumVault is IVault, SynthereumBaseVaultStorage {
   using SafeERC20 for IERC20;
   using PreciseUnitMath for uint256;
 
