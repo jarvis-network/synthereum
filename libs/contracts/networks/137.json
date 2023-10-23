@@ -195,13 +195,13 @@
     "transactionHash": "0x466a256914afc2f113220f9a47a232303b74c7b634cfc8bd38d02ed92c6b3539"
   },
   {
-    "contractName": "Vault",
-    "address": "0xCDa9C60A52fCFf444C32F1e64f7798b44196395c",
-    "transactionHash": "0xb4f7fea635047cb62b51f2d38d0723c736f4426e12d3cf410b712645513c0953"
+    "contractName": "SynthereumVault",
+    "address": "0xfE25Fcd939A1054F9500057b72ed70808c5b4F6D",
+    "transactionHash": "0x0f66a8f593ccf431499916a7805308376f99feedfffa2021653fed867ca4fee9"
   },
   {
     "contractName": "SynthereumVaultFactory",
-    "address": "0x09A049e0F5432129A1a876a48E290d763465651D",
-    "transactionHash": "0x3a6ff18b31b76325cc60adfeadfe31808baea7290a096c7eaeb3361ff9d03e8e"
+    "address": "0x92aAEE47809E175052d93024B469F420Bcd1608C",
+    "transactionHash": "0xff84b5258a3fbd529cd03d7e0b1ff6a35673b2b0b5c8d23955c2dd8f13d6e59a"
   }
 ]
