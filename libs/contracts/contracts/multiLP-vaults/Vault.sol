@@ -97,7 +97,7 @@ contract Vault is IVault, BaseVaultStorage {
     collateralAsset.safeTransferFrom(sender, address(this), collateralAmount);
 
     // approve pool to pull collateral
-    collateralAsset.safeApprove(address(pool), collateralAmount);
+    collateralAsset.safeIncreaseAllowance(address(pool), collateralAmount);
 
     // to retrieve updated vault position on pool
     IPoolVault.LPInfo memory vaultPosition;
@@ -285,7 +285,7 @@ contract Vault is IVault, BaseVaultStorage {
     collateralAsset.safeTransferFrom(sender, address(this), collateralAmount);
 
     // approve pool to pull collateral
-    collateralAsset.safeApprove(address(pool), collateralAmount);
+    collateralAsset.safeIncreaseAllowance(address(pool), collateralAmount);
 
     // add liquidity to vault position in pool
     pool.addLiquidity(collateralAmount);
