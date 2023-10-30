@@ -2,29 +2,35 @@
   "137": {
     "jrtAddress": "0x596eBE76e2DB4470966ea395B0d063aC6197A8C5",
     "jarvisAddress": "0xf5F4a92AfC0fDF40b7Cb0054b3C4f7335CeF2014",
-    "ratio": "13452380952400000000"
+    "ratio": "13452380952400000000",
+    "hasWrapper": false
   },
   "56": {
     "jrtAddress": "0x414f9e74BA3A9D0aCCE65182809492f41ac671E0",
     "jarvisAddress": "0x644C545703f57A4B905f4c558f52342a206E2c55",
-    "ratio": "13452380952400000000"
+    "ratio": "13452380952400000000",
+    "hasWrapper": false
   },
   "10": {
     "jrtAddress": "0x15e770B95Edd73fD96b02EcE0266247D50895E76",
     "jarvisAddress": "0x9F46A936BE9114bD2f71965a87C003341448b47E",
-    "ratio": "13452380952400000000"
+    "ratio": "13452380952400000000",
+    "hasWrapper": false
   },
   "42161": {
     "jrtAddress": "0x6Aa395F06986ea4eFe0a4630C7865C1eB08D5e7e",
     "jarvisAddress": "0x4e770ab9df7905649441BB4254c33b4B2B8D0a83",
-    "ratio": "13452380952400000000"
+    "ratio": "13452380952400000000",
+    "hasWrapper": false
   },
   "5": {
     "jrtAddress": "0xe9705DdDe242CB969f637082a06861751f940478",
-    "ratio": "13452380952400000000"
+    "ratio": "13452380952400000000",
+    "hasWrapper": false
   },
   "1": {
     "jrtAddress": "0x8A9C67fee641579dEbA04928c4BC45F66e26343A",
-    "ratio": "13452380952400000000"
+    "ratio": "13452380952400000000",
+    "hasWrapper": false
   }
 }

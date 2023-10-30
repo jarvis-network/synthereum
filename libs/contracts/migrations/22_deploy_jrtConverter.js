@@ -1,6 +1,7 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'JrtToJarvisConverter',
   'JarvisToken',
+  'JarvisToWrapperConverter',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -8,7 +9,8 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { JrtToJarvisConverter, JarvisToken } = migrate.getContracts(artifacts);
+  const { JrtToJarvisConverter, JarvisToken, JarvisToWrapperConverter } =
+    migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
     deploy,
@@ -61,7 +63,31 @@ async function migrate(deployer, network, accounts) {
   );
 
   console.log(
-    'Coverter contract deployed at',
+    'Converter contract deployed at',
     migratorInstance.options.address,
   );
+
+  if (data.hasWrapper) {
+    await deploy(
+      web3,
+      deployer,
+      network,
+      JarvisToWrapperConverter,
+      jarvisToken,
+      data.wrapper,
+      roles,
+      { from: keys.deployer },
+    );
+
+    const migratorWrapperInstance = await getExistingInstance(
+      web3,
+      JarvisToWrapperConverter,
+      '@jarvis-network/synthereum-contracts',
+    );
+
+    console.log(
+      'Wrapper converter contract deployed at',
+      migratorWrapperInstance.options.address,
+    );
+  }
 }
