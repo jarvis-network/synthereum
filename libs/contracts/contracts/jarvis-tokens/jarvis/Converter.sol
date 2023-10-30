@@ -2,11 +2,17 @@
 pragma solidity 0.8.9;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {StandardAccessControlEnumerable} from '../../common/roles/StandardAccessControlEnumerable.sol';
 import {PreciseUnitMath} from '../../base/utils/PreciseUnitMath.sol';
+import {StandardAccessControlEnumerable} from '../../common/roles/StandardAccessControlEnumerable.sol';
+import {ConverterActivator} from './ConverterActivator.sol';
 
-contract JrtToJarvisConverter is StandardAccessControlEnumerable {
+/**
+ * @title A contract for depositing JRT and receiving JARVIS
+ */
+contract JrtToJarvisConverter is
+  StandardAccessControlEnumerable,
+  ConverterActivator
+{
   using PreciseUnitMath for uint256;
 
   IERC20 public immutable JRT;
@@ -15,9 +21,7 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
 
   uint256 public totalJRTMigrated;
   uint256 public totalJarvisDistributed;
-  uint256 public activationBlock;
 
-  event MigrationStartBlock(uint256 indexed blockNumber);
   event JrtMigrated(
     address indexed sender,
     uint256 jrtAmount,
@@ -29,12 +33,13 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
    * @param jrt the address of the JRT token
    * @param jarvis the address of the JARVIS token
    * @param ratio the exchange rate between JRT and JARVIS
+   * @param roles input roles
    */
   constructor(
     IERC20 jrt,
     IERC20 jarvis,
     uint256 ratio,
-    Roles memory _roles
+    Roles memory roles
   ) {
     // we can add checks on the addresses passed
     JRT = jrt;
@@ -42,8 +47,8 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
     require(ratio != 0, 'Null ratio');
     JRT_JARVIS_RATIO = ratio;
 
-    _setAdmin(_roles.admin);
-    _setMaintainer(_roles.maintainer);
+    _setAdmin(roles.admin);
+    _setMaintainer(roles.maintainer);
   }
 
   /**
@@ -52,10 +57,7 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
    * @param blockNumber starting block number
    */
   function setActivationBlock(uint256 blockNumber) external onlyMaintainer {
-    require(activationBlock == 0, 'Already active');
-    require(blockNumber >= block.number, 'Wrong block number');
-    activationBlock = blockNumber;
-    emit MigrationStartBlock(blockNumber);
+    _setActivationBlock(blockNumber);
   }
 
   /**
@@ -71,15 +73,9 @@ contract JrtToJarvisConverter is StandardAccessControlEnumerable {
   /**
    * @dev executes the migration from JRT to JARVIS. Users need to give allowance to this contract to transfer JRT before executing
    * this transaction.
-   * @dev this contract needs to have minter role
    * @param amount the amount of JRT to be migrated
    */
-  function migrateFromJRT(uint256 amount) external {
-    require(
-      activationBlock != 0 && block.number >= activationBlock,
-      'Not active'
-    );
-
+  function migrateFromJRT(uint256 amount) external onlyActive {
     totalJRTMigrated += amount;
     JRT.transferFrom(msg.sender, address(this), amount);
 
