@@ -18,7 +18,7 @@ contract JarvisToWrapperConverter is
   IERC20 public immutable JARVIS;
   IERC20 public immutable WRAPPER;
 
-  uint256 public totalDepositedAmount;
+  uint256 internal totalDepositedAmount;
 
   event JarvisMigrated(address indexed sender, uint256 jarvisAmount);
   event Withdrawn(uint256 indexed amount, address indexed recipient);
