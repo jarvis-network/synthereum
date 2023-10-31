@@ -23,5 +23,10 @@
     "contractName": "SynthereumTrustedForwarder",
     "address": "0xbe3F359341d31e29939095d736E04CF1b358984f",
     "transactionHash": "0x9fe0eb35a14906666a846d8d6e465f8474d05ca3d32134c8e998e293c860d58d"
+  },
+  {
+    "contractName": "JarvisToWrapperConverter",
+    "address": "0xEF95A4c368964E2119c6Cac44DE8Ff4C8A906EE9",
+    "transactionHash": "0x1931a4a81bbc4ade0cab01effd9a891fce84e436d1c95a2df536a0efd98f741b"
   }
 ]
