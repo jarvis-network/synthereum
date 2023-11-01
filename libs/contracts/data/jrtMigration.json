@@ -21,9 +21,9 @@
   },
   "42161": {
     "jrtAddress": "0x6Aa395F06986ea4eFe0a4630C7865C1eB08D5e7e",
-    "jarvisAddress": "0x4e770ab9df7905649441BB4254c33b4B2B8D0a83",
+    "jarvisAddress": "0x2C7941a0fE9C52223B229747322aF16160161C98",
     "ratio": "13452380952400000000",
-    "hasWrapper": true,
+    "hasWrapper": false,
     "wrapper": "0x2C7941a0fE9C52223B229747322aF16160161C98"
   },
   "5": {
