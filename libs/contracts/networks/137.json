@@ -218,5 +218,10 @@
     "contractName": "JarvisToWrapperConverter",
     "address": "0xBBc6b3aED1a4a8029f0010E9c1383D1fcFa72CdE",
     "transactionHash": "0x967b7c2c06052071298a78d05da266dbdb2b435a8aa358de38f1183eb8021c34"
+  },
+  {
+    "contractName": "JrtToJarvisConverter",
+    "address": "0xCC8CAFCB01AaB811D71B9B5733f3f52Ad2c41048",
+    "transactionHash": "0xbc70d94cc1ffa061297e23611dc1e4ccbc97cb3b99b034582349beb66078f5d4"
   }
 ]

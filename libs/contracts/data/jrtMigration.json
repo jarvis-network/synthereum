@@ -1,9 +1,9 @@
 {
   "137": {
     "jrtAddress": "0x596eBE76e2DB4470966ea395B0d063aC6197A8C5",
-    "jarvisAddress": "0xf5F4a92AfC0fDF40b7Cb0054b3C4f7335CeF2014",
+    "jarvisAddress": "0xe292178333Fc7424211795895865adac05bAf3bE",
     "ratio": "13452380952400000000",
-    "hasWrapper": true,
+    "hasWrapper": false,
     "wrapper": "0xe292178333Fc7424211795895865adac05bAf3bE"
   },
   "56": {
