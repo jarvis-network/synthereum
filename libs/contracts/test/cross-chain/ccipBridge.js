@@ -575,6 +575,245 @@ contract('Synthereum ccip bridge', accounts => {
     });
   });
 
+  describe('Should set and remove max amount', async () => {
+    const gasLimit = 300000;
+    const strictMode = false;
+    let srcToken = accounts[5];
+    let amountFirst = toWei('100000');
+    let secondSrcToken = accounts[7];
+    let amountSecond = toWei('250000');
+
+    it('Can set tokens', async () => {
+      const tx = await bridgeInstance.setMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        [amountFirst, amountSecond],
+        {
+          from: maintainer,
+        },
+      );
+      truffleAssert.eventEmitted(tx, 'MaxChainAmountSet', ev => {
+        return (
+          ev.sourceToken == srcToken &&
+          ev.chainSelector == destChainSelector &&
+          ev.maxAmount.toString() == amountFirst.toString()
+        );
+      });
+      truffleAssert.eventEmitted(tx, 'MaxChainAmountSet', ev => {
+        return (
+          ev.sourceToken == secondSrcToken &&
+          ev.chainSelector == destChainSelector &&
+          ev.maxAmount.toString() == amountSecond.toString()
+        );
+      });
+      const firstOutAmount = await bridgeInstance.getMaxChainAmount.call(
+        srcToken,
+        destChainSelector,
+      );
+      assert.equal(
+        firstOutAmount,
+        amountFirst.toString(),
+        'wrong first max amount',
+      );
+      const secondOutAmount = await bridgeInstance.getMaxChainAmount.call(
+        secondSrcToken,
+        destChainSelector,
+      );
+      assert.equal(
+        secondOutAmount,
+        amountSecond.toString(),
+        'wrong second max amount',
+      );
+    });
+    it('Can revert if no tokens passed ', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setMaxChainAmount(destChainSelector, [], [], {
+          from: maintainer,
+        }),
+        'No tokens passed',
+      );
+    });
+    it('Can revert if tokens length does not match ', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setMaxChainAmount(
+          destChainSelector,
+          [srcToken, secondSrcToken],
+          [amountFirst],
+          {
+            from: maintainer,
+          },
+        ),
+        'Src tokens and amounts do not match',
+      );
+    });
+    it('Can revert if null token passed ', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setMaxChainAmount(
+          destChainSelector,
+          [ZERO_ADDRESS, secondSrcToken],
+          [amountFirst, amountSecond],
+          {
+            from: maintainer,
+          },
+        ),
+        'Null token',
+      );
+    });
+    it('Can revert if null amount passed ', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setMaxChainAmount(
+          destChainSelector,
+          [srcToken, secondSrcToken],
+          [amountFirst, '0'],
+          {
+            from: maintainer,
+          },
+        ),
+        'Null amount',
+      );
+    });
+    it('Can revert if chain selector not supported', async () => {
+      const wrongChainSelector = '4009297550715157269';
+      await truffleAssert.reverts(
+        bridgeInstance.setMaxChainAmount(
+          wrongChainSelector,
+          [srcToken],
+          [amountFirst],
+          {
+            from: maintainer,
+          },
+        ),
+        'Chain not supported',
+      );
+    });
+    it('Can revert if sender that sets is not the maintainer', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setMaxChainAmount(
+          destChainSelector,
+          [srcToken],
+          [amountFirst],
+          {
+            from: accounts[6],
+          },
+        ),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can remove amounts', async () => {
+      const tx = await bridgeInstance.removeMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        {
+          from: maintainer,
+        },
+      );
+      truffleAssert.eventEmitted(tx, 'MaxChainAmountRemoved', ev => {
+        return (
+          ev.sourceToken == srcToken && ev.chainSelector == destChainSelector
+        );
+      });
+      truffleAssert.eventEmitted(tx, 'MaxChainAmountRemoved', ev => {
+        return (
+          ev.sourceToken == secondSrcToken &&
+          ev.chainSelector == destChainSelector
+        );
+      });
+      assert.equal(
+        await bridgeInstance.getMaxChainAmount.call(
+          srcToken,
+          destChainSelector,
+        ),
+        '0',
+        'wrong first amount removed',
+      );
+      assert.equal(
+        await bridgeInstance.getMaxChainAmount.call(
+          secondSrcToken,
+          destChainSelector,
+        ),
+        '0',
+        'wrong second amount removed',
+      );
+    });
+    it('Can revert if no tokens passed ', async () => {
+      await bridgeInstance.setMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        [amountFirst, amountSecond],
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        bridgeInstance.removeMaxChainAmount(destChainSelector, [], {
+          from: maintainer,
+        }),
+        'No tokens passed',
+      );
+      await bridgeInstance.removeMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        {
+          from: maintainer,
+        },
+      );
+    });
+    it('Can revert if amount already zero ', async () => {
+      await bridgeInstance.setMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        [amountFirst, amountSecond],
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        bridgeInstance.removeMaxChainAmount(
+          destChainSelector,
+          [srcToken, accounts[9]],
+          {
+            from: maintainer,
+          },
+        ),
+        'Max amount not set',
+      );
+      await bridgeInstance.removeMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        {
+          from: maintainer,
+        },
+      );
+    });
+    it('Can revert if sender that removes is not the maintainer', async () => {
+      await bridgeInstance.setMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        [amountFirst, amountSecond],
+        {
+          from: maintainer,
+        },
+      );
+      await truffleAssert.reverts(
+        bridgeInstance.removeMaxChainAmount(
+          destChainSelector,
+          [srcToken, secondSrcToken],
+          {
+            from: accounts[6],
+          },
+        ),
+        'Sender must be the maintainer',
+      );
+      await bridgeInstance.removeMaxChainAmount(
+        destChainSelector,
+        [srcToken, secondSrcToken],
+        {
+          from: maintainer,
+        },
+      );
+    });
+  });
+
   describe('Should set free fee', async () => {
     it('Can set free fee', async () => {
       assert.equal(
@@ -624,11 +863,13 @@ contract('Synthereum ccip bridge', accounts => {
   describe('Should move tokens from the source chain', async () => {
     let bridgeToken;
     let amount;
+    let maxAmount;
     let gasLimit;
     let destToken;
     before(async () => {
       gasLimit = 300000;
       amount = toWei('10000');
+      maxAmount = toWei('100000');
       bridgeToken = await MintableBurnableSyntheticTokenPermit.new(
         'Jarvis Synthetic Euro',
         'jEUR',
@@ -660,6 +901,14 @@ contract('Synthereum ccip bridge', accounts => {
           from: maintainer,
         },
       );
+      await bridgeInstance.setMaxChainAmount(
+        destChainSelector,
+        [bridgeToken.address],
+        [maxAmount],
+        {
+          from: maintainer,
+        },
+      );
       await setTokenBalance(
         linkToken.address,
         sender,
@@ -687,6 +936,13 @@ contract('Synthereum ccip bridge', accounts => {
         from: maintainer,
       });
       await bridgeInstance.removeMappedTokens(
+        destChainSelector,
+        [bridgeToken.address],
+        {
+          from: maintainer,
+        },
+      );
+      await bridgeInstance.removeMaxChainAmount(
         destChainSelector,
         [bridgeToken.address],
         {
@@ -822,6 +1078,14 @@ contract('Synthereum ccip bridge', accounts => {
           from: maintainer,
         },
       );
+      await bridgeInstance.setMaxChainAmount(
+        secondDestChainSelector,
+        [bridgeToken.address],
+        [maxAmount],
+        {
+          from: maintainer,
+        },
+      );
       const thirdAmount = toWei('25000');
       await bridgeToken.approve(bridgeInstance.address, thirdAmount, {
         from: sender,
@@ -880,6 +1144,13 @@ contract('Synthereum ccip bridge', accounts => {
         from: maintainer,
       });
       await bridgeInstance.removeMappedTokens(
+        secondDestChainSelector,
+        [bridgeToken.address],
+        {
+          from: maintainer,
+        },
+      );
+      await bridgeInstance.removeMaxChainAmount(
         secondDestChainSelector,
         [bridgeToken.address],
         {
@@ -1386,6 +1657,53 @@ contract('Synthereum ccip bridge', accounts => {
       await bridgeInstance.setExtraArgs(destChainSelector, gasLimit, false, {
         from: maintainer,
       });
+    });
+    it('Can revert if overcome max amount', async () => {
+      await bridgeToken.approve(bridgeInstance.address, amount, {
+        from: sender,
+      });
+      let retValues =
+        await bridgeInstance.transferTokensToDestinationChain.call(
+          destChainSelector,
+          bridgeToken.address,
+          amount,
+          recipient,
+          ZERO_ADDRESS,
+          { from: sender, value: toWei('1000') },
+        );
+      const tx = await bridgeInstance.transferTokensToDestinationChain(
+        destChainSelector,
+        bridgeToken.address,
+        amount,
+        recipient,
+        ZERO_ADDRESS,
+        { from: sender, value: retValues[1] },
+      );
+      const actualBridgedAmount = await bridgeInstance.getChainBridgedAmount(
+        bridgeToken.address,
+        destChainSelector,
+      );
+      const actualOvercomeAmount = await bridgeInstance.getMaxChainAmount(
+        bridgeToken.address,
+        destChainSelector,
+      );
+      const overcomeAmount = toBN(actualOvercomeAmount)
+        .add(toBN(actualBridgedAmount))
+        .add(toBN('1'));
+      await bridgeToken.approve(bridgeInstance.address, overcomeAmount, {
+        from: sender,
+      });
+      await truffleAssert.reverts(
+        bridgeInstance.transferTokensToDestinationChain(
+          destChainSelector,
+          bridgeToken.address,
+          overcomeAmount,
+          recipient,
+          ZERO_ADDRESS,
+          { from: sender, value: retValues[1] },
+        ),
+        'Max bridged amount reached',
+      );
     });
   });
 

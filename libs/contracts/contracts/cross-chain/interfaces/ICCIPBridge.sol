@@ -80,6 +80,17 @@ interface ISynthereumCCIPBridge {
     returns (int256);
 
   /**
+   * @notice Max amount of token to be bridged on input destination chain
+   * @param _token Address of the token
+   * @param _destChainSelector CCIP chain selector of the destination chain
+   * @return Max amount to be bridged
+   */
+  function getMaxChainAmount(address _token, uint64 _destChainSelector)
+    external
+    view
+    returns (uint256);
+
+  /**
    * @notice Get the source endpoint for the input chain
    * @param _chainSelector CCIP chain selector of the source chain
    * @return srcEndpoint Source endpoint

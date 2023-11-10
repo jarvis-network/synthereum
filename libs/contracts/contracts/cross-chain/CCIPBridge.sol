@@ -37,6 +37,13 @@ contract SynthereumCCIPBridge is
     address contractReceiver;
   }
 
+  struct TransferTokensCache {
+    address messageReceiver;
+    int256 actualBridgedAmount;
+    int256 amount;
+    address msgSender;
+  }
+
   //----------------------------------------
   // Storage
   //----------------------------------------
@@ -54,6 +61,8 @@ contract SynthereumCCIPBridge is
   mapping(IMintableBurnableERC20 => mapping(uint64 => int256)) chainBridgedAmount;
 
   mapping(IMintableBurnableERC20 => int256) totalBridgedAmount;
+
+  mapping(IMintableBurnableERC20 => mapping(uint64 => uint256)) chainMaxAmount;
 
   //----------------------------------------
   // Events
@@ -81,6 +90,17 @@ contract SynthereumCCIPBridge is
   );
 
   event TokenUnmapped(
+    IMintableBurnableERC20 indexed sourceToken,
+    uint64 indexed chainSelector
+  );
+
+  event MaxChainAmountSet(
+    IMintableBurnableERC20 indexed sourceToken,
+    uint64 indexed chainSelector,
+    uint256 maxAmount
+  );
+
+  event MaxChainAmountRemoved(
     IMintableBurnableERC20 indexed sourceToken,
     uint64 indexed chainSelector
   );
@@ -237,7 +257,7 @@ contract SynthereumCCIPBridge is
   }
 
   /**
-   * @notice Reomve mapped tokens between this chain and a destination chain
+   * @notice Remove mapped tokens between this chain and a destination chain
    * @notice Only maintainer can call this function
    * @param _chainSelector CCIP chain selector of the destination chain
    * @param _srcTokens List of tokens on this chain to be removed
@@ -255,6 +275,60 @@ contract SynthereumCCIPBridge is
       );
       delete tokensMap[_srcTokens[j]][_chainSelector];
       emit TokenUnmapped(_srcTokens[j], _chainSelector);
+      unchecked {
+        j++;
+      }
+    }
+  }
+
+  /**
+   * @notice Set max amount of a token that can be bridged on a destination chain
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @param _srcTokens List of tokens on this chain
+   * @param _amounts List of the max amounts
+   */
+  function setMaxChainAmount(
+    uint64 _chainSelector,
+    IMintableBurnableERC20[] calldata _srcTokens,
+    uint256[] calldata _amounts
+  ) external onlyMaintainer {
+    require(i_router.isChainSupported(_chainSelector), 'Chain not supported');
+    uint256 tokensNumber = _srcTokens.length;
+    require(tokensNumber > 0, 'No tokens passed');
+    require(
+      tokensNumber == _amounts.length,
+      'Src tokens and amounts do not match'
+    );
+    for (uint256 j = 0; j < tokensNumber; ) {
+      require(address(_srcTokens[j]) != address(0), 'Null token');
+      require(_amounts[j] > 0, 'Null amount');
+      chainMaxAmount[_srcTokens[j]][_chainSelector] = _amounts[j];
+      emit MaxChainAmountSet(_srcTokens[j], _chainSelector, _amounts[j]);
+      unchecked {
+        j++;
+      }
+    }
+  }
+
+  /**
+   * @notice Remove  max amount of a token that can be bridged on a destination chain
+   * @notice Only maintainer can call this function
+   * @param _chainSelector CCIP chain selector of the destination chain
+   * @param _srcTokens List of tokens on this chain whose max amount are removed
+   */
+  function removeMaxChainAmount(
+    uint64 _chainSelector,
+    IMintableBurnableERC20[] calldata _srcTokens
+  ) external onlyMaintainer {
+    uint256 tokensNumber = _srcTokens.length;
+    require(tokensNumber > 0, 'No tokens passed');
+    for (uint256 j = 0; j < tokensNumber; ) {
+      require(
+        chainMaxAmount[_srcTokens[j]][_chainSelector] != 0,
+        'Max amount not set'
+      );
+      delete chainMaxAmount[_srcTokens[j]][_chainSelector];
+      emit MaxChainAmountRemoved(_srcTokens[j], _chainSelector);
       unchecked {
         j++;
       }
@@ -293,37 +367,50 @@ contract SynthereumCCIPBridge is
     address _recipient,
     address _feeToken
   ) external payable nonReentrant returns (bytes32 messageId, uint256 fees) {
-    address messageReceiver = getDestEndpoint(_destinationChainSelector);
+    TransferTokensCache memory cache;
+    cache.messageReceiver = getDestEndpoint(_destinationChainSelector);
     IMintableBurnableERC20 destToken = IMintableBurnableERC20(
       getMappedToken(_token, _destinationChainSelector)
     );
 
-    address msgSender = _msgSender();
+    cache.actualBridgedAmount = chainBridgedAmount[
+      IMintableBurnableERC20(_token)
+    ][_destinationChainSelector];
+    cache.amount = _amount.toInt256();
+    require(
+      cache.amount - cache.actualBridgedAmount <=
+        chainMaxAmount[IMintableBurnableERC20(_token)][
+          _destinationChainSelector
+        ].toInt256(),
+      'Max bridged amount reached'
+    );
+
+    cache.msgSender = _msgSender();
     (messageId, fees) = _burnAndSendCCIPMessage(
       _destinationChainSelector,
-      messageReceiver,
+      cache.messageReceiver,
       IMintableBurnableERC20(_token),
       destToken,
       _amount,
-      msgSender,
+      cache.msgSender,
       _recipient,
       _feeToken
     );
 
     chainBridgedAmount[IMintableBurnableERC20(_token)][
       _destinationChainSelector
-    ] -= _amount.toInt256();
-    totalBridgedAmount[IMintableBurnableERC20(_token)] -= _amount.toInt256();
+    ] = cache.actualBridgedAmount - cache.amount;
+    totalBridgedAmount[IMintableBurnableERC20(_token)] -= cache.amount;
 
     // Emit an event with message details
     emit TransferInitiated(
       messageId,
       _destinationChainSelector,
-      messageReceiver,
+      cache.messageReceiver,
       IMintableBurnableERC20(_token),
       destToken,
       _amount,
-      msgSender,
+      cache.msgSender,
       _recipient,
       _feeToken,
       fees
@@ -426,6 +513,7 @@ contract SynthereumCCIPBridge is
   /**
    * @notice Amount of bridged token (negative outbound bridge, positive inbound bridge) for every chain
    * @param _token Address of the token
+   * @return Total bridged amount
    */
   function getTotalBridgedAmount(address _token)
     external
@@ -439,6 +527,7 @@ contract SynthereumCCIPBridge is
    * @notice Amount of bridged token (negative outbound bridge, positive inbound bridge) for the input chain
    * @param _token Address of the token
    * @param _destChainSelector CCIP chain selector of the destination chain
+   * @return Bridged amount for the input chain
    */
   function getChainBridgedAmount(address _token, uint64 _destChainSelector)
     external
@@ -447,6 +536,20 @@ contract SynthereumCCIPBridge is
   {
     return
       chainBridgedAmount[IMintableBurnableERC20(_token)][_destChainSelector];
+  }
+
+  /**
+   * @notice Max amount of token to be bridged on input destination chain
+   * @param _token Address of the token
+   * @param _destChainSelector CCIP chain selector of the destination chain
+   * @return Max amount to be bridged
+   */
+  function getMaxChainAmount(address _token, uint64 _destChainSelector)
+    external
+    view
+    returns (uint256)
+  {
+    return chainMaxAmount[IMintableBurnableERC20(_token)][_destChainSelector];
   }
 
   /**
