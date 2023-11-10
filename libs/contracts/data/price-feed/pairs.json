@@ -386,6 +386,16 @@
       "type": 2,
       "oracle": "",
       "intermediatePairs": ["CHFUSD", "USDEUR"]
+    },
+    "USDSTMATIC": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    },
+    "EURSTMATIC": {
+      "type": 2,
+      "oracle": "",
+      "intermediatePairs": ["EURUSD", "USDSTMATIC"]
     }
   },
   "43113": {

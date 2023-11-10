@@ -326,6 +326,12 @@
       "aggregator": "0x10f964234cae09cB6a9854B56FF7D4F38Cda5E6a",
       "convertionMetricUnit": 0,
       "maxSpread": "3000000000000000"
+    },
+    "USDSTMATIC": {
+      "type": 2,
+      "aggregator": "0x97371dF4492605486e23Da797fA68e55Fc38a13f",
+      "convertionMetricUnit": 0,
+      "maxSpread": "5000000000000000"
     }
   },
   "56": {
