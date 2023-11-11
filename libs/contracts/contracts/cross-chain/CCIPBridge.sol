@@ -156,6 +156,16 @@ contract SynthereumCCIPBridge is
   //----------------------------------------
   // External functions
   //----------------------------------------
+
+  /**
+   * @notice Set new router
+   * @notice Only maintainer can call this function
+   * @param _router Address of the new router
+   */
+  function setRouter(address _router) external onlyMaintainer {
+    _setRouter(_router);
+  }
+
   /**
    * @notice Set sender and receiver endpoint for a chain
    * @notice Only maintainer can call this function

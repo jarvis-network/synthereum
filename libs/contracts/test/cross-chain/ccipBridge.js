@@ -68,13 +68,42 @@ contract('Synthereum ccip bridge', accounts => {
       const router = await bridgeInstance.getRouter.call();
       assert.notEqual(router, ZERO_ADDRESS, 'wrong router');
     });
-    it('Can revert if null router passed ', async () => {
+    it('Can revert if null router passed', async () => {
       await truffleAssert.reverts(
         SynthereumCCIPBridge.new(finderInstance.address, ZERO_ADDRESS, {
           admin: admin,
           maintainer: maintainer,
         }),
         'Invalid router',
+      );
+    });
+  });
+
+  describe('Should set new router', async () => {
+    let actualRouter;
+    let newRouter;
+    before(async () => {
+      actualRouter = await bridgeInstance.getRouter.call();
+      newRouter = accounts[8];
+    });
+    after(async () => {
+      await bridgeInstance.setRouter(actualRouter, { from: maintainer });
+    });
+    it('Can set a new router', async () => {
+      await bridgeInstance.setRouter(newRouter, { from: maintainer });
+      const newRouterOut = await bridgeInstance.getRouter.call();
+      assert.equal(newRouter, newRouterOut, 'wrong router');
+    });
+    it('Can revert if null router passed', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setRouter(ZERO_ADDRESS, { from: maintainer }),
+        'Invalid router',
+      );
+    });
+    it('Can revert if sender that sets is not the maintainer', async () => {
+      await truffleAssert.reverts(
+        bridgeInstance.setRouter(newRouter, { from: accounts[6] }),
+        'Sender must be the maintainer',
       );
     });
   });
