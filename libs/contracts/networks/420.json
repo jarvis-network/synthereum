@@ -85,13 +85,13 @@
     "transactionHash": "0xe26c9a04ec9a33a4e5740f68398497eea0eb35f9b9ae7aead1c06fefe6308b12"
   },
   {
-    "contractName": "SynthereumCCIPBridge",
-    "address": "0xfaa6229B087Da78cAEBb29799D9a8A74Ec1ea237",
-    "transactionHash": "0x1aebf1dcc30af6f3a674c9a118f50bf120bd9e5553c83bb49c53361be166b313"
-  },
-  {
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x017Ed428F9B7BBf64aCc5381c1F0D99F80EC0e35",
     "transactionHash": "0x756118eab60a94750dacf35b250c4ffc0927bbbc589eadf29c79b5732541d5a7"
+  },
+  {
+    "contractName": "SynthereumCCIPBridge",
+    "address": "0xe9705DdDe242CB969f637082a06861751f940478",
+    "transactionHash": "0x79e03dc08d68de72b936deed469d27a3af4757c2c900043e180e10668eb215a4"
   }
 ]
