@@ -39,7 +39,10 @@
     "EURWSTETH",
     "CHFEUR",
     "CHFETH",
-    "CHFWSTETH"
+    "CHFWSTETH",
+    "EURSTMATIC",
+    "BRLSTMATIC",
+    "CHFSTMATIC"
   ],
   "56": [
     "EURUSD",
