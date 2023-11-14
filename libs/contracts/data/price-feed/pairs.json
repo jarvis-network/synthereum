@@ -396,6 +396,16 @@
       "type": 2,
       "oracle": "",
       "intermediatePairs": ["EURUSD", "USDSTMATIC"]
+    },
+    "CHFSTMATIC": {
+      "type": 2,
+      "oracle": "",
+      "intermediatePairs": ["CHFUSD", "USDSTMATIC"]
+    },
+    "BRLSTMATIC": {
+      "type": 2,
+      "oracle": "",
+      "intermediatePairs": ["BRLUSD", "USDSTMATIC"]
     }
   },
   "43113": {
