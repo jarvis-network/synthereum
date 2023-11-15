@@ -406,6 +406,26 @@
       "type": 2,
       "oracle": "",
       "intermediatePairs": ["BRLUSD", "USDSTMATIC"]
+    },
+    "STMATICUSD": {
+      "type": 1,
+      "oracle": "chainlink",
+      "intermediatePairs": []
+    },
+    "STMATICEUR": {
+      "type": 2,
+      "oracle": "",
+      "intermediatePairs": ["STMATICUSD", "USDEUR"]
+    },
+    "STMATICCHF": {
+      "type": 2,
+      "oracle": "",
+      "intermediatePairs": ["STMATICUSD", "USDCHF"]
+    },
+    "STMATICBRL": {
+      "type": 2,
+      "oracle": "",
+      "intermediatePairs": ["STMATICUSD", "USDBRL"]
     }
   },
   "43113": {
