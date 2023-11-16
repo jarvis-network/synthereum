@@ -411,7 +411,7 @@
       "collateralRequirement": "1150000000000000000",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "25000000000000000000000",
-      "liquidationReward": "500000000000000000"
+      "liquidationReward": "200000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic Euro",
