@@ -45,6 +45,7 @@ import '../oracle/implementations/PriceFeedImplementation.sol';
 import '../oracle/implementations/ChainlinkPriceFeed.sol';
 import '../oracle/implementations/Api3PriceFeed.sol';
 import '../oracle/implementations/DiaPriceFeed.sol';
+import '../oracle/implementations/ERC4626PriceFeed.sol';
 import '../synthereum-pool/common/migration/PoolMigration.sol';
 import '../synthereum-pool/common/migration/PoolMigrationFrom.sol';
 import '../synthereum-pool/common/migration/PoolMigrationTo.sol';

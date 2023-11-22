@@ -1,6 +1,7 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumChainlinkPriceFeed',
+  'SynthereumERC4626PriceFeed',
   'MockAggregator',
   'MockRandomAggregator',
   'SynthereumPriceFeed',
@@ -16,6 +17,7 @@ async function migrate(deployer, network, accounts) {
   const chainlinkPriceFeeds = require('../data/price-feed/pairs/chainlinkAggregators.json');
   const api3PriceFeeds = require('../data/price-feed/pairs/api3Aggregators.json');
   const diaPriceFeeds = require('../data/price-feed/pairs/diaAggregators.json');
+  const erc4626PriceFeeds = require('../data/price-feed/pairs/erc4626Aggregators.json');
   const randomOracleConfig = require('../data/price-feed/pairs/randomAggregator.json');
   const pairs = require('../data/price-feed/pairs.json');
   const {
@@ -24,6 +26,7 @@ async function migrate(deployer, network, accounts) {
   const {
     SynthereumFinder,
     SynthereumChainlinkPriceFeed,
+    SynthereumERC4626PriceFeed,
     MockAggregator,
     MockRandomAggregator,
     SynthereumApi3PriceFeed,
@@ -89,6 +92,7 @@ async function migrate(deployer, network, accounts) {
   let synthereumChainlinkPriceFeed;
   let synthereumApi3PriceFeed;
   let synthereumDiaPriceFeed;
+  let erc4626PriceFeed;
 
   if (!isPublicNetwork(network) || (protocols[networkId]?.chainlink ?? true)) {
     // deploy chainlink module
@@ -174,9 +178,39 @@ async function migrate(deployer, network, accounts) {
     }
   }
 
+  if (!isPublicNetwork(network) || (protocols[networkId]?.erc4626 ?? true)) {
+    // deploy erc4626 module
+    await deploy(
+      web3,
+      deployer,
+      network,
+      SynthereumERC4626PriceFeed,
+      synthereumFinder.options.address,
+      roles,
+      {
+        from: roles.maintainer,
+      },
+    );
+
+    erc4626PriceFeed = await getExistingInstance(
+      web3,
+      SynthereumERC4626PriceFeed,
+      '@jarvis-network/synthereum-contracts',
+    );
+
+    if (isPublicNetwork(network)) {
+      await priceFeedInstance.methods
+        .addOracle('erc4626', erc4626PriceFeed.options.address)
+        .send({ from: maintainer });
+      console.log('ERC4626 adapter added to the price feed');
+    }
+  }
+
   var chainlinkAggregatorsData = [];
   var api3AggregatorData = [];
   var diaAggregatorData = [];
+  var erc4626AggregatorData = [];
+
   if (!isPublicNetwork(network)) {
     return;
   } else if (networkId in randomOracleConfig) {
@@ -316,6 +350,18 @@ async function migrate(deployer, network, accounts) {
         });
       });
     }
+    const erc4626Assets = Object.keys(erc4626PriceFeeds[networkId]);
+    erc4626Assets.map(async asset => {
+      erc4626AggregatorData.push({
+        kind: erc4626PriceFeeds[networkId][asset].type,
+        asset: asset,
+        pair: asset,
+        aggregator: erc4626PriceFeeds[networkId][asset].sourceVault,
+        convertionMetricUnit:
+          erc4626PriceFeeds[networkId][asset].convertionMetricUnit,
+        maxSpread: erc4626PriceFeeds[networkId][asset].maxSpread,
+      });
+    });
   }
   for (let j = 0; j < chainlinkAggregatorsData.length; j++) {
     await synthereumChainlinkPriceFeed.methods
@@ -356,7 +402,19 @@ async function migrate(deployer, network, accounts) {
       .send({ from: maintainer });
     console.log(`   Add '${diaAggregatorData[j].pair}' aggregator`);
   }
-
+  for (let j = 0; j < erc4626AggregatorData.length; j++) {
+    await erc4626PriceFeed.methods
+      .setPair(
+        erc4626AggregatorData[j].pair,
+        erc4626AggregatorData[j].kind,
+        erc4626AggregatorData[j].aggregator,
+        erc4626AggregatorData[j].convertionMetricUnit,
+        '0x',
+        erc4626AggregatorData[j].maxSpread,
+      )
+      .send({ from: maintainer });
+    console.log(`   Add '${erc4626AggregatorData[j].pair}' aggregator`);
+  }
   var priceFeedData = [];
   const priceFeedAssets = Object.keys(pairs[networkId]);
   priceFeedAssets.map(async asset => {
