@@ -4822,10 +4822,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts@npm:4.3.2":
-  version: 4.3.2
-  resolution: "@openzeppelin/contracts@npm:4.3.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40openzeppelin%2Fcontracts%2F-%2Fcontracts-4.3.2.tgz"
-  checksum: 9032453eef3e10b6453b667c7edd3381292665083b855ca8a8b5f64b473e768eacb53516865fb3ce1e493deadbb977069e483cce5650c42807a742ab59a18695
+"@openzeppelin/contracts@npm:4.8.2":
+  version: 4.8.2
+  resolution: "@openzeppelin/contracts@npm:4.8.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40openzeppelin%2Fcontracts%2F-%2Fcontracts-4.8.2.tgz"
+  checksum: 1d362f0b9c880549cb82544e23fb70270fbbbe24a69e10bd5aa07649fd82347686173998ae484defafdc473d04004d519f839e3cd3d3e7733d0895b950622243
   languageName: node
   linkType: hard
 
