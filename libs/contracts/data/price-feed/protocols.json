@@ -1,15 +1,18 @@
 {
   "80001": {
+    "erc4626": true,
     "chainlink": true,
     "api3": false,
     "dia": false
   },
   "137": {
+    "erc4626": true,
     "chainlink": true,
     "api3": false,
     "dia": false
   },
   "43113": {
+    "erc4626": false,
     "chainlink": true,
     "api3": false,
     "dia": false

@@ -426,6 +426,11 @@
       "type": 2,
       "oracle": "",
       "intermediatePairs": ["STMATICUSD", "USDBRL"]
+    },
+    "FRKwFRK": {
+      "type": 1,
+      "oracle": "erc4626",
+      "intermediatePairs": []
     }
   },
   "43113": {
