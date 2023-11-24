@@ -203,5 +203,10 @@
     "contractName": "SynthereumVaultFactory",
     "address": "0x92aAEE47809E175052d93024B469F420Bcd1608C",
     "transactionHash": "0xff84b5258a3fbd529cd03d7e0b1ff6a35673b2b0b5c8d23955c2dd8f13d6e59a"
+  },
+  {
+    "contractName": "SynthereumERC4626PriceFeed",
+    "address": "0x1bC987099b49b889F5a57Ab62B132aBAE0CD9ED3",
+    "transactionHash": "0x74f1500bcdbdcbe4e45fab436b89592bf14a2bf37bbc54676f6afb7111ea1d7b"
   }
 ]
