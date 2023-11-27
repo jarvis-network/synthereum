@@ -164,6 +164,16 @@
       "minSponsorTokens": "25000000000000000000",
       "capMintAmount": "25000000000000000000000",
       "liquidationReward": "120000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "WFRKFRK",
+      "collateralAddress": "0x01d1a890d40d890d59795afcce22f5adbb511a3a",
+      "collateralRequirement": "1010000000000000000",
+      "minSponsorTokens": "25000000000000000000",
+      "capMintAmount": "25000000000000000000000",
+      "liquidationReward": "99000000000000000"
     }
   ],
   "97": [
