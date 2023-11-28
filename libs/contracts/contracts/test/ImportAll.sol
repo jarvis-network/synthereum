@@ -3,6 +3,7 @@
 pragma solidity >=0.8.0;
 
 import '../base/interfaces/IStandardERC20.sol';
+import '../base/interfaces/IERC4626.sol';
 import '../base/utils/StringUtils.sol';
 import '../base/utils/PreciseUnitMath.sol';
 import '../base/utils/ExplicitERC20.sol';

@@ -3,7 +3,7 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumPriceFeedImplementation} from './PriceFeedImplementation.sol';
-import {IERC4626} from './interfaces/IERC4626.sol';
+import {IERC4626} from '../../base/interfaces/IERC4626.sol';
 
 /**
  * @title Implementation for synthereum price-feed reading from a ERC4626 vault
@@ -68,8 +68,7 @@ contract SynthereumERC4626PriceFeed is SynthereumPriceFeedImplementation {
   ) internal view override returns (uint256 price, uint8 decimals) {
     IERC4626 vault = IERC4626(_source);
     decimals = vault.decimals();
-    uint256 baseUnit = 10**decimals;
-    price = vault.convertToAssets(baseUnit);
+    price = vault.convertToAssets(10**decimals);
   }
 
   /**
