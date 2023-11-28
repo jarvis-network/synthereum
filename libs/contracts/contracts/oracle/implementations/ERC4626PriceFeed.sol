@@ -3,7 +3,7 @@ pragma solidity 0.8.9;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumPriceFeedImplementation} from './PriceFeedImplementation.sol';
-import {IERC4626} from '@openzeppelin/contracts/interfaces/IERC4626.sol';
+import {IERC4626} from './interfaces/IERC4626.sol';
 
 /**
  * @title Implementation for synthereum price-feed reading from a ERC4626 vault
