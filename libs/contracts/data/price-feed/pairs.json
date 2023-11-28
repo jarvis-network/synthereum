@@ -431,6 +431,11 @@
       "type": 1,
       "oracle": "erc4626",
       "intermediatePairs": []
+    },
+    "FRKWFRK": {
+      "type": 1,
+      "oracle": "erc4626",
+      "intermediatePairs": []
     }
   },
   "43113": {

@@ -3,9 +3,14 @@
     "WFRKFRK": {
       "type": 1,
       "sourceVault": "0x01d1a890D40d890d59795aFCce22F5AdbB511A3a",
-      "intermediatePairs": [],
       "convertionMetricUnit": 0,
-      "maxSpread": "10000000000000000"
+      "maxSpread": "50000000000000000"
+    },
+    "FRKWFRK": {
+      "type": 2,
+      "sourceVault": "0x01d1a890D40d890d59795aFCce22F5AdbB511A3a",
+      "convertionMetricUnit": 0,
+      "maxSpread": "50000000000000000"
     }
   }
 }
