@@ -168,7 +168,7 @@
     {
       "syntheticName": "Jarvis Synthetic Euro",
       "syntheticSymbol": "jEUR",
-      "priceFeedIdentifier": "WFRKFRK",
+      "priceFeedIdentifier": "FRKWFRK",
       "collateralAddress": "0x01d1a890d40d890d59795afcce22f5adbb511a3a",
       "collateralRequirement": "1010000000000000000",
       "minSponsorTokens": "25000000000000000000",
