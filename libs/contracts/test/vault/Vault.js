@@ -51,7 +51,7 @@ contract('LP Vault', accounts => {
   let user4 = accounts[5];
   let user5 = accounts[6];
   let mockInterest = accounts[7];
-  let collateralAllocation = toWei('50', 'gwei');
+  let collateralAllocation = toWei('50', 'Mwei');
   let priceIdentifier = toHex('jEUR/USDC');
   let priceSpread = toWei('0.01');
   const maintainer = accounts[1];
@@ -319,7 +319,7 @@ contract('LP Vault', accounts => {
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
         // deposit
-        let collateralDeposit = toWei('5', 'gwei');
+        let collateralDeposit = toWei('5', 'Mwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user1 });
         let tx = await vault.deposit(collateralDeposit, user1, { from: user1 });
         let expectedUserLP = toBN(collateralDeposit).mul(
@@ -388,7 +388,7 @@ contract('LP Vault', accounts => {
         // deposit
         let LPTotalSupply = await vault.totalSupply.call();
 
-        let collateralDeposit = toWei('10', 'gwei');
+        let collateralDeposit = toWei('10', 'Mwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user2 });
         let tx = await vault.deposit(collateralDeposit, user2, { from: user2 });
 
@@ -462,7 +462,7 @@ contract('LP Vault', accounts => {
         let LPTotalSupply = await vault.totalSupply.call();
 
         // mock addition of interest to vault position
-        let generatedInterest = toWei('10', 'gwei');
+        let generatedInterest = toWei('10', 'Mwei');
         await USDC.approve(pool.address, generatedInterest, {
           from: mockInterest,
         });
@@ -481,7 +481,7 @@ contract('LP Vault', accounts => {
 
         let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
-        let collateralDeposit = toWei('10', 'gwei');
+        let collateralDeposit = toWei('10', 'Mwei');
         await USDC.approve(vault.address, collateralDeposit, { from: user3 });
         let tx = await vault.deposit(collateralDeposit, user3, { from: user3 });
 
@@ -954,7 +954,7 @@ contract('LP Vault', accounts => {
       let vaultBalanceBefore = await USDC.balanceOf.call(vault.address);
 
       // deposit
-      let collateralDeposit = toWei('5', 'gwei');
+      let collateralDeposit = toWei('5', 'Mwei');
       await USDC.approve(vault.address, collateralDeposit, { from: user1 });
       let tx = await vault.deposit(collateralDeposit, user1, { from: user1 });
       let expectedUserLP = toBN(collateralDeposit).mul(
@@ -1004,7 +1004,7 @@ contract('LP Vault', accounts => {
       let collBefore = (await pool.positionLPInfo.call(vault.address))
         .actualCollateralAmount;
       let userBalanceBefore = await USDC.balanceOf.call(user1);
-      let amount = toWei('10', 'gwei');
+      let amount = toWei('10', 'Mwei');
 
       await USDC.approve(vault.address, amount, { from: user1 });
       let tx = await vault.donate(amount, { from: user1 });
