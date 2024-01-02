@@ -67,6 +67,7 @@
     "@openzeppelin/contracts": "4.3.2",
     "@truffle/hdwallet-provider": "^1.2.1",
     "@solidity-parser/parser": "0.13.2",
+    "concat-stream": "2.0.0",
     "hardhat": "2.7.0",
     "sha3": "^2.1.4",
     "solidity-coverage": "^0.7.17",
